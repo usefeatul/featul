@@ -9,7 +9,62 @@ const nextConfig = {
             { source: '/auth/set-password', destination: '/auth/setpassword', permanent: true },
             { source: '/auth/two-factor', destination: '/auth/twofactor', permanent: true },
             { source: '/api/changelog/ai-stream', destination: '/api/changelog/stream', permanent: true },
+            { source: '/widget/sdk.js', destination: '/widget/sdk/v1.js', permanent: true },
         ];
+    },
+    async headers() {
+        const nosniff = { key: 'X-Content-Type-Options', value: 'nosniff' }
+        const referrer = { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' }
+        const appCsp = {
+            key: 'Content-Security-Policy',
+            value: [
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.sentry.io https://*.posthog.com",
+                "style-src 'self' 'unsafe-inline'",
+                "img-src 'self' data: blob: https:",
+                "font-src 'self' data:",
+                "connect-src 'self' https: wss:",
+                "frame-src 'self' https://www.youtube.com",
+                "frame-ancestors 'self'",
+                "base-uri 'self'",
+                "form-action 'self'",
+                "object-src 'none'",
+            ].join('; '),
+        }
+        const widgetCsp = {
+            key: 'Content-Security-Policy',
+            value: [
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+                "style-src 'self' 'unsafe-inline'",
+                "img-src 'self' data: blob: https:",
+                "font-src 'self' data:",
+                "connect-src 'self' https: wss:",
+                "frame-src 'self' https://www.youtube.com",
+                "frame-ancestors *",
+                "base-uri 'self'",
+                "object-src 'none'",
+            ].join('; '),
+        }
+        return [
+            {
+                source: '/widget',
+                headers: [nosniff, referrer, widgetCsp],
+            },
+            {
+                source: '/widget/:path*',
+                headers: [nosniff, referrer, widgetCsp],
+            },
+            {
+                source: '/((?!widget(?:/|$)).*)',
+                headers: [
+                    nosniff,
+                    referrer,
+                    { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+                    appCsp,
+                ],
+            },
+        ]
     },
     images: {
         remotePatterns: [

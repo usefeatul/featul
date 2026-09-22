@@ -132,7 +132,8 @@ export default function SetPassword() {
     };
     return (
         <AuthLayout
-            title="Set a Password"
+            title="Set a password."
+            description="Add a password to your account so you can enable extra security."
             onSubmit={handleSubmit}
             footer={
                 <p className={styles.footerTextCls}>

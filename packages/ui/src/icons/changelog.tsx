@@ -6,7 +6,7 @@ interface ChangelogIconProps {
   opacity?: number
 }
 
-export const ChangelogIcon: React.FC<ChangelogIconProps> = ({ className = '', size = 18, opacity = 0.6 }) => {
+export const ChangelogIcon: React.FC<ChangelogIconProps> = ({ className = '', size = 18, opacity = 1 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

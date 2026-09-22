@@ -2,39 +2,62 @@
 
 import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import {
-  Bell,
-  Camera,
-  ChevronLeft,
-  ChevronRight,
-  Flame,
-  Home,
-  ImageIcon,
-  Map,
-  Megaphone,
-  MessageSquare,
-  Pencil,
-  X,
-} from "lucide-react";
 import { client } from "@featul/api/client";
-import { Button } from "@featul/ui/components/button";
-import { Textarea } from "@featul/ui/components/textarea";
-
-type Section = "home" | "feedback" | "roadmap" | "changelog";
-
-type Board = {
-  id: string;
-  name: string;
-  allowAnonymous?: boolean;
-};
-
-type IdentifiedUser = {
-  id: string;
-  email?: string;
-  name?: string;
-  avatar?: string;
-  signature?: string;
-};
+import { getBrowserFingerprint } from "@/utils/fingerprint";
+import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { normalizeRoadmapStatus } from "@/lib/roadmap";
+import { WidgetFeedbackCompose } from "./compose";
+import { WidgetFeedbackDetail } from "./detail";
+import { Header } from "./header";
+import { Home } from "./home";
+import { WidgetEmpty } from "./empty";
+import { widgetCardInnerClass, widgetCardShellClass } from "./chrome";
+import { cn } from "@featul/ui/lib/utils";
+import {
+  mapChangelogEntries,
+  parseBoards,
+  parseBrandingTheme,
+  parseConfigTabs,
+  parseIdentifiedUser,
+  parseLayoutStyle,
+  parseSection,
+  parseThemeMode,
+  parseWidgetPosts,
+  parseWidgetRoadmapItems,
+} from "./load";
+import { WidgetFeedbackList } from "./list";
+import { MessagingProvider, postToParent, readHostMessage } from "./messaging";
+import { Nav } from "./nav";
+import { WidgetRoadmap, type WidgetRoadmapItem } from "./roadmap";
+import {
+  WidgetFeedbackListSkeleton,
+  WidgetHomeSkeleton,
+  WidgetNavSkeleton,
+  WidgetRoadmapSkeleton,
+  WidgetUpdatesSkeleton,
+} from "./skeleton";
+import {
+  Theme,
+  resolveWidgetAccent,
+  resolveWidgetTheme,
+  widgetAccentVars,
+  widgetLayoutClass,
+  widgetShellHex,
+  widgetSurfaceHex,
+  widgetThemeVars,
+} from "./theme";
+import type {
+  Board,
+  FeedbackView,
+  IdentifiedUser,
+  Section,
+  WidgetBootstrap,
+  WidgetLayoutStyle,
+  WidgetPost,
+  WidgetWorkspace,
+} from "./types";
+import { WidgetUpdates, type WidgetChangelogEntry } from "./updates";
+import { readIdentifiedUserId, readScreenshotPayload, viewerPayload } from "./utils";
 
 type WidgetFrameProps = {
   projectId: string;
@@ -42,393 +65,922 @@ type WidgetFrameProps = {
   initialTheme: "light" | "dark" | "auto";
   initialSection: Section;
   initialPosition: "left" | "right";
+  initialFullscreen?: boolean;
+  initialConfig?: WidgetBootstrap | null;
 };
+
+/** Normalize bootstrap config into workspace, tabs, boards, and theme. */
+function readBootstrap(
+  data: WidgetBootstrap,
+  projectId: string,
+): {
+  workspace: WidgetWorkspace;
+  tabs: Section[];
+  layoutStyle: WidgetLayoutStyle;
+  theme: WidgetWorkspace["theme"];
+  boards: Board[];
+} {
+  const theme = parseBrandingTheme(data.config?.theme);
+  const layoutStyle = parseLayoutStyle(data.config?.layoutStyle);
+  const enabledTabs = parseConfigTabs(data.config?.enabledTabs);
+  return {
+    theme,
+    layoutStyle,
+    tabs: ["home", ...enabledTabs],
+    boards: parseBoards(data.boards),
+    workspace: {
+      id: data.workspace?.id || projectId,
+      name: data.workspace?.name || "Feedback",
+      slug: data.workspace?.slug || "",
+      logo: data.workspace?.logo || null,
+      primaryColor: data.workspace?.primaryColor || null,
+      hideBranding: data.workspace?.hideBranding ?? null,
+      layoutStyle,
+      theme,
+    },
+  };
+}
 
 export default function WidgetFrame({
   projectId,
   parentOrigin,
   initialTheme,
   initialSection,
-  initialPosition,
+  initialFullscreen = false,
+  initialConfig = null,
 }: WidgetFrameProps) {
-  const [section, setSection] = React.useState<Section>(initialSection || "home");
-  const [workspaceName, setWorkspaceName] = React.useState("Feedback");
-  const [primaryColor, setPrimaryColor] = React.useState("#111827");
-  const [tabs, setTabs] = React.useState<Section[]>(["home", "feedback", "roadmap", "changelog"]);
-  const [boardId, setBoardId] = React.useState("");
-  const [content, setContent] = React.useState("");
+  const hasBootstrap = Boolean(initialConfig);
+  const bootstrap = hasBootstrap && initialConfig
+    ? readBootstrap(initialConfig, projectId)
+    : null;
+  const [section, setSection] = React.useState<Section>(() => {
+    const requested = initialSection || "home";
+    if (bootstrap?.tabs.includes(requested)) return requested;
+    return bootstrap?.tabs[0] || "home";
+  });
+  const [feedbackView, setFeedbackView] = React.useState<FeedbackView>("list");
+  const [workspace, setWorkspace] = React.useState<WidgetWorkspace | null>(
+    bootstrap?.workspace ?? null,
+  );
+  const [tabs, setTabs] = React.useState<Section[]>(bootstrap?.tabs ?? []);
+  const [tabsReady, setTabsReady] = React.useState(Boolean(bootstrap));
+  const [layoutStyle, setLayoutStyle] = React.useState<WidgetLayoutStyle>(
+    bootstrap?.layoutStyle ?? "comfortable",
+  );
+  const brandingThemeRef = React.useRef<"light" | "dark" | "auto">(
+    bootstrap?.theme ?? "auto",
+  );
+  const tabsRef = React.useRef<Section[]>(bootstrap?.tabs ?? []);
+  const [boards, setBoards] = React.useState<Board[]>(bootstrap?.boards ?? []);
+  const [listBoardId, setListBoardId] = React.useState("");
   const [userId, setUserId] = React.useState<string | null>(null);
   const [identity, setIdentity] = React.useState<IdentifiedUser | null>(null);
-  const [roadmap, setRoadmap] = React.useState<Array<{ id: string; title: string; roadmapStatus: string | null; upvotes: number | null }>>([]);
-  const [changelog, setChangelog] = React.useState<Array<{ id: string; title: string; summary: string | null; publishedAt: string | null }>>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [submitting, setSubmitting] = React.useState(false);
-  const [message, setMessage] = React.useState("");
+  const identifyVersionRef = React.useRef(0);
+  const [roadmap, setRoadmap] = React.useState<WidgetRoadmapItem[]>([]);
+  const [changelog, setChangelog] = React.useState<WidgetChangelogEntry[]>([]);
+  const [roadmapReady, setRoadmapReady] = React.useState(false);
+  const [changelogReady, setChangelogReady] = React.useState(false);
+  const [recentPosts, setRecentPosts] = React.useState<WidgetPost[]>([]);
+  const [recentReady, setRecentReady] = React.useState(false);
+  const [selectedChangelogId, setSelectedChangelogId] = React.useState<
+    string | null
+  >(null);
+  const [loading, setLoading] = React.useState(!bootstrap);
+  const [loadFailed, setLoadFailed] = React.useState(false);
+  const [selectedPost, setSelectedPost] = React.useState<WidgetPost | null>(
+    null,
+  );
+  const [detailReturn, setDetailReturn] = React.useState<Section | null>(null);
+  const [listRefreshKey, setListRefreshKey] = React.useState(0);
+  const [listVotePatch, setListVotePatch] = React.useState<{
+    postId: string;
+    upvotes: number;
+    hasVoted: boolean;
+  } | null>(null);
+  const [navBorderVisible, setNavBorderVisible] = React.useState(false);
+  const [fullscreen, setFullscreen] = React.useState(initialFullscreen);
+  const [screenshotUrl, setScreenshotUrl] = React.useState<string | null>(null);
+  const [capturingScreenshot, setCapturingScreenshot] = React.useState(false);
+  const [captureHint, setCaptureHint] = React.useState("");
+  const [themeMode, setThemeMode] = React.useState<"light" | "dark" | "auto">(
+    initialTheme === "auto" && bootstrap?.theme ? bootstrap.theme : initialTheme,
+  );
+  const [theme, setTheme] = React.useState<"light" | "dark">(() =>
+    resolveWidgetTheme(
+      initialTheme === "auto" && bootstrap?.theme ? bootstrap.theme : initialTheme,
+    ),
+  );
+  const navBorderTimeoutRef = React.useRef<number | null>(null);
 
-  const apiBase = React.useMemo(() => ({ projectId, parentOrigin }), [projectId, parentOrigin]);
+  const apiBase = React.useMemo(
+    () => ({ projectId, parentOrigin }),
+    [projectId, parentOrigin],
+  );
+  const accent = resolveWidgetAccent(workspace?.primaryColor);
+  const workspaceName = workspace?.name || "Feedback";
+  const workspaceSlug = workspace?.slug || "";
+  const workspaceLogo = workspace?.logo || null;
 
   React.useEffect(() => {
-    if (initialTheme === "dark") document.documentElement.classList.add("dark");
-    if (initialTheme === "light") document.documentElement.classList.remove("dark");
-  }, [initialTheme]);
+    if (!capturingScreenshot) return;
+    const timer = window.setTimeout(() => {
+      setCapturingScreenshot(false);
+      setCaptureHint("Couldn’t capture this page.");
+    }, 120000);
+    return () => window.clearTimeout(timer);
+  }, [capturingScreenshot]);
+
+  React.useEffect(() => {
+    const applyTheme = (next: "light" | "dark") => {
+      setTheme(next);
+      document.documentElement.style.colorScheme = next;
+      document.body.style.background = widgetShellHex(next);
+    };
+
+    applyTheme(resolveWidgetTheme(themeMode));
+    if (themeMode !== "auto") return;
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => applyTheme(resolveWidgetTheme("auto"));
+    if (typeof media.addEventListener === "function")
+      media.addEventListener("change", onChange);
+    else media.addListener(onChange);
+    return () => {
+      if (typeof media.removeEventListener === "function")
+        media.removeEventListener("change", onChange);
+      else media.removeListener(onChange);
+    };
+  }, [themeMode]);
+
+  React.useEffect(() => {
+    if (!workspace) return;
+    postToParent(parentOrigin, "brand", {
+      primaryColor: accent,
+      name: workspace.name,
+    });
+  }, [accent, parentOrigin, workspace]);
+
+  React.useEffect(() => {
+    if (hasBootstrap) postToParent(parentOrigin, "ready");
+  }, [hasBootstrap, parentOrigin]);
 
   React.useEffect(() => {
     let canceled = false;
     async function load() {
-      setLoading(true);
+      if (!hasBootstrap) {
+        setLoading(true);
+        setLoadFailed(false);
+      }
       try {
         const res = await client.widget.config.$get(apiBase);
         const data = await res.json();
         if (canceled) return;
-        setWorkspaceName(data.workspace?.name || "Feedback");
-        setPrimaryColor(data.workspace?.primaryColor || "#111827");
-        const enabledTabs: Section[] = data.config?.enabledTabs?.length
-          ? (data.config.enabledTabs as Section[])
-          : ["feedback", "roadmap", "changelog"];
-        setTabs(["home", ...enabledTabs]);
-        const nextBoards: Board[] = Array.isArray(data.boards) ? data.boards : [];
-        setBoardId(data.config?.defaultBoardId || nextBoards[0]?.id || "");
+        const next = readBootstrap(data, projectId);
+        brandingThemeRef.current = next.theme;
+        tabsRef.current = next.tabs;
+        setWorkspace(next.workspace);
+        setLayoutStyle(next.layoutStyle);
+        setTabs(next.tabs);
+        setSection((current) =>
+          next.tabs.includes(current) ? current : "home",
+        );
+        if (initialTheme === "auto") setThemeMode(next.theme);
+        setBoards(next.boards);
+        setListBoardId("");
+        setTabsReady(true);
+        postToParent(parentOrigin, "ready");
       } catch {
-        if (!canceled) setMessage("The widget could not load.");
+        if (!canceled && !hasBootstrap) setLoadFailed(true);
       } finally {
         if (!canceled) setLoading(false);
       }
     }
     load();
-    window.parent.postMessage({ source: "featul-widget-frame", type: "ready" }, "*");
     return () => {
       canceled = true;
     };
-  }, [apiBase]);
+  }, [apiBase, parentOrigin, projectId, initialTheme, hasBootstrap]);
 
   React.useEffect(() => {
+    let canceled = false;
+
     async function loadLists() {
-      try {
-        if (section === "home" || section === "roadmap") {
-          const res = await client.widget.roadmap.$get(apiBase);
-          const data = await res.json();
-          setRoadmap(Array.isArray(data.posts) ? data.posts : []);
+      if (loading || loadFailed || !workspace) {
+        if (!loading && !workspace) {
+          setRoadmapReady(true);
+          setChangelogReady(true);
+          setRecentReady(true);
         }
-        if (section === "home" || section === "changelog") {
-          const res = await client.widget.changelog.$get(apiBase);
-          const data = await res.json();
-          setChangelog(Array.isArray(data.entries) ? data.entries : []);
-        }
-      } catch {
-        setMessage("Could not load this section.");
+        return;
       }
+
+      const showRoadmap = tabs.includes("roadmap");
+      const showChangelog = tabs.includes("changelog");
+      const showRecent = !showRoadmap && !showChangelog;
+      if (!showRoadmap) {
+        setRoadmap([]);
+        setRoadmapReady(true);
+      }
+      if (!showChangelog) {
+        setChangelog([]);
+        setChangelogReady(true);
+      }
+      if (!showRecent) {
+        setRecentPosts([]);
+        setRecentReady(true);
+      }
+
+      const fingerprint =
+        userId || identity?.email ? undefined : await getBrowserFingerprint();
+      const identityPayload = identity?.email
+        ? {
+            id: identity.id,
+            email: identity.email,
+            name: identity.name,
+            avatar: identity.avatar,
+            expiresAt: identity.expiresAt,
+            signature: identity.signature,
+          }
+        : undefined;
+
+      await Promise.all([
+        showRoadmap
+          ? (async () => {
+              try {
+                const res = await client.widget.roadmap.$get({
+                  ...apiBase,
+                  identity: identityPayload,
+                  fingerprint,
+                });
+                const data = await res.json();
+                if (canceled) return;
+                setRoadmap(parseWidgetRoadmapItems(data.posts));
+                setRoadmapReady(true);
+              } catch {
+                if (!canceled) setRoadmapReady(true);
+              }
+            })()
+          : Promise.resolve(),
+        showChangelog
+          ? (async () => {
+              try {
+                const res = await client.widget.changelog.$get(apiBase);
+                const data = await res.json();
+                if (canceled) return;
+                const entries = Array.isArray(data.entries) ? data.entries : [];
+                setChangelog(mapChangelogEntries(entries));
+                setChangelogReady(true);
+              } catch {
+                if (!canceled) setChangelogReady(true);
+              }
+            })()
+          : Promise.resolve(),
+        showRecent
+          ? (async () => {
+              try {
+                const res = await client.widget.posts.$get({
+                  ...viewerPayload(apiBase, {
+                    userId,
+                    identity,
+                    fingerprint,
+                  }),
+                  sort: "newest",
+                  limit: 6,
+                  offset: 0,
+                });
+                const data = await res.json();
+                if (canceled) return;
+                setRecentPosts(parseWidgetPosts(data.posts));
+                setRecentReady(true);
+              } catch {
+                if (!canceled) {
+                  setRecentPosts([]);
+                  setRecentReady(true);
+                }
+              }
+            })()
+          : Promise.resolve(),
+      ]);
     }
+
     loadLists();
-  }, [apiBase, section]);
+    return () => {
+      canceled = true;
+    };
+  }, [
+    apiBase,
+    identity,
+    userId,
+    tabs,
+    loading,
+    loadFailed,
+    workspace,
+    listRefreshKey,
+  ]);
 
   React.useEffect(() => {
     async function handleMessage(event: MessageEvent) {
-      if (event.data?.source !== "featul-widget") return;
-      if (event.data.type === "show" && event.data.payload?.section) {
-        setSection(event.data.payload.section);
+      const message = readHostMessage(event, parentOrigin);
+      if (!message) return;
+      if (message.type === "layout") {
+        const payload = message.payload;
+        if (payload && typeof payload === "object" && "fullscreen" in payload) {
+          setFullscreen(
+            Boolean((payload as { fullscreen?: unknown }).fullscreen),
+          );
+        }
+        return;
       }
-      if (event.data.type === "identify") {
-        const nextIdentity = event.data.payload as IdentifiedUser | null;
-        setIdentity(nextIdentity);
-        if (!nextIdentity?.email) return;
+      if (message.type === "theme") {
+        const mode = parseThemeMode(message.payload);
+        if (mode) setThemeMode(mode === "auto" ? brandingThemeRef.current : mode);
+        return;
+      }
+      if (message.type === "show") {
+        const nextSection = parseSection(message.payload);
+        const allowed = nextSection && tabsRef.current.includes(nextSection)
+          ? nextSection
+          : nextSection
+            ? "home"
+            : null;
+        if (allowed) {
+          setSection(allowed);
+          if (allowed === "feedback") {
+            setFeedbackView("list");
+            setSelectedPost(null);
+          }
+        }
+      }
+      if (message.type === "screenshot") {
+        setCapturingScreenshot(false);
+        const shot = readScreenshotPayload(message.payload);
+        if (shot.dataUrl) {
+          setCaptureHint("");
+          postToParent(parentOrigin, "panel", {
+            expanded: false,
+            overlay: true,
+          });
+          setScreenshotUrl(shot.dataUrl);
+        } else {
+          setCaptureHint(
+            shot.error === "cancelled"
+              ? "Screenshot was cancelled."
+              : "Couldn’t capture this page.",
+          );
+        }
+        return;
+      }
+      if (message.type === "identify") {
+        const requestVersion = ++identifyVersionRef.current;
+        const nextIdentity = parseIdentifiedUser(message.payload);
+        if (!nextIdentity) {
+          setIdentity(null);
+          setUserId(null);
+          return;
+        }
         try {
           const res = await client.widget.identify.$post({
             ...apiBase,
-            user: { ...nextIdentity, email: nextIdentity.email },
+            user: nextIdentity,
           });
           const data = await res.json();
-          setUserId(data.user?.id || null);
+          if (requestVersion !== identifyVersionRef.current) return;
+          const identifiedUserId = readIdentifiedUserId(data);
+          setIdentity(identifiedUserId ? nextIdentity : null);
+          setUserId(identifiedUserId);
         } catch {
+          if (requestVersion !== identifyVersionRef.current) return;
+          setIdentity(null);
           setUserId(null);
-          setMessage("Could not identify this user.");
         }
       }
     }
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [apiBase]);
+  }, [apiBase, parentOrigin]);
+
+  React.useEffect(() => {
+    if (!identity) return;
+    const expiresInMs = identity.expiresAt * 1000 - Date.now();
+    if (expiresInMs <= 0) {
+      setIdentity(null);
+      setUserId(null);
+      return;
+    }
+    const timeout = window.setTimeout(() => {
+      identifyVersionRef.current += 1;
+      setIdentity(null);
+      setUserId(null);
+    }, expiresInMs);
+    return () => window.clearTimeout(timeout);
+  }, [identity]);
+
+  const reduceMotion = useReducedMotion();
 
   const close = () => {
-    window.parent.postMessage({ source: "featul-widget-frame", type: "close" }, "*");
+    postToParent(parentOrigin, "close");
   };
 
-  const submit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const normalizedContent = content.trim();
-    const derivedTitle = normalizedContent.split(/\s+/).slice(0, 10).join(" ");
-    if (!boardId || normalizedContent.length < 3) return;
-    setSubmitting(true);
-    setMessage("");
-    try {
-      const res = await client.widget.create.$post({
-        ...apiBase,
-        boardId,
-        title: derivedTitle.slice(0, 120),
-        content: normalizedContent,
-        userId: userId || undefined,
-        identity: identity?.email ? { ...identity, email: identity.email } : undefined,
-      });
-      if (!res.ok) throw new Error("Failed");
-      setContent("");
-      setMessage("Feedback submitted. Thank you.");
-    } catch {
-      setMessage(identity && !userId ? "Identification failed. Check the email passed to identify()." : "Could not submit feedback.");
-    } finally {
-      setSubmitting(false);
+  const goFeedback = (view: FeedbackView = "list") => {
+    setSection("feedback");
+    setFeedbackView(view);
+    if (view !== "detail") setSelectedPost(null);
+    if (view !== "compose") {
+      setScreenshotUrl(null);
+      setCapturingScreenshot(false);
     }
   };
 
+  React.useEffect(() => {
+    const showNavBorder = () => {
+      setNavBorderVisible(true);
+      if (navBorderTimeoutRef.current !== null) {
+        window.clearTimeout(navBorderTimeoutRef.current);
+      }
+      navBorderTimeoutRef.current = window.setTimeout(() => {
+        setNavBorderVisible(false);
+        navBorderTimeoutRef.current = null;
+      }, 220);
+    };
+
+    document.addEventListener("scroll", showNavBorder, true);
+    return () => {
+      document.removeEventListener("scroll", showNavBorder, true);
+      if (navBorderTimeoutRef.current !== null) {
+        window.clearTimeout(navBorderTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const featuredEntry = changelog[0];
-  const previewRoadmap = roadmap.slice(0, 4);
-  const displayedTabs = tabs.filter((tab, index, list) => list.indexOf(tab) === index);
-  const isFeedback = section === "feedback";
-  const reduceMotion = useReducedMotion();
-  const transformOrigin = initialPosition === "left" ? "bottom left" : "bottom right";
-
-  return (
-    <motion.main
-      initial={reduceMotion ? false : { opacity: 0, y: 24, scale: 0.94 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.8 }}
-      style={{ transformOrigin }}
-      className="flex h-screen flex-col overflow-hidden rounded-[18px] border border-white/10 bg-[#171717] text-white shadow-sm"
-    >
-      {isFeedback ? (
-        <header className="flex items-center gap-3 px-5 py-4">
-          <button
-            type="button"
-            onClick={() => setSection("home")}
-            className="flex size-7 items-center justify-center rounded-full text-white/55 transition-colors hover:bg-white/10 hover:text-white"
-            aria-label="Back to widget home"
-          >
-            <ChevronLeft className="size-5" />
-          </button>
-          <p className="flex-1 text-base font-semibold">Give feedback</p>
-          <button
-            type="button"
-            className="flex size-7 items-center justify-center rounded-full text-white/45 transition-colors hover:bg-white/10 hover:text-white"
-            aria-label="Notifications"
-          >
-            <Bell className="size-4" />
-          </button>
-          <button
-            type="button"
-            onClick={close}
-            className="flex size-7 items-center justify-center rounded-full text-white/45 transition-colors hover:bg-white/10 hover:text-white"
-            aria-label="Close widget"
-          >
-            <X className="size-4" />
-          </button>
-        </header>
-      ) : (
-        <header className="flex items-center gap-3 px-4 py-3">
-          <div className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/8">
-            <MessageSquare className="size-4 text-white" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{workspaceName}</p>
-          </div>
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => setSection("feedback")}
-            className="h-8 rounded-full bg-white px-3 text-xs text-black hover:bg-white/90"
-          >
-            <Pencil className="size-3.5" />
-            Give feedback
-          </Button>
-          <Button type="button" variant="ghost" size="icon-sm" className="text-white/55 hover:bg-white/10 hover:text-white" aria-label="Notifications">
-            <Bell className="size-4" />
-          </Button>
-          <button type="button" onClick={close} className="text-white/45 transition-colors hover:text-white" aria-label="Close widget">
-            <X className="size-4" />
-          </button>
-        </header>
-      )}
-
-      <div className={isFeedback ? "flex min-h-0 flex-1 flex-col px-5 pb-5 pt-1" : "min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-2"}>
-        {loading ? <p className="text-sm text-white/45">Loading...</p> : null}
-        {message ? <p className="mb-3 rounded-lg border border-white/10 bg-white/8 px-3 py-2 text-sm text-white/85">{message}</p> : null}
-
-        {section === "home" ? (
-          <div className="space-y-6">
-            <button
-              type="button"
-              onClick={() => featuredEntry ? setSection("changelog") : setSection("feedback")}
-              className="group relative w-full overflow-hidden rounded-2xl border border-white/8 bg-[#242424] p-5 text-left shadow-inner"
-            >
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-35"
-                style={{
-                  backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,.22) 1px, transparent 0)",
-                  backgroundSize: "14px 14px",
-                }}
-              />
-              <div className="relative flex min-h-36 flex-col justify-end">
-                <div className="mb-8 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-gradient-to-br from-orange-300 to-orange-600" />
-                    <div>
-                      <p className="text-sm font-semibold">{workspaceName}</p>
-                      <p className="text-xs text-white/45">Product team</p>
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-[#303030] px-2.5 py-2 text-center shadow-sm">
-                    <p className="text-[10px] font-bold uppercase text-[#ff7144]">New</p>
-                    <p className="text-lg font-semibold leading-none">{new Date().getDate()}</p>
-                  </div>
-                </div>
-                <p className="text-xs font-semibold text-[#ff7144]">Built from feedback</p>
-                <div className="mt-2 flex items-end justify-between gap-3">
-                  <h2 className="max-w-[250px] text-xl font-semibold leading-tight">
-                    {featuredEntry?.title || "Share feedback without leaving the app"}
-                  </h2>
-                  <ChevronRight className="size-5 shrink-0 text-white/35 transition-transform group-hover:translate-x-0.5" />
-                </div>
-              </div>
-            </button>
-
-            <section>
-              <div className="mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Flame className="size-3.5 text-[#ff7144]" />
-                  <p className="text-xs font-bold uppercase tracking-wide text-white/80">What's coming</p>
-                </div>
-                <button type="button" onClick={() => setSection("roadmap")} className="text-xs text-white/50 hover:text-white">
-                  Roadmap →
-                </button>
-              </div>
-              <div className="space-y-0">
-                {previewRoadmap.length ? (
-                  previewRoadmap.map((item) => (
-                    <RoadmapRow key={item.id} item={item} />
-                  ))
-                ) : (
-                  <p className="rounded-xl border border-dashed border-white/10 px-4 py-5 text-sm text-white/45">No public roadmap items yet.</p>
-                )}
-              </div>
-            </section>
-
-            <button
-              type="button"
-              onClick={() => setSection("feedback")}
-              className="w-full rounded-2xl border border-white/8 bg-[#202020] px-5 py-4 text-left transition-colors hover:bg-[#242424]"
-            >
-              <p className="text-xs font-bold uppercase tracking-wide text-[#ff7144]">Share</p>
-              <p className="mt-2 text-base font-semibold">Got a different idea?</p>
-            </button>
-          </div>
-        ) : null}
-
-        {section === "feedback" ? (
-          <form onSubmit={submit} className="flex min-h-0 flex-1 flex-col">
-            <Textarea
-              variant="plain"
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              placeholder="What's on your mind?"
-              autoFocus
-              className="min-h-0 flex-1 resize-none px-0 py-5 text-lg leading-relaxed text-white shadow-none placeholder:text-white/25 focus-visible:ring-0"
-            />
-            <div className="flex items-center justify-between pt-3">
-              <div className="flex items-center gap-5 text-white/50">
-                <button
-                  type="button"
-                  className="transition-colors hover:text-white"
-                  aria-label="Attach image"
-                >
-                  <ImageIcon className="size-4" />
-                </button>
-                <button
-                  type="button"
-                  className="transition-colors hover:text-white"
-                  aria-label="Take screenshot"
-                >
-                  <Camera className="size-4" />
-                </button>
-              </div>
-              <Button
-                type="submit"
-                variant="plain"
-                disabled={submitting || !boardId || content.trim().length < 3}
-                className="h-10 rounded-full bg-white/60 px-5 text-sm font-medium text-black hover:bg-white/75 disabled:bg-white/20 disabled:text-white/35"
-                style={!submitting && boardId && content.trim().length >= 3 ? { backgroundColor: primaryColor || "#ff7144", color: "#fff" } : undefined}
-              >
-                Post
-              </Button>
-            </div>
-          </form>
-        ) : null}
-
-        {section === "roadmap" ? (
-          <section className="space-y-0">
-            <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#ff7144]">Roadmap</p>
-              <h2 className="mt-2 text-xl font-semibold">What’s coming next</h2>
-            </div>
-            {roadmap.length ? roadmap.map((item) => (
-              <RoadmapRow key={item.id} item={item} />
-            )) : <p className="text-sm text-white/45">No public roadmap items yet.</p>}
-          </section>
-        ) : null}
-
-        {section === "changelog" ? (
-          <section className="space-y-2">
-            <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-[#ff7144]">Updates</p>
-              <h2 className="mt-2 text-xl font-semibold">Latest changes</h2>
-            </div>
-            {changelog.length ? changelog.map((entry) => (
-              <div key={entry.id} className="rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3">
-                <p className="text-sm font-medium">{entry.title}</p>
-                {entry.summary ? <p className="mt-1 line-clamp-3 text-xs text-white/45">{entry.summary}</p> : null}
-              </div>
-            )) : <p className="text-sm text-white/45">No updates published yet.</p>}
-          </section>
-        ) : null}
-      </div>
-
-      {!isFeedback ? (
-        <nav className="grid grid-cols-4 border-t border-white/8 bg-[#1b1b1b]/95 px-3 py-2">
-          {displayedTabs.map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setSection(tab)}
-              className={`flex flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] transition-colors ${section === tab ? "text-[#ff7144]" : "text-white/45 hover:text-white/75"}`}
-            >
-              {tab === "home" ? <Home className="size-4" /> : null}
-              {tab === "feedback" ? <MessageSquare className="size-4" /> : null}
-              {tab === "roadmap" ? <Map className="size-4" /> : null}
-              {tab === "changelog" ? <Megaphone className="size-4" /> : null}
-              <span>{tab === "changelog" ? "Updates" : `${tab.charAt(0).toUpperCase()}${tab.slice(1)}`}</span>
-            </button>
-          ))}
-        </nav>
-      ) : null}
-    </motion.main>
+  const homeRoadmap = React.useMemo(() => {
+    const progress = roadmap.filter(
+      (item) =>
+        normalizeRoadmapStatus(item.roadmapStatus, "planned") === "progress",
+    );
+    const rest = roadmap.filter(
+      (item) =>
+        normalizeRoadmapStatus(item.roadmapStatus, "planned") !== "progress",
+    );
+    return [...progress, ...rest].slice(0, 5);
+  }, [roadmap]);
+  const homeChangelog = changelog.slice(0, 5);
+  const homeRoadmapLabel = homeRoadmap.some(
+    (item) =>
+      normalizeRoadmapStatus(item.roadmapStatus, "planned") === "progress",
+  )
+    ? "In progress"
+    : "Roadmap";
+  const displayedTabs = tabs.filter(
+    (tab, index, list) => list.indexOf(tab) === index,
   );
-}
+  const isFeedback = section === "feedback";
+  const isChangelogDetail =
+    section === "changelog" && Boolean(selectedChangelogId);
+  const showNavSlot =
+    !loadFailed &&
+    !screenshotUrl &&
+    (!isFeedback || feedbackView === "list") &&
+    !isChangelogDetail;
+  const contentTransition = reduceMotion
+    ? { duration: 0 }
+    : { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const };
+  const feedbackTitle =
+    feedbackView === "compose"
+      ? "Give feedback"
+      : feedbackView === "detail"
+        ? "Request"
+        : "Feedback";
+  const showSubpageHeader =
+    (isFeedback && feedbackView !== "list") || isChangelogDetail;
 
-function RoadmapRow({
-  item,
-}: {
-  item: { id: string; title: string; roadmapStatus: string | null; upvotes: number | null };
-}) {
+  React.useEffect(() => {
+    postToParent(parentOrigin, "panel", {
+      expanded: isChangelogDetail,
+      overlay: Boolean(screenshotUrl),
+    });
+  }, [isChangelogDetail, parentOrigin, screenshotUrl]);
+
+  const prevSectionRef = React.useRef(section);
+  React.useEffect(() => {
+    const prev = prevSectionRef.current;
+    prevSectionRef.current = section;
+    if (prev === "changelog" && section !== "changelog") {
+      setSelectedChangelogId(null);
+    }
+  }, [section]);
+
+  React.useEffect(() => {
+    if (!listVotePatch) return;
+    setRecentPosts((prev) =>
+      prev.map((post) =>
+        post.id === listVotePatch.postId
+          ? {
+              ...post,
+              upvotes: listVotePatch.upvotes,
+              hasVoted: listVotePatch.hasVoted,
+            }
+          : post,
+      ),
+    );
+  }, [listVotePatch]);
+
   return (
-    <div className="flex items-center gap-3 border-b border-dashed border-white/10 py-3">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-xs text-white/45">
-        {item.title.slice(0, 1).toUpperCase()}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{item.title}</p>
-        <p className="mt-1 text-xs capitalize text-white/45">
-          <span className="mr-1 inline-block size-1.5 rounded-full bg-purple-500" />
-          {(item.roadmapStatus || "planned").replace("-", " ")} · {item.upvotes || 0} votes
-        </p>
-      </div>
-      <span className="rounded-full border border-white/10 px-2 py-1 text-xs text-white/70">⌃ {item.upvotes || 0}</span>
-    </div>
+    <MessagingProvider parentOrigin={parentOrigin}>
+      <Theme mode={themeMode}>
+        <motion.main
+          initial={false}
+          className={cn(
+            widgetLayoutClass(layoutStyle),
+            screenshotUrl
+              ? "flex h-full min-h-0 w-full flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))]"
+              : cn(widgetCardShellClass, "h-full min-h-0 w-full"),
+            fullscreen ? "rounded-none border-0" : "",
+          )}
+          style={
+            {
+              backgroundColor: screenshotUrl
+                ? widgetSurfaceHex(theme)
+                : widgetShellHex(theme),
+              color: theme === "light" ? "#171717" : "#fafafa",
+              paddingTop: fullscreen
+                ? "max(0.25rem, env(safe-area-inset-top, 0px))"
+                : undefined,
+              paddingBottom: fullscreen
+                ? "max(0.25rem, env(safe-area-inset-bottom, 0px))"
+                : undefined,
+              paddingLeft: fullscreen
+                ? "max(0.25rem, env(safe-area-inset-left, 0px))"
+                : undefined,
+              paddingRight: fullscreen
+                ? "max(0.25rem, env(safe-area-inset-right, 0px))"
+                : undefined,
+              ...widgetThemeVars(theme),
+              ...widgetAccentVars(accent),
+            } as React.CSSProperties
+          }
+        >
+          <div
+            className={
+              screenshotUrl
+                ? "flex min-h-0 flex-1 flex-col"
+                : cn(widgetCardInnerClass, "flex min-h-0 flex-1 flex-col overflow-hidden")
+            }
+          >
+          {!screenshotUrl ? (
+          <Header
+            workspaceName={workspaceName}
+            workspaceLogo={workspaceLogo}
+            showSubpageHeader={showSubpageHeader}
+            isChangelogDetail={isChangelogDetail}
+            isFeedback={isFeedback}
+            feedbackView={feedbackView}
+            feedbackTitle={feedbackTitle}
+            onBack={() => {
+              if (isChangelogDetail) {
+                setSelectedChangelogId(null);
+                return;
+              }
+              if (detailReturn) {
+                const next = detailReturn;
+                setDetailReturn(null);
+                setSelectedPost(null);
+                setFeedbackView("list");
+                setSection(next);
+                return;
+              }
+              goFeedback("list");
+            }}
+            onCompose={() => goFeedback("compose")}
+            onClose={close}
+            fullscreen={fullscreen}
+            loading={loading}
+            hideCompose={loadFailed}
+            layoutStyle={layoutStyle}
+          />
+          ) : null}
+
+          <div
+            className={
+              isFeedback && screenshotUrl
+                ? "relative flex min-h-0 flex-1 flex-col"
+                : isFeedback &&
+              (feedbackView === "list" || feedbackView === "detail")
+                ? "relative flex min-h-0 flex-1 flex-col"
+                : isChangelogDetail || section === "changelog"
+                  ? "relative flex min-h-0 flex-1 flex-col overflow-hidden"
+                  : isFeedback
+                    ? "relative flex min-h-0 flex-1 flex-col px-5 pb-4"
+                    : section === "roadmap"
+                      ? "relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide pb-5 pt-0"
+                      : section === "home"
+                        ? `relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide ${
+                            layoutStyle === "compact"
+                              ? "pb-3 pt-2"
+                              : layoutStyle === "spacious"
+                                ? "pb-7 pt-5"
+                                : "pb-5 pt-4"
+                          }`
+                        : "relative flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide px-5 pb-5 pt-3"
+            }
+            data-widget-scroll=""
+          >
+            {loading ? (
+              <motion.div key="loading" initial={false} className="flex min-h-0 flex-1 flex-col">
+                {section === "feedback" ? (
+                  <WidgetFeedbackListSkeleton withToolbar />
+                ) : section === "roadmap" ? (
+                  <WidgetRoadmapSkeleton />
+                ) : section === "changelog" ? (
+                  <WidgetUpdatesSkeleton />
+                ) : (
+                  <WidgetHomeSkeleton
+                    featured={false}
+                    roadmap={false}
+                    updates={false}
+                    recent
+                  />
+                )}
+              </motion.div>
+            ) : null}
+
+            {!loading && loadFailed ? (
+              <WidgetEmpty
+                title="Couldn’t load right now"
+                description="Check your connection and open the widget again."
+              />
+            ) : null}
+
+            {!loading && !loadFailed ? (
+              <>
+                <div className={section === "home" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
+                  <Home
+                    featuredEntry={featuredEntry}
+                    homeRoadmap={homeRoadmap}
+                    homeChangelog={homeChangelog}
+                    homeRoadmapLabel={homeRoadmapLabel}
+                    changelogLoading={!changelogReady}
+                    roadmapLoading={!roadmapReady}
+                    showRoadmap={tabs.includes("roadmap")}
+                    showChangelog={tabs.includes("changelog")}
+                    showRecent={
+                      !tabs.includes("roadmap") && !tabs.includes("changelog")
+                    }
+                    recentPosts={recentPosts}
+                    recentLoading={!recentReady}
+                    layoutStyle={layoutStyle}
+                    accent={accent}
+                    apiBase={apiBase}
+                    userId={userId}
+                    identity={identity}
+                    onOpenChangelog={(id) => {
+                      if (id) setSelectedChangelogId(id);
+                      setSection("changelog");
+                    }}
+                    onSeeUpdates={() => setSection("changelog")}
+                    onSeeRoadmap={() => setSection("roadmap")}
+                    onSeeFeedback={() => goFeedback("list")}
+                    onCompose={() => goFeedback("compose")}
+                    onOpenRoadmapItem={(post) => {
+                      setDetailReturn("home");
+                      setSelectedPost(post);
+                      setSection("feedback");
+                      setFeedbackView("detail");
+                    }}
+                    onVoteChange={(id, upvotes, hasVoted) => {
+                      setRoadmap((prev) =>
+                        prev.map((row) =>
+                          row.id === id ? { ...row, upvotes, hasVoted } : row,
+                        ),
+                      );
+                      setRecentPosts((prev) =>
+                        prev.map((row) =>
+                          row.id === id ? { ...row, upvotes, hasVoted } : row,
+                        ),
+                      );
+                    }}
+                  />
+                </div>
+
+                <div
+                  className={
+                    section === "feedback"
+                      ? "relative flex min-h-0 flex-1 flex-col"
+                      : "hidden"
+                  }
+                >
+                  <div
+                    className={
+                      feedbackView === "list"
+                        ? "flex min-h-0 flex-1 flex-col"
+                        : "pointer-events-none invisible absolute inset-0 flex flex-col"
+                    }
+                    aria-hidden={section !== "feedback" || feedbackView !== "list"}
+                  >
+                    <WidgetFeedbackList
+                      apiBase={apiBase}
+                      boards={boards}
+                      boardId={listBoardId}
+                      onBoardChange={setListBoardId}
+                      userId={userId}
+                      identity={identity}
+                      refreshKey={listRefreshKey}
+                      active={section === "feedback" && feedbackView === "list"}
+                      votePatch={listVotePatch}
+                      onCompose={() => goFeedback("compose")}
+                      onOpenPost={(post) => {
+                        setDetailReturn(null);
+                        setSelectedPost(post);
+                        setFeedbackView("detail");
+                      }}
+                    />
+                  </div>
+
+                  {feedbackView === "compose" ? (
+                    <motion.div
+                      key="feedback-compose"
+                      initial={reduceMotion ? false : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={contentTransition}
+                      className="flex min-h-0 flex-1 flex-col"
+                    >
+                      <WidgetFeedbackCompose
+                        apiBase={apiBase}
+                        boards={boards}
+                        userId={userId}
+                        identity={identity}
+                        accent={accent}
+                        ink={theme === "light" ? "#171717" : "#fafafa"}
+                        screenshotUrl={screenshotUrl}
+                        capturing={capturingScreenshot}
+                        captureHint={captureHint}
+                        onCapture={() => {
+                          setCaptureHint("");
+                          setCapturingScreenshot(true);
+                          postToParent(parentOrigin, "capture-screenshot");
+                        }}
+                        onScreenshotConsumed={() => {
+                          setScreenshotUrl(null);
+                          setCaptureHint("");
+                        }}
+                        onCancel={() => goFeedback("list")}
+                        onCreated={(post) => {
+                          setSelectedPost(post);
+                          setListRefreshKey((value) => value + 1);
+                        }}
+                        onView={(post) => {
+                          setDetailReturn(null);
+                          setSelectedPost(post);
+                          setFeedbackView("detail");
+                        }}
+                      />
+                    </motion.div>
+                  ) : null}
+
+                  {feedbackView === "detail" && selectedPost ? (
+                    <motion.div
+                      key={`feedback-detail-${selectedPost.id}`}
+                      initial={reduceMotion ? false : { opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={contentTransition}
+                      className="flex min-h-0 flex-1 flex-col"
+                    >
+                      <WidgetFeedbackDetail
+                        apiBase={apiBase}
+                        workspaceSlug={workspaceSlug}
+                        accent={accent}
+                        postId={selectedPost.id}
+                        initialPost={selectedPost}
+                        userId={userId}
+                        identity={identity}
+                        onVoteChange={(postId, upvotes, hasVoted) => {
+                          setSelectedPost((prev) =>
+                            prev && prev.id === postId
+                              ? { ...prev, upvotes, hasVoted }
+                              : prev,
+                          );
+                          setListVotePatch({ postId, upvotes, hasVoted });
+                        }}
+                      />
+                    </motion.div>
+                  ) : null}
+                </div>
+
+                <div
+                  className={
+                    section === "roadmap"
+                      ? "flex min-h-0 flex-1 flex-col"
+                      : "hidden"
+                  }
+                >
+                  {!roadmapReady ? (
+                    <WidgetRoadmapSkeleton />
+                  ) : (
+                    <WidgetRoadmap
+                      items={roadmap}
+                      apiBase={apiBase}
+                      userId={userId}
+                      identity={identity}
+                      onVoteChange={(id, upvotes, hasVoted) => {
+                        setRoadmap((prev) =>
+                          prev.map((row) =>
+                            row.id === id ? { ...row, upvotes, hasVoted } : row,
+                          ),
+                        );
+                      }}
+                      onOpen={(item) => {
+                        setDetailReturn("roadmap");
+                        setSelectedPost({
+                          id: item.id,
+                          title: item.title,
+                          slug: item.slug || item.id,
+                          content: item.content ?? null,
+                          upvotes: item.upvotes,
+                          commentCount: null,
+                          roadmapStatus: item.roadmapStatus,
+                          createdAt: item.createdAt ?? null,
+                          boardId: "",
+                          boardName: null,
+                          boardSlug: null,
+                          isAnonymous: item.isAnonymous ?? null,
+                          authorName: item.authorName ?? null,
+                          authorImage: item.authorImage ?? null,
+                          hasVoted: Boolean(item.hasVoted),
+                        });
+                        setSection("feedback");
+                        setFeedbackView("detail");
+                      }}
+                    />
+                  )}
+                </div>
+
+                <div
+                  className={
+                    section === "changelog"
+                      ? "flex min-h-0 flex-1 flex-col"
+                      : "hidden"
+                  }
+                >
+                  {!changelogReady ? (
+                    <WidgetUpdatesSkeleton />
+                  ) : (
+                    <WidgetUpdates
+                      entries={changelog}
+                      accent={accent}
+                      selectedId={selectedChangelogId}
+                      onOpen={(entry) => setSelectedChangelogId(entry.id)}
+                      onBack={() => setSelectedChangelogId(null)}
+                    />
+                  )}
+                </div>
+              </>
+            ) : null}
+          </div>
+
+          {showNavSlot ? (
+            tabsReady ? (
+            <Nav
+              tabs={displayedTabs}
+              section={section}
+              accent={accent}
+              navBorderVisible={navBorderVisible}
+              fullscreen={fullscreen}
+              layoutStyle={layoutStyle}
+              onSelect={(tab) => {
+                setSection(tab);
+                if (tab === "feedback") goFeedback("list");
+              }}
+            />
+            ) : (
+              <WidgetNavSkeleton
+                fullscreen={fullscreen}
+                layoutStyle={layoutStyle}
+              />
+            )
+          ) : null}
+
+          {!workspace?.hideBranding &&
+          !screenshotUrl &&
+          !(
+            isFeedback &&
+            (feedbackView === "compose" || feedbackView === "detail")
+          ) &&
+          !isChangelogDetail ? (
+            <div className="border-t border-[rgb(var(--widget-fg)/0.1)] px-4 py-1 text-center">
+              <a
+                href="https://featul.com?utm_source=powered_by&utm_medium=referral&utm_campaign=widget"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-[11px] leading-none text-[rgb(var(--widget-fg)/0.35)] transition-colors hover:text-[rgb(var(--widget-fg)/0.6)]"
+              >
+                <span>Powered by featul</span>
+                <FeatulLogoIcon className="size-3 shrink-0" size={12} />
+              </a>
+            </div>
+          ) : null}
+          </div>
+        </motion.main>
+      </Theme>
+    </MessagingProvider>
   );
 }

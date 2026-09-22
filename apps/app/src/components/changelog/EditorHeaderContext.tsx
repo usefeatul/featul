@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react"
 
-interface EditorAction {
+export interface EditorAction {
     key: string
     label: string
     icon?: ReactNode
@@ -17,7 +17,9 @@ interface EditorAction {
     destructive?: boolean
     type?: "button" | "switch" | "menu"
     checked?: boolean
-    variant?: "card"
+    active?: boolean
+    variant?: "card" | "plain"
+    shortcut?: string
 }
 
 interface EditorHeaderContextValue {
@@ -52,6 +54,7 @@ export function EditorHeaderProvider({ children }: { children: ReactNode }) {
     )
 }
 
+/** Header actions from changelog editor. Throws outside the provider. */
 export function useEditorHeaderActions() {
     const context = useContext(EditorHeaderContext)
     if (!context) {
@@ -60,6 +63,7 @@ export function useEditorHeaderActions() {
     return context
 }
 
+/** Same as useEditorHeaderActions, but null outside the provider. */
 export function useEditorHeaderActionsOptional() {
     return useContext(EditorHeaderContext)
 }

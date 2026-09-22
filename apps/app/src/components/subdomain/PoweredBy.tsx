@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
+import { cn } from "@featul/ui/lib/utils"
 import { useDomainBranding } from "./DomainBrandingProvider"
 
 export function PoweredBy() {
@@ -13,16 +15,21 @@ export function PoweredBy() {
 
   if (hidePoweredBy === true) return null
   return (
-    <div className="pt-2 text-center">
-      <a
-        href={utmUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-md border border-borde bg-background px-2.5 py-1 text-xs text-accent transition-colors hover:bg-muted/70"
-      >
-        <span>Powered by featul</span>
-        <FeatulLogoIcon className="size-3.5 shrink-0 text-accent" size={14} />
-      </a>
+    <div className="pt-2 flex justify-center">
+      <Toolbar size="sm" className="w-fit">
+        <a
+          href={utmUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            toolbarItemClass,
+            "inline-flex items-center gap-1.5 px-2.5 text-xs text-accent",
+          )}
+        >
+          <span>Powered by featul</span>
+          <FeatulLogoIcon className="size-3.5 shrink-0 text-accent" size={14} />
+        </a>
+      </Toolbar>
     </div>
   )
 }

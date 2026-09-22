@@ -17,6 +17,7 @@ export type ImportResult = {
   rowLimit: number;
 };
 
+/** Narrow a successful import payload. Missing counts become 0. */
 export function parseImportResultPayload(payload: unknown): ImportResult | null {
   if (!isRecord(payload) || payload.ok !== true) return null;
 
@@ -33,6 +34,7 @@ export function parseImportResultPayload(payload: unknown): ImportResult | null 
   };
 }
 
+/** Read `message` from an import error body. Else the fallback. */
 export function readImportErrorMessage(payload: unknown, fallback: string): string {
   if (!isRecord(payload)) return fallback;
   const message = payload.message;
@@ -42,6 +44,7 @@ export function readImportErrorMessage(payload: unknown, fallback: string): stri
   return fallback;
 }
 
+/** Refresh boards, status counts, and post-count queries after an import. */
 export async function invalidateWorkspaceImportQueries(
   queryClient: QueryClient,
   slug: string
@@ -74,6 +77,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
+/** Coerce numbers from number or numeric string. Else the fallback. */
 function toNumber(value: unknown, fallback = 0): number {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -87,6 +91,7 @@ function toNumber(value: unknown, fallback = 0): number {
   return fallback;
 }
 
+/** Keep issues with a non-empty message. Row may be number, numeric string, or null. */
 function toIssueArray(value: unknown): ImportIssue[] {
   if (!Array.isArray(value)) return [];
   const next: ImportIssue[] = [];

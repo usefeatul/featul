@@ -4,13 +4,20 @@
  * Matches marketing sky-hero pattern used on home / alternatives / integrations.
  */
 
+import { MarketingContainer, marketingStackClass } from "@/components/layout/container";
 import Link from "next/link";
-import { Container } from "@/components/global/container";
 import { RelatedLinks } from "@/components/seo/links";
 import { UseCaseHero } from "@/components/use-cases/hero";
 import { SectionStack } from "@/components/layout/stack";
+import { SkyCtaFrame } from "@/components/layout/sky-banner";
 import { HotkeyLink } from "@/components/global/hotkey";
 import { LiveDemo } from "@/components/global/demo";
+import {
+  heroPrimaryCtaClass,
+  skyCardKbdClassName,
+  skyCardPrimaryCtaClass,
+} from "@/components/shared/cta";
+import { cn } from "@featul/ui/lib/utils";
 import type { UseCasePageData } from "@/lib/data/programmatic/generators";
 import type { RelatedLink } from "@/lib/seo/interlink";
 import { SITE_URL } from "@/config/seo";
@@ -65,9 +72,9 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
         badge={badge}
       />
 
-      <div className="relative mx-auto max-w-6xl">
+      <div className={marketingStackClass}>
         <SectionStack>
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <MarketingContainer>
             <section className="py-16" data-component="UseCaseChallenge">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                 <SquareIcon aria-hidden className="size-5 text-primary" />
@@ -91,9 +98,9 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                 </ul>
               </div>
             </section>
-          </Container>
+          </MarketingContainer>
 
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <MarketingContainer>
             <section className="py-16" data-component="UseCaseSolution">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
                 <SetupIcon aria-hidden className="size-5 text-primary" opacity={1} />
@@ -120,20 +127,17 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                 </ul>
               </div>
             </section>
-          </Container>
+          </MarketingContainer>
 
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <MarketingContainer>
             <section className="py-10 sm:py-14" data-component="UseCaseVerdict">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-                <div
-                  className="rounded-md bg-cover bg-center bg-no-repeat p-6 text-left sm:p-8"
-                  style={{ backgroundImage: "url(/image/sky.PNG)" }}
-                >
-                  <p className="text-sm text-white/85">{badge}</p>
-                  <h2 className="mt-3 max-w-2xl text-balance font-heading text-xl font-medium text-white sm:text-2xl lg:text-3xl">
+                <SkyCtaFrame>
+                  <p className="text-sm text-foreground/70">{badge}</p>
+                  <h2 className="mt-3 max-w-2xl text-balance font-heading text-xl font-medium text-foreground sm:text-2xl lg:text-3xl">
                     Put this use case into practice with Featul.
                   </h2>
-                  <p className="mt-3 max-w-xl text-sm text-white/80 sm:text-base">
+                  <p className="mt-3 max-w-xl text-sm text-foreground/80 sm:text-base">
                     Start free, invite your team, and ship a clearer feedback
                     workflow in minutes.
                   </p>
@@ -141,49 +145,57 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                     <HotkeyLink
                       variant="nav"
                       label="Try Featul free"
-                      className="h-10 min-h-[40px] w-full min-w-[40px] border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground sm:w-auto"
+                      className={cn(
+                        "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
+                        skyCardPrimaryCtaClass,
+                      )}
+                      kbdClassName={skyCardKbdClassName}
                     />
-                    <LiveDemo className="h-10 min-h-[40px] w-full min-w-[40px] border-white/60 bg-white text-accent hover:bg-white/95 sm:w-auto" />
+                    <LiveDemo
+                      variant="default"
+                      className={cn(
+                        "h-10 min-h-[40px] w-full min-w-[40px] shadow-sm sm:w-auto",
+                        heroPrimaryCtaClass,
+                      )}
+                    />
                   </div>
-                </div>
+                </SkyCtaFrame>
               </div>
             </section>
-          </Container>
+          </MarketingContainer>
 
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <MarketingContainer>
             <section className="py-16 md:py-24" data-component="UseCaseFaqs">
               <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-                <div className="max-w-xl">
-                  <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
-                    Frequently asked questions
-                  </h2>
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="mt-8 w-full border-y border-border/60"
-                  >
-                    {faqs.map((faq, i) => (
-                      <AccordionItem
-                        key={i}
-                        id={`faq-${useCase.slug}-${i + 1}`}
-                        value={`faq-${useCase.slug}-${i + 1}`}
-                        className="px-0"
-                      >
-                        <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
-                          {faq.question}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-sm leading-relaxed text-accent">
-                          {faq.answer}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </div>
+                <h2 className="text-balance text-2xl font-semibold text-foreground sm:text-3xl">
+                  Frequently asked questions
+                </h2>
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="mt-8 w-full border-y border-border/60"
+                >
+                  {faqs.map((faq, i) => (
+                    <AccordionItem
+                      key={i}
+                      id={`faq-${useCase.slug}-${i + 1}`}
+                      value={`faq-${useCase.slug}-${i + 1}`}
+                      className="px-0"
+                    >
+                      <AccordionTrigger className="py-4 text-left text-base font-medium !no-underline hover:!no-underline">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm leading-relaxed text-accent">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
               </div>
             </section>
-          </Container>
+          </MarketingContainer>
 
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <MarketingContainer>
             <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
               <RelatedLinks links={relatedLinks} title="Related resources" />
               <div className="pb-10">
@@ -195,7 +207,7 @@ export function UseCaseTemplate({ data, relatedLinks }: Props) {
                 </Link>
               </div>
             </div>
-          </Container>
+          </MarketingContainer>
         </SectionStack>
       </div>
     </main>

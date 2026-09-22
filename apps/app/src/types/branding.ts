@@ -1,3 +1,4 @@
+/** Public workspace appearance (theme, chrome, layout). */
 export type BrandingConfig = {
   logoUrl?: string
   primaryColor?: string

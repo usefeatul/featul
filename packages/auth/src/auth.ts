@@ -28,15 +28,15 @@ import {
   sessionMiddleware,
 } from "better-auth/api";
 import { getPasswordError } from "./password";
-import { getValidatedTrustedOrigins } from "./trusted-origins";
+import { getValidatedTrustedOrigins } from "./origins/trusted";
 import { setSessionCookie } from "better-auth/cookies";
-import { getAuthRateLimitStorage } from "./rate-limit-storage";
-import { isAuthRateLimitEnabled } from "./rate-limit-config";
+import { getAuthRateLimitStorage } from "./rate/storage";
+import { isAuthRateLimitEnabled } from "./rate/config";
 import {
   sendFailedPaymentNotificationForInvoice,
   sendUpcomingPaymentNotificationForInvoice,
   sendWorkspaceUpgradeNotification,
-} from "./billing-notifications";
+} from "./billing/notifications";
 import {
   isWorkspaceBillingOwner,
   syncWorkspacePlanFromSubscription,

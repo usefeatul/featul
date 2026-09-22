@@ -1,4 +1,12 @@
 import type { FormEvent, ReactNode } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@featul/ui/components/card";
 
 export type AuthLayoutStyles = {
   sectionCls: string;
@@ -20,18 +28,20 @@ export type AuthLayoutStyles = {
   dividerTextCls: string;
   secondaryActionCls: string;
   errorTextCls: string;
+  socialButtonVariant: "card" | "nav";
 };
 
 export function getAuthLayoutStyles(embedded: boolean = false): AuthLayoutStyles {
   if (embedded) {
     return {
-      sectionCls: "flex flex-1 px-4 sm:px-5 py-3 sm:py-4 items-center justify-center",
-      formCls: "m-auto h-fit w-full max-w-sm",
-      bodyPaddingCls: "p-4 sm:p-5 pb-4 sm:pb-4",
-      footerPaddingCls: "p-3 sm:p-4",
-      headingCls: "mb-2 mt-1 text-lg sm:text-xl font-semibold text-center",
-      sectionSpacingCls: "mt-4 space-y-4",
-      socialGapCls: "gap-2",
+      sectionCls: "w-full",
+      formCls: "w-full",
+      bodyPaddingCls: "p-0",
+      footerPaddingCls: "pt-3",
+      headingCls: "sr-only",
+      sectionSpacingCls: "space-y-3",
+      socialGapCls: "gap-1.5",
+      socialButtonVariant: "card",
       dividerCls: "my-1 grid grid-cols-[1fr_auto_1fr] items-center gap-2",
       fieldSpacingCls: "space-y-1.5",
       pwdSpacingCls: "space-y-0.5",
@@ -49,57 +59,80 @@ export function getAuthLayoutStyles(embedded: boolean = false): AuthLayoutStyles
   }
 
   return {
-    sectionCls: "flex flex-1 px-4 sm:px-6 py-8 sm:py-12 items-center justify-center",
+    sectionCls: "w-full",
     formCls: "m-auto h-fit w-full max-w-sm",
-    bodyPaddingCls: "p-6 sm:p-8 pb-5 sm:pb-6",
-    footerPaddingCls: "p-3",
-    headingCls:
-      "mb-2 mt-4 font-heading text-xl font-semibold text-center text-white sm:text-2xl",
-    sectionSpacingCls: "mt-6 space-y-6",
+    bodyPaddingCls: "",
+    footerPaddingCls: "",
+    headingCls: "font-heading text-xl",
+    sectionSpacingCls: "space-y-6",
     socialGapCls: "gap-3",
     dividerCls: "my-2 grid grid-cols-[1fr_auto_1fr] items-center gap-3",
     fieldSpacingCls: "space-y-2",
     pwdSpacingCls: "space-y-0.5",
-    labelCls: "block text-sm text-white",
-    footerTextCls: "text-center text-sm font-normal text-white/85",
-    linkButtonCls: "px-2 text-white underline-offset-4 hover:text-white/90",
-    mutedTextCls: "text-xs text-white/70",
-    helperTextCls: "text-xs text-center text-white/80",
-    dividerHrCls: "border-dashed border-white/30",
-    dividerTextCls: "text-xs text-white/70",
+    labelCls: "block text-sm",
+    footerTextCls: "text-accent text-center text-sm font-normal",
+    linkButtonCls: "px-2 text-primary",
+    mutedTextCls: "text-xs text-muted-foreground",
+    helperTextCls: "text-xs text-accent text-center",
+    dividerHrCls: "border-dashed",
+    dividerTextCls: "text-muted-foreground text-xs",
     secondaryActionCls:
-      "text-sm font-medium text-white/85 hover:text-white flex items-center gap-2 transition-colors cursor-pointer",
-    errorTextCls: "text-xs text-center text-red-200",
+      "text-sm font-medium text-foreground/80 hover:text-foreground flex items-center gap-2 transition-colors cursor-pointer",
+    errorTextCls: "text-destructive text-xs text-center",
+    socialButtonVariant: "nav",
   };
 }
 
 export function AuthLayout({
   embedded = false,
   title,
+  description,
   onSubmit,
   children,
   footer,
 }: {
   embedded?: boolean;
   title: string;
+  description?: string;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   children: ReactNode;
   footer?: ReactNode;
 }) {
   const styles = getAuthLayoutStyles(embedded);
 
+  if (embedded) {
+    return (
+      <section className={styles.sectionCls}>
+        <form noValidate className={styles.formCls} onSubmit={onSubmit}>
+          <div className={styles.bodyPaddingCls}>
+            <h1 className="sr-only">{title}</h1>
+            <div className={styles.sectionSpacingCls}>{children}</div>
+          </div>
+          {footer ? <div className={styles.footerPaddingCls}>{footer}</div> : null}
+        </form>
+      </section>
+    );
+  }
+
   return (
     <section className={styles.sectionCls}>
       <form noValidate className={styles.formCls} onSubmit={onSubmit}>
-        <div className={styles.bodyPaddingCls}>
-          <div className="text-center">
-            <h1 className={styles.headingCls}>{title}</h1>
-          </div>
+        <Card variant="plain" className="w-full bg-transparent dark:bg-transparent">
+          <CardHeader>
+            <CardTitle className={styles.headingCls}>{title}</CardTitle>
+            {description ? (
+              <CardDescription className="font-light text-accent">
+                {description}
+              </CardDescription>
+            ) : null}
+          </CardHeader>
 
-          <div className={styles.sectionSpacingCls}>{children}</div>
-        </div>
+          <CardContent className={styles.sectionSpacingCls}>{children}</CardContent>
 
-        {footer ? <div className={styles.footerPaddingCls}>{footer}</div> : null}
+          {footer ? (
+            <CardFooter className="flex-col items-stretch">{footer}</CardFooter>
+          ) : null}
+        </Card>
       </form>
     </section>
   );

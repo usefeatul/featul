@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 
+/** Cached slug→name maps for board and tag filter chips. Excludes roadmap/changelog boards. */
 export function useRequestFilterLabels(slug: string) {
   const { data: boardsBySlug = {} } = useQuery({
     queryKey: ["boards-map", slug],

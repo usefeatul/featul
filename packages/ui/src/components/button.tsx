@@ -4,40 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@featul/ui/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center dark:text-white justify-center gap-2 whitespace-now rap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none cursor-pointer",
+  "inline-flex items-center dark:text-white justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer",
   {
     variants: {
       variant: {
-        default: cn(
-          "relative bg-primary text-primary-foreground shadow-[0_1px_2px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.06)] hover:bg-primary/90 hover:shadow-[0_1px_2px_rgba(0,0,0,0.1),0_6px_14px_rgba(0,0,0,0.08)] ring-ring/60 hover:ring-ring border-border/80 dark:border-border/70 dark:shadow-[0_1px_2px_rgba(0,0,0,0.22),0_6px_14px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.26),0_8px_18px_rgba(0,0,0,0.24)] before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:content-[''] before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.14)] dark:before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.46)]"
-        ),
-        destructive: cn(
-          "relative bg-destructive text-white shadow-[0_1px_2px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.06)] hover:bg-destructive/90 hover:shadow-[0_1px_2px_rgba(0,0,0,0.1),0_6px_14px_rgba(0,0,0,0.08)] ring-destructive/50 hover:ring-destructive/60 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 border-destructive/70 dark:border-destructive/50 dark:shadow-[0_1px_2px_rgba(0,0,0,0.22),0_6px_14px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.26),0_8px_18px_rgba(0,0,0,0.24)] before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:content-[''] before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.14)] dark:before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.46)]"
-        ),
-        outline: cn(
-          "border bg-background shadow-xs hover:bg-muted hover:text-accent-foreground ring-border/60 hover:ring-accent/60 dark:bg-input/30 dark:border-input dark:hover:bg-input/50 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black"
-        ),
-        secondary: cn(
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 ring-secondary/50 hover:ring-secondary/60 dark:bg-black/40"
-        ),
-        ghost: cn(
-          "hover:bg-muted hover:text-accent-foreground ring-border/50 hover:ring-accent/60 dark:hover:bg-muted/50 dark:bg-black/40"
-        ),
+        default: "border border-primary/20 bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive: "border border-destructive/20 bg-destructive text-white hover:bg-destructive/90 dark:bg-destructive/60",
+        outline: "border border-border/40 bg-background hover:bg-muted/50 hover:text-accent-foreground dark:border-white/8",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 dark:bg-black/40",
+        ghost: "hover:bg-muted/50 hover:text-accent-foreground dark:hover:bg-muted/50 dark:bg-black/40",
         link: "text-primary dark:text-primary underline-offset-4 hover:underline bg-transparent",
-
-        quiet: cn("bg-primary text-primary-foreground hover:bg-primary/70"),
-        nav: cn(
-          "relative border bg-card text-foreground border-border shadow-[0_1px_2px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.06)] dark:border-border hover:bg-muted/30 hover:text-accent-foreground hover:border-accent/20 hover:shadow-[0_1px_2px_rgba(0,0,0,0.1),0_6px_14px_rgba(0,0,0,0.08)] dark:bg-background dark:hover:bg-black/40 dark:shadow-[0_1px_2px_rgba(0,0,0,0.22),0_6px_14px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.26),0_8px_18px_rgba(0,0,0,0.24)] ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:content-[''] before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.14)] dark:before:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.46)]"
-        ),
-        plain: cn(
-          " bg-card dark:bg-background text-foreground hover:bg-muted hover:text-accent-foreground dark:hover:bg-black/50 "
-        ),
-        card: cn(
-          "bg-card dark:bg-black/50 text-foreground border border-border hover:bg-muted/20 hover:text-accent-foreground dark:hover:bg-black/30"
-        ),
-        // changelog: cn(
-        //   "bg-card text-foreground hover:bg-muted/30 hover:text-accent-foreground hover:border-accent/20 dark:bg-black/30 dark:hover:bg-black/40"
-        // ),
+        quiet: "bg-primary text-primary-foreground hover:bg-primary/70",
+        nav: "border border-border/40 bg-card text-foreground hover:bg-muted/30 hover:text-accent-foreground dark:border-white/8 dark:bg-background dark:hover:bg-white/5",
+        plain: "bg-card dark:bg-background text-foreground hover:bg-muted hover:text-accent-foreground dark:hover:bg-black/50",
+        card: "border border-border/40 bg-card text-foreground hover:bg-muted/20 hover:text-accent-foreground dark:border-white/8 dark:bg-black/50 dark:hover:bg-black/30",
 
       },
       size: {

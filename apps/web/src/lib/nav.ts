@@ -1,4 +1,4 @@
-import type { DocsNavSection } from "@/config/docsNav"
+import { docsSections, type DocsNavSection } from "@/config/docsNav"
 
 /**
  * Derives the current page label from a docs pathname.
@@ -7,11 +7,14 @@ import type { DocsNavSection } from "@/config/docsNav"
  * @returns A human-readable page label.
  */
 export function getDocsCurrentPageLabel(pathname: string | null): string {
-  if (!pathname) return "Introduction"
+  if (!pathname || pathname === "/docs") return "Overview"
+  for (const section of docsSections) {
+    const item = section.items.find((entry) => entry.href === pathname)
+    if (item) return item.label
+  }
   const parts = pathname.split("/").filter(Boolean)
-  if (parts.length === 0) return "Introduction"
   const lastPart = parts[parts.length - 1]
-  if (!lastPart) return "Introduction"
+  if (!lastPart) return "Overview"
   return lastPart.charAt(0).toUpperCase() + lastPart.slice(1).replace(/-/g, " ")
 }
 
@@ -26,11 +29,10 @@ export function getDocsCurrentSectionLabel(
   pathname: string | null,
   sections: DocsNavSection[],
 ): string {
-  if (!pathname) return "Getting started"
+  if (!pathname || pathname === "/docs") return "Docs"
   for (const section of sections) {
     const hasMatch = section.items.some((item) => item.href === pathname)
     if (hasMatch) return section.label
   }
   return "Getting started"
 }
-

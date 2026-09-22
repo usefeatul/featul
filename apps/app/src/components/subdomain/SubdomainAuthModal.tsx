@@ -5,8 +5,10 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogInner,
   DialogTitle,
 } from "@featul/ui/components/dialog";
+import { AccountIcon } from "@featul/ui/icons/account";
 import SignIn from "@/components/auth/SignIn";
 import SignUp from "@/components/auth/SignUp";
 import type { AuthMode } from "@/types/auth";
@@ -28,15 +30,14 @@ export default function SubdomainAuthModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        fluid
-        showCloseButton={false}
-        className="bg-transparent border-none shadow-none ring-0 ring-offset-0 p-2"
-      >
-        <DialogHeader className="sr-only">
-          <DialogTitle>{title}</DialogTitle>
+      <DialogContent fluid className="w-[min(90vw,400px)]">
+        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+          <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
+            <AccountIcon className="size-3.5 text-primary" />
+            {title}
+          </DialogTitle>
         </DialogHeader>
-        <div className="w-[min(90vw,400px)] max-h-[66vh] overflow-y-auto rounded-2xl bg-background border border-border shadow-xl">
+        <DialogInner className="max-h-[66vh] overflow-y-auto pt-5 pb-4">
           {mode === "sign-in" ? (
             <SignIn
               redirectTo={redirectTo}
@@ -50,7 +51,7 @@ export default function SubdomainAuthModal({
               onSwitchMode={() => onModeChange("sign-in")}
             />
           )}
-        </div>
+        </DialogInner>
       </DialogContent>
     </Dialog>
   );

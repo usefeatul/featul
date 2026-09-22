@@ -6,6 +6,7 @@ import { checkSlugInputSchema } from "../validators/workspace"
 import { updateBrandingInputSchema } from "../validators/branding"
 import { getPlanLimits } from "../shared/plan"
 import { getWorkspaceAccessPlan, requireBrandingManagerBySlug } from "../shared/access"
+import { assertOptionalWorkspaceAssetUrl, WORKSPACE_BRANDING_FOLDERS } from "../storage/urls"
 
 export function createBrandingRouter() {
   return j.router({
@@ -75,6 +76,7 @@ export function createBrandingRouter() {
 
         if (typeof input.logoUrl !== "undefined") {
           if (!limits.allowBranding) throw new HTTPException(403, { message: "Logo upload not available on current plan" })
+          assertOptionalWorkspaceAssetUrl(input.logoUrl, ws.slug, WORKSPACE_BRANDING_FOLDERS)
           try {
             await ctx.db.update(workspace).set({ logo: input.logoUrl }).where(eq(workspace.id, ws.id))
           } catch {}

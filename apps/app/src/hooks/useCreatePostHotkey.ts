@@ -7,6 +7,7 @@ interface UseCreatePostHotkeyOptions {
   onOpen: () => void;
 }
 
+/** True for inputs, textareas, contenteditable, or role=textbox. */
 function isEditableElement(element: HTMLElement | null) {
   if (!element) return false;
   const role = element.getAttribute("role");
@@ -19,6 +20,7 @@ function isEditableElement(element: HTMLElement | null) {
   );
 }
 
+/** `C` opens create-post unless the user is typing in an editable field. */
 export function useCreatePostHotkey({
   enabled = true,
   onOpen,

@@ -23,9 +23,7 @@ interface UseIntegrationsReturn {
   isConnected: (type: IntegrationType) => boolean;
 }
 
-/**
- * Hook for managing workspace integrations (Discord, Slack webhooks)
- */
+/** Discord/Slack webhook connect, disconnect, and test. Seeds from `initialData` when provided. */
 export function useIntegrations({
   workspaceSlug,
   initialData,

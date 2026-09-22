@@ -4,6 +4,7 @@ export function welcomeTourStorageKey(userId: string) {
   return `${STORAGE_PREFIX}${userId}`;
 }
 
+/** True when this user finished the welcome tour (localStorage). */
 export function hasCompletedWelcomeTour(userId: string | null | undefined) {
   if (!userId || typeof window === "undefined") return false;
   try {
@@ -13,6 +14,7 @@ export function hasCompletedWelcomeTour(userId: string | null | undefined) {
   }
 }
 
+/** Marks the tour done and clears the session pending flag. */
 export function markWelcomeTourCompleted(userId: string) {
   if (typeof window === "undefined") return;
   try {
@@ -25,6 +27,7 @@ export function markWelcomeTourCompleted(userId: string) {
 
 const PENDING_WELCOME_TOUR_KEY = "featul:pending-welcome-tour";
 
+/** Session-only flag so the tour can resume after a reload. */
 export function markPendingWelcomeTour() {
   if (typeof window === "undefined") return;
   try {
@@ -34,6 +37,7 @@ export function markPendingWelcomeTour() {
   }
 }
 
+/** Whether a welcome tour is queued in this tab. */
 export function hasPendingWelcomeTour() {
   if (typeof window === "undefined") return false;
   try {

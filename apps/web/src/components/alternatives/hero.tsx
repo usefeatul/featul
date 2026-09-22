@@ -16,6 +16,8 @@ export function AlternativeHero({ alt }: { alt: Alternative }) {
         description={getAltDescription(alt.slug, "first")}
         slug={alt.slug}
         website={alt.website}
+        heroTitle={alt.heroTitle}
+        heroKicker={alt.heroKicker}
       />
     </SkyMarketingHero>
   );

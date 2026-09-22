@@ -131,7 +131,8 @@ export default function ForgotPassword() {
 
   return (
     <AuthLayout
-      title="Forgot your password"
+      title="Forgot your password."
+      description="We'll send a code so you can choose a new one."
       onSubmit={handleSubmit}
       footer={
         <p className={styles.footerTextCls}>

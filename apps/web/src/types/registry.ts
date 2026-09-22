@@ -60,8 +60,26 @@ import CtaGeneratorTool from '../components/tools/content/generator'
 // Additional Feedback tools
 import ResponseRateCalculatorTool from '../components/tools/feedback/response'
 import MarginOfErrorCalculatorTool from '../components/tools/feedback/margin'
+import RicePrioritizationTool from '../components/tools/feedback-roadmaps/rice'
+import ChangelogGeneratorTool from '../components/tools/feedback-roadmaps/changelog'
+import VotingBiasTool from '../components/tools/feedback-roadmaps/voting-bias'
+import PublicBoardChecklistTool from '../components/tools/feedback-roadmaps/checklist'
+import RoadmapTemplateTool from '../components/tools/feedback-roadmaps/roadmap'
+import VoteConfidenceTool from '../components/tools/feedback-roadmaps/vote-confidence'
+import NpsFollowUpTool from '../components/tools/feedback-roadmaps/nps-follow-up'
+import DuplicateFeedbackTool from '../components/tools/feedback-roadmaps/duplicates'
 
 export const TOOL_COMPONENTS: Record<string, Record<string, ComponentType>> = {
+  'feedback-roadmaps': {
+    'rice-prioritization-calculator': RicePrioritizationTool,
+    'changelog-generator': ChangelogGeneratorTool,
+    'feature-voting-bias-calculator': VotingBiasTool,
+    'public-feedback-board-checklist': PublicBoardChecklistTool,
+    'roadmap-status-template': RoadmapTemplateTool,
+    'feedback-vote-confidence-calculator': VoteConfidenceTool,
+    'nps-follow-up-planner': NpsFollowUpTool,
+    'duplicate-feedback-estimator': DuplicateFeedbackTool,
+  },
   'product-feature-analytics': {
     'feature-adoption-calculator': FeatureAdoptionTool,
     'cohort-analysis': CohortAnalysisTool,

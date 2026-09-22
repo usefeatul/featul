@@ -1,34 +1,25 @@
 ---
 title: Integrations
-description: Connect third-party services to streamline your feedback workflow.
+description: Send Slack or Discord notifications when new feedback is submitted.
 ---
 
-## Available Integrations
+## Available integrations
 
-Connect your tools to receive notifications and automate workflows:
+Connect Slack or Discord from **Settings → Integrations**. Integrations are available on Starter and Professional.
 
 ### Slack
-Real-time notifications in your Slack workspace:
-- Instant alerts for new submissions
-- Direct links to feedback items
-- Channel-based routing
 
-### Discord  
-Server notifications for new feedback:
-- Customizable notification channels
-- Quick access to feedback items
-- Server-based organization
+Paste an incoming webhook URL for a channel. Featul notifies that channel when a new request is submitted, with a link to the item. You can send a test notification after connecting.
 
-## Request Integrations
+### Discord
 
-Need a different integration?
+Paste a Discord webhook URL for a channel. Featul notifies that channel when a new request is submitted. You can send a test notification after connecting.
 
-1. Go to **Settings → Integrations**
-2. Click **Suggest Integration**
-3. Describe your requirements
+## Suggest an integration
 
-We prioritize based on community demand.
+Need something else? Open **Settings → Integrations** and use **Suggest Integration**. That sends you to Featul’s public feedback board so we can prioritize based on demand.
 
----
+## Related setup
 
-**Note:** Integrations available on paid plans only.
+- Identify signed-in users in the [embed widget](/docs/getting-started/widget)
+- [Import CSV feedback](/docs/branding-setup/data) when you are moving from another tool

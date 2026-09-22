@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers"
 
+/** Persists collapsed comment ids in an httpOnly cookie. */
 export async function updateCommentCollapseState(
   postId: string,
   commentId: string,

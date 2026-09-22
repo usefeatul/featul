@@ -12,6 +12,7 @@ import {
 import { createId } from "@paralleldrive/cuid2";
 import { post } from "./post";
 import { user } from "./auth";
+import { widgetUser } from "./widget";
 import { fingerprintColumn } from "./shared";
 
 export const comment = pgTable(
@@ -28,6 +29,9 @@ export const comment = pgTable(
     authorId: text("author_id").references(() => user.id, {
       onDelete: "set null",
     }),
+    widgetUserId: text("widget_user_id").references(() => widgetUser.id, {
+      onDelete: "set null",
+    }),
     authorName: text("author_name"),
     authorEmail: text("author_email"),
     isAnonymous: boolean("is_anonymous").default(false),
@@ -42,7 +46,10 @@ export const comment = pgTable(
     isInternal: boolean("is_internal").notNull().default(false),
     isEdited: boolean("is_edited").default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
     editedAt: timestamp("edited_at"),
     moderatedBy: text("moderated_by").references(() => user.id),
     moderatedAt: timestamp("moderated_at"),
@@ -54,13 +61,14 @@ export const comment = pgTable(
       fingerprint?: string;
     }>(),
   },
-  (table) => ({
-    commentParentFk: foreignKey({
-      columns: [table.parentId],
-      foreignColumns: [table.id],
-      name: "comment_parent_id_comment_id_fk",
-    }).onDelete('cascade'),
-  } as const)
+  (table) =>
+    ({
+      commentParentFk: foreignKey({
+        columns: [table.parentId],
+        foreignColumns: [table.id],
+        name: "comment_parent_id_comment_id_fk",
+      }).onDelete("cascade"),
+    }) as const,
 );
 
 // Comment reactions (beyond upvote/downvote)
@@ -74,17 +82,24 @@ export const commentReaction = pgTable(
       .notNull()
       .references(() => comment.id, { onDelete: "cascade" }),
     userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
+    widgetUserId: text("widget_user_id").references(() => widgetUser.id, {
+      onDelete: "cascade",
+    }),
     type: text("type", {
       enum: ["upvote", "downvote"],
     }).notNull(),
     ...fingerprintColumn,
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => ({
-    commentReactionUnique: uniqueIndex(
-      "comment_reaction_comment_user_type_unique"
-    ).on(table.commentId, table.userId, table.type),
-  } as const)
+  (table) =>
+    ({
+      commentReactionUnique: uniqueIndex(
+        "comment_reaction_comment_user_type_unique",
+      ).on(table.commentId, table.userId, table.type),
+      commentReactionWidgetUserUnique: uniqueIndex(
+        "comment_reaction_comment_widget_user_type_unique",
+      ).on(table.commentId, table.widgetUserId, table.type),
+    }) as const,
 );
 
 // Comment mentions for notifications

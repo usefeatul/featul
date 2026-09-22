@@ -7,7 +7,7 @@ description: Keyboard shortcuts available in the main Featul workspace app.
 
 These shortcuts are implemented in the main workspace app under `/workspaces/...`.
 
-Most shortcuts are ignored while you're typing in an input, textarea, or rich text editor.
+Most shortcuts are ignored while you're typing in an input, textarea, or rich text editor. Open this catalog anytime with `Cmd + /` or `Ctrl + /`.
 
 ## Global workspace shortcuts
 
@@ -15,6 +15,7 @@ Most shortcuts are ignored while you're typing in an input, textarea, or rich te
 | --- | --- |
 | `Cmd + /` / `Ctrl + /` | Opens the **Keyboard Shortcuts** drawer. |
 | `Cmd + G` / `Ctrl + G` | Opens the workspace home page for the current workspace. |
+| `Cmd + K` / `Ctrl + K` | Opens search when no field is focused. |
 | `Cmd + C` / `Ctrl + C` | Opens the **Create Post** modal when no field is focused and no text is selected. |
 | `Cmd + M` / `Ctrl + M` | Quickly toggles between light mode and dark mode. |
 
@@ -35,8 +36,9 @@ These shortcuts are used on selectable workspace lists such as the requests list
 
 | Shortcut | What it does |
 | --- | --- |
-| `Cmd + D` / `Ctrl + D` | Toggles bulk selection mode on or off. |
+| `Cmd + D` / `Ctrl + D` | Toggles bulk selection mode on or off. Shift-click rows to select a range. |
 | `D` | Opens the bulk delete confirmation dialog when bulk selection mode is active and at least one item is selected. |
+| `Escape` | Leaves selection mode and clears the current selection. |
 | `Z` | Goes to the previous page in paginated workspace lists. |
 | `X` | Goes to the next page in paginated workspace lists. |
 

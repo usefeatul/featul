@@ -4,6 +4,11 @@ import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { DocumentTextIcon } from "@featul/ui/icons/document-text"
 import { useBoards, type Board } from "@/hooks/useBoards"
+import { cn } from "@featul/ui/lib/utils"
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard"
 
 export function BoardsList({ slug, initialBoards, selectedBoard }: { slug: string; initialBoards?: Board[]; selectedBoard?: string }) {
   const router = useRouter()
@@ -39,16 +44,18 @@ export function BoardsList({ slug, initialBoards, selectedBoard }: { slug: strin
   )
 
   return (
-    <div className="rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card dark:bg-background p-4 min-h-[160px]">
-      <div className="mb-2 text-sm font-medium flex items-center gap-2">
+    <div className={settingsCardShellClass}>
+      <header className="flex items-center gap-2 py-2">
         <DocumentTextIcon className="size-4 text-muted-foreground" />
-        Boards
-      </div>
-      <div className="space-y-1">
-        <Item active={current === "__all__"} label="All Feedback" count={total} onClick={() => go("__all__")} />
-        {boards.map((b) => (
-          <Item key={b.id} active={current === b.slug} label={b.name} count={b.postCount} onClick={() => go(b.slug)} />
-        ))}
+        <h2 className="text-sm font-medium leading-none">Boards</h2>
+      </header>
+      <div className={cn(settingsCardInnerClass, "min-h-[160px] p-2")}>
+        <div className="space-y-1">
+          <Item active={current === "__all__"} label="All Feedback" count={total} onClick={() => go("__all__")} />
+          {boards.map((b) => (
+            <Item key={b.id} active={current === b.slug} label={b.name} count={b.postCount} onClick={() => go(b.slug)} />
+          ))}
+        </div>
       </div>
     </div>
   )

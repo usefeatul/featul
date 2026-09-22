@@ -13,6 +13,7 @@ import RoleBadge from "@/components/global/RoleBadge"
 import { FlagRibbon } from "@/components/global/FlagRibbon"
 import { subdomainListItemClassName } from "./subdomainListItemStyles"
 
+/** Strip HTML tags. Collapse whitespace. Empty in → empty out. */
 function toPlain(s?: string | null): string {
   if (!s) return ""
   return s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
@@ -48,7 +49,7 @@ function PostCardBase({
 
   return (
     <div className={`${subdomainListItemClassName} relative group overflow-hidden`}>
-      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
+      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} isLocked={item.isLocked} />
       <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
         <span className="sr-only">View post</span>
       </Link>
@@ -92,7 +93,7 @@ function PostCardBase({
               postId={item.id}
               upvotes={item.upvotes}
               hasVoted={item.hasVoted}
-              className="text-xs hover:text-red-500/80"
+              className="text-xs"
               onChange={(v) => onVoteChange?.(item.id, v.upvotes, v.hasVoted)}
             />
           </div>

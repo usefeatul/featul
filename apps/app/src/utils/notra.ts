@@ -1,5 +1,7 @@
 "use client";
 
+/** Client helpers for Notra changelog import toasts and error payloads. */
+
 import { toast } from "sonner";
 import type { ImportSummary } from "@/types/notra";
 
@@ -11,6 +13,7 @@ type ResponseLike = {
   json(): Promise<unknown>;
 };
 
+/** Read a non-empty `message` string from a JSON body. Invalid JSON yields null. */
 export async function readMessageFromResponse(
   response: ResponseLike,
 ): Promise<string | null> {
@@ -21,6 +24,7 @@ export async function readMessageFromResponse(
   return typeof message === "string" && message.trim() ? message : null;
 }
 
+/** Toast import counts. Limit-reached is the only error toast. */
 export function showImportSummaryToasts(summary: ImportSummary) {
   toast.success(
     `Synced ${summary.importedCount} entries (${summary.createdCount} created, ${summary.updatedCount} updated).`,

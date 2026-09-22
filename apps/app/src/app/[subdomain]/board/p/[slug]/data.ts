@@ -1,4 +1,4 @@
-import { db, board, post, user, workspaceMember } from "@featul/db";
+import { db, board, post, postTag, tag, user, widgetUser, workspaceMember } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
 import { getServerSession } from "@featul/auth/session";
 import { readHasVotedForPost } from "@/lib/vote.server";
@@ -36,13 +36,11 @@ type RawPostRow = Omit<
   createdAt: string | Date;
   publishedAt: string | Date | null;
   metadata: Record<string, unknown> | null;
-  author:
-    | {
-        name: string | null;
-        image: string | null;
-        email: string | null;
-      }
-    | null;
+  author: {
+    name: string | null;
+    image: string | null;
+    email: string | null;
+  } | null;
 };
 
 function toIsoString(value: string | Date): string {
@@ -63,6 +61,7 @@ export type PublicBoardRequestDetailPageData = {
   backLink: string;
 };
 
+/** Public post detail plus comments; viewerCanEdit from session membership. */
 export async function loadPublicBoardRequestDetailPageData({
   subdomain,
   postSlug,
@@ -92,8 +91,8 @@ export async function loadPublicBoardRequestDetailPageData({
             and(
               eq(workspaceMember.workspaceId, ws.id),
               eq(workspaceMember.userId, userId),
-              eq(workspaceMember.isActive, true)
-            )
+              eq(workspaceMember.isActive, true),
+            ),
           )
           .limit(1);
         const perms = (member?.permissions || {}) as Record<string, boolean>;
@@ -117,8 +116,12 @@ export async function loadPublicBoardRequestDetailPageData({
 
   const isOwner = !!rawPost.authorId && rawPost.authorId === ws.ownerId;
 
+  const tags = await loadPostTags(rawPost.id);
   const hasVoted = await readHasVotedForPost(rawPost.id);
-  const { initialComments, initialCollapsedIds } = await loadPostComments(rawPost.id, "public");
+  const { initialComments, initialCollapsedIds } = await loadPostComments(
+    rawPost.id,
+    "public",
+  );
 
   const post: SubdomainRequestDetailData = {
     id: postWithAuthor.id,
@@ -134,11 +137,13 @@ export async function loadPublicBoardRequestDetailPageData({
     boardName: postWithAuthor.boardName,
     boardSlug: postWithAuthor.boardSlug,
     allowComments: postWithAuthor.allowComments ?? undefined,
-    hidePublicMemberIdentity: postWithAuthor.hidePublicMemberIdentity ?? undefined,
+    hidePublicMemberIdentity:
+      postWithAuthor.hidePublicMemberIdentity ?? undefined,
     role: postWithAuthor.role ?? null,
     duplicateOfId: postWithAuthor.duplicateOfId ?? null,
     mergedCount: postWithAuthor.mergedCount ?? 0,
     mergedInto: postWithAuthor.mergedInto ?? null,
+    mergedSources: postWithAuthor.mergedSources,
     author: postWithAuthor.author,
     metadata: postWithAuthor.metadata ?? null,
     createdAt: toIsoString(postWithAuthor.createdAt),
@@ -147,6 +152,7 @@ export async function loadPublicBoardRequestDetailPageData({
     isOwner,
     isFeatul: rawPost.authorId === "featul-founder",
     viewerCanEdit,
+    tags,
   };
 
   return {
@@ -158,40 +164,51 @@ export async function loadPublicBoardRequestDetailPageData({
   };
 }
 
+/** Published feedback post with author, board, and merge metadata. */
 async function loadPostWithAuthorAndBoard(
   workspaceId: string,
-  postSlug: string
+  postSlug: string,
 ): Promise<RawPostRow | null> {
   const [p] = await db
     .select(
-      buildPostSelect({
-        hidePublicMemberIdentity: board.hidePublicMemberIdentity,
-        role: workspaceMember.role,
-      })
+      buildPostSelect(
+        {
+          hidePublicMemberIdentity: board.hidePublicMemberIdentity,
+          role: workspaceMember.role,
+        },
+        { includeAuthorEmail: false },
+      ),
     )
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
     .leftJoin(user, eq(post.authorId, user.id))
+    .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
     .leftJoin(
       workspaceMember,
-      and(eq(workspaceMember.userId, post.authorId), eq(workspaceMember.workspaceId, workspaceId))
+      and(
+        eq(workspaceMember.userId, post.authorId),
+        eq(workspaceMember.workspaceId, workspaceId),
+      ),
     )
     .where(
       and(
         eq(board.workspaceId, workspaceId),
         sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
-        eq(post.slug, postSlug)
-      )
+        eq(board.isPublic, true),
+        eq(post.status, "published"),
+        eq(post.slug, postSlug),
+      ),
     )
     .limit(1);
 
   if (!p) return null;
 
-  const { mergedCount, mergedInto } = await loadMergedPostData({
+  const { mergedCount, mergedInto, mergedSources } = await loadMergedPostData({
     workspaceId,
     postId: p.id,
     duplicateOfId: p.duplicateOfId,
-    includeSources: false,
+    includeSources: true,
+    publicOnly: true,
   });
 
   return {
@@ -199,5 +216,15 @@ async function loadPostWithAuthorAndBoard(
     metadata: (p.metadata ?? null) as Record<string, unknown> | null,
     mergedCount,
     mergedInto,
+    mergedSources,
   };
+}
+
+/** Tag rows attached to the post. */
+async function loadPostTags(postId: string) {
+  return db
+    .select({ id: tag.id, name: tag.name, slug: tag.slug, color: tag.color })
+    .from(postTag)
+    .innerJoin(tag, eq(postTag.tagId, tag.id))
+    .where(eq(postTag.postId, postId));
 }

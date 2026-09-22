@@ -9,14 +9,17 @@ export type Board = {
     type?: string | null
 }
 
+/** Sort boards alphabetically by name. */
 function sortBoards(list: Board[]) {
     return [...list].sort((a, b) => a.name.localeCompare(b.name))
 }
 
+/** Drop system roadmap/changelog slugs, then sort. */
 function normalizeBoards(list: Board[]): Board[] {
     return sortBoards(list.filter((b) => b.slug !== "roadmap" && b.slug !== "changelog"))
 }
 
+/** Parse localStorage board cache; supports `{ boards }` or `{ data }`. */
 function readCachedBoards(raw: string | null): Board[] {
     if (!raw) return []
     const parsed = JSON.parse(raw) as { boards?: Board[]; data?: Board[] } | null
@@ -29,6 +32,7 @@ function readCachedBoards(raw: string | null): Board[] {
     return normalizeBoards(maybeBoards)
 }
 
+/** Workspace boards from API, with localStorage cache while the first fetch is in flight. */
 export function useBoards({ slug, initialBoards }: { slug: string; initialBoards?: Board[] }) {
 
     const [boards, setBoards] = React.useState<Board[]>(() => normalizeBoards(Array.isArray(initialBoards) ? initialBoards : []))

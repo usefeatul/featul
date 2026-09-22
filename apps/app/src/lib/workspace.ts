@@ -10,6 +10,7 @@ import {
   workspaceDomain,
   workspaceInvite,
   user,
+  widgetUser,
   workspaceIntegration,
   postReport,
   subscription,
@@ -27,7 +28,22 @@ import type {
 import type { BrandingConfig } from "../types/branding";
 import type { Member, Invite } from "../types/team";
 import type { DomainInfo } from "../types/domain";
-import { buildPostFtsFilter } from "@featul/api/shared/post-search";
+import { buildPostFtsFilter } from "@featul/api/post/search";
+import {
+  STALE_STATUS_KEY,
+  STALE_THRESHOLD_DAYS,
+  isStaleStatusFilter,
+} from "@featul/api/shared/stale";
+import {
+  LOW_INTERACTION_MAX_UPVOTES,
+  LOW_INTERACTION_STATUS_KEY,
+  LOW_INTERACTION_THRESHOLD_DAYS,
+  isLowInteractionStatusFilter,
+} from "@featul/api/shared/low-interaction";
+import {
+  SNOOZED_STATUS_KEY,
+  isSnoozedStatusFilter,
+} from "@featul/api/shared/snooze";
 import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
 import {
   getBrandingBySlug,
@@ -39,14 +55,11 @@ import {
   getWorkspaceIdBySlug,
 } from "@/lib/workspace/slug";
 
-export {
-  getBrandingBySlug,
-  getBrandingColorsBySlug,
-  getSidebarPositionBySlug,
-};
+export { getBrandingBySlug, getBrandingColorsBySlug, getSidebarPositionBySlug };
 
+/** First owned workspace slug, else first active membership. */
 export async function findFirstAccessibleWorkspaceSlug(
-  userId: string
+  userId: string,
 ): Promise<string | null> {
   const [owned] = await db
     .select({ slug: workspace.slug })
@@ -63,14 +76,15 @@ export async function findFirstAccessibleWorkspaceSlug(
     .where(
       and(
         eq(workspaceMember.userId, userId),
-        eq(workspaceMember.isActive, true)
-      )
+        eq(workspaceMember.isActive, true),
+      ),
     )
     .limit(1);
 
   return memberWs?.slug || null;
 }
 
+/** Canonical roadmap status, including stale, low-traction, and snoozed filter keys. */
 export function normalizeStatus(s: string): string {
   const raw = (s || "").trim().toLowerCase();
   const t = raw.replace(/-/g, "");
@@ -81,8 +95,39 @@ export function normalizeStatus(s: string): string {
     progress: "progress",
     completed: "completed",
     closed: "closed",
+    stale: STALE_STATUS_KEY,
+    lowtraction: LOW_INTERACTION_STATUS_KEY,
+    lowinteraction: LOW_INTERACTION_STATUS_KEY,
+    snoozed: SNOOZED_STATUS_KEY,
   };
   return map[t] || raw;
+}
+
+/** Open, non-completed posts older than the stale threshold. */
+function buildStalePostCondition(): SQL {
+  return and(
+    sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,
+    sql`COALESCE(${post.updatedAt}, ${post.publishedAt}, ${post.createdAt}) < NOW() - (${STALE_THRESHOLD_DAYS} * INTERVAL '1 day')`,
+  ) as SQL;
+}
+
+/** Open posts submitted 5+ days ago with no extra upvotes and no comments. */
+function buildLowInteractionPostCondition(): SQL {
+  return and(
+    sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,
+    sql`COALESCE(${post.publishedAt}, ${post.createdAt}) < NOW() - (${LOW_INTERACTION_THRESHOLD_DAYS} * INTERVAL '1 day')`,
+    sql`COALESCE(${post.upvotes}, 0) <= ${LOW_INTERACTION_MAX_UPVOTES}`,
+    sql`COALESCE(${post.commentCount}, 0) = 0`,
+  ) as SQL;
+}
+
+/** Posts whose snooze is still in the future. */
+function buildActiveSnoozeCondition(): SQL {
+  return sql`(${post.snoozedUntil} IS NOT NULL AND ${post.snoozedUntil} > NOW())`;
+}
+
+function buildNotActivelySnoozedCondition(): SQL {
+  return sql`(${post.snoozedUntil} IS NULL OR ${post.snoozedUntil} <= NOW())`;
 }
 
 type PostFilterOptions = {
@@ -128,7 +173,7 @@ function resolvePostOrder(order?: "newest" | "oldest" | "likes") {
 async function resolveTagPostIds(
   workspaceId: string,
   tagSlugs: string[],
-  publicOnly: boolean
+  publicOnly: boolean,
 ): Promise<string[]> {
   if (tagSlugs.length === 0) return [];
   const rows = await db
@@ -142,12 +187,13 @@ async function resolveTagPostIds(
         eq(board.workspaceId, workspaceId),
         eq(board.isSystem, false),
         ...(publicOnly ? [eq(board.isPublic, true)] : []),
-        inArray(tag.slug, tagSlugs)
-      )
+        inArray(tag.slug, tagSlugs),
+      ),
     );
   return Array.from(new Set(rows.map((r) => r.postId)));
 }
 
+/** Combines board, status, snooze, tag, and search filters. */
 function buildPostFilters({
   workspaceId,
   matchStatuses,
@@ -168,8 +214,33 @@ function buildPostFilters({
     eq(board.isSystem, false),
   ];
   if (publicOnly) filters.push(eq(board.isPublic, true));
-  if (matchStatuses.length > 0)
-    filters.push(inArray(post.roadmapStatus, matchStatuses));
+  const wantsStale = matchStatuses.some(isStaleStatusFilter);
+  const wantsLowInteraction = matchStatuses.some(isLowInteractionStatusFilter);
+  const wantsSnoozed = matchStatuses.some(isSnoozedStatusFilter);
+  const roadmapStatuses = matchStatuses.filter(
+    (s) =>
+      !isStaleStatusFilter(s) &&
+      !isLowInteractionStatusFilter(s) &&
+      !isSnoozedStatusFilter(s),
+  );
+
+  if (wantsSnoozed) {
+    filters.push(buildActiveSnoozeCondition());
+  } else {
+    filters.push(buildNotActivelySnoozedCondition());
+  }
+
+  if (wantsStale) {
+    filters.push(buildStalePostCondition());
+    if (roadmapStatuses.length > 0) {
+      filters.push(inArray(post.roadmapStatus, roadmapStatuses));
+    }
+  } else if (roadmapStatuses.length > 0) {
+    filters.push(inArray(post.roadmapStatus, roadmapStatuses));
+  }
+  if (wantsLowInteraction) {
+    filters.push(buildLowInteractionPostCondition());
+  }
   if (boardSlugs.length > 0) filters.push(inArray(board.slug, boardSlugs));
   if (tagPostIds && tagPostIds.length > 0)
     filters.push(inArray(post.id, tagPostIds));
@@ -178,9 +249,8 @@ function buildPostFilters({
   return filters;
 }
 
-export async function getWorkspaceBySlug(
-  slug: string
-): Promise<{
+/** Workspace by slug without timezone; plan is the effective plan. */
+export async function getWorkspaceBySlug(slug: string): Promise<{
   id: string;
   name: string;
   slug: string;
@@ -204,8 +274,9 @@ export async function getWorkspaceBySlug(
   };
 }
 
+/** Custom-domain status/host, or domain null when unset. */
 export async function getWorkspaceDomainInfoBySlug(
-  slug: string
+  slug: string,
 ): Promise<{ domain: { status: string; host?: string } | null } | null> {
   const workspaceId = await getWorkspaceIdBySlug(slug);
   if (!workspaceId) return { domain: null };
@@ -219,16 +290,23 @@ export async function getWorkspaceDomainInfoBySlug(
 }
 
 export async function getWorkspaceTimezoneBySlug(
-  slug: string
+  slug: string,
 ): Promise<string | null> {
   const ws = await getWorkspaceBySlugRecord(slug);
   return ws?.timezone || null;
 }
 
+/** Owned and active-member workspaces, de-duplicated, with effective plans. */
 export async function listUserWorkspaces(
-  userId: string
+  userId: string,
 ): Promise<
-  Array<{ id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null }>
+  Array<{
+    id: string;
+    name: string;
+    slug: string;
+    logo?: string | null;
+    plan?: "free" | "starter" | "professional" | null;
+  }>
 > {
   const owned = await db
     .select({
@@ -254,13 +332,19 @@ export async function listUserWorkspaces(
     .where(
       and(
         eq(workspaceMember.userId, userId),
-        eq(workspaceMember.isActive, true)
-      )
+        eq(workspaceMember.isActive, true),
+      ),
     );
 
   const map = new Map<
     string,
-    { id: string; name: string; slug: string; logo?: string | null; plan?: "free" | "starter" | "professional" | null }
+    {
+      id: string;
+      name: string;
+      slug: string;
+      logo?: string | null;
+      plan?: "free" | "starter" | "professional" | null;
+    }
   >();
   for (const w of owned.concat(memberRows)) map.set(w.id, w);
 
@@ -268,10 +352,11 @@ export async function listUserWorkspaces(
     Array.from(map.values()).map(async (workspaceSummary) => ({
       ...workspaceSummary,
       plan: await getEffectiveWorkspacePlan(workspaceSummary.id),
-    }))
+    })),
   );
 }
 
+/** Filtered feedback posts; publicOnly hides private-board items. */
 export async function getWorkspacePosts(
   slug: string,
   opts?: {
@@ -287,7 +372,7 @@ export async function getWorkspacePosts(
     // posts in private boards are fully hidden.
     publicOnly?: boolean;
     includeReportCounts?: boolean;
-  }
+  },
 ): Promise<RequestItemRow[]> {
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return [];
@@ -328,10 +413,16 @@ export async function getWorkspacePosts(
       roadmapStatus: post.roadmapStatus,
       publishedAt: post.publishedAt,
       createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+      snoozedUntil: post.snoozedUntil,
       boardSlug: board.slug,
       boardName: board.name,
-      authorImage: user.image,
-      authorName: user.name,
+      authorImage: sql<
+        string | null
+      >`coalesce(${widgetUser.image}, ${user.image})`,
+      authorName: sql<
+        string | null
+      >`coalesce(${widgetUser.name}, ${user.name})`,
       isAnonymous: post.isAnonymous,
       authorId: post.authorId,
       isPinned: post.isPinned,
@@ -340,23 +431,37 @@ export async function getWorkspacePosts(
       metadata: post.metadata,
       role: workspaceMember.role,
       ...(includeReportCounts
-        ? { reportCount: sql<number>`(SELECT count(*) FROM ${postReport} WHERE ${postReport.postId} = ${post.id})` }
+        ? {
+            reportCount: sql<number>`(SELECT count(*) FROM ${postReport} WHERE ${postReport.postId} = ${post.id})`,
+          }
         : {}),
     })
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
     .leftJoin(user, eq(post.authorId, user.id))
-    .leftJoin(workspaceMember, and(eq(workspaceMember.userId, post.authorId), eq(workspaceMember.workspaceId, ws.id)))
+    .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
+    .leftJoin(
+      workspaceMember,
+      and(
+        eq(workspaceMember.userId, post.authorId),
+        eq(workspaceMember.workspaceId, ws.id),
+      ),
+    )
     .where(and(...filters))
-    .orderBy(desc(post.isPinned), order)
+    .orderBy(desc(post.isPinned), order, desc(post.id))
     .limit(lim)
     .offset(off);
 
   // Fetch tags for these posts
-  type TagData = { id: string; name: string; color: string | null; slug: string }
-  const tagsByPostId: Record<string, TagData[]> = {}
+  type TagData = {
+    id: string;
+    name: string;
+    color: string | null;
+    slug: string;
+  };
+  const tagsByPostId: Record<string, TagData[]> = {};
   if (rows.length > 0) {
-    const postIds = rows.map((r) => r.id)
+    const postIds = rows.map((r) => r.id);
     const tagRows = await db
       .select({
         postId: postTag.postId,
@@ -367,12 +472,17 @@ export async function getWorkspacePosts(
       })
       .from(postTag)
       .innerJoin(tag, eq(postTag.tagId, tag.id))
-      .where(inArray(postTag.postId, postIds))
+      .where(inArray(postTag.postId, postIds));
 
     for (const tr of tagRows) {
-      const list = tagsByPostId[tr.postId] || []
-      list.push({ id: String(tr.id), name: String(tr.name), color: tr.color, slug: String(tr.slug) })
-      tagsByPostId[tr.postId] = list
+      const list = tagsByPostId[tr.postId] || [];
+      list.push({
+        id: String(tr.id),
+        name: String(tr.name),
+        color: tr.color,
+        slug: String(tr.slug),
+      });
+      tagsByPostId[tr.postId] = list;
     }
   }
 
@@ -380,8 +490,12 @@ export async function getWorkspacePosts(
     ...r,
     isOwner: r.authorId === ws.ownerId,
     isFeatul: r.authorId === "featul-founder",
-    isOnboarding: isOnboardingPost(r.metadata as Record<string, unknown> | null),
-    onboardingKind: getOnboardingPostKind(r.metadata as Record<string, unknown> | null),
+    isOnboarding: isOnboardingPost(
+      r.metadata as Record<string, unknown> | null,
+    ),
+    onboardingKind: getOnboardingPostKind(
+      r.metadata as Record<string, unknown> | null,
+    ),
     authorImage: resolvePostAuthorImage({
       isAnonymous: Boolean(r.isAnonymous),
       authorImage: r.authorImage,
@@ -397,6 +511,7 @@ export async function getWorkspacePosts(
   return withAvatars;
 }
 
+/** Count matching getWorkspacePosts filters. */
 export async function getWorkspacePostsCount(
   slug: string,
   opts?: {
@@ -408,7 +523,7 @@ export async function getWorkspacePostsCount(
     // Used for public-facing subdomain pages so that
     // counts match the visible (public) posts.
     publicOnly?: boolean;
-  }
+  },
 ) {
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return 0;
@@ -442,8 +557,9 @@ export async function getWorkspacePostsCount(
 
   return Number(row?.count || 0);
 }
+/** Per-status counts plus stale, low-traction, and snoozed, excluding the other bucket. */
 export async function getWorkspaceStatusCounts(
-  slug: string
+  slug: string,
 ): Promise<Record<string, number>> {
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return {};
@@ -452,7 +568,13 @@ export async function getWorkspaceStatusCounts(
     .select({ status: post.roadmapStatus, count: sql<number>`count(*)` })
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
-    .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.isSystem, false),
+        buildNotActivelySnoozedCondition(),
+      ),
+    )
     .groupBy(post.roadmapStatus);
 
   const counts: Record<string, number> = {};
@@ -467,16 +589,68 @@ export async function getWorkspaceStatusCounts(
     "completed",
     "pending",
     "closed",
+    STALE_STATUS_KEY,
+    LOW_INTERACTION_STATUS_KEY,
+    SNOOZED_STATUS_KEY,
   ]) {
     if (typeof counts[key] !== "number") counts[key] = 0;
   }
+
+  const [staleRow] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.isSystem, false),
+        buildNotActivelySnoozedCondition(),
+        buildStalePostCondition(),
+      ),
+    );
+  counts[STALE_STATUS_KEY] = Number(staleRow?.count || 0);
+
+  const [lowInteractionRow] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.isSystem, false),
+        buildNotActivelySnoozedCondition(),
+        buildLowInteractionPostCondition(),
+      ),
+    );
+  counts[LOW_INTERACTION_STATUS_KEY] = Number(lowInteractionRow?.count || 0);
+
+  const [snoozedRow] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.isSystem, false),
+        buildActiveSnoozeCondition(),
+      ),
+    );
+  counts[SNOOZED_STATUS_KEY] = Number(snoozedRow?.count || 0);
+
   return counts;
 }
 
+/** Public non-system boards for the workspace sidebar. */
 export async function getWorkspaceBoards(
-  slug: string
+  slug: string,
 ): Promise<
-  Array<{ id: string; name: string; slug: string; postCount: number; hidePublicMemberIdentity?: boolean }>
+  Array<{
+    id: string;
+    name: string;
+    slug: string;
+    postCount: number;
+    hidePublicMemberIdentity?: boolean;
+  }>
 > {
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return [];
@@ -497,8 +671,8 @@ export async function getWorkspaceBoards(
         // Only include public boards in the public workspace feed.
         // Private boards should never appear on the public sidebar,
         // even briefly on initial page load.
-        eq(board.isPublic, true)
-      )
+        eq(board.isPublic, true),
+      ),
     )
     .orderBy(asc(board.name))
     .groupBy(board.id);
@@ -511,6 +685,7 @@ export async function getWorkspaceBoards(
   }));
 }
 
+/** Planned public posts when the roadmap board is visible. */
 export async function getPlannedRoadmapPosts(
   slug: string,
   opts?: {
@@ -518,7 +693,7 @@ export async function getPlannedRoadmapPosts(
     offset?: number;
     order?: "newest" | "oldest";
     search?: string;
-  }
+  },
 ) {
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return [];
@@ -529,12 +704,7 @@ export async function getPlannedRoadmapPosts(
       isPublic: board.isPublic,
     })
     .from(board)
-    .where(
-      and(
-        eq(board.workspaceId, ws.id),
-        eq(board.systemType, "roadmap")
-      )
-    )
+    .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "roadmap")))
     .limit(1);
 
   if (!rb?.isVisible || !rb?.isPublic) return [];
@@ -552,9 +722,10 @@ export async function getPlannedRoadmapPosts(
     publicOnly: true,
   });
 }
+/** Non-system board by workspace and board slug. */
 export async function getBoardByWorkspaceSlug(
   slug: string,
-  boardSlug: string
+  boardSlug: string,
 ): Promise<{ name: string; slug: string } | null> {
   const workspaceId = await getWorkspaceIdBySlug(slug);
   if (!workspaceId) return null;
@@ -565,16 +736,17 @@ export async function getBoardByWorkspaceSlug(
       and(
         eq(board.workspaceId, workspaceId),
         eq(board.isSystem, false),
-        eq(board.slug, boardSlug)
-      )
+        eq(board.slug, boardSlug),
+      ),
     )
     .limit(1);
   return b || null;
 }
 
+/** Aggregates settings-page initial data in one round of queries. */
 export async function getSettingsInitialData(
   slug: string,
-  meId?: string
+  meId?: string,
 ): Promise<{
   initialPlan?: string;
   initialWorkspaceId?: string;
@@ -641,10 +813,7 @@ export async function getSettingsInitialData(
       })
       .from(board)
       .where(
-        and(
-          eq(board.workspaceId, ws.id),
-          eq(board.systemType, "changelog")
-        )
+        and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")),
       )
       .limit(1),
     db
@@ -720,8 +889,8 @@ export async function getSettingsInitialData(
         and(
           eq(post.boardId, board.id),
           eq(board.workspaceId, ws.id),
-          eq(board.isSystem, false)
-        )
+          eq(board.isSystem, false),
+        ),
       )
       .where(eq(tag.workspaceId, ws.id))
       .groupBy(tag.id, tag.name, tag.slug, tag.color),
@@ -750,8 +919,8 @@ export async function getSettingsInitialData(
       .where(
         and(
           eq(subscription.referenceId, ws.id),
-          sql`${subscription.status} in ('active', 'trialing', 'past_due')`
-        )
+          sql`${subscription.status} in ('active', 'trialing', 'past_due')`,
+        ),
       )
       .orderBy(desc(subscription.updatedAt), desc(subscription.createdAt))
       .limit(1),
@@ -762,7 +931,7 @@ export async function getSettingsInitialData(
   const b = changelogRows[0];
   const br = brandingRows[0];
   const d = domainRows[0];
-  const feedbackBoards = [...feedbackRoadmap, ...feedbackBoardsNonSystem]
+  const feedbackBoards = [...feedbackRoadmap, ...feedbackBoardsNonSystem];
 
   return {
     initialPlan: effectivePlan,
@@ -773,12 +942,14 @@ export async function getSettingsInitialData(
           id: activeBillingSubscription[0].id,
           plan: String(activeBillingSubscription[0].plan || ""),
           status: String(activeBillingSubscription[0].status || ""),
-          stripeSubscriptionId: activeBillingSubscription[0].stripeSubscriptionId ?? null,
+          stripeSubscriptionId:
+            activeBillingSubscription[0].stripeSubscriptionId ?? null,
           billingInterval: activeBillingSubscription[0].billingInterval ?? null,
           periodEnd: activeBillingSubscription[0].periodEnd
             ? activeBillingSubscription[0].periodEnd.toISOString()
             : null,
-          cancelAtPeriodEnd: activeBillingSubscription[0].cancelAtPeriodEnd ?? null,
+          cancelAtPeriodEnd:
+            activeBillingSubscription[0].cancelAtPeriodEnd ?? null,
           trialEnd: activeBillingSubscription[0].trialEnd
             ? activeBillingSubscription[0].trialEnd.toISOString()
             : null,
@@ -852,6 +1023,7 @@ export async function getSettingsInitialData(
   };
 }
 
+/** Prev/next post in the current filtered list order. */
 export async function getPostNavigation(
   slug: string,
   currentPostId: string,
@@ -861,7 +1033,7 @@ export async function getPostNavigation(
     tagSlugs?: string[];
     order?: "newest" | "oldest" | "likes";
     search?: string;
-  }
+  },
 ) {
   const ws = await getWorkspaceBySlug(slug);
   if (!ws) return { prev: null, next: null };
@@ -871,7 +1043,9 @@ export async function getPostNavigation(
   const order = resolvePostOrder(opts?.order);
 
   const tagPostIds =
-    tagSlugs.length > 0 ? await resolveTagPostIds(ws.id, tagSlugs, false) : null;
+    tagSlugs.length > 0
+      ? await resolveTagPostIds(ws.id, tagSlugs, false)
+      : null;
   if (tagPostIds && tagPostIds.length === 0) {
     return { prev: null, next: null };
   }

@@ -5,6 +5,9 @@ export const REQUEST_STATUS_OPTIONS = [
   { label: "Progress", value: "progress" },
   { label: "Complete", value: "completed" },
   { label: "Closed", value: "closed" },
+  { label: "Stale", value: "stale" },
+  { label: "Low Traction", value: "low-traction" },
+  { label: "Snoozed", value: "snoozed" },
 ] as const;
 
 export function getRequestStatusLabel(status: string) {

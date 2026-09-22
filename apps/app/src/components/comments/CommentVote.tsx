@@ -1,12 +1,11 @@
 "use client"
 
 import React, { useState, useTransition } from "react"
-import { ThumbsUp, ThumbsDown } from "lucide-react"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { cn } from "@featul/ui/lib/utils"
 import { Button } from "@featul/ui/components/button"
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { motion, AnimatePresence } from "framer-motion"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getBrowserFingerprint } from "@/utils/fingerprint"
@@ -16,6 +15,7 @@ import {
   type CommentListResponse,
   type CommentSurface,
 } from "@/lib/comment/shared"
+import { VoteIcon } from "@/components/upvote/VoteIcon"
 
 interface CommentVoteProps {
   commentId: string
@@ -164,7 +164,7 @@ export default function CommentVote({
   }
 
   return (
-    <Toolbar size="sm" variant="plain" className="h-8 bg-card dark:bg-black/50 border-border">
+    <Toolbar variant="soft" size="sm" className="w-fit">
       <Button
         type="button"
         variant="plain"
@@ -172,14 +172,14 @@ export default function CommentVote({
         onClick={() => handleVote("upvote")}
         disabled={isPending}
         className={cn(
-          "h-8 min-w-[58px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
-          userVote === "upvote"
-            ? "text-green-600 dark:text-green-400"
-            : "text-accent hover:text-foreground"
+          toolbarItemClass,
+          "min-w-10 justify-center gap-1.5 px-2.5 text-orange-500 group/vote hover:text-orange-500 dark:text-orange-500 dark:hover:text-orange-500"
         )}
+        aria-pressed={userVote === "upvote"}
+        aria-label="Upvote comment"
         title="Upvote"
       >
-        <ThumbsUp className={cn("size-3.5", userVote === "upvote" && "fill-current")} />
+        <VoteIcon hasVoted={userVote === "upvote"} direction="up" />
         <AnimatePresence initial={false} mode="popLayout">
           {upvotes > 0 && (
             <motion.span
@@ -187,7 +187,7 @@ export default function CommentVote({
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              className="font-medium tabular-nums pr-1"
+              className="font-medium tabular-nums"
             >
               {upvotes}
             </motion.span>
@@ -195,7 +195,7 @@ export default function CommentVote({
         </AnimatePresence>
       </Button>
 
-      <ToolbarSeparator />
+      <ToolbarSeparator className="self-stretch bg-border/40 dark:bg-white/10" />
 
       <Button
         type="button"
@@ -204,14 +204,14 @@ export default function CommentVote({
         onClick={() => handleVote("downvote")}
         disabled={isPending}
         className={cn(
-          "h-8 min-w-[48px] px-1.5 gap-1.5 rounded-none border-0 shadow-none bg-transparent dark:bg-transparent hover:bg-muted/20 dark:hover:bg-black/30",
-          userVote === "downvote"
-            ? "text-red-600 dark:text-red-400"
-            : "text-accent hover:text-foreground"
+          toolbarItemClass,
+          "min-w-10 justify-center gap-1.5 px-2.5 text-red-500 group/vote hover:text-red-500 dark:text-red-500 dark:hover:text-red-500"
         )}
+        aria-pressed={userVote === "downvote"}
+        aria-label="Downvote comment"
         title="Downvote"
       >
-        <ThumbsDown className={cn("size-3.5", userVote === "downvote" && "fill-current")} />
+        <VoteIcon hasVoted={userVote === "downvote"} direction="down" />
         <AnimatePresence initial={false} mode="popLayout">
           {downvotes > 0 && (
             <motion.span
@@ -219,7 +219,7 @@ export default function CommentVote({
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              className="font-medium tabular-nums pr-1"
+              className="font-medium tabular-nums"
             >
               {downvotes}
             </motion.span>

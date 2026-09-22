@@ -4,6 +4,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@featul/ui/components/popover";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor, useEditorState } from "@tiptap/react";
 import { Palette } from "lucide-react";
@@ -93,16 +94,28 @@ export const EditorMarkTextColor = ({
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent
+				unstyled
 				align="start"
-				className="w-80 p-0"
 				onOpenAutoFocus={(event) => event.preventDefault()}
 				side="top"
+				sideOffset={8}
+				className={cn(
+					overlayDialogClass,
+					"z-[100] flex w-80 flex-col gap-2 text-popover-foreground outline-hidden",
+					"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+				)}
 			>
-				<ColorPicker
-					color={currentColor}
-					onChange={handleColorChange}
-					onClear={handleClearColor}
-				/>
+				<div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+					<Palette className="size-3.5 text-primary" />
+					Text color
+				</div>
+				<div className={cn(overlayInnerClass, "px-4 py-3")}>
+					<ColorPicker
+						color={currentColor}
+						onChange={handleColorChange}
+						onClear={handleClearColor}
+					/>
+				</div>
 			</PopoverContent>
 		</Popover>
 	);

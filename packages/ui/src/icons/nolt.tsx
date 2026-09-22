@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useId } from 'react'
 
 interface NoltIconProps {
   className?: string
@@ -6,6 +6,8 @@ interface NoltIconProps {
 }
 
 export const NoltIcon: React.FC<NoltIconProps> = ({ className = '', size = 24 }) => {
+  const clipId = `nolt-rounded-${useId().replace(/:/g, "")}`
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -16,12 +18,12 @@ export const NoltIcon: React.FC<NoltIconProps> = ({ className = '', size = 24 })
       fill="none"
     >
       <defs>
-        <clipPath id="nolt-rounded">
+        <clipPath id={clipId}>
           <rect width="64" height="64" rx="12" ry="12" />
         </clipPath>
       </defs>
 
-      <g clipPath="url(#nolt-rounded)">
+      <g clipPath={`url(#${clipId})`}>
         {/* Main background */}
         <path
           d="M0 0h64v64H0V0Z"

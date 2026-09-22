@@ -9,9 +9,9 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { DropdownIcon } from "@featul/ui/icons/dropdown";
 import { client } from "@featul/api/client";
 import { cn } from "@featul/ui/lib/utils";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import type { Board } from "@/types/board";
 
 export default function BoardPicker({
@@ -68,21 +68,23 @@ export default function BoardPicker({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-6 px-2.5  border text-xs font-medium transition-colors hover:bg-muted",
-            className,
-          )}
-        >
-          <span className="">{value?.name || "Board"}</span>
-          <DropdownIcon className="ml-1.5  size-3" />
-        </Button>
-      </PopoverTrigger>
+    <Toolbar variant="plain" size="sm" className="w-fit rounded-md border-0 bg-black/5 dark:bg-white/5">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="plain"
+            size="sm"
+            className={cn(
+              toolbarItemClass,
+              "h-8 gap-1.5 px-2.5 text-xs font-medium",
+              className,
+            )}
+          >
+            <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+            <span>{value?.name || "Board"}</span>
+          </Button>
+        </PopoverTrigger>
       <PopoverContent list className="w-fit">
         <PopoverList>
           {boards.map((b) => (
@@ -92,6 +94,7 @@ export default function BoardPicker({
               aria-checked={value?.slug === b.slug}
               onClick={() => select(b.slug, b.name)}
             >
+              <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
               <span className="text-sm">{b.name}</span>
               {value?.slug === b.slug ? (
                 <span className="ml-auto text-xs">✓</span>
@@ -100,6 +103,7 @@ export default function BoardPicker({
           ))}
         </PopoverList>
       </PopoverContent>
-    </Popover>
+      </Popover>
+    </Toolbar>
   );
 }

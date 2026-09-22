@@ -10,6 +10,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@featul/ui/components/tooltip";
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor } from "@tiptap/react";
 import {
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 import type { FormEventHandler } from "react";
 import { useEffect, useRef, useState } from "react";
+import { getSafeHttpUrlFromString } from "../../lib/safe-url";
 
 export type EditorLinkSelectorProps = {
 	open?: boolean;
@@ -49,29 +51,8 @@ export const EditorLinkSelector = ({
 	const [openInNewTab, setOpenInNewTab] = useState(true);
 	const inputReference = useRef<HTMLInputElement>(null);
 
-	const isValidUrl = (text: string): boolean => {
-		try {
-			new URL(text);
-			return true;
-		} catch {
-			return false;
-		}
-	};
-
-	const getUrlFromString = (text: string): string | null => {
-		if (isValidUrl(text)) {
-			return text;
-		}
-		try {
-			if (text.includes(".") && !text.includes(" ")) {
-				return new URL(`https://${text}`).toString();
-			}
-
-			return null;
-		} catch {
-			return null;
-		}
-	};
+	const getUrlFromString = (text: string): string | null =>
+		getSafeHttpUrlFromString(text);
 
 	useEffect(() => {
 		if (open) {
@@ -129,12 +110,21 @@ export const EditorLinkSelector = ({
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent
+				unstyled
 				align="start"
-				className="w-fit p-1 z-[100] bg-muted dark:bg-black rounded-2xl shadow-none border-none"
 				onOpenAutoFocus={(event) => event.preventDefault()}
-				sideOffset={10}
+				sideOffset={8}
+				className={cn(
+					overlayDialogClass,
+					"z-[100] flex w-fit flex-col gap-2 text-popover-foreground outline-hidden",
+					"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+				)}
 			>
-				<div className="bg-card dark:bg-background border border-border rounded-xl p-0.5">
+				<div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+					<Link className="size-3.5 text-primary" />
+					Link
+				</div>
+				<div className={cn(overlayInnerClass, "flex items-center p-1")}>
 					<form className="flex items-center gap-0.5" onSubmit={handleSubmit}>
 						<input
 							aria-label="Link URL"

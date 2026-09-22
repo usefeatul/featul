@@ -1,10 +1,10 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useEffect, useCallback } from "react"
 import { toast } from "sonner"
 import { client } from "@featul/api/client"
 import { useSession } from "@featul/auth/client"
 
 interface Member {
-  id: string
+  id?: string
   userId?: string
   name: string
   image?: string | null
@@ -18,6 +18,90 @@ export interface MentionCandidate {
   image: string | null
 }
 
+function memberNames(members: Member[]): string[] {
+  return members.map((member) => (member.name || "").trim()).filter(Boolean)
+}
+
+/** True when `@Name ` is already inserted and no longer an in-progress query. */
+function isCommittedMentionQuery(after: string, names: string[]): boolean {
+  if (!after) return false
+
+  const afterLower = after.toLowerCase()
+  const sorted = [...names].sort((left, right) => right.length - left.length)
+
+  for (const name of sorted) {
+    const nameLower = name.toLowerCase()
+    const committed =
+      afterLower.startsWith(`${nameLower} `) ||
+      afterLower.startsWith(`${nameLower}\n`)
+    if (!committed) continue
+
+    const stillTypingLongerName = names.some((other) => {
+      if (other.length <= name.length) return false
+      return other.toLowerCase().startsWith(afterLower)
+    })
+    if (!stillTypingLongerName) return true
+  }
+
+  return false
+}
+
+function notifyMentionAuthError(status?: number) {
+  if (status === 403) {
+    toast.error("You must be a member of this workspace to mention users")
+    return true
+  }
+  if (status === 401) {
+    toast.error("Please sign in to mention users")
+    return true
+  }
+  return false
+}
+
+/** Workspace members (and owner) that can be mentioned. Preloads so typed `@Name` can match without opening the picker. */
+export function useMentionableMembers(workspaceSlug: string | undefined) {
+  const [members, setMembers] = useState<Member[]>([])
+  const { data: session } = useSession()
+  const requestRef = useRef<Promise<void> | null>(null)
+
+  const loadMembers = useCallback(
+    (notifyAuthErrors: boolean) => {
+      if (!workspaceSlug || members.length > 0 || requestRef.current) return
+
+      requestRef.current = client.team.membersByWorkspaceSlug
+        .$get({ slug: workspaceSlug })
+        .then(async (res) => {
+          if (res.ok) {
+            const data = await res.json()
+            setMembers((data as { members: Member[] })?.members || [])
+            return
+          }
+          if (notifyAuthErrors && notifyMentionAuthError(res.status)) return
+        })
+        .catch((err) => {
+          if (
+            notifyAuthErrors &&
+            notifyMentionAuthError(err?.status || err?.response?.status)
+          ) {
+            return
+          }
+        })
+        .finally(() => {
+          requestRef.current = null
+        })
+    },
+    [workspaceSlug, members.length],
+  )
+
+  useEffect(() => {
+    if (!workspaceSlug || !session?.user) return
+    loadMembers(false)
+  }, [workspaceSlug, session?.user, loadMembers])
+
+  return { members, loadMembers }
+}
+
+/** @-mention picker from workspace members. Inserts `@name` at the caret and tracks mention analytics. */
 export function useMentions(
   workspaceSlug: string | undefined,
   content: string,
@@ -27,40 +111,54 @@ export function useMentions(
   const [mentionOpen, setMentionOpen] = useState(false)
   const [mentionQuery, setMentionQuery] = useState("")
   const [mentionIndex, setMentionIndex] = useState(0)
-  const [members, setMembers] = useState<Member[]>([])
-  const { data: session } = useSession() 
+  const { members, loadMembers } = useMentionableMembers(workspaceSlug)
+  const { data: session } = useSession()
+  const skipMentionCheckRef = useRef(false)
+  const names = useMemo(() => memberNames(members), [members]) 
 
   // Filter members based on query
-  const filteredCandidates = useMemo(() => {
+  const filteredCandidates = useMemo((): MentionCandidate[] => {
     const q = (mentionQuery || "").trim().toLowerCase()
-    return members
-      .map((m) => ({
-        userId: m.userId || m.id,
+    return members.flatMap((m) => {
+      const userId = m.userId || m.id
+      if (!userId) return []
+      const candidate: MentionCandidate = {
+        userId,
         name: m.name || "",
         email: m.email || null,
         image: m.image || null,
-      }))
-      .filter((m) => (m.name || "").toLowerCase().includes(q))
+      }
+      if (!(candidate.name || "").toLowerCase().includes(q)) return []
+      return [candidate]
+    })
   }, [members, mentionQuery])
 
   // Insert selected mention into text
   const insertMention = (name: string) => {
+    skipMentionCheckRef.current = true
+    setMentionOpen(false)
+    setMentionQuery("")
+    setMentionIndex(0)
+
     const el = textareaRef.current
-    if (!el) return
-    
+    if (!el) {
+      skipMentionCheckRef.current = false
+      return
+    }
+
     const caret = el.selectionStart || content.length
     const upto = content.slice(0, caret)
     const at = upto.lastIndexOf("@")
-    if (at < 0) return
+    if (at < 0) {
+      skipMentionCheckRef.current = false
+      return
+    }
 
     const before = content.slice(0, at)
     const afterCaret = content.slice(caret)
     const nextContent = `${before}@${name} ${afterCaret}`
-    
+
     setContent(nextContent)
-    setMentionOpen(false)
-    setMentionQuery("")
-    setMentionIndex(0)
 
     // Reset caret to after inserted mention
     setTimeout(() => {
@@ -71,11 +169,13 @@ export function useMentions(
       } catch {
         el.focus()
       }
+      skipMentionCheckRef.current = false
     }, 0)
   }
 
   // Check for mention trigger in text
   const checkForMention = (text: string, selectionStart: number) => {
+    if (skipMentionCheckRef.current) return
     if (!workspaceSlug) return
 
     const upto = text.slice(0, selectionStart)
@@ -93,6 +193,12 @@ export function useMentions(
       }
 
       const after = text.slice(at + 1, selectionStart)
+      if (isCommittedMentionQuery(after, names)) {
+        setMentionOpen(false)
+        setMentionQuery("")
+        return
+      }
+
       const valid = /^[A-Za-z0-9._\-\s]*$/.test(after)
       const beforeChar = upto[at - 1]
       const boundaryChars = "().,;:!?[]{}"
@@ -103,31 +209,8 @@ export function useMentions(
         setMentionOpen(true)
         setMentionIndex(0)
 
-        // Fetch members if not loaded
         if (members.length === 0) {
-          client.team.membersByWorkspaceSlug
-            .$get({ slug: workspaceSlug })
-            .then(async (res) => {
-              if (res.ok) {
-                const data = await res.json()
-                setMembers((data as { members: Member[] })?.members || [])
-              } else if (res.status === 403) {
-                toast.error("You must be a member of this workspace to mention users")
-                setMentionOpen(false)
-              } else if (res.status === 401) {
-                toast.error("Please sign in to mention users")
-                setMentionOpen(false)
-              }
-            })
-            .catch((err) => {
-              if (err?.status === 403 || err?.response?.status === 403) {
-                toast.error("You must be a member of this workspace to mention users")
-                setMentionOpen(false)
-              } else if (err?.status === 401 || err?.response?.status === 401) {
-                toast.error("Please sign in to mention users")
-                setMentionOpen(false)
-              }
-            })
+          loadMembers(true)
         }
       } else {
         setMentionOpen(false)
@@ -160,6 +243,7 @@ export function useMentions(
     mentionOpen,
     mentionIndex,
     filteredCandidates,
+    members,
     setMentionOpen,
     checkForMention,
     handleKeyDown,

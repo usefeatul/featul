@@ -1,3 +1,5 @@
+/** Window CustomEvent detail payloads for workspace-scoped UI refresh. */
+
 export interface PostDeletedEventDetail {
   postId: string;
   workspaceSlug: string;

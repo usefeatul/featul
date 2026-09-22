@@ -1,25 +1,26 @@
-import React from "react";
+import React from "react"
 
 interface BoxIconProps {
-  className?: string;
-  size?: number;
+  className?: string
+  size?: number
+  opacity?: number
 }
 
 export const BoxIcon: React.FC<BoxIconProps> = ({
   className = "",
   size = 18,
+  opacity = 1,
 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
-      x="0px"
-      y="0px"
-      opacity={0.6}
       viewBox="0 0 18 18"
+      opacity={opacity}
       className={className}
     >
+      <title>archive</title>
       <path
         d="M14.75 6.25V13.25C14.75 14.355 13.855 15.25 12.75 15.25H5.25C4.145 15.25 3.25 14.355 3.25 13.25V6.25"
         fill="currentColor"
@@ -42,6 +43,7 @@ export const BoxIcon: React.FC<BoxIconProps> = ({
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
+        className="origin-center transition-transform duration-300 ease-[cubic-bezier(.2,.0,0,1)] group-hover:-translate-y-0.5"
       />
       <path
         d="M7 9.25H11"
@@ -50,9 +52,10 @@ export const BoxIcon: React.FC<BoxIconProps> = ({
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
+        className="origin-center transition-transform duration-300 ease-[cubic-bezier(.2,.0,0,1)] group-hover:scale-x-110"
       />
     </svg>
-  );
-};
+  )
+}
 
-export default BoxIcon;
+export default BoxIcon

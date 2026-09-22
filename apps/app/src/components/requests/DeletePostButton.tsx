@@ -2,9 +2,11 @@
 
 import React, { useState, useTransition } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { PopoverListItem } from "@featul/ui/components/popover";
 import { Button } from "@featul/ui/components/button";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { TrashIcon } from "@featul/ui/icons/trash";
+import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
@@ -18,6 +20,7 @@ export interface DeletePostButtonProps {
   workspaceSlug?: string;
   backHref?: string;
   className?: string;
+  menuItem?: boolean;
 }
 
 export function DeletePostButton({
@@ -25,6 +28,7 @@ export function DeletePostButton({
   workspaceSlug,
   backHref,
   className,
+  menuItem = false,
 }: DeletePostButtonProps) {
   const router = useRouter();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -55,6 +59,8 @@ export function DeletePostButton({
         } else {
           toast.error(result.message);
         }
+      } catch {
+        toast.error("Could not delete this post. Please try again.");
       } finally {
         setConfirmOpen(false);
       }
@@ -63,17 +69,22 @@ export function DeletePostButton({
 
   return (
     <>
-      <Button
+      {menuItem ? (
+        <PopoverListItem onClick={() => setConfirmOpen(true)} disabled={isPending} className={`text-destructive ${className || ""}`}>
+          <TrashIcon className="size-4" />
+          <span className="text-sm">Delete</span>
+        </PopoverListItem>
+      ) : <Button
         type="button"
-        variant="nav"
+        variant="plain"
         size="icon-sm"
-        className={`rounded-none border-none shadow-none hover:bg-background focus-visible:ring-0 focus-visible:ring-offset-0 ${className || ""}`}
+        className={`${toolbarItemClass} ${className || ""}`}
         aria-label="Delete"
         onClick={() => setConfirmOpen(true)}
         disabled={isPending}
       >
         <TrashIcon className="size-3.5" />
-      </Button>
+      </Button>}
       <DestructiveConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}

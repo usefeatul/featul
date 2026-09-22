@@ -7,10 +7,11 @@ import {
   workspace,
   workspaceMember,
 } from "@featul/db";
-import { loadMemberActivityPage } from "@featul/api/services/member-activity";
+import { loadMemberActivityPage } from "@featul/api/member/load";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import type { ActivityMetadata, PaginatedActivity } from "@/types/activity";
 
+/** Owner or active member; otherwise no access. */
 async function getWorkspaceForMemberAccess(slug: string, viewerId: string) {
   const [workspaceRow] = await db
     .select({ id: workspace.id, ownerId: workspace.ownerId })
@@ -36,6 +37,7 @@ async function getWorkspaceForMemberAccess(slug: string, viewerId: string) {
   return membership ? workspaceRow : null;
 }
 
+/** Member stats and top posts; empty when the viewer cannot access. */
 export async function loadMemberStats(
   slug: string,
   memberUserId: string,
@@ -152,6 +154,7 @@ export async function loadMemberStats(
   };
 }
 
+/** Paginated member activity; empty when the viewer cannot access. */
 export async function loadMemberActivity(
   slug: string,
   memberUserId: string,

@@ -2,62 +2,101 @@
 
 import React from "react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@featul/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
-import { sidebarBadgeClassName } from "./badge";
+import { SidebarBadge } from "./badge";
+import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
+
+const pillTransition = (reduce: boolean | null) =>
+  reduce
+    ? { duration: 0 }
+    : { type: "spring" as const, stiffness: 420, damping: 34, mass: 0.7 };
 
 function SidebarItem({
   item,
   pathname,
   className = "",
-  shortcut,
   count,
   mutedIcon = false,
   onClick,
+  indicator = true,
+  collapsed = false,
 }: {
   item: NavItem;
   pathname: string;
   className?: string;
-  shortcut?: string;
   count?: number;
   mutedIcon?: boolean;
   onClick?: () => void;
+  indicator?: boolean;
+  collapsed?: boolean;
 }) {
   const Icon = item.icon;
+  const reduceMotion = useReducedMotion();
   const [mounted, setMounted] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
   }, []);
+  const activePrefix = item.match || item.href
   const active =
     mounted &&
     !item.external &&
-    (pathname === item.href ||
-      (item.href !== "/" && pathname.startsWith(item.href)));
+    (pathname === activePrefix ||
+      (!item.exact && activePrefix !== "/" && pathname.startsWith(activePrefix)));
   const classes = cn(
-    "group flex items-center gap-2 rounded-md  px-3 py-2 text-xs md:text-sm",
-    active ? "bg-transparent text-foreground" : "text-accent hover:bg-muted dark:hover:bg-black/40",
+    sidebarRowClassName,
+    "text-foreground",
+    collapsed &&
+      "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
     className
   );
   const content = (
     <>
-      <Icon
-        className={cn(
-          "size-5 text-foreground group-hover:text-primary transition-colors",
-          mutedIcon ? "opacity-60 group-hover:opacity-100" : ""
-        )}
-      />
-      <span className="transition-colors">{item.label}</span>
-      {typeof count === "number" && count > 0 ? (
-        <span className={cn("ml-auto", sidebarBadgeClassName(count < 10))}>
+      {hovered ? (
+        <motion.span
+          layoutId="sidebar-hover-pill"
+          className="absolute inset-0 z-0 rounded-md bg-sidebar-accent/70"
+          transition={pillTransition(reduceMotion)}
+        />
+      ) : null}
+      {indicator && active ? (
+        <motion.span
+          layoutId="sidebar-active-pill"
+          className="absolute inset-0 z-0 rounded-md bg-sidebar-accent dark:bg-white/[0.07]"
+          transition={pillTransition(reduceMotion)}
+        />
+      ) : null}
+      <span className={sidebarLeadSlotClassName}>
+        <Icon
+          className={cn(
+            "size-5 transition-colors duration-200",
+            active
+              ? "text-primary opacity-100"
+              : mutedIcon
+                ? "text-neutral-600 opacity-100 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary"
+                : "text-foreground group-hover:text-primary"
+          )}
+        />
+      </span>
+      {!collapsed ? (
+        <span className="relative z-[1] min-w-0 flex-1 truncate transition-colors duration-200">
+          {item.label}
+        </span>
+      ) : null}
+      {!collapsed && typeof count === "number" && count > 0 ? (
+        <SidebarBadge className="relative z-[1] ml-auto shrink-0" innerClassName="font-medium text-muted-foreground/70" fixedWidth={count < 10}>
           {count}
-        </span>
-      ) : shortcut ? (
-        <span className={cn("ml-auto", sidebarBadgeClassName(true))}>
-          {shortcut}
-        </span>
+        </SidebarBadge>
       ) : null}
     </>
   );
+
+  const hoverProps = {
+    onMouseEnter: () => setHovered(true),
+    onMouseLeave: () => setHovered(false),
+  };
 
   if (item.external) {
     return (
@@ -67,7 +106,10 @@ function SidebarItem({
         rel="noopener noreferrer"
         className={classes}
         aria-current={active ? "page" : undefined}
+        aria-label={collapsed ? item.label : undefined}
+        title={collapsed ? item.label : undefined}
         onClick={onClick}
+        {...hoverProps}
       >
         {content}
       </a>
@@ -77,9 +119,13 @@ function SidebarItem({
   return (
     <Link
       href={item.href}
+      replace={item.replace}
       className={classes}
       aria-current={active ? "page" : undefined}
+      aria-label={collapsed ? item.label : undefined}
+      title={collapsed ? item.label : undefined}
       onClick={onClick}
+      {...hoverProps}
     >
       {content}
     </Link>

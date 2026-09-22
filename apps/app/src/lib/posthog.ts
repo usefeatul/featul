@@ -2,6 +2,7 @@
 
 import posthog from "posthog-js"
 
+/** Canonical PostHog event names for product analytics. */
 export const analyticsEvents = {
   authMethodUsed: "auth_method_used",
   signInCompleted: "sign_in_completed",
@@ -63,6 +64,7 @@ function isPostHogConfigured() {
   return Boolean(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN)
 }
 
+/** Captures an event; no-ops when PostHog is unconfigured. */
 export function captureAnalyticsEvent(
   event: AnalyticsEventName,
   properties?: AnalyticsProperties,
@@ -71,6 +73,7 @@ export function captureAnalyticsEvent(
   posthog.capture(event, cleanProperties(properties))
 }
 
+/** Identifies the current user; no-ops when PostHog is unconfigured. */
 export function identifyAnalyticsUser(user: {
   id: string
   email?: string | null
@@ -87,6 +90,7 @@ export function identifyAnalyticsUser(user: {
   )
 }
 
+/** Clears the PostHog identity on sign-out. */
 export function resetAnalyticsUser() {
   if (!isPostHogConfigured()) return
   posthog.reset()

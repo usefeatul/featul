@@ -1,11 +1,14 @@
-import React from 'react'
+import React from "react";
 
 interface PlusIconProps {
-  className?: string
-  size?: number
+  className?: string;
+  size?: number;
 }
 
-export const PlusIcon: React.FC<PlusIconProps> = ({ className = '', size = 18 }) => {
+export const PlusIcon: React.FC<PlusIconProps> = ({
+  className = "",
+  size = 18,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -17,18 +20,6 @@ export const PlusIcon: React.FC<PlusIconProps> = ({ className = '', size = 18 })
       viewBox="0 0 18 18"
       className={className}
     >
-      <rect
-        x="2.25"
-        y="2.25"
-        width="13.5"
-        height="13.5"
-        rx="2.5"
-        fill="currentColor"
-        fillOpacity="0.3"
-        data-color="color-2"
-        data-stroke="none"
-        className="transform transition-transform duration-150 ease-out origin-center group-hover:scale-105 group-active:scale-100"
-      />
       <rect
         x="2.25"
         y="2.25"
@@ -59,7 +50,7 @@ export const PlusIcon: React.FC<PlusIconProps> = ({ className = '', size = 18 })
         fill="none"
       />
     </svg>
-  )
-}
+  );
+};
 
-export default PlusIcon
+export default PlusIcon;

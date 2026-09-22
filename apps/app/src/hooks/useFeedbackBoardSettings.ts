@@ -14,10 +14,12 @@ type ErrorResponse = {
   message?: string;
 };
 
+/** React Query key for workspace feedback-board settings. */
 export function feedbackBoardsQueryKey(slug: string) {
   return ["feedback-boards", slug] as const;
 }
 
+/** Fetch board settings for a workspace slug. */
 export async function loadFeedbackBoards(
   slug: string,
 ): Promise<FeedbackBoardSettings[]> {
@@ -29,6 +31,7 @@ export async function loadFeedbackBoards(
   return Array.isArray(data?.boards) ? data.boards : [];
 }
 
+/** Cached feedback-board settings; seeds from `initialBoards` when provided. */
 export function useFeedbackBoardsSettings(
   slug: string,
   initialBoards?: FeedbackBoardSettings[],
@@ -44,6 +47,7 @@ export function useFeedbackBoardsSettings(
   });
 }
 
+/** Apply an updater to the feedback-boards query cache. */
 export function setFeedbackBoardsCache(
   queryClient: QueryClient,
   slug: string,
@@ -55,6 +59,7 @@ export function setFeedbackBoardsCache(
   );
 }
 
+/** Throw with the API message when a board mutation response is not ok. */
 export async function assertBoardMutationOk(
   response: MutationResponse,
   fallbackMessage: string,

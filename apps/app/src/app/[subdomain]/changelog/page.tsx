@@ -16,6 +16,8 @@ import {
   parsePositiveIntSearchParam,
   resolveSearchParams,
 } from "@/utils/search/params"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
+import { cn } from "@featul/ui/lib/utils"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
@@ -63,7 +65,30 @@ export default async function ChangelogPage({
       sortKeepParams={["page"]}
     >
       <div>
-        <SubdomainListHeader title="Changelog" sidebarPosition={sidebarPosition} />
+        <SubdomainListHeader
+          title="Changelog"
+          sidebarPosition={sidebarPosition}
+          desktopSecondary={
+            <Toolbar size="sm" className="w-fit">
+              <a
+                href="/changelog/feed.xml"
+                className={cn(toolbarItemClass, "inline-flex items-center px-3 text-xs text-accent")}
+              >
+                RSS feed
+              </a>
+            </Toolbar>
+          }
+          mobileSecondary={
+            <Toolbar size="sm" className="w-fit">
+              <a
+                href="/changelog/feed.xml"
+                className={cn(toolbarItemClass, "inline-flex items-center px-3 text-xs text-accent")}
+              >
+                RSS
+              </a>
+            </Toolbar>
+          }
+        />
         <SubdomainListCard>
           {entries.length === 0 ? (
             <SubdomainListEmptyState

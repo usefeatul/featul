@@ -32,16 +32,14 @@ export default async function MemberDetailPage({ params }: Props) {
     ])
 
   return (
-    <section className="space-y-4">
-      <MemberDetail
-        slug={slug}
-        userId={userId}
-        initialMembers={initialMembers}
-        initialMember={initialMember}
-        initialStats={initialStats}
-        initialTopPosts={initialTopPosts}
-        initialActivity={initialActivity}
-      />
-    </section>
+    <MemberDetail
+      slug={slug}
+      userId={userId}
+      initialMembers={initialMembers}
+      initialMember={initialMember}
+      initialStats={initialStats}
+      initialTopPosts={initialTopPosts}
+      initialActivity={initialActivity}
+    />
   )
 }

@@ -16,7 +16,7 @@ export function useAiSourcePosts(workspaceSlug: string, enabled: boolean) {
       try {
         const res = await client.changelog.aiSourcePostsList.$get({
           slug: workspaceSlug,
-          limit: 30,
+          limit: 50,
         });
         const data = await res.json().catch(() => ({}));
 

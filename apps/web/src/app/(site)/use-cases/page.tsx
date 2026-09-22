@@ -1,6 +1,6 @@
+import { MarketingContainer, marketingRailClass, marketingStackClass } from "@/components/layout/container";
 import type { Metadata } from "next";
 import { getAllUseCasesForIndex } from "@/types/scenarios";
-import { Container } from "@/components/global/container";
 import { UseCasesIndexHero } from "@/components/use-cases/index";
 import UseCasesList from "@/components/use-cases/list";
 import { createPageMetadata } from "@/lib/seo";
@@ -18,13 +18,10 @@ export default function UseCasesIndexPage() {
   return (
     <main className="min-h-screen overflow-x-clip">
       <UseCasesIndexHero />
-      <div className="relative mx-auto max-w-6xl">
-        <Container
-          maxWidth="6xl"
-          className="relative z-10 px-4 pb-14 sm:px-10 sm:pb-20 lg:px-12 xl:px-14"
-        >
+      <div className={marketingStackClass}>
+        <MarketingContainer className="relative z-10 pb-14 sm:pb-20">
           <section className="mt-4">
-            <div className="border-b border-border/70 pb-6 sm:pb-8">
+            <div className={marketingRailClass}>
               <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-accent">
                 Use cases
               </p>
@@ -40,13 +37,13 @@ export default function UseCasesIndexPage() {
                 Scenario-based walkthroughs for feedback, roadmaps, growth, and
                 customer success.
               </p>
-            </div>
 
-            <div className="mt-2">
-              <UseCasesList items={useCases} />
+              <div className="mt-8">
+                <UseCasesList items={useCases} />
+              </div>
             </div>
           </section>
-        </Container>
+        </MarketingContainer>
       </div>
     </main>
   );

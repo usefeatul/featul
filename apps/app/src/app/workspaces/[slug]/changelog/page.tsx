@@ -47,7 +47,7 @@ export default async function ChangelogListPage({
   const { entries } = data;
 
   return (
-    <section className="space-y-4">
+    <section className="-mx-4 space-y-3 bg-background sm:-mx-8 lg:-mx-12 xl:-mx-16">
       <ChangelogList
         items={entries}
         workspaceSlug={slug}
@@ -55,13 +55,15 @@ export default async function ChangelogListPage({
         initialIsSelecting={initialIsSelecting}
         initialSelectedIds={initialSelectedIds}
       />
-      <RequestPagination
-        workspaceSlug={slug}
-        page={page}
-        pageSize={pageSize}
-        totalCount={data.total}
-        variant="changelog"
-      />
+      <div className="px-4 sm:px-6">
+        <RequestPagination
+          workspaceSlug={slug}
+          page={page}
+          pageSize={pageSize}
+          totalCount={data.total}
+          variant="changelog"
+        />
+      </div>
     </section>
   );
 }

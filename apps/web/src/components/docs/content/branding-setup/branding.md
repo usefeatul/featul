@@ -3,44 +3,40 @@ title: Branding
 description: Customize your workspace appearance with logos, colors, themes, and layout options.
 ---
 
-## Branding Options
+## Branding options
 
-Personalize your feedback portal to match your brand identity:
+Personalize your feedback portal from **Settings → Branding**. Logo, colors, and hiding “Powered by Featul” are available on Starter and Professional.
 
-### Workspace Name
+### Workspace name
 - Maximum 15 characters
 - Displays in sidebar navigation
-- Visible to all visitors
+- Visible to visitors
 
 ### Logo
-- Supported formats: PNG, JPG, SVG
-- Recommended size: 128×128 pixels or larger
-- Available on paid plans
+- Supported formats: PNG, JPG, WebP
+- Applied to the public portal and widget
 
-### Primary Color
+### Primary color
 - Applied to buttons, links, and interactive elements
-- Choose from preset palette for consistent styling
 
-### Layout Options
+### Layout options
 
-**Sidebar Position:**
-- Left (traditional layout)
-- Right (alternative layout)
+**Sidebar position:**
+- Left
+- Right
 
 **Theme:**
-- Light (bright background, dark text)
-- Dark (dark background, light text)  
-- System (matches device preference)
+- Light
+- Dark
+- System (matches the visitor’s device)
 
-**Layout Style:**
-- Compact (reduced spacing)
-- Comfortable (balanced spacing - default)
-- Spacious (increased spacing)
+**Layout style:**
+- Compact
+- Comfortable (default)
+- Spacious
 
-### Branding Removal
+### Branding removal
 
-Hide "Powered by Featul" footer branding on higher-tier plans.
+Hide the “Powered by Featul” footer on Starter and Professional.
 
----
-
-**Note:** Some branding features require paid plans. Upgrade for full customization access.
+The [embed widget](/docs/getting-started/widget) uses the same branding. A widget `theme` of `"auto"` follows these settings.

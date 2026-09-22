@@ -1,25 +1,12 @@
-"use client"
+"use client";
 
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
-import BoardsAction from "./actions/BoardsAction"
-import StatusAction from "./actions/StatusAction"
-import TagsAction from "./actions/TagsAction"
-import SortAction from "./actions/SortAction"
-import SearchAction from "./actions/SearchAction"
+import FiltersAction from "./actions/FiltersAction";
+import { cn } from "@featul/ui/lib/utils";
 
-export default function HeaderActions({ className = "" }: { className?: string }) {
+export default function HeaderActions({ className }: { className?: string }) {
   return (
-    <Toolbar size="sm" className={className}>
-      <SearchAction className="h-full rounded-none border-none hover:bg-muted px-3" />
-      <ToolbarSeparator />
-      <BoardsAction className="h-full rounded-none border-none hover:bg-muted px-3" />
-      <ToolbarSeparator />
-      <StatusAction className="h-full rounded-none border-none hover:bg-muted px-3" />
-      <ToolbarSeparator />
-      <TagsAction className="h-full rounded-none border-none hover:bg-muted px-3" />
-      <ToolbarSeparator />
-      <SortAction className="h-full rounded-none border-none hover:bg-muted px-3" />
-    </Toolbar>
-  )
+    <div className={cn("ml-auto flex shrink-0 items-center", className)}>
+      <FiltersAction className="size-8 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-[#292929] dark:hover:bg-[#303030]" />
+    </div>
+  );
 }
-

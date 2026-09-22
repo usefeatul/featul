@@ -7,6 +7,7 @@ import { FilterIslandChips } from "@/components/requests/filter/FilterIslandChip
 import { FilterIslandHeader } from "@/components/requests/filter/FilterIslandHeader";
 import {
   FILTER_ISLAND_CONTENT_CLASS,
+  FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS,
   FILTER_ISLAND_MAX_WIDTH_CLASS,
   FILTER_ISLAND_SHELL_CLASS,
 } from "@/components/requests/filter/constants";
@@ -39,11 +40,11 @@ export default function FilterDynamicIsland() {
       {isVisible ? (
         <motion.div
           key="filter-dynamic-island"
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
+          initial={{ scale: 0.98 }}
+          animate={{ scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
           transition={transitions.visibility}
-          className="pointer-events-none fixed inset-x-0 top-0 z-[100] flex justify-center"
+          className="relative z-20 h-8 min-w-0 flex-1"
           aria-live="polite"
         >
           <motion.div
@@ -55,12 +56,17 @@ export default function FilterDynamicIsland() {
             aria-label={getFilterIslandLabel(count, expanded)}
             className={cn(
               FILTER_ISLAND_SHELL_CLASS,
-              "w-fit transform-gpu",
+              "absolute left-0 top-0 w-fit transform-gpu",
               FILTER_ISLAND_MAX_WIDTH_CLASS,
+              expanded && FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS,
             )}
           >
             <div
-              className={cn(FILTER_ISLAND_CONTENT_CLASS, "min-w-0 w-max max-w-full")}
+              className={cn(
+                FILTER_ISLAND_CONTENT_CLASS,
+                "min-w-0 max-w-full",
+                expanded ? "w-full" : "w-max",
+              )}
             >
               <FilterIslandHeader
                 count={count}

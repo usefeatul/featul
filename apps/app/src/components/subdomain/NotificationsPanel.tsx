@@ -5,13 +5,17 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import { getInitials } from "@/utils/user"
 import { relativeTime } from "@/lib/time"
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay"
+import { cn } from "@featul/ui/lib/utils"
 import { motion, type HTMLMotionProps } from "framer-motion"
 
 export interface NotificationItem {
   id: string
   type?: "feedback" | "changelog"
   path?: string
+  workspaceSlug?: string
   postSlug?: string
+  entryId?: string
   entrySlug?: string
   postTitle?: string | null
   entryTitle?: string | null
@@ -21,56 +25,79 @@ export interface NotificationItem {
   createdAt: string | Date
 }
 
+export type NotificationLinkMode = "public" | "workspace"
+
+/** Workspace vs public notification URL. `path` wins when present. */
+export function resolveNotificationHref(
+  notification: NotificationItem,
+  linkMode: NotificationLinkMode = "public",
+): string {
+  if (linkMode === "workspace" && notification.workspaceSlug) {
+    if (notification.type === "changelog" && notification.entryId) {
+      return `/workspaces/${notification.workspaceSlug}/changelog/${notification.entryId}/edit`
+    }
+    if (notification.postSlug) {
+      return `/workspaces/${notification.workspaceSlug}/requests/${notification.postSlug}`
+    }
+  }
+
+  if (notification.path) return notification.path
+  if (notification.type === "changelog") {
+    return `/changelog/p/${notification.entrySlug}`
+  }
+  return `/board/p/${notification.postSlug}`
+}
+
 interface NotificationsPanelProps {
   notifications: NotificationItem[]
   markRead: (id: string) => void
   onMarkAllRead?: () => void
+  linkMode?: NotificationLinkMode
 }
 
-const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelProps & HTMLMotionProps<"div">>(
-  ({ notifications, markRead, onMarkAllRead, ...props }, ref) => {
-    return (
-      <motion.div
-        ref={ref}
-        {...props}
-        className={`z-50 max-w-[90vw] max-h-[36rem] bg-card dark:bg-black overflow-y-auto rounded-md border  p-2 text-popover-foreground shadow-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black "}`}
-        role="dialog"
-        aria-label="Notifications"
-        initial={{ opacity: 0, y: -6, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -6, scale: 0.98 }}
-        transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.2 }}
-      >
-        <div className="px-2.5 py-2.5 space-x-4 text-sm font-medium flex items-center justify-between">
-          <span>Notifications</span>
-
-          {onMarkAllRead && (
-            <button
-              type="button"
-              className="text-xs rounded-md  bg-muted ring-1 ring-border px-2 py-1.5 cursor-pointer"
-              onClick={onMarkAllRead}
-            >
-              Mark all as read
-            </button>
-          )}
-        </div>
-
+const NotificationsPanel = React.forwardRef<
+  HTMLDivElement,
+  NotificationsPanelProps & HTMLMotionProps<"div">
+>(({ notifications, markRead, onMarkAllRead, linkMode = "public", ...props }, ref) => {
+  return (
+    <motion.div
+      ref={ref}
+      {...props}
+      className={cn(
+        overlayShellClass,
+        "z-50 w-80 max-h-[36rem] max-w-[90vw] overflow-y-auto p-1 text-popover-foreground",
+      )}
+      role="dialog"
+      aria-label="Notifications"
+      initial={{ opacity: 0, y: -6, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -6, scale: 0.98 }}
+      transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.2 }}
+    >
+      <header className="flex items-center justify-between gap-3 px-1 py-2">
+        <span className="text-sm font-medium">Notifications</span>
+        {onMarkAllRead ? (
+          <button
+            type="button"
+            className="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+            onClick={onMarkAllRead}
+          >
+            Mark all as read
+          </button>
+        ) : null}
+      </header>
+      <div className={cn(overlayInnerClass, "p-0")}>
         {notifications.length === 0 ? (
-          <div className="px-5 py-5 text-sm text-accent flex justify-center">
+          <div className="px-5 py-5 text-sm text-muted-foreground flex justify-center">
             No notifications
           </div>
         ) : (
           <ul className="list-none">
             {notifications.map((n) => (
-              <li key={n.id} className="px-2">
+              <li key={n.id} className="px-1.5 py-1">
                 <Link
-                  href={
-                    n.path ||
-                    (n.type === "changelog"
-                      ? `/changelog/p/${n.entrySlug}`
-                      : `/board/p/${n.postSlug}`)
-                  }
-                  className="px-2 py-1.5 flex items-center gap-2 rounded-md  hover:bg-muted dark:hover:bg-black/40"
+                  href={resolveNotificationHref(n, linkMode)}
+                  className="px-2 py-1.5 flex items-center gap-2 rounded-md hover:bg-muted/40"
                   onClick={() => markRead(n.id)}
                 >
                   <div className="relative">
@@ -80,12 +107,10 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
                         {getInitials(n.authorName || "U")}
                       </AvatarFallback>
                     </Avatar>
-
                     {!n.isRead && (
-                      <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-orange-500 ring-1 ring-background" />
+                      <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-orange-500" />
                     )}
                   </div>
-
                   <div className="flex-1">
                     <div className="text-xs">
                       <span className="font-bold">{n.authorName || "Guest"}</span>
@@ -99,7 +124,7 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
                       {relativeTime(
                         typeof n.createdAt === "string"
                           ? n.createdAt
-                          : n.createdAt.toISOString()
+                          : n.createdAt.toISOString(),
                       )}
                     </div>
                   </div>
@@ -108,10 +133,10 @@ const NotificationsPanel = React.forwardRef<HTMLDivElement, NotificationsPanelPr
             ))}
           </ul>
         )}
-      </motion.div>
-    )
-  }
-)
+      </div>
+    </motion.div>
+  )
+})
 
 NotificationsPanel.displayName = "NotificationsPanel"
 

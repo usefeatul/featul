@@ -1,5 +1,6 @@
 export * from "./auth";
 export * from "./workspace";
+export * from "./widget";
 export * from "./feedback";
 export * from "./post";
 export * from "./comment";

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Heart } from "lucide-react";
+import { ArrowBigUp } from "lucide-react";
 import { SearchIcon } from "@featul/ui/icons/search";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { CommentsIcon } from "@featul/ui/icons/comments";
@@ -40,7 +40,10 @@ type WorkspaceSearchActionProps = {
   className?: string;
   buttonVariant: "card" | "nav";
   placeholder?: string;
+  showLabel?: boolean;
+  showShortcut?: boolean;
   showNoResults?: boolean;
+  compact?: boolean;
   onSearchSubmit: (value: string) => void;
   onResultSelect: (result: WorkspaceSearchResult) => void;
   onClearSearch?: () => void;
@@ -76,7 +79,7 @@ function SearchResultItem({
       </div>
       <div className="flex shrink-0 items-center gap-3 self-center text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1">
-          <Heart className="size-3.5 opacity-70" aria-hidden />
+          <ArrowBigUp className="size-3.5 opacity-70" aria-hidden />
           <span className="tabular-nums">{result.upvotes ?? 0}</span>
         </span>
         <span className="inline-flex items-center gap-1">
@@ -157,7 +160,10 @@ export function WorkspaceSearchAction({
   className = "",
   buttonVariant,
   placeholder = "Search requests…",
+  showLabel = false,
+  showShortcut = false,
   showNoResults = false,
+  compact = false,
   onSearchSubmit,
   onResultSelect,
   onClearSearch,
@@ -200,6 +206,8 @@ export function WorkspaceSearchAction({
           ? document.activeElement
           : null;
       if (isEditableElement(target) || isEditableElement(activeElement)) return;
+
+      if (!buttonRef.current?.getClientRects().length) return;
 
       event.preventDefault();
       setOpen(true);
@@ -283,10 +291,39 @@ export function WorkspaceSearchAction({
         aria-label={`Search (${platformKey}K)`}
         title={`Search (${platformKey}K)`}
         aria-pressed={isSearchActive}
-        className={filterToolbarButtonClass(isSearchActive, className)}
+        className={cn(
+          filterToolbarButtonClass(isSearchActive && !compact, className),
+          compact &&
+            "group border-0 bg-transparent text-neutral-400 shadow-none ring-0 before:hidden hover:bg-muted/60 hover:text-primary dark:bg-transparent dark:text-neutral-300 dark:hover:bg-white/[0.05] dark:hover:text-primary",
+        )}
         onClick={() => setOpen(true)}
       >
-        <SearchIcon className="w-4 h-4" size={16} />
+        <SearchIcon
+          className={cn(
+            "size-4",
+            compact && "size-5 transition-colors duration-200",
+          )}
+          size={compact ? 20 : 16}
+        />
+        {showLabel ? (
+          <span
+            className={cn(
+              "min-w-0 truncate text-left font-normal",
+              currentSearch ? "text-foreground" : "text-muted-foreground",
+            )}
+          >
+            {currentSearch || placeholder}
+          </span>
+        ) : null}
+        {showShortcut ? (
+          <kbd
+            aria-hidden="true"
+            className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded border border-border/50 px-1 py-0.5 font-sans text-[10px] leading-none text-accent"
+          >
+            <span>{platformKey}</span>
+            <span>K</span>
+          </kbd>
+        ) : null}
       </Button>
 
       <CommandDialog
@@ -341,7 +378,10 @@ export function WorkspaceSearchAction({
           ) : null}
           {isSearching ? (
             <SearchStatusMessage>
-              <LoaderIcon className="size-4 animate-spin opacity-70" size={16} />
+              <LoaderIcon
+                className="size-4 animate-spin opacity-70"
+                size={16}
+              />
               Searching…
             </SearchStatusMessage>
           ) : null}
@@ -373,9 +413,7 @@ export function WorkspaceSearchAction({
               <CommandGroup>
                 <CommandItem onSelect={handleSubmit} className="text-primary">
                   <SearchIcon className="size-3.5 opacity-70" size={14} />
-                  <span>
-                    View all results for &ldquo;{trimmedValue}&rdquo;
-                  </span>
+                  <span>View all results for &ldquo;{trimmedValue}&rdquo;</span>
                   <CommandShortcut>{enterKey}</CommandShortcut>
                 </CommandItem>
               </CommandGroup>

@@ -16,6 +16,7 @@ export const DEFAULT_KEYWORDS = [
 
 export const DEFAULT_OG_IMAGE = "/og.png"
 
+/** Schema.org Organization JSON-LD for the marketing site URL. */
 export function getOrganizationJsonLd() {
   return {
     "@context": "https://schema.org",

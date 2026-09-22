@@ -5,6 +5,10 @@ import type { Brand } from "./email/brandemail"
 import { sendEmail } from "./email/transport"
 import { renderReserveEmail } from "./email/reserveemail"
 import { renderReportEmail, type ReportEmailProps } from "./email/reportemail"
+import {
+  renderStatusChangeEmail,
+  type StatusChangeEmailProps,
+} from "./email/statuschangeemail"
 import { db, user } from "@featul/db"
 import { eq } from "drizzle-orm"
 import {
@@ -159,6 +163,19 @@ export async function sendReportEmail(to: string, props: ReportEmailProps) {
   const recipientName = await resolveRecipientName(to, props.recipientName)
   const subject = `Report: ${props.itemName}`
   const { html, text } = await renderReportEmail({
+    ...props,
+    recipientName,
+  })
+  await sendEmail({ to, subject, html, text })
+}
+
+export async function sendPostStatusChangeEmail(
+  to: string,
+  props: StatusChangeEmailProps,
+) {
+  const recipientName = await resolveRecipientName(to, props.recipientName)
+  const subject = `Status update: ${props.postTitle}`
+  const { html, text } = await renderStatusChangeEmail({
     ...props,
     recipientName,
   })

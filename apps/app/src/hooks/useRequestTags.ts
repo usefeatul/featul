@@ -13,6 +13,7 @@ interface UseRequestTagsProps {
     enabled?: boolean
 }
 
+/** Optimistic request tags plus workspace tag list. POSTs tag ids; `triggerPendingRefresh` defers `router.refresh`. */
 export function useRequestTags({ item, workspaceSlug, enabled = false }: UseRequestTagsProps) {
     const router = useRouter()
     const [_, startTransition] = useTransition()

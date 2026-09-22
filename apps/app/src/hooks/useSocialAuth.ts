@@ -19,6 +19,7 @@ type UseSocialAuthOptions = {
   errorMessages: SocialAuthErrorMessages;
 };
 
+/** Google/GitHub OAuth sign-in. Sets loading/error on the parent; tracks auth analytics. */
 export function useSocialAuth({
   redirect,
   setIsLoading,

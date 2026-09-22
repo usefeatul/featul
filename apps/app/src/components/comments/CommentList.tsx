@@ -14,9 +14,15 @@ import {
   type CommentListResponse,
   type CommentSurface,
 } from "@/lib/comment/shared"
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard"
+import { cn } from "@featul/ui/lib/utils"
 
 interface CommentListProps {
   postId: string
+  plain?: boolean
   initialCount?: number
   workspaceSlug?: string
   surface?: CommentSurface
@@ -28,6 +34,7 @@ interface CommentListProps {
 
 export default function CommentList({
   postId,
+  plain = false,
   initialCount: _initialCount = 0,
   workspaceSlug,
   surface = "workspace",
@@ -46,7 +53,7 @@ export default function CommentList({
 
   const queryKey = getCommentsQueryKey(postId, surface)
 
-  const { data: commentsData, isLoading, refetch } = useQuery<CommentListResponse>({
+  const { data: commentsData, refetch } = useQuery<CommentListResponse>({
     queryKey,
     queryFn: async () => {
       const res = await client.comment.list.$get({
@@ -81,23 +88,31 @@ export default function CommentList({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border bg-background dark:bg-background p-3.5">
-        <CommentForm
-          postId={postId}
-          onSuccess={handleCommentSuccess}
-          workspaceSlug={workspaceSlug}
-          surface={surface}
-        />
-      </div>
-      {commentCount === 0 && !isLoading ? (
-        <div className="p-6 text-center">
-          <p className="text-sm text-accent">
-            No comments yet. Be the first to comment!
-          </p>
+      <div className={plain ? "pt-2" : settingsCardShellClass}>
+        <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-3">
+            <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
+              Comments
+            </h2>
+          </div>
+          <div className="flex w-full shrink-0 items-center justify-end sm:w-auto sm:pl-4">
+            <span className="text-xs tabular-nums text-accent">
+              {commentCount} {commentCount === 1 ? "comment" : "comments"}
+            </span>
+          </div>
+        </header>
+        <div className={plain ? "mt-3 rounded-md border border-border/40 bg-black/[0.02] p-3 dark:bg-white/[0.025]" : settingsCardInnerClass}>
+          <CommentForm
+            postId={postId}
+            onSuccess={handleCommentSuccess}
+            workspaceSlug={workspaceSlug}
+            surface={surface}
+          />
         </div>
-      ) : (
-        <div className="space-y-4 relative">
-          {comments.length > 0 && (
+      </div>
+      {commentCount > 0 ? (
+        <div className={cn(!plain && settingsCardShellClass, "pt-2")}>
+          <div className={cn(!plain && settingsCardInnerClass, "overflow-hidden p-0")}>
             <CommentThread
               postId={postId}
               comments={comments}
@@ -108,9 +123,9 @@ export default function CommentList({
               initialCollapsedIds={initialCollapsedIds}
               hidePublicMemberIdentity={hidePublicMemberIdentity}
             />
-          )}
+          </div>
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

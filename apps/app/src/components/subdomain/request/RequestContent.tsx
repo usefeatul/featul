@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import { UpvoteButton } from "../../upvote/UpvoteButton";
 import CommentList from "../../comments/CommentList";
 import CommentCounter from "../../comments/CommentCounter";
@@ -8,10 +7,17 @@ import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getDisplayUser } from "@/utils/user";
 import type { SubdomainRequestDetailData } from "../../../types/subdomain";
-import ContentImage from "@/components/global/ContentImage";
+import { PostImageGallery } from "@/components/post/PostImageGallery";
 import { RequestActions } from "./RequestActions";
 import { isOnboardingPost } from "@/lib/onboarding/post";
 import { OnboardingPostContent } from "@/components/requests/OnboardingPostContent";
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard";
+import { cn } from "@featul/ui/lib/utils";
+import { MergeSubmissionSection } from "@/components/requests/MergeSubmission";
+import { Linkify } from "@/components/post/linkify";
 
 
 
@@ -49,20 +55,21 @@ export function RequestContent({
   const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest
 
   return (
-    <div className="min-w-0 rounded-md border bg-card dark:bg-background p-4 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
-      {/* Status & Actions */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="inline-flex items-center gap-2">
-          <StatusIcon
-            status={post.roadmapStatus || undefined}
-            className="size-5 text-foreground/80"
-          />
-          <span className="text-sm text-accent">
-            {statusLabel(String(post.roadmapStatus || "pending"))}
-          </span>
-        </div>
-        <RequestActions post={post} workspaceSlug={workspaceSlug} />
-      </div>
+    <div className="min-w-0 space-y-4">
+      <article className={settingsCardShellClass}>
+        <header className="flex items-center justify-between py-2">
+          <div className="inline-flex items-center gap-2">
+            <StatusIcon
+              status={post.roadmapStatus || undefined}
+              className="size-5 text-foreground/80"
+            />
+            <span className="text-sm text-accent">
+              {statusLabel(String(post.roadmapStatus || "pending"))}
+            </span>
+          </div>
+          <RequestActions post={post} workspaceSlug={workspaceSlug} />
+        </header>
+        <div className={cn(settingsCardInnerClass)}>
 
       {/* Post Title */}
       <h1 className="text-xl font-semibold text-foreground mb-4">
@@ -76,56 +83,29 @@ export function RequestContent({
           <OnboardingPostContent content={normalizedContent} className="mb-6" />
         ) : (
           <div className="prose dark:prose-invert text-sm text-accent mb-6 wrap-break-word whitespace-pre-wrap leading-6">
-            {normalizedContent}
+            <Linkify content={normalizedContent} />
           </div>
         )
       ) : null}
 
       {/* Content */}
-      {post.image ? (
-        <>
-          <ContentImage
-            url={post.image}
-            alt={post.title}
-            className="w-48 h-36 mb-4"
-          />
-          {post.duplicateOfId && post.mergedInto ? (
-            <div className="mt-2 flex justify-center">
-              <div className="inline-flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs">
-                <StatusIcon status={post.mergedInto.roadmapStatus || "pending"} className="size-4" />
-                <span className="text-accent">Merged into</span>
-                <Link
-                  href={`/board/p/${post.mergedInto.slug}`}
-                  className="font-medium text-foreground hover:underline"
-                >
-                  {post.mergedInto.title}
-                </Link>
-                {post.mergedInto.boardName ? (
-                  <span className="text-accent">({post.mergedInto.boardName})</span>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
-        </>
-      ) : null}
-      {/* Fallback: show merged banner centered even without image */}
-      {!post.image && post.duplicateOfId && post.mergedInto ? (
-        <div className="mt-2 flex justify-center">
-          <div className="inline-flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs">
-            <StatusIcon status={post.mergedInto.roadmapStatus || "pending"} className="size-4" />
-            <span className="text-accent">Merged into</span>
-            <Link
-              href={`/board/p/${post.mergedInto.slug}`}
-              className="font-medium text-foreground hover:underline"
-            >
-              {post.mergedInto.title}
-            </Link>
-            {post.mergedInto.boardName ? (
-              <span className="text-accent">({post.mergedInto.boardName})</span>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
+      <PostImageGallery
+        image={post.image}
+        metadata={post.metadata}
+        alt={post.title}
+        className="mb-4"
+      />
+      <MergeSubmissionSection
+        className="mb-4"
+        mergedInto={post.mergedInto}
+        mergedIntoHref={
+          post.mergedInto ? `/board/p/${post.mergedInto.slug}` : undefined
+        }
+        mergedSources={post.mergedSources}
+        mergedCount={post.mergedCount}
+        sourceHref={(slug) => `/board/p/${slug}`}
+        hidePublicMemberIdentity={post.hidePublicMemberIdentity}
+      />
       {/* Footer: Author & Upvotes */}
       <div className="flex items-center justify-end pt-2">
         <div className="flex items-center gap-3 text-xs text-accent">
@@ -133,7 +113,7 @@ export function RequestContent({
             postId={post.id}
             upvotes={post.upvotes}
             hasVoted={post.hasVoted}
-            className="text-xs hover:text-red-500/80"
+            className="text-xs"
           />
           <CommentCounter
             postId={post.id}
@@ -144,9 +124,10 @@ export function RequestContent({
         </div>
       </div>
 
-      {/* Comments */}
-      <div className="mt-6 pt-6">
-        <CommentList
+        </div>
+      </article>
+
+      <CommentList
           postId={post.id}
           initialCount={visibleCommentCount}
           workspaceSlug={workspaceSlug}
@@ -156,7 +137,6 @@ export function RequestContent({
           initialCollapsedIds={initialCollapsedIds}
           hidePublicMemberIdentity={showHiddenIdentity}
         />
-      </div>
     </div>
   );
 }

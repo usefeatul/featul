@@ -4,9 +4,12 @@ import React from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
-import { DropdownIcon } from "@featul/ui/icons/dropdown"
 import { cn } from "@featul/ui/lib/utils"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { client } from "@featul/api/client"
+import { XMarkIcon } from "@featul/ui/icons/xmark"
+import { TagIcon } from "@featul/ui/icons/tag"
+import { toast } from "sonner"
 
 type Tag = {
   id: string
@@ -29,10 +32,11 @@ type TagsPickerProps = {
   postId: string
   value?: Array<{ id: string; name: string }>
   className?: string
+  showTags?: boolean
   onChange?: (next: Tag[]) => void
 }
 
-export default function TagsPicker({ workspaceSlug, postId, value = [], className, onChange }: TagsPickerProps) {
+export default function TagsPicker({ workspaceSlug, postId, value = [], className, showTags = false, onChange }: TagsPickerProps) {
   const [open, setOpen] = React.useState(false)
   const [selectedIds, setSelectedIds] = React.useState<string[]>(() => value.map((t) => t.id))
   const queryClient = useQueryClient()
@@ -71,43 +75,46 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
       }
       return nextIds
     },
+    onError: () => toast.error("Could not update tags. Please try again."),
     onSuccess: async (nextIds) => {
       setSelectedIds(nextIds)
-      const nextTags = items.filter((t) => nextIds.includes(t.id))
+      const available = new Map<string, Tag>([...value.map((tag) => [tag.id, { ...tag, slug: "" }] as const), ...items.map((tag) => [tag.id, tag] as const)])
+      const nextTags = nextIds.flatMap((id) => { const tag = available.get(id); return tag ? [tag] : [] })
       onChange?.(nextTags)
-      // Invalidate any queries that might depend on this post's tags
       await queryClient.invalidateQueries({ queryKey: ["tags", workspaceSlug], exact: false })
     },
   })
 
   const toggleTag = (tagId: string) => {
+    if (mutation.isPending) return
     const exists = selectedIds.includes(tagId)
     const next = exists ? selectedIds.filter((id) => id !== tagId) : [...selectedIds, tagId]
     mutation.mutate(next)
   }
 
   return (
-    <div className={cn("flex flex-col items-end gap-1", className)}>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "h-6 rounded-md border border-border/60 bg-background px-2.5 text-xs font-medium text-foreground/90 transition-colors hover:bg-muted/60",
-              selectedIds.length > 0 && "border-primary/25 bg-primary/10 text-primary hover:bg-primary/15",
-              mutation.isPending && "opacity-70 cursor-wait"
-            )}
-            aria-label="Manage tags"
-            disabled={mutation.isPending}
-          >
-            <span className="truncate max-w-[140px]">
-              {selectedIds.length > 0 ? `${selectedIds.length} tag${selectedIds.length > 1 ? "s" : ""}` : "Tags"}
-            </span>
-            <DropdownIcon className="ml-1.5  size-3" />
-          </Button>
-        </PopoverTrigger>
+    <div className={cn(showTags ? "contents" : "flex min-w-0 flex-wrap items-center gap-2", className)}>
+      <Toolbar variant="plain" size="sm" className="w-fit rounded-md border-0 bg-black/5 dark:bg-white/5">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="plain"
+              size="sm"
+              className={cn(
+                toolbarItemClass,
+                "h-8 gap-1.5 px-2.5 text-xs font-medium",
+                mutation.isPending && "opacity-70 cursor-wait"
+              )}
+              aria-label="Manage tags"
+              disabled={mutation.isPending}
+            >
+              <TagIcon className="size-3.5 shrink-0 text-muted-foreground" size={14} />
+              <span className="max-w-[140px] truncate">
+                {selectedIds.length > 0 ? `${selectedIds.length} tag${selectedIds.length > 1 ? "s" : ""}` : "Tags"}
+              </span>
+            </Button>
+          </PopoverTrigger>
         <PopoverContent list className="w-fit" align="end">
           {isLoading ? (
             <div className="p-3 text-sm text-accent">Loading...</div>
@@ -122,8 +129,14 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
                     key={it.id}
                     role="menuitemcheckbox"
                     aria-checked={isSelected}
+                    disabled={mutation.isPending}
                     onClick={() => toggleTag(it.id)}
                   >
+                    <span
+                      className="size-1.5 shrink-0 rounded-full bg-primary"
+                      style={it.color ? { backgroundColor: it.color } : undefined}
+                      aria-hidden
+                    />
                     <span className="text-sm truncate">{it.name}</span>
                     {isSelected ? <span className="ml-auto text-xs">✓</span> : null}
                   </PopoverListItem>
@@ -132,8 +145,17 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
             </PopoverList>
           )}
         </PopoverContent>
-      </Popover>
-
+        </Popover>
+      </Toolbar>
+      {showTags ? value.map((tag) => (
+        <span key={tag.id} className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-md bg-black/5 pl-2.5 pr-1.5 text-xs font-medium dark:bg-white/5">
+          <span className="size-1.5 shrink-0 rounded-full bg-primary" />
+          <span className="truncate">{tag.name}</span>
+          <button type="button" aria-label={`Remove ${tag.name} tag`} title={`Remove ${tag.name}`} disabled={mutation.isPending} onClick={() => toggleTag(tag.id)} className="flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-md text-accent hover:bg-black/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:cursor-wait disabled:opacity-50 dark:hover:bg-white/10">
+            <XMarkIcon className="size-3" />
+          </button>
+        </span>
+      )) : null}
     </div>
   )
 }

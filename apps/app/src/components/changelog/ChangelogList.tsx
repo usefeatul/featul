@@ -60,6 +60,10 @@ export function ChangelogList({
 
   return (
     <SelectableListShell
+      variant="plain"
+      className="w-full"
+      wrapList={false}
+      toolbarClassName="px-4 sm:px-6"
       isPending={isPending}
       selection={selection}
       confirmOpen={confirmOpen}
@@ -70,14 +74,16 @@ export function ChangelogList({
       deleteDescription="This action cannot be undone. These changelog entries will be permanently removed."
       totalCount={listItems.length}
     >
-      {listItems.map((entry, index) => (
-        <ChangelogItem
-          key={entry.id}
-          item={entry}
-          workspaceSlug={workspaceSlug}
-          {...selection.getItemSelectionProps(entry.id, index)}
-        />
-      ))}
+      <ul className="m-0 min-w-0 list-none p-0 [&>li+li]:border-t [&>li+li]:border-border/40 dark:[&>li+li]:border-white/6">
+        {listItems.map((entry, index) => (
+          <ChangelogItem
+            key={entry.id}
+            item={entry}
+            workspaceSlug={workspaceSlug}
+            {...selection.getItemSelectionProps(entry.id, index)}
+          />
+        ))}
+      </ul>
     </SelectableListShell>
   );
 }

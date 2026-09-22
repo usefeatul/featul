@@ -7,8 +7,20 @@ import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem }
 import { ChevronDownIcon } from "@featul/ui/icons/chevron-down"
 import { ListIcon } from "@featul/ui/icons/list"
 import { useBoards, type Board } from "@/hooks/useBoards"
+import { cn } from "@featul/ui/lib/utils"
+import { toolbarItemClass } from "@featul/ui/components/toolbar"
 
-export function BoardsDropdown({ slug, initialBoards, selectedBoard }: { slug: string; initialBoards?: Board[]; selectedBoard?: string }) {
+export function BoardsDropdown({
+  slug,
+  initialBoards,
+  selectedBoard,
+  className,
+}: {
+  slug: string
+  initialBoards?: Board[]
+  selectedBoard?: string
+  className?: string
+}) {
   const router = useRouter()
   const search = useSearchParams()
   const selected = selectedBoard || search.get("board") || "__all__"
@@ -30,7 +42,12 @@ export function BoardsDropdown({ slug, initialBoards, selectedBoard }: { slug: s
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="nav" className="justify-start gap-2" disabled={loading}>
+        <Button
+          type="button"
+          variant="plain"
+          className={cn(toolbarItemClass, "h-8 justify-start gap-2 px-3", className)}
+          disabled={loading}
+        >
           <ListIcon className="size-4" />
           <span className="truncate">{label}</span>
           <span className="ml-auto" />

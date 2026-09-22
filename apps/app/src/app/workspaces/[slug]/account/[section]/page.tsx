@@ -33,7 +33,6 @@ export default async function AccountSectionPage({ params }: Props) {
   ])
   return (
     <AccountServer
-      slug={slug}
       selectedSection={section}
       initialUser={session.user}
       twoFactorEnabled={session.user?.twoFactorEnabled}

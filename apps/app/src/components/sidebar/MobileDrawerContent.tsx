@@ -9,15 +9,30 @@ import type { NavItem } from "../../types/nav";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
+import SearchAction from "@/components/requests/actions/SearchAction";
+import RoadmapSearchAction from "@/components/roadmap/actions/RoadmapSearchAction";
+import { sidebarSearchClassName } from "./styles";
 import Timezone from "./Timezone";
 import UserDropdown from "@/components/account/UserDropdown";
-import { Button } from "@featul/ui/components/button";
-import { PlusIcon } from "@featul/ui/icons/plus";
-import { getSlugFromPath } from "../../config/nav";
+import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
+import { WorkspaceCreateIcon } from "@featul/ui/icons/workspace";
+import {
+  getSlugFromPath,
+  isWorkspaceAccountPath,
+  isWorkspaceSettingsPath,
+  workspaceBase,
+} from "../../config/nav";
+import SettingsNav from "@/components/settings/global/SettingsNav";
+import AccountNav from "@/components/account/AccountNav";
+import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
+import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 import { CreatePostModal } from "../post/CreatePostModal";
+import { LayoutGroup } from "framer-motion";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
+import { cn } from "@featul/ui/lib/utils";
 
 export default function MobileDrawerContent({
+  boardItem,
   pathname,
   primaryNav,
   statusCounts,
@@ -30,6 +45,7 @@ export default function MobileDrawerContent({
   initialDeviceAccounts,
   onLinkClick,
 }: {
+  boardItem?: NavItem;
   pathname: string;
   primaryNav: NavItem[];
   statusCounts?: Record<string, number>;
@@ -60,77 +76,142 @@ export default function MobileDrawerContent({
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname);
+  const isSettings = isWorkspaceSettingsPath(pathname);
+  const isAccount = isWorkspaceAccountPath(pathname);
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
   };
   return (
-    <DrawerContent>
+    <DrawerContent className="flex flex-col bg-sidebar pb-[env(safe-area-inset-bottom)] text-sidebar-foreground">
       <VisuallyHidden>
         <DrawerTitle>Menu</DrawerTitle>
       </VisuallyHidden>
-      <ScrollArea className="h-full">
+      <ScrollArea className="min-h-0 flex-1">
         <div className="p-3">
-          <div className="group flex items-center gap-2 rounded-md px-2 py-2">
-            <FeatulLogoIcon className="size-6" size={24} />
+          <div className={cn(sidebarRowClassName, "py-1")}>
+            <span className={sidebarLeadSlotClassName}>
+              <FeatulLogoIcon className="size-6" size={24} />
+            </span>
             <div className="text-lg font-semibold">Featul</div>
           </div>
           <WorkspaceSwitcher
-            className="mt-5.5 px-1"
+            className="mt-5.5"
             initialWorkspace={initialWorkspace}
             initialWorkspaces={initialWorkspaces}
           />
+          {pathname.split("/")[3] === "roadmap" ? (
+            <RoadmapSearchAction className={sidebarSearchClassName} />
+          ) : (
+            <SearchAction className={sidebarSearchClassName} />
+          )}
+          <button
+            type="button"
+            className={cn(
+              sidebarRowClassName,
+              "mt-4",
+              "cursor-pointer text-foreground hover:bg-muted dark:hover:bg-white/5",
+            )}
+            onClick={() => setCreatePostOpen(true)}
+          >
+            <span className={sidebarLeadSlotClassName}>
+              <WorkspaceCreateIcon className="size-5 text-neutral-600 transition-colors group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
+            </span>
+            <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
+              Create Posts
+            </span>
+          </button>
+          {boardItem ? (
+            <SidebarItem
+              item={boardItem}
+              pathname={pathname}
+              mutedIcon
+              className="mt-1.5"
+              onClick={onLinkClick}
+            />
+          ) : null}
           <Timezone
-            className="mt-2 px-1"
+            className="mt-2"
             initialTimezone={initialTimezone}
             initialServerNow={initialServerNow}
           />
         </div>
 
-        <SidebarSection title="REQUEST">
-          {primaryNav.map((item) => (
-            <SidebarItem
-              key={item.label}
-              item={item}
-              pathname={pathname}
-              count={
-                statusCounts ? statusCounts[statusKey(item.label)] : undefined
-              }
-              mutedIcon={false}
-              onClick={onLinkClick}
-            />
-          ))}
-        </SidebarSection>
-
-        <SidebarSection className="pb-8">
-          <Button
-            className="w-full mb-1 group flex items-center gap-2 rounded-md px-3 py-2 text-xs md:text-sm justify-start text-accent hover:bg-muted dark:hover:bg-black/40"
-            variant="plain"
-            onClick={() => setCreatePostOpen(true)}
+        {isSettings || isAccount ? (
+          <LayoutGroup
+            id={isSettings ? "mobile-settings-nav" : "mobile-account-nav"}
           >
-            <PlusIcon className="size-5 text-foreground opacity-60 group-hover:text-primary group-hover:opacity-100 transition-colors" />
-            <span className="transition-colors">Create Post</span>
-          </Button>
-          <CreatePostModal
-            open={createPostOpen}
-            onOpenChange={setCreatePostOpen}
-            workspaceSlug={slug}
-            user={initialUser}
+            <SidebarSection>
+              <SidebarItem
+                item={{
+                  label: "Back",
+                  href: workspaceBase(slug),
+                  icon: ArrowBackIcon,
+                  exact: true,
+                }}
+                pathname={pathname}
+                mutedIcon
+                indicator={false}
+                onClick={onLinkClick}
+              />
+            </SidebarSection>
+            <SidebarSection
+              title={isSettings ? "SETTINGS" : "ACCOUNT"}
+              className="mt-4"
+            >
+              {isSettings ? (
+                <SettingsNav onLinkClick={onLinkClick} />
+              ) : (
+                <AccountNav onLinkClick={onLinkClick} />
+              )}
+            </SidebarSection>
+          </LayoutGroup>
+        ) : (
+          <LayoutGroup id="mobile-workspace-nav">
+            <SidebarSection title="REQUEST">
+              {primaryNav.map((item) => (
+                <SidebarItem
+                  key={item.label}
+                  item={item}
+                  pathname={pathname}
+                  count={
+                    statusCounts
+                      ? statusCounts[statusKey(item.label)]
+                      : undefined
+                  }
+                  mutedIcon={false}
+                  onClick={onLinkClick}
+                />
+              ))}
+            </SidebarSection>
+          </LayoutGroup>
+        )}
+      </ScrollArea>
+      <CreatePostModal
+        open={createPostOpen}
+        onOpenChange={setCreatePostOpen}
+        workspaceSlug={slug}
+        user={initialUser}
+      />
+      <div className="shrink-0 space-y-1.5 px-3 pb-3 pt-1">
+        {secondaryNav.map((item) => (
+          <SidebarItem
+            key={item.label}
+            item={item}
+            pathname={pathname}
+            mutedIcon
+            indicator={false}
+            onClick={onLinkClick}
           />
-          {secondaryNav.map((item) => (
-            <SidebarItem
-              key={item.label}
-              item={item}
-              pathname={pathname}
-              mutedIcon
-              onClick={onLinkClick}
-            />
-          ))}
+        ))}
+        <div className="flex items-center gap-1">
           <UserDropdown
+            className="min-w-0 flex-1"
             initialUser={initialUser}
             initialDeviceAccounts={initialDeviceAccounts}
           />
-        </SidebarSection>
-      </ScrollArea>
+          <WorkspaceNotificationsAction className="size-8 shrink-0 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.05]" />
+        </div>
+      </div>
     </DrawerContent>
   );
 }

@@ -5,6 +5,10 @@ import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog"
 
 import { cn } from "@featul/ui/lib/utils"
 import { buttonVariants } from "@featul/ui/components/button"
+import {
+  overlayDialogClass,
+  overlayDialogInnerClass,
+} from "@featul/ui/lib/overlay"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 
 function AlertDialog({
@@ -37,9 +41,19 @@ function AlertDialogOverlay({
     <BaseAlertDialog.Backdrop
       data-slot="alert-dialog-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/30 backdrop-blur-sm",
+        "fixed inset-0 z-50 bg-black/20 backdrop-blur-xs dark:bg-black/40",
         className
       )}
+      {...props}
+    />
+  )
+}
+
+function AlertDialogInner({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="alert-dialog-inner"
+      className={cn(overlayDialogInnerClass, "px-4 py-3", className)}
       {...props}
     />
   )
@@ -59,7 +73,8 @@ function AlertDialogContent({
       <BaseAlertDialog.Popup
         data-slot="alert-dialog-content"
         className={cn(
-          "bg-background fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-2xl border-2 p-6 shadow-lg duration-200 sm:max-w-sm",
+          overlayDialogClass,
+          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl duration-200 outline-none sm:max-w-sm",
           className
         )}
         {...props}
@@ -68,7 +83,7 @@ function AlertDialogContent({
         {showCloseButton && (
           <BaseAlertDialog.Close
             data-slot="alert-dialog-close"
-            className="ring-offset-background focus:ring-ring absolute top-3 right-2 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer"
+            className="ring-offset-background focus:ring-ring absolute top-3 right-3 rounded-md opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer"
           >
             <XMarkIcon size={14} />
             <span className="sr-only">Close</span>
@@ -140,7 +155,7 @@ function AlertDialogAction({
 }: React.ComponentProps<typeof BaseAlertDialog.Close>) {
   return (
     <BaseAlertDialog.Close
-      className={cn(buttonVariants(), className)}
+      className={cn(buttonVariants(), "rounded-md", className)}
       {...props}
     />
   )
@@ -152,7 +167,7 @@ function AlertDialogCancel({
 }: React.ComponentProps<typeof BaseAlertDialog.Close>) {
   return (
     <BaseAlertDialog.Close
-      className={cn(buttonVariants({ variant: "card" }), className)}
+      className={cn(buttonVariants({ variant: "card" }), "rounded-md", className)}
       {...props}
     />
   )
@@ -165,6 +180,7 @@ export {
   AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,
+  AlertDialogInner,
   AlertDialogFooter,
   AlertDialogTitle,
   AlertDialogDescription,

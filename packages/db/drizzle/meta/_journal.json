@@ -120,6 +120,48 @@
       "when": 1774729584887,
       "tag": "0016_cute_frightful_four",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1786402991539,
+      "tag": "0017_aberrant_doctor_doom",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1786800000000,
+      "tag": "0018_widget_secret",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1786801800000,
+      "tag": "0019_widget_security",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1786805400000,
+      "tag": "0020_custom_domain_unique",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1789776000000,
+      "tag": "0021_refresh_theme_blue",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1789992842555,
+      "tag": "0022_yellow_fixer",
+      "breakpoints": true
     }
   ]
 }

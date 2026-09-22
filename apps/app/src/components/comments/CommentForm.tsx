@@ -2,12 +2,13 @@
 
 import React, { useState, useRef } from "react"
 import MentionList from "./MentionList"
-import { Textarea } from "@featul/ui/components/textarea"
+import { MentionTextarea } from "./MentionTextarea"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import { ImageIcon } from "@featul/ui/icons/image"
 import { LockIcon } from "@featul/ui/icons/lock"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip"
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import ContentImage from "@/components/global/ContentImage"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
@@ -27,6 +28,7 @@ interface CommentFormProps {
   workspaceSlug?: string
   surface?: CommentSurface
   defaultInternal?: boolean
+  compact?: boolean
 }
 
 export default function CommentForm({
@@ -40,6 +42,7 @@ export default function CommentForm({
   workspaceSlug,
   surface = "workspace",
   defaultInternal = false,
+  compact = false,
 }: CommentFormProps) {
   const [content, setContent] = useState("")
   const [isInternal, setIsInternal] = useState(defaultInternal)
@@ -64,7 +67,12 @@ export default function CommentForm({
     checkForMention,
     handleKeyDown,
     insertMention,
+    members,
   } = useMentions(workspaceSlug, content, setContent, textareaRef)
+  const mentionNames = React.useMemo(
+    () => members.map((member) => member.name).filter(Boolean),
+    [members],
+  )
 
   const resetForm = () => {
     setContent("")
@@ -88,9 +96,10 @@ export default function CommentForm({
       className="space-y-2.5"
     >
       <div className="relative">
-        <Textarea
+        <MentionTextarea
           ref={textareaRef}
           value={content}
+          mentionNames={mentionNames}
           onChange={(e) => {
             const next = e.target.value
             setContent(next)
@@ -98,7 +107,7 @@ export default function CommentForm({
             checkForMention(next, caret)
           }}
           placeholder={placeholder}
-          className="min-h-[60px] resize-none text-sm shadow-none placeholder:text-accent border-none focus-visible:ring-0"
+          compact={compact}
           autoFocus={autoFocus}
           disabled={isPending || uploadingImage}
           onKeyDown={handleKeyDown}
@@ -106,7 +115,12 @@ export default function CommentForm({
 
         {mentionOpen && filteredCandidates.length > 0 && textareaRef.current && (
           <MentionList
-            candidates={filteredCandidates.map(u => ({ id: u.userId, ...u }))}
+            candidates={filteredCandidates.map((u) => ({
+              id: u.userId,
+              name: u.name,
+              email: u.email,
+              image: u.image,
+            }))}
             selectedIndex={mentionIndex}
             onSelect={(user) => insertMention(user.name)}
             className="left-2 top-full mt-1"
@@ -117,27 +131,25 @@ export default function CommentForm({
       {/* Image Preview */}
       {uploadedImage && (
         <div className="relative inline-block">
-          <div className="relative">
-            <ContentImage
-              url={uploadedImage.url}
-              alt={uploadedImage.name}
-              className="max-w-[120px] max-h-20"
-            />
-            <button
-              type="button"
-              onClick={handleRemoveImage}
-              className="absolute -top-1 -right-1 rounded-xl bg-destructive text-destructive-foreground p-0.5 hover:bg-destructive/90 transition-colors z-10 cursor-pointer"
-              disabled={isPending || uploadingImage}
-              aria-label="Remove image"
-            >
-              <XMarkIcon className="size-3" />
-            </button>
-          </div>
+          <ContentImage
+            url={uploadedImage.url}
+            alt={uploadedImage.name}
+            className="h-16 w-24"
+          />
+          <button
+            type="button"
+            onClick={() => handleRemoveImage()}
+            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md ring-1 ring-background hover:bg-destructive/90"
+            disabled={isPending || uploadingImage}
+            aria-label="Remove image"
+          >
+            <XMarkIcon className="size-2.5" />
+          </button>
         </div>
       )}
 
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <Toolbar variant="soft" size="sm" className="w-fit">
           <input
             ref={fileInputRef}
             type="file"
@@ -149,8 +161,8 @@ export default function CommentForm({
           <Button
             type="button"
             size="xs"
-            variant="card"
-            className="h-8 w-8 p-0 rounded-md dark:bg-black/40"
+            variant="plain"
+            className={cn(toolbarItemClass, "w-8 px-0 text-accent hover:text-foreground")}
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"
@@ -158,54 +170,73 @@ export default function CommentForm({
             {uploadingImage ? (
               <LoaderIcon className="h-4 w-4 animate-spin" />
             ) : (
-              <ImageIcon className="size-4 " />
+              <ImageIcon className="size-4" />
             )}
           </Button>
 
           {canMarkInternal && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  size="xs"
-                  variant="card"
-                  onClick={() => setIsInternal((prev) => !prev)}
-                  className={cn(
-                    "h-8 w-8 p-0 rounded-md dark:bg-black/40",
-                    isInternal && "bg-muted border-green-600/40 text-green-600 dark:text-green-400"
-                  )}
-                  disabled={isPending || uploadingImage || internalForced}
-                  aria-label={
-                    isInternal
-                      ? "Disable internal comment"
-                      : "Enable internal comment"
-                  }
-                  aria-pressed={isInternal}
-                >
-                  <LockIcon
+            <>
+              <ToolbarSeparator className="self-stretch bg-border/40 dark:bg-white/10" />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant="plain"
+                    onClick={() => setIsInternal((prev) => !prev)}
                     className={cn(
-                      "size-4",
-                      isInternal && "text-green-600 dark:text-green-400"
+                      toolbarItemClass,
+                      "w-8 px-0",
+                      isInternal && "bg-primary/10 text-primary dark:bg-primary/10",
                     )}
-                  />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
-                {internalForced
-                  ? "Internal reply"
-                  : isInternal
-                    ? "Internal only"
-                    : "Make internal"}
-              </TooltipContent>
-            </Tooltip>
+                    disabled={isPending || uploadingImage || internalForced}
+                    aria-label={
+                      isInternal
+                        ? "Disable internal comment"
+                        : "Enable internal comment"
+                    }
+                    aria-pressed={isInternal}
+                  >
+                    <LockIcon
+                      className={cn(
+                        "size-4",
+                        isInternal && "text-primary"
+                      )}
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
+                  {internalForced
+                    ? "Internal reply"
+                    : isInternal
+                      ? "Internal only"
+                      : "Make internal"}
+                </TooltipContent>
+              </Tooltip>
+            </>
           )}
-        </div>
+        </Toolbar>
 
         <div className="flex items-center gap-2">
+          {onCancel ? (
+            <Toolbar variant="soft" size="sm" className="w-fit">
+              <Button
+                type="button"
+                size="xs"
+                variant="plain"
+                className={cn(toolbarItemClass, "px-3")}
+                onClick={onCancel}
+                disabled={isPending || uploadingImage}
+              >
+                Cancel
+              </Button>
+            </Toolbar>
+          ) : null}
           <Button
             type="submit"
             size="xs"
-            variant="card"
+            variant="outline"
+            className="h-8 bg-black/5 px-4 dark:bg-white/5"
             disabled={
               (!content.trim() && !uploadedImage) || isPending || uploadingImage
             }
@@ -216,17 +247,6 @@ export default function CommentForm({
               buttonText
             )}
           </Button>
-          {onCancel && (
-            <Button
-              type="button"
-              size="xs"
-              variant="nav"
-              onClick={onCancel}
-              disabled={isPending || uploadingImage}
-            >
-              Cancel
-            </Button>
-          )}
         </div>
       </div>
     </form>

@@ -1,0 +1,376 @@
+import { HTTPException } from "hono/http-exception";
+import { aiAssistSchema } from "../validators/changelog";
+import { requireBoardManagerBySlug } from "../shared/access";
+import { applyRateLimitHeaders } from "../services/ratelimiter";
+import {
+  authorizePrivateChangelogAiRequest,
+  changelogAiJsonResponse,
+} from "./auth";
+import {
+  resolveOpenRouterStreamModel,
+  streamOpenRouterChat,
+} from "../services/openrouter";
+import {
+  AI_STREAM_REFINE_SYSTEM_PROMPT,
+  AI_STREAM_SUMMARY_SYSTEM_PROMPT,
+  AI_TEMPERATURE_BY_ACTION,
+  getMaxTokensByAction,
+} from "./constants";
+import {
+  buildChatAskOpenRouterMessages,
+  buildChatPatchOpenRouterMessages,
+  buildChatRefineOpenRouterMessages,
+  buildChatTagsOpenRouterMessages,
+  buildStreamRefineUserPrompt,
+} from "./prompts";
+import { sanitizeChangelogAiError } from "./security";
+import { createSseStreamHeaders, encodeChangelogAiSseEvent } from "./sse";
+import {
+  ensureFeedbackSection,
+  fetchAiBrandContext,
+  fetchAiSourcePostsByIds,
+} from "./sources";
+import { streamStructuredChangelog } from "./generation";
+import {
+  extractAiOutputMeta,
+  extractSummaryFromMarkdown,
+  extractTitleFromMarkdown,
+  usesStructuredChangelogStream,
+} from "./title";
+import type {
+  AiAction,
+  AiChatIntent,
+  ChangelogAiStreamEvent,
+  StructuredGenerationAction,
+} from "./types";
+
+function resolveIntent(input: {
+  intent?: AiChatIntent;
+  selectionMarkdown?: string;
+}): AiChatIntent {
+  if (input.intent) return input.intent;
+  if (input.selectionMarkdown?.trim()) return "patch";
+  return "rewrite";
+}
+
+export async function createChangelogAiStreamResponse(req: Request) {
+  const authResult = await authorizePrivateChangelogAiRequest(req);
+  if (authResult instanceof Response) {
+    return authResult;
+  }
+
+  const { session, rateLimit } = authResult;
+
+  let parsedInput;
+  try {
+    const json = await req.json();
+    parsedInput = aiAssistSchema.parse(json);
+  } catch {
+    return changelogAiJsonResponse(400, { message: "Invalid request" });
+  }
+
+  const { db } = await import("@featul/db");
+  const ctx = { db, session };
+
+  let workspace;
+  try {
+    workspace = await requireBoardManagerBySlug(ctx, parsedInput.slug);
+  } catch (err) {
+    const message = err instanceof HTTPException ? err.message : "Forbidden";
+    const status = err instanceof HTTPException ? err.status : 403;
+    return changelogAiJsonResponse(status, { message });
+  }
+
+  const model = resolveOpenRouterStreamModel(parsedInput.action);
+  const hasExistingContent = Boolean(parsedInput.contentMarkdown?.trim());
+  const intent = resolveIntent(parsedInput);
+  const structured =
+    intent === "rewrite" &&
+    usesStructuredChangelogStream(parsedInput.action, hasExistingContent);
+
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const encoder = new TextEncoder();
+      const send = (event: ChangelogAiStreamEvent) => {
+        controller.enqueue(encoder.encode(encodeChangelogAiSseEvent(event)));
+      };
+
+      try {
+        send({ type: "status", phase: "preparing" });
+
+        const needsSourcePosts = Boolean(parsedInput.sourcePostIds?.length);
+
+        const workspaceName = workspace.name?.trim() || "this product";
+        const needsBrandContext = intent !== "ask" && intent !== "tags";
+        const [sourcePosts, brandContext] = await Promise.all([
+          needsSourcePosts
+            ? fetchAiSourcePostsByIds({
+                db,
+                workspaceId: workspace.id,
+                postIds: parsedInput.sourcePostIds!,
+              })
+            : Promise.resolve(undefined),
+          needsBrandContext
+            ? fetchAiBrandContext({
+                db,
+                workspaceId: workspace.id,
+              })
+            : Promise.resolve({ brandVoice: "", tagNames: [] as string[] }),
+        ]);
+
+        if (
+          parsedInput.action === "generateFromPosts" &&
+          (!sourcePosts || sourcePosts.length === 0)
+        ) {
+          send({
+            type: "error",
+            message:
+              "No valid shipped feedback items were found for generation",
+          });
+          controller.close();
+          return;
+        }
+
+        const availableTagNames = parsedInput.availableTagNames?.length
+          ? parsedInput.availableTagNames
+          : brandContext.tagNames;
+        const githubUrls = parsedInput.githubUrls;
+
+        send({ type: "status", phase: "generating" });
+
+        if (structured) {
+          const structuredAction: StructuredGenerationAction =
+            parsedInput.action === "chat"
+              ? sourcePosts?.length
+                ? "generateFromPosts"
+                : "prompt"
+              : (parsedInput.action as StructuredGenerationAction);
+
+          const result = await streamStructuredChangelog({
+            model,
+            action: structuredAction,
+            temperature: AI_TEMPERATURE_BY_ACTION[parsedInput.action],
+            maxBodyTokens: getMaxTokensByAction(
+              parsedInput.action,
+              parsedInput.detailLevel,
+            ),
+            prompt: parsedInput.prompt,
+            tone: parsedInput.tone,
+            detailLevel: parsedInput.detailLevel,
+            workspaceName,
+            sourcePosts,
+            brandVoice: brandContext.brandVoice,
+            githubUrls,
+            availableTagNames,
+            send,
+          });
+
+          if (!result.contentMarkdown) {
+            send({ type: "error", message: "AI response was empty" });
+            controller.close();
+            return;
+          }
+
+          const meta = extractAiOutputMeta(result.contentMarkdown);
+          const contentMarkdown = ensureFeedbackSection(
+            meta.body,
+            sourcePosts ?? [],
+          );
+
+          send({
+            type: "done",
+            title: result.title,
+            contentMarkdown,
+            suggestedTags: meta.suggestedTags,
+            summary: extractSummaryFromMarkdown(contentMarkdown),
+          });
+          controller.close();
+          return;
+        }
+
+        if (
+          parsedInput.action === "chat" &&
+          intent === "tags" &&
+          availableTagNames.length === 0
+        ) {
+          send({
+            type: "done",
+            reply: "This workspace does not have any changelog tags yet.",
+            suggestedTags: [],
+          });
+          controller.close();
+          return;
+        }
+
+        const chatMessages =
+          parsedInput.action === "chat" && intent === "ask"
+            ? buildChatAskOpenRouterMessages({
+                prompt: parsedInput.prompt ?? "",
+                title: parsedInput.title,
+                contentMarkdown: parsedInput.contentMarkdown,
+                workspaceName,
+                sourcePosts,
+                history: parsedInput.messages,
+                githubUrls,
+              })
+            : parsedInput.action === "chat" && intent === "tags"
+              ? buildChatTagsOpenRouterMessages({
+                  prompt: parsedInput.prompt ?? "",
+                  title: parsedInput.title,
+                  contentMarkdown: parsedInput.contentMarkdown,
+                  workspaceName,
+                  availableTagNames,
+                })
+              : parsedInput.action === "chat" && intent === "patch"
+                ? buildChatPatchOpenRouterMessages({
+                    prompt: parsedInput.prompt ?? "",
+                    title: parsedInput.title,
+                    contentMarkdown: parsedInput.contentMarkdown,
+                    selectionMarkdown: parsedInput.selectionMarkdown ?? "",
+                    workspaceName,
+                    sourcePosts,
+                    history: parsedInput.messages,
+                    brandVoice: brandContext.brandVoice,
+                  })
+                : parsedInput.action === "chat"
+                  ? buildChatRefineOpenRouterMessages({
+                      prompt: parsedInput.prompt ?? "",
+                      title: parsedInput.title,
+                      contentMarkdown: parsedInput.contentMarkdown,
+                      workspaceName,
+                      sourcePosts,
+                      history: parsedInput.messages,
+                      brandVoice: brandContext.brandVoice,
+                      githubUrls,
+                      availableTagNames,
+                    })
+                  : [
+                      {
+                        role: "system" as const,
+                        content:
+                          parsedInput.action === "summary"
+                            ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
+                            : AI_STREAM_REFINE_SYSTEM_PROMPT,
+                      },
+                      {
+                        role: "user" as const,
+                        content: buildStreamRefineUserPrompt({
+                          action: parsedInput.action,
+                          prompt: parsedInput.prompt,
+                          title: parsedInput.title,
+                          contentMarkdown: parsedInput.contentMarkdown,
+                          tone: parsedInput.tone,
+                          detailLevel: parsedInput.detailLevel,
+                          workspaceName,
+                          sourcePosts,
+                        }),
+                      },
+                    ];
+
+        let accumulated = "";
+        const maxTokens =
+          intent === "ask"
+            ? 700
+            : intent === "tags"
+              ? 120
+              : intent === "patch"
+                ? 1400
+                : getMaxTokensByAction(
+                    parsedInput.action,
+                    parsedInput.detailLevel,
+                  );
+
+        await streamOpenRouterChat(
+          {
+            model,
+            messages: chatMessages,
+            temperature:
+              AI_TEMPERATURE_BY_ACTION[parsedInput.action as AiAction],
+            max_tokens: maxTokens,
+          },
+          (text) => {
+            accumulated += text;
+            send({ type: "delta", text });
+          },
+        );
+
+        const trimmed = accumulated.trim();
+        if (!trimmed) {
+          send({ type: "error", message: "AI response was empty" });
+          controller.close();
+          return;
+        }
+
+        if (parsedInput.action === "summary") {
+          send({
+            type: "done",
+            summary: trimmed.slice(0, 512),
+          });
+          controller.close();
+          return;
+        }
+
+        if (intent === "tags") {
+          const meta = extractAiOutputMeta(trimmed);
+          const existingTags = new Map(
+            availableTagNames.map((name) => [name.toLowerCase(), name]),
+          );
+          const suggestedTags = (meta.suggestedTags ?? [])
+            .map((name) => existingTags.get(name.toLowerCase()))
+            .filter((name): name is string => Boolean(name))
+            .slice(0, 4);
+          send({
+            type: "done",
+            reply: suggestedTags.length
+              ? `Found ${suggestedTags.length} relevant workspace tags.`
+              : "No relevant tags were found.",
+            suggestedTags,
+          });
+          controller.close();
+          return;
+        }
+
+        if (intent === "ask") {
+          send({
+            type: "done",
+            reply: trimmed.slice(0, 4000),
+          });
+          controller.close();
+          return;
+        }
+
+        const meta = extractAiOutputMeta(trimmed);
+        const contentMarkdown =
+          intent === "patch"
+            ? meta.body
+            : ensureFeedbackSection(meta.body, sourcePosts ?? []);
+
+        send({
+          type: "done",
+          contentMarkdown,
+          title:
+            meta.title ||
+            extractTitleFromMarkdown(contentMarkdown, parsedInput.title),
+          summary:
+            parsedInput.action === "chat"
+              ? undefined
+              : extractSummaryFromMarkdown(contentMarkdown),
+          suggestedTags: meta.suggestedTags,
+        });
+        controller.close();
+      } catch (err) {
+        send({ type: "error", message: sanitizeChangelogAiError(err) });
+        controller.close();
+      }
+    },
+  });
+
+  const headers = createSseStreamHeaders();
+  applyRateLimitHeaders(
+    { header: (key: string, value: string) => headers.set(key, value) },
+    rateLimit,
+    "Too Many Requests",
+  );
+
+  return new Response(stream, { headers });
+}

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import { Drawer } from "@featul/ui/components/drawer";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
-import { buildBottomNav, getSlugFromPath } from "../../config/nav";
+import { buildAccountNav, buildBottomNav, buildSettingsNav, getSlugFromPath, isWorkspaceAccountPath, isWorkspaceSettingsPath } from "../../config/nav";
 import MobileBottomBar from "./MobileBottomBar";
 import MobileDrawerContent from "./MobileDrawerContent";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
@@ -59,13 +59,18 @@ export default function MobileSidebar({
     initialDomainInfo || null,
   );
   const secondaryNav = buildBottomNav();
+  const settingsNav = React.useMemo(() => buildSettingsNav(slug), [slug]);
+  const accountNav = React.useMemo(() => buildAccountNav(slug), [slug]);
+  const isSettings = isWorkspaceSettingsPath(pathname);
+  const isAccount = isWorkspaceAccountPath(pathname);
   const [open, setOpen] = React.useState(false);
 
   return (
     <div className={cn("lg:hidden", className)}>
       <Drawer direction="right" open={open} onOpenChange={setOpen}>
-        <MobileBottomBar items={middleNav} />
+        <MobileBottomBar items={isSettings ? settingsNav : isAccount ? accountNav : middleNav.filter((item) => item.label !== "My Board")} />
         <MobileDrawerContent
+          boardItem={middleNav.find((item) => item.label === "My Board")}
           pathname={pathname}
           primaryNav={primaryNav}
           statusCounts={statusCounts ?? undefined}

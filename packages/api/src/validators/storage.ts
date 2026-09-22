@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { SIGNED_UPLOAD_INPUT_MAX_BYTES, WORKSPACE_UPLOAD_FOLDERS } from "../upload-policy"
+import { SIGNED_UPLOAD_INPUT_MAX_BYTES, WORKSPACE_UPLOAD_FOLDERS } from "../upload/policy"
 
 const fileNameSchema = z
   .string()
@@ -46,6 +46,10 @@ export const getAvatarUploadUrlInputSchema = z.object({
   fileName: fileNameSchema,
   contentType: contentTypeSchema,
   fileSize: fileSizeSchema,
+})
+
+export const deleteUploadInputSchema = z.object({
+  url: z.string().url().max(2048),
 })
 
 export type GetUploadUrlInput = z.infer<typeof getUploadUrlInputSchema>

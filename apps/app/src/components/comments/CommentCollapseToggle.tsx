@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { commentBadgeClass } from "./styles"
 import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
 import { cn } from "@featul/ui/lib/utils"
 
@@ -21,21 +22,20 @@ export default function CommentCollapseToggle({
 
   return (
     <button
+      type="button"
       onClick={onToggle}
-      className={cn(
-        "inline-flex cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-xs text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground",
-        className
-      )}
+      className={cn(commentBadgeClass, "cursor-pointer hover:bg-black/[0.08] focus-visible:outline-2 focus-visible:outline-ring dark:hover:bg-[#303030]", className)}
+      aria-expanded={!isCollapsed}
       aria-label={isCollapsed ? "Expand replies" : "Collapse replies"}
     >
-      <ChevronLeftIcon
-        size={12}
-        className={cn(
-          "transition-transform duration-200",
-          isCollapsed ? "rotate-180" : "-rotate-90"
-        )}
-      />
-      <span className="font-medium">{label}</span>
+        <ChevronLeftIcon
+          size={10}
+          className={cn(
+            "text-accent transition-transform duration-200",
+            isCollapsed ? "rotate-180" : "-rotate-90",
+          )}
+        />
+        {label}
     </button>
   )
 }

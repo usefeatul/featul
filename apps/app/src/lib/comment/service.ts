@@ -1,5 +1,6 @@
 import { client } from "@featul/api/client"
 
+/** Requests a signed URL for a comment image. */
 export async function getCommentImageUploadUrl(
   postId: string,
   fileName: string,
@@ -21,4 +22,11 @@ export async function getCommentImageUploadUrl(
     key: data.key,
     publicUrl: data.publicUrl,
   }
+}
+
+/** Deletes an uploaded comment image; 409 means already gone. */
+export async function deleteCommentImageUpload(url: string): Promise<void> {
+  const res = await client.storage.deleteUpload.$post({ url })
+  if (res.ok || res.status === 409) return
+  throw new Error("Failed to delete image")
 }

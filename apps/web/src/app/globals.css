@@ -4,6 +4,11 @@
 @custom-variant dark (&:is(.dark *));
 @plugin "@tailwindcss/typography";
 
+:root {
+  --marketing-edge-strip: clamp(1rem, 5vw, 4.5rem);
+  --marketing-create-band: var(--color-primary, var(--primary));
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -11,4 +16,32 @@ html {
   html {
     scroll-behavior: auto;
   }
+}
+
+html[data-scrolled] [data-component="Navbar"] [data-nav-brand],
+html[data-scrolled] [data-component="Navbar"] [data-nav-brand] * {
+  color: var(--foreground);
+}
+html[data-scrolled] [data-component="Navbar"] a:not([data-slot="button"]):not([data-nav-brand]) {
+  color: var(--accent);
+}
+html[data-scrolled] [data-component="Navbar"] [data-slot="separator"] {
+  background-color: color-mix(in oklab, var(--accent) 50%, transparent);
+}
+html[data-scrolled] [data-component="Navbar"] [data-nav-menu] {
+  background-color: var(--muted);
+  color: var(--accent);
+}
+
+[data-nav-create-mask] {
+  --background: var(--primary);
+  --foreground: oklch(99.700% 0.00105 11.528);
+  --accent: color-mix(in oklab, white 82%, var(--primary));
+  --card: color-mix(in oklab, white 14%, var(--primary));
+  --border: color-mix(in oklab, white 22%, var(--primary));
+  --muted: color-mix(in oklab, white 16%, var(--primary));
+  clip-path: inset(100% 0 0 0);
+}
+html[data-over-create] [data-nav-create-mask] {
+  clip-path: inset(0);
 }

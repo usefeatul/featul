@@ -93,8 +93,8 @@ export function ProductFeedbackUseCase() {
           </p>
           <p className="text-accent">
             Using Featul, the team groups all analytics‑related feedback into a single idea, attaches internal notes,
-            quantifies the number and type of customers affected, and evaluates the strategic impact. Once the work is
-            prioritized, the idea is moved to “Planned” on the roadmap. Customers can subscribe to updates, and when the
+            and records how much ARR sits behind the request so a flagship account is not ranked like a free-tier upvote.
+            Once the work is prioritized, the idea is moved to “Planned” on the roadmap. Customers can subscribe to updates, and when the
             new analytics release ships, they automatically receive a clear changelog entry that explains what was
             delivered and why.
           </p>
@@ -131,8 +131,14 @@ export function ProductFeedbackUseCase() {
             <Link href="/docs" className="text-accent underline-offset-4 hover:underline">
               Read the docs
             </Link>
-            <Link href="/tools" className="text-accent underline-offset-4 hover:underline">
-              Explore free product tools
+            <Link href="/alternatives/featurebase" className="text-accent underline-offset-4 hover:underline">
+              Featurebase alternatives
+            </Link>
+            <Link href="/alternatives/canny" className="text-accent underline-offset-4 hover:underline">
+              Canny alternatives
+            </Link>
+            <Link href="/definitions/arr" className="text-accent underline-offset-4 hover:underline">
+              What is ARR?
             </Link>
           </div>
         </section>

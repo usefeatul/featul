@@ -1,5 +1,9 @@
 import { db, subscription, workspace } from "@featul/db"
 import { desc, eq } from "drizzle-orm"
+import {
+  getComplimentarySubscriptionPlan,
+  getComplimentaryWorkspacePlan,
+} from "./billing/complimentary"
 import { getStripeClient, getStripePlanNameFromSubscription } from "./stripe"
 
 export type BillingSubscriptionStatus =
@@ -20,6 +24,7 @@ type BillingSubscriptionLike = {
 
 type BillingSubscriptionRow = {
   plan: unknown
+  status: unknown
   stripeCustomerId: string | null
   stripeSubscriptionId: string | null
   updatedAt: Date
@@ -51,10 +56,27 @@ function isMissingStripeSubscription(error: unknown) {
   return code === "resource_missing" || statusCode === 404
 }
 
+function isDevPlanOverrideEnabled() {
+  return process.env.NODE_ENV !== "production" && process.env.DEV_PLAN_OVERRIDE === "true"
+}
+
+function getLocalDevPaidPlan(row: BillingSubscriptionRow): BillingPlan | null {
+  if (!isDevPlanOverrideEnabled()) return null
+
+  const stripeSubscriptionId = String(row.stripeSubscriptionId || "").trim()
+  if (!stripeSubscriptionId.startsWith("dev_sub_")) return null
+  if (!isPaidStatus(row.status)) return null
+
+  const plan = normalizePlan(row.plan)
+  if (!plan || plan === "free") return null
+  return plan
+}
+
 async function getWorkspaceSubscriptionRows(workspaceId: string) {
   return db
     .select({
       plan: subscription.plan,
+      status: subscription.status,
       stripeCustomerId: subscription.stripeCustomerId,
       stripeSubscriptionId: subscription.stripeSubscriptionId,
       updatedAt: subscription.updatedAt,
@@ -66,6 +88,12 @@ async function getWorkspaceSubscriptionRows(workspaceId: string) {
 }
 
 async function getVerifiedPaidPlan(row: BillingSubscriptionRow, workspaceId: string): Promise<BillingPlan | null> {
+  const localPlan = getLocalDevPaidPlan(row)
+  if (localPlan) return localPlan
+
+  const complimentaryPlan = getComplimentarySubscriptionPlan(row)
+  if (complimentaryPlan) return complimentaryPlan
+
   const stripeSubscriptionId = String(row.stripeSubscriptionId || "").trim()
   if (!stripeSubscriptionId) return null
 
@@ -111,6 +139,9 @@ async function setWorkspacePlan(workspaceId: string, nextPlan: BillingPlan, curr
 export async function getEffectiveWorkspacePlan(workspaceId: string): Promise<BillingPlan> {
   const id = String(workspaceId || "").trim()
   if (!id) return "free"
+
+  const complimentaryPlan = getComplimentaryWorkspacePlan(id)
+  if (complimentaryPlan) return complimentaryPlan
 
   const rows = await getWorkspaceSubscriptionRows(id)
   for (const row of rows) {

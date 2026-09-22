@@ -105,13 +105,19 @@ function TabsList({
       `[data-slot="tabs-trigger"][data-value="${v}"]`
     );
     if (!isMobile) measure(el);
-    if (el && "scrollIntoView" in el) {
-      (el as HTMLElement).scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest",
-      });
-    }
+    if (!el) return;
+    // Keep the active tab visible inside a horizontally overflowing strip.
+    // Never use scrollIntoView — `block: "nearest"` still scrolls the page
+    // when the strip is below the fold (homepage pricing landed on Create).
+    if (root.scrollWidth <= root.clientWidth + 1) return;
+    const rootRect = root.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const delta =
+      elRect.left - rootRect.left - (root.clientWidth - elRect.width) / 2;
+    root.scrollTo({
+      left: Math.max(0, root.scrollLeft + delta),
+      behavior: "smooth",
+    });
   }, [ctx?.value, measure, isMobile]);
 
   return (

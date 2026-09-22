@@ -4,12 +4,14 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { fetchUserWorkspaces } from "@/lib/workspace/client";
 
+/** Trim and drop empty workspace slugs. */
 function mapWorkspaceSlugs(slugs: Array<string | undefined>): string[] {
   return slugs
     .map((slug) => String(slug || "").trim())
     .filter(Boolean);
 }
 
+/** Navigate to profile/branding/switch targets. Falls back to /workspaces/new. */
 export function useWorkspaceNavigation(currentSlug: string) {
   const router = useRouter();
 

@@ -1,0 +1,152 @@
+.docs-code {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-docs-code), "Cascadia Code", "Cascadia Mono", Consolas,
+    "Courier New", Menlo, Monaco, ui-monospace, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  font-variant-ligatures: none;
+  tab-size: 2;
+}
+
+.docs-code code {
+  background: transparent !important;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 400;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+/* VS Code Light+ */
+.docs-code .hljs-comment,
+.docs-code .hljs-quote {
+  color: #008000;
+  font-style: italic;
+}
+
+.docs-code .hljs-keyword,
+.docs-code .hljs-selector-tag,
+.docs-code .hljs-literal,
+.docs-code .hljs-section,
+.docs-code .hljs-link {
+  color: #0000ff;
+}
+
+.docs-code .hljs-string,
+.docs-code .hljs-doctag,
+.docs-code .hljs-template-tag,
+.docs-code .hljs-addition {
+  color: #a31515;
+}
+
+.docs-code .hljs-number,
+.docs-code .hljs-regexp {
+  color: #098658;
+}
+
+.docs-code .hljs-title,
+.docs-code .hljs-title.function_,
+.docs-code .hljs-name {
+  color: #795e26;
+}
+
+.docs-code .hljs-type,
+.docs-code .hljs-title.class_,
+.docs-code .hljs-attribute,
+.docs-code .hljs-built_in {
+  color: #267f99;
+}
+
+.docs-code .hljs-variable,
+.docs-code .hljs-template-variable,
+.docs-code .hljs-params,
+.docs-code .hljs-attr,
+.docs-code .hljs-property {
+  color: #001080;
+}
+
+.docs-code .hljs-tag,
+.docs-code .hljs-punctuation {
+  color: #800000;
+}
+
+.docs-code .hljs-symbol,
+.docs-code .hljs-bullet,
+.docs-code .hljs-selector-id,
+.docs-code .hljs-selector-class,
+.docs-code .hljs-selector-attr,
+.docs-code .hljs-selector-pseudo,
+.docs-code .hljs-meta,
+.docs-code .hljs-deletion {
+  color: #af00db;
+}
+
+/* VS Code Dark+ */
+.dark .docs-code {
+  color: #d4d4d4;
+}
+
+.dark .docs-code .hljs-comment,
+.dark .docs-code .hljs-quote {
+  color: #6a9955;
+}
+
+.dark .docs-code .hljs-keyword,
+.dark .docs-code .hljs-selector-tag,
+.dark .docs-code .hljs-literal,
+.dark .docs-code .hljs-section,
+.dark .docs-code .hljs-link {
+  color: #569cd6;
+}
+
+.dark .docs-code .hljs-string,
+.dark .docs-code .hljs-doctag,
+.dark .docs-code .hljs-template-tag,
+.dark .docs-code .hljs-addition {
+  color: #ce9178;
+}
+
+.dark .docs-code .hljs-number,
+.dark .docs-code .hljs-regexp {
+  color: #b5cea8;
+}
+
+.dark .docs-code .hljs-title,
+.dark .docs-code .hljs-title.function_,
+.dark .docs-code .hljs-name {
+  color: #dcdcaa;
+}
+
+.dark .docs-code .hljs-type,
+.dark .docs-code .hljs-title.class_,
+.dark .docs-code .hljs-attribute,
+.dark .docs-code .hljs-built_in {
+  color: #4ec9b0;
+}
+
+.dark .docs-code .hljs-variable,
+.dark .docs-code .hljs-template-variable,
+.dark .docs-code .hljs-params,
+.dark .docs-code .hljs-attr,
+.dark .docs-code .hljs-property {
+  color: #9cdcfe;
+}
+
+.dark .docs-code .hljs-tag,
+.dark .docs-code .hljs-punctuation {
+  color: #808080;
+}
+
+.dark .docs-code .hljs-symbol,
+.dark .docs-code .hljs-bullet,
+.dark .docs-code .hljs-selector-id,
+.dark .docs-code .hljs-selector-class,
+.dark .docs-code .hljs-selector-attr,
+.dark .docs-code .hljs-selector-pseudo,
+.dark .docs-code .hljs-meta,
+.dark .docs-code .hljs-deletion {
+  color: #c586c0;
+}

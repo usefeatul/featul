@@ -17,7 +17,7 @@ export function ReportIndicator({ count, className }: ReportIndicatorProps) {
             title={`Reported ${count} times`}
         >
             <FlagIcon className="size-3.5" />
-            <span className="text-xs font-semibold tabular-nums">{count}</span>
+            <span className="text-[10px] font-semibold tabular-nums">{count}</span>
         </div>
     )
 }

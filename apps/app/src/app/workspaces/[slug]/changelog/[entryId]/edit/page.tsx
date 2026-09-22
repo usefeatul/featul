@@ -1,4 +1,7 @@
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { ASSISTANT_PANEL_COOKIE } from "@/lib/changelog/panel";
+import { PANEL_WIDTH_COOKIES, parsePanelWidth } from "@/lib/panel";
 import { createPageMetadata } from "@/lib/seo";
 import { ChangelogEditor } from "@/components/changelog/ChangelogEditor";
 import { getChangelogEntryForEdit } from "../../data";
@@ -22,11 +25,15 @@ export default async function EditChangelogPage({ params }: Props) {
     }
 
     const { entry, availableTags } = data;
+    const cookieStore = await cookies();
+    const initialAiOpen = cookieStore.get(ASSISTANT_PANEL_COOKIE)?.value === "true";
 
     return (
         <ChangelogEditor
             workspaceSlug={slug}
             mode="edit"
+            initialAiOpen={initialAiOpen}
+            initialAiWidth={parsePanelWidth(cookieStore.get(PANEL_WIDTH_COOKIES.assistant)?.value)}
             entryId={entryId}
             initialData={{
                 title: entry.title,

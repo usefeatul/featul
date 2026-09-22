@@ -5,8 +5,12 @@ import Image from "next/image"
 import { toast } from "sonner"
 import { getLogoUploadUrl, saveBranding } from "../../../lib/branding/service"
 import { setWorkspaceLogo } from "@/lib/branding/store"
-import { BRANDING_UPLOAD_CONTENT_TYPES, BRANDING_LOGO_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy"
+import { updateWorkspaceLogoInCache } from "./cache"
+import { useQueryClient } from "@tanstack/react-query"
+import { BRANDING_UPLOAD_CONTENT_TYPES, BRANDING_LOGO_UPLOAD_MAX_BYTES } from "@featul/api/upload/policy"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
+import { cn } from "@featul/ui/lib/utils"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 
 type Props = {
   slug: string
@@ -16,6 +20,7 @@ type Props = {
 }
 
 export default function LogoUploader({ slug, value = "", onChange, disabled = false }: Props) {
+  const queryClient = useQueryClient()
   const [preview, setPreview] = React.useState<string>(value || "")
 
   React.useEffect(() => {
@@ -41,8 +46,13 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
       toast.error("File too large")
       return
     }
+    const previousLogo = value || ""
     const reader = new FileReader()
-    reader.onload = () => setPreview(typeof reader.result === "string" ? reader.result : "")
+    reader.onload = () => {
+      const dataUrl = typeof reader.result === "string" ? reader.result : ""
+      setPreview(dataUrl)
+      if (dataUrl) setWorkspaceLogo(slug, dataUrl)
+    }
     reader.readAsDataURL(file)
     const toastId = toast.loading("Uploading logo...")
     try {
@@ -57,6 +67,11 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
       const result = await saveBranding(slug, { logoUrl: publicUrl })
       if (!result.ok) throw new Error(result.message || "Save failed")
       setWorkspaceLogo(slug, publicUrl)
+      try {
+        updateWorkspaceLogoInCache(queryClient, slug, publicUrl)
+      } catch {
+        // ignore cache errors
+      }
       onChange(publicUrl)
       captureAnalyticsEvent(analyticsEvents.logoUploaded, {
         workspace_slug: slug,
@@ -65,6 +80,8 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
       })
       toast.success("Logo updated", { id: toastId })
     } catch (error: unknown) {
+      setPreview(previousLogo)
+      setWorkspaceLogo(slug, previousLogo)
       const message = error instanceof Error && error.message ? error.message : "Failed to upload"
       toast.error(message, { id: toastId })
     }
@@ -86,34 +103,40 @@ export default function LogoUploader({ slug, value = "", onChange, disabled = fa
   }
 
   return (
-    <div
-      className={`relative w-8 h-8 rounded-md  bg-muted border ring-1 ring-border overflow-hidden ${disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
-      onClick={pick}
-      onDrop={onDrop}
-      onDragOver={onDragOver}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          pick();
-        }
-      }}
-      aria-label="Upload workspace logo"
-      aria-disabled={disabled}
-    >
-      {preview ? (
-        <Image
-          src={preview}
-          alt="Logo"
-          fill
-          sizes="32px"
-          className="object-cover"
-          unoptimized
-          loader={({ src }) => src}
-        />
-      ) : null}
-      <input ref={inputRef} type="file" accept={BRANDING_UPLOAD_CONTENT_TYPES.join(",")} className="hidden" onChange={onInputChange} />
-    </div>
+    <Toolbar size="sm" className="w-fit">
+      <div
+        className={cn(
+          toolbarItemClass,
+          "relative size-8 overflow-hidden",
+          disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
+        )}
+        onClick={pick}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            pick();
+          }
+        }}
+        aria-label="Upload workspace logo"
+        aria-disabled={disabled}
+      >
+        {preview ? (
+          <Image
+            src={preview}
+            alt="Logo"
+            fill
+            sizes="32px"
+            className="object-cover"
+            unoptimized
+            loader={({ src }) => src}
+          />
+        ) : null}
+        <input ref={inputRef} type="file" accept={BRANDING_UPLOAD_CONTENT_TYPES.join(",")} className="hidden" onChange={onInputChange} />
+      </div>
+    </Toolbar>
   )
 }

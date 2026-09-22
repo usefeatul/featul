@@ -3,6 +3,7 @@
 import { useSession } from "@featul/auth/client"
 import { useWorkspaceRole } from "@/hooks/useWorkspaceAccess"
 
+/** True when the viewer is signed in and is owner, admin, or `viewerCanEdit`. */
 export function usePostEditAccess({
   workspaceSlug,
   viewerCanEdit,

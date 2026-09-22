@@ -1,6 +1,5 @@
 "use client"
 
-import SectionCard from "@/components/settings/global/SectionCard"
 import OAuthConnections from "./OAuthConnections"
 import DeleteAccount from "./DeleteAccount"
 import AvatarUpload from "./AvatarUpload"
@@ -15,16 +14,11 @@ type ProfileProps = {
 
 export default function Profile({ initialUser, initialAccounts, initialPasskeys }: ProfileProps) {
   return (
-    <SectionCard
-      title="Profile"
-      description="Manage your account settings and connected services"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <AvatarUpload initialUser={initialUser} />
-        <AccountDetails initialUser={initialUser} initialPasskeys={initialPasskeys} />
-        <OAuthConnections initialAccounts={initialAccounts} />
-        <DeleteAccount />
-      </div>
-    </SectionCard>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:auto-rows-fr md:items-stretch">
+      <AvatarUpload initialUser={initialUser} />
+      <AccountDetails initialUser={initialUser} initialPasskeys={initialPasskeys} />
+      <OAuthConnections initialAccounts={initialAccounts} />
+      <DeleteAccount />
+    </div>
   )
 }

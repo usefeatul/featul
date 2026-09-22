@@ -6,6 +6,7 @@ import { SubmitIdeaCard } from "./SubmitIdeaCard"
 import { BoardsList } from "./BoardsList"
 import { PoweredBy } from "./PoweredBy"
 import { useDomainBranding } from "./DomainBrandingProvider"
+import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
 
 export function DomainSidebar({
   subdomain,
@@ -30,9 +31,12 @@ export function DomainSidebar({
   const alignClass = sidebarPosition === "left" ? "justify-start" : "justify-end"
   return (
     <aside className="space-y-4">
-      <div className={`flex items-center ${alignClass} gap-2`}>
-        <SortPopover subdomain={subdomain} slug={slug} basePath={sortBasePath} keepParams={sortKeepParams} />
-        <SearchAction slug={slug} />
+      <div className={`flex items-center ${alignClass}`}>
+        <Toolbar size="sm" className="w-fit">
+          <SortPopover subdomain={subdomain} slug={slug} basePath={sortBasePath} keepParams={sortKeepParams} />
+          <ToolbarSeparator />
+          <SearchAction slug={slug} />
+        </Toolbar>
       </div>
       {!hideSubmitButton && <SubmitIdeaCard subdomain={subdomain} slug={slug} />}
       {!hideBoards && <BoardsList slug={slug} initialBoards={initialBoards} selectedBoard={selectedBoard} />}

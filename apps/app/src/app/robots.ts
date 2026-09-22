@@ -22,6 +22,7 @@ const PUBLIC_DISALLOW = [
   "/settings",
 ]
 
+/** Public board/roadmap/changelog paths; blocks dashboard and API. */
 function workspaceRobots(): MetadataRoute.Robots {
   return {
     rules: {
@@ -32,6 +33,7 @@ function workspaceRobots(): MetadataRoute.Robots {
   }
 }
 
+/** Disallow all crawlers (app host, reserved subdomains, local). */
 function blockRobots(): MetadataRoute.Robots {
   return {
     rules: {
@@ -41,6 +43,7 @@ function blockRobots(): MetadataRoute.Robots {
   }
 }
 
+/** Host-based robots: public workspaces allowlisted, app host blocked. */
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const headerStore = await headers()
   const host = (headerStore.get("host") || "").replace(/:\d+$/, "").toLowerCase()

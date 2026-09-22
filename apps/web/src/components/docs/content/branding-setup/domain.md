@@ -1,59 +1,49 @@
 ---
 title: Custom domains
-description: Set up workspace subdomains and custom domains for your feedback portal.
+description: Set up a workspace subdomain and an optional custom domain for your feedback portal.
 ---
 
-## Default Subdomain
+## Default subdomain
 
 Every workspace receives a free subdomain:
+
 ```
 yourworkspace.featul.com
 ```
 
-Ready to use immediately after workspace creation.
+It is ready to use as soon as the workspace exists.
 
-## Custom Domain Setup
+## Custom domain
 
-Connect your branded domain for seamless customer experience:
+Connect your own domain from **Settings → Domain**. Custom domains are available on Starter and Professional.
 
-1. Navigate to **Settings → Domain**
-2. Enter desired domain (e.g., `feedback.yourdomain.com`)
-3. Add DNS record with your provider:
+1. Go to **Settings → Domain**
+2. Click **Add domain** and enter a host such as `feedback.yourdomain.com`
+3. Add the DNS records Featul shows:
 
 | Type | Name | Value |
 |------|------|-------|
-| CNAME | feedback | `yourworkspace.featul.com` |
+| CNAME | `feedback` (or the host you chose) | `origin.featul.com` |
+| TXT | The `_acme-challenge` name shown in settings | The verification value shown in settings |
 
-4. Wait for DNS propagation (few minutes to hours)
-5. Featul verifies domain automatically
-6. Portal becomes accessible at your custom domain
+Copy the exact Name and Value from the Domain page. Featul verifies both records.
 
-## SSL Certificates
+4. Click verify after DNS has propagated (a few minutes, sometimes longer)
+5. Your portal is then available at the custom domain over HTTPS
 
-Automatic SSL provisioning for all custom domains. No manual configuration required—your portal serves over HTTPS immediately after verification.
+## Routing
 
-## Routing Behavior
+Both URLs serve the same public site:
 
-Both URLs serve identical content:
 - Workspace subdomain: `yourworkspace.featul.com`
 - Custom domain: `feedback.yourdomain.com`
 
-Featul handles routing automatically.
-
-## Multiple Workspaces
-
-Each workspace has independent domains:
-- Unique subdomain
-- Optional custom domain
-- Completely isolated data and settings
-
 ## Troubleshooting
 
-**Domain verification issues:**
-- Verify DNS record accuracy
-- Allow propagation time (up to 48 hours)
-- Check for conflicting DNS records
+**Verification still pending:**
+- Confirm the CNAME target is `origin.featul.com` (not your Featul subdomain)
+- Confirm the TXT record matches the value in settings
+- Allow time for DNS to propagate
+- Check for conflicting records on the same host
 
-**SSL certificate problems:**
-- Certificates provision automatically after verification
-- Remove and re-add domain if issues persist
+Remove the domain and add it again if you need a fresh verification challenge.

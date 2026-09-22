@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
+import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { NotraIcon } from "@featul/ui/icons/notra";
+import { cn } from "@featul/ui/lib/utils";
 import { NotraConnectionSection } from "@/components/changelog/notra/NotraConnectionSection";
 import { NotraCredentialsSection } from "@/components/changelog/notra/NotraCredentialsSection";
 import { NotraDialogActions } from "@/components/changelog/notra/NotraDialogActions";
@@ -22,9 +24,15 @@ import { SettingsDialogShell } from "@/components/settings/global/SettingsDialog
 
 type ImportNotraDialogProps = {
   workspaceSlug: string;
+  iconOnly?: boolean;
+  triggerClassName?: string;
 };
 
-export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
+export function ImportNotraDialog({
+  workspaceSlug,
+  iconOnly = false,
+  triggerClassName,
+}: ImportNotraDialogProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [organizationId, setOrganizationId] = React.useState("");
@@ -239,12 +247,21 @@ export function ImportNotraDialog({ workspaceSlug }: ImportNotraDialogProps) {
     <>
       <Button
         type="button"
-        variant="card"
-        className="h-full rounded-none border-none hover:bg-muted px-3 text-xs font-medium text-muted-foreground hover:text-foreground"
+        variant="plain"
+        size={iconOnly ? "icon-sm" : undefined}
+        className={cn(
+          toolbarItemClass,
+          iconOnly
+            ? "size-8 p-0"
+            : "px-3 text-xs font-medium text-muted-foreground hover:text-foreground",
+          triggerClassName,
+        )}
         onClick={openDialog}
+        aria-label="Import from Notra"
+        title={iconOnly ? "Import from Notra" : undefined}
       >
-        <NotraIcon className="size-4 mr-2" />
-        Import Notra
+        <NotraIcon className={cn("size-4", !iconOnly && "mr-2")} />
+        <span className={iconOnly ? "sr-only" : undefined}>Import Notra</span>
       </Button>
 
       <SettingsDialogShell

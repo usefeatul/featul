@@ -5,6 +5,7 @@ import {
   POST_TITLE_MAX_LENGTH,
   POST_TITLE_MIN_LENGTH,
 } from "./postValidation"
+import { POST_MAX_IMAGES } from "../upload/policy"
 
 const postTitleSchema = z
   .string()
@@ -17,6 +18,17 @@ const postContentSchema = z
   .trim()
   .min(POST_CONTENT_MIN_LENGTH)
 
+const postImagesSchema = z
+  .array(
+    z.object({
+      url: z.string().url(),
+      name: z.string().max(255).optional(),
+      type: z.string().max(128).optional(),
+    })
+  )
+  .max(POST_MAX_IMAGES)
+  .optional()
+
 export const byIdSchema = z.object({ postId: z.string().min(1) })
 
 export const updatePostMetaSchema = z.object({
@@ -25,6 +37,15 @@ export const updatePostMetaSchema = z.object({
   isPinned: z.boolean().optional(),
   isLocked: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
+  snoozedUntil: z
+    .union([z.string().datetime(), z.coerce.date()])
+    .nullable()
+    .optional()
+    .transform((value) => {
+      if (value === undefined) return undefined
+      if (value === null) return null
+      return value instanceof Date ? value : new Date(value)
+    }),
 })
 
 export const updatePostBoardSchema = z.object({
@@ -41,6 +62,7 @@ export const createPostSchema = z.object({
   title: postTitleSchema,
   content: postContentSchema,
   image: z.string().url().optional(),
+  images: postImagesSchema,
   workspaceSlug: z.string().min(1),
   boardSlug: z.string().min(1),
   fingerprint: fingerprintSchema.optional(),
@@ -53,6 +75,7 @@ export const updatePostSchema = z.object({
   title: postTitleSchema.optional(),
   content: postContentSchema.optional(),
   image: z.string().url().optional().nullable(),
+  images: postImagesSchema,
   boardSlug: z.string().min(1).optional(),
   roadmapStatus: z.string().min(1).max(64).optional(),
   tags: z.array(z.string().min(1)).optional(),

@@ -49,6 +49,7 @@ function getUnknownErrorMessage(error: unknown): string {
   return ""
 }
 
+/** Creates a comment or reply. Fingerprints anonymous authors; invalidates the comment query and dispatches `comment:created`. */
 export function useCommentSubmit({
   postId,
   parentId,
@@ -195,6 +196,7 @@ export function useCommentSubmit({
           try {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
+            queryClient.invalidateQueries({ queryKey: ["mentions"] })
           } catch (e) {
             console.error("Failed to invalidate queries:", e)
           }

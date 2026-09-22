@@ -1,6 +1,12 @@
 import type { FeatureSupport } from "@/config/alternatives";
 import { Check, Minus, X } from "lucide-react";
 
+export function featureSupportLabel(value: FeatureSupport): string {
+  if (value === true) return "Yes"
+  if (value === "partial") return "Partial"
+  return "No"
+}
+
 export function StatusIcon({ value }: { value: FeatureSupport }) {
   if (value === true)
     return (

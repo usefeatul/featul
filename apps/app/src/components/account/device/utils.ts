@@ -4,6 +4,7 @@ import type {
   UserDropdownAccount,
 } from "../types";
 
+/** Normalize device-account list payloads. Drop rows without a userId. */
 export function normalizeDeviceAccountsPayload(
   payload: unknown,
 ): DeviceAccount[] {
@@ -39,6 +40,7 @@ export function normalizeDeviceAccountsPayload(
     .filter((value): value is DeviceAccount => Boolean(value));
 }
 
+/** Deduped account list. Inject current session if missing. Current first. */
 export function buildAccountsList({
   deviceAccounts,
   currentSession,
@@ -58,11 +60,15 @@ export function buildAccountsList({
   for (const account of deviceAccounts) {
     if (!account.userId || seenUserIds.has(account.userId)) continue;
     seenUserIds.add(account.userId);
+    const isCurrent =
+      account.isCurrent ||
+      (Boolean(currentUserId) && account.userId === currentUserId);
+    const useLiveIdentity = Boolean(isCurrent && currentSession?.user);
     accounts.push({
       userId: account.userId,
-      name: account.name,
-      image: account.image,
-      isCurrent: account.isCurrent,
+      name: useLiveIdentity ? fallbackName || account.name : account.name,
+      image: useLiveIdentity ? fallbackImage : account.image,
+      isCurrent,
     });
   }
 

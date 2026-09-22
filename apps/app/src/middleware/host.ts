@@ -1,8 +1,10 @@
 import type { NextRequest } from "next/server"
 import { reroute } from "./reroute"
 
+/** Subdomains that must stay on the main app, not tenant public sites. */
 export const reservedSubdomains = new Set(["www", "app", "featul", "feedgot", "staging"])
 
+/** Host, tenant slug, and whether this is localhost vs *.featul.com. */
 export function getHostInfo(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   const host = req.headers.get("host") || ""
@@ -15,6 +17,7 @@ export function getHostInfo(req: NextRequest) {
   return { pathname, hostNoPort, isLocal, isMainDomain, subdomain }
 }
 
+/** Workspace-subdomain traffic: rewrite public paths onto `/{slug}/…`. Reserved hosts skip. */
 export function rewriteSubdomain(req: NextRequest, ctx: ReturnType<typeof getHostInfo>) {
   const { pathname, subdomain } = ctx
   if (subdomain && !reservedSubdomains.has(subdomain)) {

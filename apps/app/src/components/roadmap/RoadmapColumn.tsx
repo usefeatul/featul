@@ -2,13 +2,25 @@
 
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
+import { useReducedMotion } from "framer-motion";
 import { MoveVerticalIcon } from "@featul/ui/icons/vertical";
-import { MoveHorizontalIcon } from "@featul/ui/icons/horizontal";
 import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
 import { Button } from "@featul/ui/components/button";
+import { cn } from "@featul/ui/lib/utils";
 import StatusIcon from "@/components/requests/StatusIcon";
 import RoadmapEmptyColumn from "@/components/roadmap/RoadmapEmptyColumn";
-import { motion, AnimatePresence } from "framer-motion";
+import { getRoadmapStatusTone } from "@/components/roadmap/card";
+
+const COLUMN_MOTION_MS = 550;
+
+export const ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS =
+  "md:transition-[flex-grow,flex-shrink,flex-basis,min-width] md:duration-[550ms] md:ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none";
+
+export function roadmapColumnWidthClass(collapsed: boolean) {
+  return collapsed
+    ? "md:min-w-14 md:flex-[0_0_56px]"
+    : "md:min-w-[270px] md:flex-[1_1_0px] lg:min-w-[280px]";
+}
 
 export default function RoadmapColumn({
   id,
@@ -30,26 +42,45 @@ export default function RoadmapColumn({
   disableMotion?: boolean;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  const reduceMotion = useReducedMotion() ?? false;
+  const instant = Boolean(disableMotion || reduceMotion);
+  const tone = getRoadmapStatusTone(id);
+  const [contentMounted, setContentMounted] = React.useState(!collapsed);
+  const showContent = !collapsed || contentMounted;
+
+  React.useEffect(() => {
+    if (!collapsed) {
+      setContentMounted(true);
+      return;
+    }
+    const delay = instant ? 0 : COLUMN_MOTION_MS;
+    const timeoutId = window.setTimeout(() => setContentMounted(false), delay);
+    return () => window.clearTimeout(timeoutId);
+  }, [collapsed, instant]);
 
   return (
-    <motion.div
+    <div
       ref={setNodeRef}
-      className={`h-full overflow-hidden rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border transition-colors duration-200 flex flex-col ${isOver ? "border-green-500/70 bg-green-500/[0.04]" : ""}`}
-      layout
-      initial={false}
-      transition={{
-        type: "tween",
-        ease: "easeOut",
-        duration: disableMotion ? 0 : 0.28,
-      }}
+      className={cn(
+        "flex h-full min-h-0 w-full flex-col overflow-hidden text-foreground transition-colors duration-200",
+        collapsed
+          ? "rounded-lg bg-card dark:bg-[#232323]"
+          : "bg-transparent",
+        isOver && "bg-green-500/[0.025]",
+      )}
     >
       <div
-        className={`${collapsed ? "relative flex flex-col items-center gap-2 px-2 py-3" : "flex items-center justify-between border-b border-border/60 px-3 py-2.5"} cursor-pointer`}
+        className={cn(
+          "cursor-pointer",
+          collapsed
+            ? "relative flex min-h-0 flex-1 flex-col items-center gap-2 px-2 py-3"
+            : "flex min-h-10 items-center justify-between px-2.5 py-2",
+        )}
         role="button"
         tabIndex={0}
         aria-expanded={!collapsed}
-        aria-label={collapsed ? `${label} column, ${count} posts` : undefined}
-        title={collapsed ? label : undefined}
+        aria-label={`${label} column, ${count} posts`}
+        title={label}
         onClick={() => onToggle?.(!collapsed)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") onToggle?.(!collapsed);
@@ -57,23 +88,39 @@ export default function RoadmapColumn({
       >
         {collapsed ? (
           <>
-            <MoveHorizontalIcon className="mx-auto block size-4 text-accent" />
-            <StatusIcon
-              status={id}
-              className="mx-auto block size-4.5 text-foreground/80"
+            <MoveVerticalIcon
+              className={cn(
+                "mx-auto block size-4 rotate-90 text-accent transition-transform duration-[550ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
+                instant && "transition-none",
+              )}
             />
-            <div className="mx-auto block px-1 text-xs font-mono tabular-nums text-accent">
-              {count}
+            <div className="flex flex-col items-center gap-2">
+              <StatusIcon status={id} className="block size-4.5 shrink-0" />
+              <span
+                className="text-xs font-medium leading-none tracking-wide [writing-mode:vertical-rl]"
+                style={{ color: tone.color }}
+              >
+                {label}
+              </span>
             </div>
+            <div className="min-h-2 flex-1" />
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-md bg-muted px-1.5 text-[10px] tabular-nums text-muted-foreground dark:bg-white/[0.055]">
+              {count}
+            </span>
           </>
         ) : (
           <>
             <div className="flex min-w-0 items-center gap-2">
               <StatusIcon
                 status={id}
-                className="size-4 text-foreground/80 shrink-0"
+                className="size-4 shrink-0 text-foreground/80"
               />
-              <div className="truncate text-sm font-medium">{label}</div>
+              <div
+                className="truncate text-sm font-medium"
+                style={{ color: tone.color }}
+              >
+                {label}
+              </div>
             </div>
             <div className="flex items-center gap-2">
               {onCreate ? (
@@ -93,47 +140,51 @@ export default function RoadmapColumn({
                   <FillPlusIcon className="size-4" size={16} />
                 </Button>
               ) : null}
-              <div className="inline-flex h-6 min-w-6 items-center justify-center px-1.5 text-xs font-mono tabular-nums leading-none text-accent">
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-md bg-muted px-1.5 text-[10px] tabular-nums text-muted-foreground dark:bg-white/[0.055]">
                 {count}
-              </div>
-              <MoveVerticalIcon className="size-4 text-accent" />
+              </span>
+              <MoveVerticalIcon
+                className={cn(
+                  "size-4 text-accent transition-transform duration-[550ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
+                  instant && "transition-none",
+                )}
+              />
             </div>
           </>
         )}
       </div>
-      <AnimatePresence initial={false}>
-        {!collapsed ? (
-          <motion.ul
-            className="min-h-[260px] flex-1 space-y-2 p-2"
-            initial={false}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{
-              type: "tween",
-              ease: [0.22, 1, 0.36, 1],
-              duration: disableMotion ? 0 : 0.32,
-            }}
-          >
-            {children}
-            {count === 0 && !isOver ? (
+      <div
+        className={cn(
+          "grid min-h-0",
+          !collapsed && "flex-1",
+          instant
+            ? "transition-none"
+            : "transition-[grid-template-rows,opacity] duration-[550ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none",
+          collapsed
+            ? "grid-rows-[0fr] opacity-0"
+            : "grid-rows-[1fr] opacity-100",
+        )}
+        aria-hidden={collapsed}
+        inert={!!collapsed}
+      >
+        <div className="flex h-full min-h-0 flex-col overflow-hidden">
+          <ul className="scrollbar-hide min-h-0 flex-1 space-y-1.5 overflow-y-auto bg-transparent px-1.5 pb-2">
+            {showContent ? children : null}
+            {showContent && count === 0 && !isOver ? (
               <RoadmapEmptyColumn
                 label={label}
                 onCreate={onCreate ? () => onCreate(id) : undefined}
               />
             ) : null}
             {isOver ? (
-              <motion.li
-                className="mt-2 h-16 rounded-md border border-dashed border-green-500/70 bg-green-500/[0.04]"
+              <li
+                className="mt-2 h-14 rounded-lg border border-dashed border-green-500/60 bg-green-500/[0.035]"
                 aria-hidden
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: disableMotion ? 0 : 0.08 }}
               />
             ) : null}
-          </motion.ul>
-        ) : null}
-      </AnimatePresence>
-    </motion.div>
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 }

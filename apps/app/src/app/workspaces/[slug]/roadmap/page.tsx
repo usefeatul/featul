@@ -7,7 +7,7 @@ import { readInitialCollapsedByStatus } from "@/lib/roadmap.server";
 import { getServerSession } from "@featul/auth/session";
 import { resolveSearchParams } from "@/utils/search/params";
 import { parseRoadmapFiltersFromRecord } from "@/utils/roadmap/url";
-import { boardSlugsForSearch } from "@featul/api/shared/post-search";
+import { boardSlugsForSearch } from "@featul/api/post/search";
 
 export const revalidate = 30;
 
@@ -44,15 +44,17 @@ export default async function RoadmapPage({ params, searchParams }: Props) {
   const initialCollapsedByStatus = readInitialCollapsedByStatus(slug);
 
   return (
-    <RoadmapBoard
-      workspaceSlug={slug}
-      items={items}
-      currentUser={
-        session?.user
-          ? { name: session.user.name, image: session.user.image }
-          : undefined
-      }
-      initialCollapsedByStatus={await initialCollapsedByStatus}
-    />
+    <section className="-mx-4 h-[calc(100dvh-3rem-var(--workspace-mobile-nav-height))] bg-background sm:-mx-8 lg:-mx-12 lg:h-[calc(100dvh-3rem)] xl:-mx-16">
+      <RoadmapBoard
+        workspaceSlug={slug}
+        items={items}
+        currentUser={
+          session?.user
+            ? { name: session.user.name, image: session.user.image }
+            : undefined
+        }
+        initialCollapsedByStatus={await initialCollapsedByStatus}
+      />
+    </section>
   );
 }

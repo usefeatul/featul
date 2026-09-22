@@ -6,7 +6,7 @@ interface MemberIconProps {
   opacity?: number
 }
 
-export const MemberIcon: React.FC<MemberIconProps> = ({ className = '', size = 18, opacity = 0.6 }) => {
+export const MemberIcon: React.FC<MemberIconProps> = ({ className = '', size = 18, opacity = 1 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -36,6 +36,7 @@ export const MemberIcon: React.FC<MemberIconProps> = ({ className = '', size = 1
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
+        className="origin-center transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-active:translate-y-0"
       />
     </svg>
   )

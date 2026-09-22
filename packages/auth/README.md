@@ -23,7 +23,7 @@
 - `@featul/auth/password`
 - `@featul/auth/session`
 - `@featul/auth/email`
-- `@featul/auth/trusted-origins`
+- `@featul/auth/origins/trusted`
 - `@featul/auth/trust`
 
 ## Package Layout
@@ -37,7 +37,7 @@ src/
 ├── workspace.ts               # Workspace-aware auth utilities
 ├── session.ts                 # Session helpers
 ├── password.ts                # Password validation and helpers
-├── trusted-origins.ts         # Trusted-origin parsing and validation
+├── origins/trusted.ts         # Trusted-origin parsing and validation
 ├── trust.ts                   # Additional trust/security helpers
 └── email/                     # Email templates and delivery helpers
 ```

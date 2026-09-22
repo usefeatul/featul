@@ -6,11 +6,19 @@ import { HTTPException } from "hono/http-exception"
 import { auth } from "@featul/auth"
 import { headers } from "next/headers"
 import { mapPermissions } from "../shared/permissions"
+import { canModerateWorkspace } from "../shared/access"
 import { triggerPostWebhooks } from "../services/webhook"
-import { enforceTrustedBrowserOrigin } from "../shared/request-origin"
-import { getRequestFingerprint } from "../shared/request-fingerprint"
-import { ACTIVITY_ACTIONS } from "../shared/activity-actions"
+import { notifyPostStatusChange } from "../status/notify"
+import { normalizeStatus } from "../shared/status"
+import { enforceTrustedBrowserOrigin } from "../request/origin"
+import { getRequestFingerprint } from "../request/fingerprint"
+import { ACTIVITY_ACTIONS } from "../activity/actions"
 import type { RequestCarrier } from "../types/post"
+import { mergePostMetadata, resolvePostImageFields, listPostImageUrls, droppedImageUrls } from "../storage/images"
+import { deleteUnreferencedImageUrls } from "../storage/delete"
+import { assertPostImageFields } from "../storage/urls"
+
+type PostMetadata = NonNullable<(typeof post.$inferInsert)["metadata"]>
 
 function getRequestFromContext(c: unknown): Request {
   const carrier = c as RequestCarrier
@@ -43,6 +51,37 @@ async function getOptionalSessionUserId(c: unknown): Promise<string | null> {
   }
 }
 
+type TagSummary = { id: string; name: string | null; color: string | null; slug: string | null }
+
+async function resolveWorkspaceTags(
+  db: any,
+  workspaceId: string,
+  tagIds: string[] | undefined,
+): Promise<{ ids: string[]; summaries: TagSummary[] }> {
+  const unique = [...new Set((tagIds || []).map(String).filter(Boolean))]
+  if (unique.length === 0) return { ids: [], summaries: [] }
+
+  const rows = await db
+    .select({
+      id: tag.id,
+      name: tag.name,
+      color: tag.color,
+      slug: tag.slug,
+    })
+    .from(tag)
+    .where(and(eq(tag.workspaceId, workspaceId), inArray(tag.id, unique)))
+
+  return {
+    ids: rows.map((row: { id: string }) => String(row.id)),
+    summaries: rows.map((row: TagSummary) => ({
+      id: String(row.id),
+      name: row.name,
+      color: row.color || null,
+      slug: row.slug || null,
+    })),
+  }
+}
+
 function buildTitleSearchCondition(title: string): SQL {
   const words = title.trim().split(/\s+/).filter((word) => word.length > 2)
   if (words.length === 0) {
@@ -64,7 +103,7 @@ export function createPostRouter() {
       .post(async ({ ctx, input, c }) => {
         const request = getRequestFromContext(c)
         enforceTrustedBrowserOrigin(request)
-        const { title, content, image, workspaceSlug, boardSlug, fingerprint, roadmapStatus, tags } = input
+        const { title, content, image, images, workspaceSlug, boardSlug, fingerprint, roadmapStatus, tags } = input
 
         const userId = await getOptionalSessionUserId(c)
 
@@ -132,45 +171,44 @@ export function createPostRouter() {
         const randomSuffix = Math.random().toString(36).substring(2, 8)
         const slug = slugBase ? `${slugBase}-${randomSuffix}` : `post-${randomSuffix}`
 
+        const imageFields = resolvePostImageFields({ image, images }) ?? {
+          image: image ?? null,
+          attachments: [],
+        }
+        assertPostImageFields(imageFields, workspaceSlug)
+
+        // Public submitters cannot set roadmap status. NEXT-AUTH-001.
+        const isModerator = await canModerateWorkspace(ctx, ws.id, ws.ownerId, userId)
+        const nextStatus = isModerator && roadmapStatus ? roadmapStatus : "pending"
+        const resolvedTags = isModerator
+          ? await resolveWorkspaceTags(ctx.db, ws.id, tags)
+          : { ids: [] as string[], summaries: [] as TagSummary[] }
+
         // Create Post
         const [newPost] = await ctx.db.insert(post).values({
           boardId: b.id,
           title,
           content,
-          image,
+          image: imageFields.image,
           slug,
           authorId: userId || null,
           isAnonymous: !userId,
-          metadata: !userId ? { fingerprint: anonymousFingerprint } : undefined,
-          roadmapStatus: roadmapStatus || "pending",
+          metadata: mergePostMetadata(
+            !userId ? { fingerprint: anonymousFingerprint } : undefined,
+            imageFields.attachments
+          ) as PostMetadata | undefined,
+          roadmapStatus: nextStatus,
         }).returning()
 
-        let tagSummaries: Array<{ id: string; name: string | null; color: string | null; slug: string | null }> = []
+        const tagSummaries = resolvedTags.summaries
 
-        if (tags && tags.length > 0) {
+        if (resolvedTags.ids.length > 0) {
           await ctx.db.insert(postTag).values(
-            tags.map((tagId) => ({
+            resolvedTags.ids.map((tagId) => ({
               postId: newPost.id,
               tagId,
             }))
           )
-
-          const tagRows = await ctx.db
-            .select({
-              id: tag.id,
-              name: tag.name,
-              color: tag.color,
-              slug: tag.slug,
-            })
-            .from(tag)
-            .where(inArray(tag.id, tags))
-
-          tagSummaries = tagRows.map((t: { id: string; name: string | null; color: string | null; slug: string | null }) => ({
-            id: String(t.id),
-            name: t.name,
-            color: t.color || null,
-            slug: t.slug || null,
-          }))
         }
 
         // Auto-upvote
@@ -195,7 +233,7 @@ export function createPostRouter() {
             boardId: b.id,
             slug: newPost.slug,
             roadmapStatus: newPost.roadmapStatus,
-            tagIds: tags || [],
+            tagIds: resolvedTags.ids,
             tags: tagSummaries,
             isAnonymous: !userId,
           },
@@ -247,7 +285,7 @@ export function createPostRouter() {
     update: privateProcedure
       .input(updatePostSchema)
       .post(async ({ ctx, input, c }) => {
-        const { postId, title, content, image, boardSlug, roadmapStatus, tags } = input
+        const { postId, title, content, image, images, boardSlug, roadmapStatus, tags } = input
         const userId = ctx.session.user.id
 
         // Get existing post
@@ -261,70 +299,82 @@ export function createPostRouter() {
           throw new HTTPException(404, { message: "Post not found" })
         }
 
-        // Check ownership and permissions
-        let allowed = existingPost.authorId === userId
-        if (!allowed) {
-          // Fetch workspace and check if user is admin/owner
-          const [b] = await ctx.db
-            .select({ workspaceId: board.workspaceId })
-            .from(board)
-            .where(eq(board.id, existingPost.boardId))
-            .limit(1)
+        const [boardWorkspace] = await ctx.db
+          .select({
+            workspaceId: workspace.id,
+            ownerId: workspace.ownerId,
+            slug: workspace.slug,
+          })
+          .from(board)
+          .innerJoin(workspace, eq(workspace.id, board.workspaceId))
+          .where(eq(board.id, existingPost.boardId))
+          .limit(1)
 
-          if (b) {
-            const [ws] = await ctx.db
-              .select({ ownerId: workspace.ownerId })
-              .from(workspace)
-              .where(eq(workspace.id, b.workspaceId))
-              .limit(1)
+        if (!boardWorkspace) {
+          throw new HTTPException(404, { message: "Workspace not found" })
+        }
 
-            if (ws) {
-              if (ws.ownerId === userId) {
-                allowed = true
-              } else {
-                const [member] = await ctx.db
-                  .select({ role: workspaceMember.role })
-                  .from(workspaceMember)
-                  .where(and(eq(workspaceMember.workspaceId, b.workspaceId), eq(workspaceMember.userId, userId)))
-                  .limit(1)
+        const isModerator = await canModerateWorkspace(
+          ctx,
+          boardWorkspace.workspaceId,
+          boardWorkspace.ownerId,
+          userId,
+        )
+        const isAuthor = existingPost.authorId === userId
 
-                if (member) {
-                  const perms = mapPermissions(member.role)
-                  if (perms.canModerateAllBoards) {
-                    allowed = true
-                  }
-                }
-              }
-            }
+        if (!isModerator) {
+          if (!isAuthor) {
+            throw new HTTPException(403, { message: "You don't have permission to edit this post" })
+          }
+          if (existingPost.isLocked) {
+            throw new HTTPException(403, { message: "This post is locked" })
           }
         }
 
-        if (!allowed) {
-          throw new HTTPException(403, { message: "You don't have permission to edit this post" })
-        }
-
-        // Resolve Board if changing
+        // Authors may change title/content/images only. Moderators may also move board, status, and tags.
         let boardId = existingPost.boardId
-        if (boardSlug) {
-          // First get the workspaceId from the current board of the post
-          const [currentBoard] = await ctx.db
-            .select({ workspaceId: board.workspaceId })
-            .from(board)
-            .where(eq(board.id, existingPost.boardId))
-            .limit(1)
+        let nextStatus = existingPost.roadmapStatus
+        let applyTags = false
+        let resolvedTagIds: string[] = []
 
-          if (currentBoard) {
-            const [b] = await ctx.db
+        if (isModerator) {
+          if (boardSlug) {
+            const [nextBoard] = await ctx.db
               .select({ id: board.id })
               .from(board)
               .where(and(
-                eq(board.workspaceId, currentBoard.workspaceId),
+                eq(board.workspaceId, boardWorkspace.workspaceId),
                 eq(board.slug, boardSlug)
               ))
               .limit(1)
-            if (b) boardId = b.id
+            if (nextBoard) boardId = nextBoard.id
+          }
+          if (roadmapStatus !== undefined) {
+            nextStatus = roadmapStatus
+          }
+          if (tags) {
+            applyTags = true
+            resolvedTagIds = (await resolveWorkspaceTags(ctx.db, boardWorkspace.workspaceId, tags)).ids
           }
         }
+
+        const imageFields = resolvePostImageFields({ image, images })
+        assertPostImageFields(imageFields, boardWorkspace.slug)
+        const nextImage =
+          imageFields ? imageFields.image : existingPost.image
+        const nextMetadata = imageFields
+          ? mergePostMetadata(
+              (existingPost.metadata as Record<string, unknown> | null) ?? undefined,
+              imageFields.attachments
+            )
+          : existingPost.metadata
+
+        const previousImageUrls = listPostImageUrls(
+          existingPost.image,
+          existingPost.metadata
+        )
+        const nextImageUrls = listPostImageUrls(nextImage, nextMetadata)
+        const removedImageUrls = droppedImageUrls(previousImageUrls, nextImageUrls)
 
         // Update Post
         const [updatedPost] = await ctx.db
@@ -332,9 +382,10 @@ export function createPostRouter() {
           .set({
             title: title ?? existingPost.title,
             content: content ?? existingPost.content,
-            image: image !== undefined ? image : existingPost.image,
+            image: nextImage,
+            metadata: nextMetadata as PostMetadata | undefined,
             boardId,
-            roadmapStatus: roadmapStatus ?? existingPost.roadmapStatus,
+            roadmapStatus: nextStatus,
             updatedAt: new Date(),
           })
           .where(eq(post.id, postId))
@@ -345,7 +396,7 @@ export function createPostRouter() {
         let addedTags: Array<{ id: string; name: string | null; color: string | null; slug: string | null }> = []
         let removedTags: Array<{ id: string; name: string | null; color: string | null; slug: string | null }> = []
 
-        if (tags) {
+        if (applyTags) {
           const previousTagRows = await ctx.db
             .select({
               id: tag.id,
@@ -366,9 +417,9 @@ export function createPostRouter() {
 
           await ctx.db.delete(postTag).where(eq(postTag.postId, postId))
 
-          if (tags.length > 0) {
+          if (resolvedTagIds.length > 0) {
             await ctx.db.insert(postTag).values(
-              tags.map((tagId) => ({
+              resolvedTagIds.map((tagId) => ({
                 postId,
                 tagId,
               }))
@@ -382,7 +433,7 @@ export function createPostRouter() {
                 slug: tag.slug,
               })
               .from(tag)
-              .where(inArray(tag.id, tags))
+              .where(inArray(tag.id, resolvedTagIds))
 
             tagSummaries = tagRows.map((t: { id: string; name: string | null; color: string | null; slug: string | null }) => ({
               id: String(t.id),
@@ -392,7 +443,7 @@ export function createPostRouter() {
             }))
 
             const previousIds = new Set(previousTagSummaries.map((t) => t.id))
-            const nextIds = new Set(tags.map((id) => String(id)))
+            const nextIds = new Set(resolvedTagIds)
 
             addedTags = tagSummaries.filter((t) => !previousIds.has(t.id))
             removedTags = previousTagSummaries.filter((t) => !nextIds.has(t.id))
@@ -401,41 +452,50 @@ export function createPostRouter() {
           }
         }
 
-        const [boardRow] = await ctx.db
-          .select({ workspaceId: board.workspaceId })
-          .from(board)
-          .where(eq(board.id, boardId))
-          .limit(1)
+        const statusChanged = isModerator && roadmapStatus !== undefined
+        const fromStatus = statusChanged ? existingPost.roadmapStatus : null
+        const toStatus = statusChanged ? nextStatus : updatedPost.roadmapStatus
 
-        if (boardRow) {
-          const fromStatus = roadmapStatus !== undefined ? existingPost.roadmapStatus : null
-          const toStatus = roadmapStatus !== undefined ? roadmapStatus : updatedPost.roadmapStatus
+        await ctx.db.insert(activityLog).values({
+          workspaceId: boardWorkspace.workspaceId,
+          userId,
+          action: ACTIVITY_ACTIONS.POST_UPDATED,
+          actionType: "update",
+          entity: "post",
+          entityId: String(updatedPost.id),
+          title: updatedPost.title,
+          metadata: {
+            boardId,
+            roadmapStatus: toStatus,
+            fromStatus,
+            toStatus,
+            hasTitleChange: title !== undefined && title !== existingPost.title,
+            hasContentChange: content !== undefined && content !== existingPost.content,
+            hasTagsChange: applyTags,
+            hasTagsAdded: addedTags.length > 0,
+            hasTagsRemoved: removedTags.length > 0,
+            tagIds: applyTags ? resolvedTagIds : undefined,
+            tags: tagSummaries,
+            addedTags,
+            removedTags,
+          },
+        })
 
-          await ctx.db.insert(activityLog).values({
-            workspaceId: boardRow.workspaceId,
-            userId,
-            action: ACTIVITY_ACTIONS.POST_UPDATED,
-            actionType: "update",
-            entity: "post",
-            entityId: String(updatedPost.id),
-            title: updatedPost.title,
-            metadata: {
-              boardId,
-              roadmapStatus: toStatus,
-              fromStatus,
-              toStatus,
-              hasTitleChange: title !== undefined && title !== existingPost.title,
-              hasContentChange: content !== undefined && content !== existingPost.content,
-              hasTagsChange: Array.isArray(tags),
-              hasTagsAdded: addedTags.length > 0,
-              hasTagsRemoved: removedTags.length > 0,
-              tagIds: Array.isArray(tags) ? tags : undefined,
-              tags: tagSummaries,
-              addedTags,
-              removedTags,
-            },
+        if (
+          statusChanged &&
+          normalizeStatus(existingPost.roadmapStatus || "pending") !==
+            normalizeStatus(nextStatus)
+        ) {
+          await notifyPostStatusChange({
+            db: ctx.db,
+            postId,
+            fromStatus: existingPost.roadmapStatus,
+            toStatus: nextStatus,
+            actorUserId: userId,
           })
         }
+
+        await deleteUnreferencedImageUrls(ctx.db, removedImageUrls)
 
         return c.superjson({ post: updatedPost })
       }),
@@ -481,7 +541,7 @@ export function createPostRouter() {
                 const [member] = await ctx.db
                   .select({ role: workspaceMember.role })
                   .from(workspaceMember)
-                  .where(and(eq(workspaceMember.workspaceId, b.workspaceId), eq(workspaceMember.userId, userId)))
+                  .where(and(eq(workspaceMember.workspaceId, b.workspaceId), eq(workspaceMember.userId, userId), eq(workspaceMember.isActive, true)))
                   .limit(1)
 
                 if (member) {
@@ -506,6 +566,11 @@ export function createPostRouter() {
           .limit(1)
 
         await ctx.db.delete(post).where(eq(post.id, postId))
+
+        await deleteUnreferencedImageUrls(
+          ctx.db,
+          listPostImageUrls(existingPost.image, existingPost.metadata)
+        )
 
         if (boardRow) {
           await ctx.db.insert(activityLog).values({
@@ -830,6 +895,7 @@ export function createPostRouter() {
       .input(votePostSchema)
       .get(async ({ ctx, input, c }) => {
         const { postId, fingerprint } = input
+        const request = getRequestFromContext(c)
 
         const userId = await getOptionalSessionUserId(c)
 
@@ -842,11 +908,12 @@ export function createPostRouter() {
             .where(and(eq(vote.postId, postId), eq(vote.userId, userId)))
             .limit(1)
           hasVoted = !!existing
-        } else if (fingerprint) {
+        } else {
+          const anonymousFingerprint = getRequestFingerprint(request, fingerprint)
           const [existing] = await ctx.db
             .select({ id: vote.id })
             .from(vote)
-            .where(and(eq(vote.postId, postId), isNull(vote.userId), eq(vote.fingerprint, fingerprint)))
+            .where(and(eq(vote.postId, postId), isNull(vote.userId), eq(vote.fingerprint, anonymousFingerprint)))
             .limit(1)
           hasVoted = !!existing
         }
@@ -918,7 +985,7 @@ export function createPostRouter() {
           const [member] = await ctx.db
             .select({ role: workspaceMember.role })
             .from(workspaceMember)
-            .where(and(eq(workspaceMember.workspaceId, sourceBoard.workspaceId), eq(workspaceMember.userId, userId)))
+            .where(and(eq(workspaceMember.workspaceId, sourceBoard.workspaceId), eq(workspaceMember.userId, userId), eq(workspaceMember.isActive, true)))
             .limit(1)
 
           if (member) {
@@ -1059,7 +1126,7 @@ export function createPostRouter() {
           const [member] = await ctx.db
             .select({ role: workspaceMember.role })
             .from(workspaceMember)
-            .where(and(eq(workspaceMember.workspaceId, targetBoard.workspaceId), eq(workspaceMember.userId, userId)))
+            .where(and(eq(workspaceMember.workspaceId, targetBoard.workspaceId), eq(workspaceMember.userId, userId), eq(workspaceMember.isActive, true)))
             .limit(1)
           if (member) {
             const perms = mapPermissions(member.role)

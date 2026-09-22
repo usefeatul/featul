@@ -244,14 +244,21 @@ export function ThemePreviewScene({
             fill={palette.listText}
           />
           <rect
-            x="156"
+            x="148"
             y="6"
             width="18"
             height="4"
             rx="1"
             fill={palette.listDate}
           />
-          <circle cx="186" cy="8" r="4" fill={palette.listAvatar} />
+          <circle
+            cx="184"
+            cy="8"
+            r="6.5"
+            fill={palette.profileCard}
+            stroke={palette.divider}
+          />
+          <circle cx="184" cy="8" r="5" fill={palette.listAvatar} />
           {index < listRows.length - 1 ? (
             <line x1="0" y1="18" x2="190" y2="18" stroke={palette.divider} />
           ) : null}

@@ -7,7 +7,7 @@ import { PostHeader } from "./PostHeader"
 import { PostContent } from "./PostContent"
 import { PostFooter } from "./PostFooter"
 import { usePostSubmission } from "@/hooks/usePostSubmission"
-import { usePostImageUpload } from "@/hooks/usePostImageUpload"
+import { usePostUpload } from "@/hooks/usePostUpload"
 import { useWorkspaceBoards } from "@/hooks/useWorkspaceBoards"
 import { client } from "@featul/api/client"
 import { useRouter } from "next/navigation"
@@ -15,6 +15,8 @@ import { useSimilarPosts } from "@/hooks/useSimilarPosts"
 import { SimilarPosts } from "./SimilarPosts"
 import type { TagSummary, PostUser } from "@/types/post"
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
+import { createPostImageTransferHandlers } from "@/lib/post/transfer"
+import { useDraft } from "@/hooks/useDraft"
 
 export function CreatePostModal({
   open,
@@ -47,14 +49,18 @@ export function CreatePostModal({
   }, [open, initialStatus])
 
   const {
-    uploadedImage,
+    uploadedImages,
     uploadingImage,
     fileInputRef,
-    setUploadedImage,
+    setUploadedImages,
     handleFileSelect,
+    handleImageFiles,
     handleRemoveImage,
+    maxFiles,
     ALLOWED_IMAGE_TYPES,
-  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug)
+  } = usePostUpload(workspaceSlug, selectedBoard?.slug)
+
+  const clearDraftRef = React.useRef(() => {})
 
   const {
     title,
@@ -66,8 +72,9 @@ export function CreatePostModal({
   } = usePostSubmission({
     workspaceSlug,
     onSuccess: () => {
+      clearDraftRef.current()
       onOpenChange(false)
-      setUploadedImage(null)
+      setUploadedImages([])
       // Reset fields
       setStatus(initialStatus)
       setSelectedTags([])
@@ -77,6 +84,18 @@ export function CreatePostModal({
     },
     skipDefaultRedirect: true
   })
+
+  const { clearDraft } = useDraft({
+    workspaceSlug,
+    open,
+    title,
+    content,
+    images: uploadedImages,
+    setTitle,
+    setContent,
+    setImages: setUploadedImages,
+  })
+  clearDraftRef.current = clearDraft
 
   useEffect(() => {
     if (!open) return
@@ -109,7 +128,7 @@ export function CreatePostModal({
     e?.preventDefault()
     // Find tag IDs from selected slugs/ids
     const tagIds = availableTags.filter(t => selectedTags.includes(t.id)).map(t => t.id)
-    submitPost(selectedBoard, user ?? null, uploadedImage?.url, status, tagIds)
+    submitPost(selectedBoard, user ?? null, uploadedImages, status, tagIds)
   }
 
   const { posts: similarPosts } = useSimilarPosts({
@@ -134,6 +153,13 @@ export function CreatePostModal({
     uploadingImage,
   })
 
+  const imageTransfer = createPostImageTransferHandlers({
+    onImageFiles: handleImageFiles,
+    uploading: uploadingImage,
+    imageCount: uploadedImages.length,
+    maxImages: maxFiles,
+  })
+
   return (
     <SettingsDialogShell
       open={open}
@@ -144,7 +170,11 @@ export function CreatePostModal({
       icon={<DocumentTextIcon className="size-3.5" />}
       expandable
     >
-      <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+      <form
+        onSubmit={handleSubmit}
+        className="flex min-h-0 flex-1 flex-col"
+        {...imageTransfer}
+      >
         <PostHeader
           user={user || null}
           initials={user?.name?.[0] || "?"}
@@ -162,25 +192,26 @@ export function CreatePostModal({
           setTitle={setTitle}
           content={content}
           setContent={setContent}
-          uploadedImage={uploadedImage}
+          uploadedImages={uploadedImages}
           uploadingImage={uploadingImage}
           handleRemoveImage={handleRemoveImage}
-        />
-
-        <PostFooter
-          isPending={isPending}
-          disabled={!canSubmit}
-          uploadedImage={uploadedImage}
-          uploadingImage={uploadingImage}
-          fileInputRef={fileInputRef}
-          handleFileSelect={handleFileSelect}
-          ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
         />
 
         <SimilarPosts
           posts={similarPosts}
           linkPrefix={`/workspaces/${workspaceSlug}/requests`}
           onLinkClick={() => onOpenChange(false)}
+        />
+
+        <PostFooter
+          isPending={isPending}
+          disabled={!canSubmit}
+          uploadedImages={uploadedImages}
+          uploadingImage={uploadingImage}
+          fileInputRef={fileInputRef}
+          handleFileSelect={handleFileSelect}
+          ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
+          maxImages={maxFiles}
         />
       </form>
     </SettingsDialogShell>

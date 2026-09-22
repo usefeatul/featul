@@ -3,11 +3,13 @@
 @import "@featul/ui/globals.css";
 
 /* Hide scrollbar while keeping scroll functionality */
-.scrollbar-hide {
+.scrollbar-hide,
+[data-widget-scroll] {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
 
-.scrollbar-hide::-webkit-scrollbar {
+.scrollbar-hide::-webkit-scrollbar,
+[data-widget-scroll]::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }

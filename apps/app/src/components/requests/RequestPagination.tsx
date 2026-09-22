@@ -3,7 +3,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
+import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar";
+import { OverlayChip } from "@featul/ui/components/overlay-chip";
 import {
   buildChangelogUrl,
   buildRequestsUrl,
@@ -116,10 +117,10 @@ export default function RequestPagination({
           <Toolbar size="sm">
             <Button
               asChild
-              variant="card"
+              variant="plain"
               size="sm"
               disabled={page <= 1}
-              className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
+              className={`${toolbarItemClass} h-8 px-3 gap-2`}
             >
               <Link
                 prefetch={false}
@@ -131,18 +132,18 @@ export default function RequestPagination({
                 className="group"
               >
                 <span className="text-xs font-medium">Prev</span>
-                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">
+                <OverlayChip className="hidden sm:inline-flex" innerClassName="px-1.5">
                   Z
-                </span>
+                </OverlayChip>
               </Link>
             </Button>
             <ToolbarSeparator />
             <Button
               asChild
-              variant="card"
+              variant="plain"
               size="sm"
               disabled={page >= totalPages || effectiveTotal === 0}
-              className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-card"
+              className={`${toolbarItemClass} h-8 px-3 gap-2`}
             >
               <Link
                 prefetch={false}
@@ -154,9 +155,9 @@ export default function RequestPagination({
                 className="group"
               >
                 <span className="text-xs font-medium">Next</span>
-                <span className="hidden sm:inline-flex items-center justify-center rounded-sm border bg-card dark:bg-black px-1.5 text-xs font-extralight text-accent tabular-nums h-5">
+                <OverlayChip className="hidden sm:inline-flex" innerClassName="px-1.5">
                   X
-                </span>
+                </OverlayChip>
               </Link>
             </Button>
           </Toolbar>

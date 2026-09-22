@@ -10,6 +10,7 @@ export interface User {
   image?: string | null
 }
 
+/** Fill name/email/image for UI. Missing users become Guest. */
 export function getDisplayUser(user: User | null | undefined): DisplayUser {
   if (!user) {
     return {
@@ -29,6 +30,7 @@ export function getDisplayUser(user: User | null | undefined): DisplayUser {
 }
 
 
+/** Up to two uppercase letters from the first letters of words. */
 export function getInitials(name: string): string {
   return name
     .split(' ')
@@ -40,6 +42,7 @@ export function getInitials(name: string): string {
 
 import { randomAvatarUrl } from "./avatar"
 
+/** Hide identity as “Member” when requested. Always supply a DiceBear image if none. */
 export function getPrivacySafeDisplayUser(
   user: User | null | undefined,
   hideIdentity: boolean = false,

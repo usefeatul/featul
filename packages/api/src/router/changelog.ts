@@ -13,20 +13,28 @@ import {
 import { HTTPException } from "hono/http-exception";
 import { getPlanLimits, assertWithinLimit } from "../shared/plan";
 import { toSlug } from "../shared/slug";
-import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
-import { createChangelogAutomationProcedures } from "./changelog-automation";
+import {
+  getWorkspaceAccessPlan,
+  requireBoardManagerBySlug,
+} from "../shared/access";
+import {
+  assertOptionalWorkspaceAssetUrl,
+  WORKSPACE_CHANGELOG_FOLDERS,
+} from "../storage/urls";
+import { createChangelogAutomationProcedures } from "./automation";
+import { createChangelogHistoryProcedures } from "../changelog/history";
 import {
   getChangelogTags,
   findTagsByIds,
   createTagsMap,
   type ChangelogTag,
-} from "../shared/changelog-types";
+} from "../changelog/types";
 import {
   bySlugSchema,
   createEntrySchema,
   updateEntrySchema,
 } from "../validators/changelog";
-import { ACTIVITY_ACTIONS } from "../shared/activity-actions";
+import { ACTIVITY_ACTIONS } from "../activity/actions";
 
 function extractMentionedUserIdsFromContent(content: unknown): string[] {
   const ids = new Set<string>();
@@ -246,20 +254,25 @@ export function createChangelogRouter() {
           });
         const limits = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
         const currentTags = getChangelogTags(b.changelogTags);
+        const name = input.name.trim();
+        const existingTag = currentTags.find(
+          (tag) => tag.name.trim().toLowerCase() === name.toLowerCase(),
+        );
+        if (existingTag) {
+          return c.superjson({ ok: true, tag: existingTag, created: false });
+        }
         const maxTags = limits.maxChangelogTags;
         assertWithinLimit(
           currentTags.length,
           maxTags,
           (max) => `Changelog tags limit reached (${max})`,
         );
-        const slug = toSlug(input.name);
+        const slug = toSlug(name);
         const id = globalThis.crypto?.randomUUID
           ? globalThis.crypto.randomUUID()
           : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-        const next = [
-          ...currentTags,
-          { id, name: input.name.trim(), slug, color: input.color || null },
-        ];
+        const tag = { id, name, slug, color: input.color || null };
+        const next = [...currentTags, tag];
         await ctx.db
           .update(board)
           .set({ changelogTags: next, updatedAt: new Date() })
@@ -272,14 +285,14 @@ export function createChangelogRouter() {
           actionType: "create",
           entity: "changelog_tag",
           entityId: String(id),
-          title: input.name.trim(),
+          title: name,
           metadata: {
             slug,
             color: input.color || null,
           },
         });
 
-        return c.superjson({ ok: true });
+        return c.superjson({ ok: true, tag, created: true });
       }),
 
     tagsDelete: privateProcedure
@@ -324,6 +337,7 @@ export function createChangelogRouter() {
         return c.superjson({ ok: true });
       }),
     ...createChangelogAutomationProcedures(),
+    ...createChangelogHistoryProcedures(),
 
     // Entry CRUD operations
     entriesCreate: privateProcedure
@@ -361,6 +375,12 @@ export function createChangelogRouter() {
         const entrySlug = toSlug(input.title) + "-" + Date.now().toString(36);
         const isPublished = input.status === "published";
 
+        assertOptionalWorkspaceAssetUrl(
+          input.coverImage,
+          ws.slug,
+          WORKSPACE_CHANGELOG_FOLDERS,
+        );
+
         const [entry] = await ctx.db
           .insert(changelogEntry)
           .values({
@@ -377,7 +397,9 @@ export function createChangelogRouter() {
           })
           .returning();
 
-        const mentionUserIds = extractMentionedUserIdsFromContent(input.content);
+        const mentionUserIds = extractMentionedUserIdsFromContent(
+          input.content,
+        );
         if (mentionUserIds.length > 0) {
           const validMentionUserIds = await resolveValidMentionUserIds({
             ctx,
@@ -455,8 +477,14 @@ export function createChangelogRouter() {
           updates.content = input.content as Record<string, unknown>;
         if (input.summary !== undefined)
           updates.summary = input.summary?.trim() || null;
-        if (input.coverImage !== undefined)
+        if (input.coverImage !== undefined) {
+          assertOptionalWorkspaceAssetUrl(
+            input.coverImage,
+            ws.slug,
+            WORKSPACE_CHANGELOG_FOLDERS,
+          );
           updates.coverImage = input.coverImage || null;
+        }
         if (input.tags !== undefined) updates.tags = input.tags;
         if (input.status !== undefined) {
           updates.status = input.status;
@@ -472,7 +500,9 @@ export function createChangelogRouter() {
           .returning();
 
         if (input.content !== undefined) {
-          const mentionUserIds = extractMentionedUserIdsFromContent(input.content);
+          const mentionUserIds = extractMentionedUserIdsFromContent(
+            input.content,
+          );
 
           const validMentionUserIds = await resolveValidMentionUserIds({
             ctx,
@@ -481,8 +511,10 @@ export function createChangelogRouter() {
             mentionUserIds,
           });
 
-          const existingMentions: Array<{ id: string; mentionedUserId: string }> =
-            await ctx.db
+          const existingMentions: Array<{
+            id: string;
+            mentionedUserId: string;
+          }> = await ctx.db
             .select({
               id: changelogMention.id,
               mentionedUserId: changelogMention.mentionedUserId,
@@ -491,10 +523,12 @@ export function createChangelogRouter() {
             .where(eq(changelogMention.entryId, input.entryId));
 
           const existingByUserId = new Map(
-            existingMentions.map((mention: { id: string; mentionedUserId: string }) => [
-              mention.mentionedUserId,
-              mention,
-            ]),
+            existingMentions.map(
+              (mention: { id: string; mentionedUserId: string }) => [
+                mention.mentionedUserId,
+                mention,
+              ],
+            ),
           );
           const nextUserIdSet = new Set(validMentionUserIds);
 
@@ -503,7 +537,9 @@ export function createChangelogRouter() {
               (mention: { id: string; mentionedUserId: string }) =>
                 !nextUserIdSet.has(mention.mentionedUserId),
             )
-            .map((mention: { id: string; mentionedUserId: string }) => mention.id);
+            .map(
+              (mention: { id: string; mentionedUserId: string }) => mention.id,
+            );
 
           if (mentionIdsToDelete.length > 0) {
             await ctx.db

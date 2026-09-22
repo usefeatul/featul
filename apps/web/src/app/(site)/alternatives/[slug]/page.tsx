@@ -1,12 +1,14 @@
+import { MarketingContainer, marketingStackClass } from "@/components/layout/container";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AlternativeHero } from "@/components/alternatives/hero";
 import TLDR from "@/components/alternatives/tldr";
+import Snapshot from "@/components/alternatives/snapshot";
 import Compare from "@/components/alternatives/compare";
 import WhyBetter from "@/components/alternatives/why";
+import AlternativeGuide from "@/components/alternatives/guide";
 import AlternativeFAQs from "@/components/alternatives/faq";
 import Verdict from "@/components/alternatives/verdict";
-import { Container } from "@/components/global/container";
 import { getAltDescription } from "@/types/descriptions";
 import { createArticleMetadata } from "@/lib/seo";
 import {
@@ -15,6 +17,10 @@ import {
   getAlternativePageTitle,
   getAlternativeSlugs,
 } from "@/config/alternatives";
+import {
+  getCompetitorDetail,
+  KIND_RELATED_LINKS,
+} from "@/config/alternatives-detail";
 import { getRelatedPages } from "@/lib/seo/interlink";
 import { RelatedLinks } from "@/components/seo/links";
 import { getAlternativeFaq } from "@/data/alt";
@@ -35,7 +41,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const alt = getAlternativeBySlug(slug);
   if (!alt) return {};
-  const title = getAlternativePageTitle(alt.name);
+  const title = getAlternativePageTitle(alt);
   const rawDescription = getAltDescription(slug, "first");
   const description =
     rawDescription.length > 160
@@ -45,6 +51,7 @@ export async function generateMetadata({
     title,
     description,
     path: `/alternatives/${slug}`,
+    absoluteTitle: true,
   });
 }
 
@@ -65,6 +72,42 @@ export default async function AlternativePage({
     currentSlug: slug,
     currentType: "competitor",
   });
+  relatedLinks.unshift({
+    href: "/alternatives",
+    label: "Best Featurebase alternatives 2026",
+    type: "hub",
+  });
+  const kind = getCompetitorDetail(slug)?.kind;
+  if (kind) {
+    const useCase = KIND_RELATED_LINKS[kind];
+    relatedLinks.unshift({
+      href: useCase.href,
+      label: useCase.label,
+      type: "use-case",
+    });
+  }
+  if (slug === "featurebase") {
+    relatedLinks.unshift(
+      {
+        href: "/use-cases/open-source-roadmap",
+        label: "Open source roadmap use case",
+        type: "use-case",
+      },
+      {
+        href: "/docs/open-source",
+        label: "Featul is open source",
+        type: "hub",
+      },
+    );
+  }
+  if (slug === "canny") {
+    relatedLinks.unshift({
+      href: "/integrations/canny",
+      label: "Canny integrations and import",
+      type: "integration",
+    });
+  }
+  const related = relatedLinks.slice(0, 5);
 
   return (
     <main className="min-h-screen overflow-x-clip">
@@ -86,18 +129,20 @@ export default async function AlternativePage({
         Updated {ALTERNATIVES_UPDATED_ISO}
       </time>
       <AlternativeHero alt={alt} />
-      <div className="relative mx-auto max-w-6xl">
+      <div className={marketingStackClass}>
         <SectionStack>
           <TLDR alt={alt} />
+          <Snapshot alt={alt} />
           <Compare alt={alt} />
           <WhyBetter alt={alt} />
+          <AlternativeGuide alt={alt} />
           <Verdict alt={alt} />
           <AlternativeFAQs alt={alt} />
-          <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+          <MarketingContainer>
             <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-              <RelatedLinks links={relatedLinks} title="Related comparisons" />
+              <RelatedLinks links={related} title="Related comparisons" />
             </div>
-          </Container>
+          </MarketingContainer>
         </SectionStack>
       </div>
     </main>

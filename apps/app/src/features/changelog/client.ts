@@ -1,9 +1,11 @@
 import type {
   AiAction,
+  AiChatIntent,
+  AiChatMessage,
   AiDetailLevel,
   AiTone,
   ChangelogAiStreamEvent,
-} from "@featul/api/changelog-ai/types";
+} from "@featul/api/ai/types";
 
 export type ChangelogAiStreamInput = {
   slug: string;
@@ -14,6 +16,11 @@ export type ChangelogAiStreamInput = {
   sourcePostIds?: string[];
   tone?: AiTone;
   detailLevel?: AiDetailLevel;
+  messages?: AiChatMessage[];
+  intent?: AiChatIntent;
+  selectionMarkdown?: string;
+  githubUrls?: string[];
+  availableTagNames?: string[];
 };
 
 type StreamHandlers = {
@@ -80,12 +87,14 @@ function handleStreamEvent(
 export async function streamChangelogAiAssist(
   input: ChangelogAiStreamInput,
   handlers: StreamHandlers,
+  signal?: AbortSignal,
 ) {
   const res = await fetch("/api/changelog/stream", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify(input),
+    signal,
   });
 
   if (!res.ok) {

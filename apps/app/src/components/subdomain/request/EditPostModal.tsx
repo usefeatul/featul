@@ -8,9 +8,11 @@ import { PostContent } from "../../post/PostContent";
 import { PostFooter } from "../../post/PostFooter";
 import { useCreatePostData } from "@/hooks/useCreatePostData";
 import { usePostUpdate } from "@/hooks/usePostUpdate";
-import { usePostImageUpload } from "@/hooks/usePostImageUpload";
+import { usePostUpload } from "@/hooks/usePostUpload";
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard";
 import DocumentTextIcon from "@featul/ui/icons/document-text";
+import { createPostImageTransferHandlers } from "@/lib/post/transfer";
+import { listPostImages } from "@/lib/post/images";
 
 interface EditablePost {
   id: string;
@@ -18,6 +20,7 @@ interface EditablePost {
   content: string | null;
   image: string | null;
   boardSlug: string;
+  metadata?: unknown;
 }
 
 interface EditPostModalProps {
@@ -40,14 +43,16 @@ export default function EditPostModal({
   });
 
   const {
-    uploadedImage,
+    uploadedImages,
     uploadingImage,
     fileInputRef,
-    setUploadedImage,
+    setUploadedImages,
     handleFileSelect,
+    handleImageFiles,
     handleRemoveImage,
+    maxFiles,
     ALLOWED_IMAGE_TYPES,
-  } = usePostImageUpload(workspaceSlug, selectedBoard?.slug);
+  } = usePostUpload(workspaceSlug, selectedBoard?.slug);
 
   const { title, setTitle, content, setContent, isPending, updatePost } =
     usePostUpdate({
@@ -57,24 +62,25 @@ export default function EditPostModal({
       },
     });
 
-  // Pre-fill data
   useEffect(() => {
-    if (open) {
-      setTitle(post.title);
-      setContent(post.content || "");
-      if (post.image) {
-        setUploadedImage({
-          url: post.image,
-          name: "image", // Placeholder name since we don't have it
-          type: "image/png", // Placeholder type
-        });
-      } else {
-        setUploadedImage(null);
-      }
+    if (!open) {
+      return;
     }
-  }, [open, post, setTitle, setContent, setUploadedImage]);
+    setTitle(post.title);
+    setContent(post.content || "");
+    setUploadedImages(listPostImages(post.image, post.metadata));
+  }, [
+    open,
+    post.id,
+    post.title,
+    post.content,
+    post.image,
+    post.metadata,
+    setTitle,
+    setContent,
+    setUploadedImages,
+  ]);
 
-  // Sync selected board if boards are loaded and post has boardSlug
   useEffect(() => {
     if (boards.length > 0 && post.boardSlug) {
       const b = boards.find((b) => b.slug === post.boardSlug);
@@ -84,12 +90,7 @@ export default function EditPostModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // If uploadedImage is null but post had an image, it means it was removed. Pass null.
-    // If uploadedImage is set, pass the url.
-    // If uploadedImage is null and post didn't have an image, pass null (no change effectively).
-    const imageToUpdate = uploadedImage ? uploadedImage.url : null;
-
-    await updatePost(selectedBoard, imageToUpdate);
+    await updatePost(selectedBoard, uploadedImages);
   };
 
   const initials = user?.name ? getInitials(user.name) : "?";
@@ -98,6 +99,12 @@ export default function EditPostModal({
     hasSelectedBoard: !!selectedBoard,
     isPending,
     uploadingImage,
+  });
+  const imageTransfer = createPostImageTransferHandlers({
+    onImageFiles: handleImageFiles,
+    uploading: uploadingImage,
+    imageCount: uploadedImages.length,
+    maxImages: maxFiles,
   });
 
   return (
@@ -109,7 +116,11 @@ export default function EditPostModal({
       offsetY="20%"
       icon={<DocumentTextIcon className="size-3.5" />}
     >
-      <form onSubmit={handleSubmit} className="flex flex-col h-full">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col h-full"
+        {...imageTransfer}
+      >
         <PostHeader
           user={user}
           initials={initials}
@@ -123,7 +134,7 @@ export default function EditPostModal({
           setTitle={setTitle}
           content={content}
           setContent={setContent}
-          uploadedImage={uploadedImage}
+          uploadedImages={uploadedImages}
           uploadingImage={uploadingImage}
           handleRemoveImage={handleRemoveImage}
         />
@@ -131,11 +142,12 @@ export default function EditPostModal({
         <PostFooter
           isPending={isPending}
           disabled={!canSubmit}
-          uploadedImage={uploadedImage}
+          uploadedImages={uploadedImages}
           uploadingImage={uploadingImage}
           fileInputRef={fileInputRef}
           handleFileSelect={handleFileSelect}
           ALLOWED_IMAGE_TYPES={ALLOWED_IMAGE_TYPES}
+          maxImages={maxFiles}
           submitLabel="Save Changes"
         />
       </form>

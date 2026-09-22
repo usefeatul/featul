@@ -10,6 +10,7 @@ import {
   type WorkspaceSummary,
 } from "@/lib/workspace/client"
 
+/** Top/middle nav plus workspace, domain, and status-count queries. Uses verified custom domain for public links. */
 export function useWorkspaceNav(
   slug: string,
   initialWorkspace?: WorkspaceSummary | null,

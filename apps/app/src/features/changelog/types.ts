@@ -1,9 +1,16 @@
 export type {
   AiAction,
+  AiChatIntent,
+  AiChatMessage,
   AiDetailLevel,
   AiTone,
-} from "@featul/api/changelog-ai/types";
+} from "@featul/api/ai/types";
 
-export type AiPanelTab = "shipped" | "refine";
-
-export type AiQuickAction = "format" | "improve" | "expand";
+export type AiChatStarter = {
+  label: string;
+  prompt: string;
+  attachFeedback?: boolean;
+  attachThisWeek?: boolean;
+  publishCheck?: boolean;
+  primary?: boolean;
+};

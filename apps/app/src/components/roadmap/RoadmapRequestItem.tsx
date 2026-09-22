@@ -6,7 +6,6 @@ import { FlagRibbon } from "@/components/global/FlagRibbon";
 import {
   buildRoadmapPreview,
   formatRoadmapCardDate,
-  getRoadmapStatusTone,
 } from "@/components/roadmap/card";
 import { randomAvatarUrl } from "@/utils/avatar";
 
@@ -31,6 +30,7 @@ export type RoadmapItemData = {
   isFeatul?: boolean;
   isPinned?: boolean;
   isFeatured?: boolean;
+  isLocked?: boolean;
 };
 
 export default function RoadmapRequestItem({
@@ -50,24 +50,25 @@ export default function RoadmapRequestItem({
   const preview = buildRoadmapPreview(item.content, item.boardName);
   const dateLabel =
     formatRoadmapCardDate(item.publishedAt || item.createdAt) || "No date";
-  const tone = getRoadmapStatusTone(item.roadmapStatus);
-
   return (
     <div className="relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[inherit]">
-      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} />
-      <div className="min-h-0 flex-1 px-3.5 pb-3 pt-3.5">
+      <FlagRibbon
+        isPinned={item.isPinned}
+        isFeatured={item.isFeatured}
+        isLocked={item.isLocked}
+      />
+      <div className="min-h-0 flex-1 px-2.5 pt-2.5">
         <Link
           href={href}
-          className="line-clamp-2 block min-h-10 text-sm font-medium leading-5 text-foreground hover:text-primary"
+          className="line-clamp-2 block text-xs font-medium leading-[17px] text-foreground/95 hover:text-primary"
         >
           {item.title}
         </Link>
-        <p className="mt-1.5 line-clamp-2 min-h-10 text-xs leading-5 text-accent/90">
+        <p className="mt-1 line-clamp-1 text-[10px] leading-4 text-muted-foreground">
           {preview}
         </p>
       </div>
       <RoadmapRequestItemFooter
-        toneFooterClass={tone.footer}
         authorLabel={authorLabel}
         avatarSrc={avatarSrc}
         boardLabel={boardLabel}

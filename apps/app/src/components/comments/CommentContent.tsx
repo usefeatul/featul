@@ -1,6 +1,10 @@
+"use client"
+
 import React from "react"
 import ContentImage from "@/components/global/ContentImage"
+import { ImageLightbox } from "@/components/global/ImageLightbox"
 import type { CommentData } from "../../types/comment"
+import { renderCommentMentions } from "./mentionText"
 
 interface CommentContentProps {
   content: string
@@ -8,32 +12,18 @@ interface CommentContentProps {
 }
 
 export default function CommentContent({ content, metadata }: CommentContentProps) {
+  const [viewerIndex, setViewerIndex] = React.useState<number | null>(null)
+  const imageAttachments = (metadata?.attachments || []).filter((att) =>
+    att.type.startsWith("image/"),
+  )
+  const lightboxImages = imageAttachments.map((att) => ({
+    url: att.url,
+    alt: att.name,
+  }))
   const renderText = () => {
     const text = content || ""
-    const mentions = (metadata?.mentions || [])
-      .map((m) => (m || "").toLowerCase())
-      .sort((a, b) => b.length - a.length)
-
-    if (!text || mentions.length === 0) return text
-
-    const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    const pattern = new RegExp(`@(${mentions.map(esc).join("|")})\\b`, "gi")
-    const parts: React.ReactNode[] = []
-    let lastIndex = 0
-    let m: RegExpExecArray | null
-
-    while ((m = pattern.exec(text))) {
-      if (m.index > lastIndex) parts.push(text.slice(lastIndex, m.index))
-      const matched = m[0]
-      parts.push(
-        <span key={`m-${m.index}`} className="text-primary font-medium">
-          {matched}
-        </span>
-      )
-      lastIndex = m.index + matched.length
-    }
-    if (lastIndex < text.length) parts.push(text.slice(lastIndex))
-    return parts
+    const mentions = (metadata?.mentions || []).map((mention) => mention || "")
+    return renderCommentMentions(text, mentions)
   }
 
   return (
@@ -44,20 +34,28 @@ export default function CommentContent({ content, metadata }: CommentContentProp
         </div>
       )}
       {/* Display images from metadata */}
-      {metadata?.attachments && metadata.attachments.length > 0 && (
+      {imageAttachments.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
-          {metadata.attachments
-            .filter((att) => att.type.startsWith("image/"))
-            .map((att, idx) => (
+          {imageAttachments.map((att, idx) => (
               <ContentImage
                 key={idx}
                 url={att.url}
                 alt={att.name}
-                className="max-w-[120px] max-h-20"
+                className="h-16 w-24"
+                onPreview={() => setViewerIndex(idx)}
               />
             ))}
         </div>
       )}
+      <ImageLightbox
+        open={viewerIndex !== null}
+        onOpenChange={(open) => {
+          if (!open) setViewerIndex(null)
+        }}
+        images={lightboxImages}
+        index={viewerIndex ?? 0}
+        onIndexChange={setViewerIndex}
+      />
     </>
   )
 }

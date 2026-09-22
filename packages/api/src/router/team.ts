@@ -75,7 +75,7 @@ async function requireCanManageMembers(ctx: TeamRouterContext, ws: { id: string;
   const [me] = await ctx.db
     .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
     .from(workspaceMember)
-    .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
+    .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId), eq(workspaceMember.isActive, true)))
     .limit(1)
 
   const allowed = me?.permissions?.canManageMembers || me?.role === "admin" || ws.ownerId === meId
@@ -424,7 +424,13 @@ export function createTeamRouter() {
         const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
         await requireCanManageMembers(ctx, ws)
 
-        await ctx.db.delete(workspaceInvite).where(eq(workspaceInvite.id, input.inviteId))
+        const deleted = await ctx.db
+          .delete(workspaceInvite)
+          .where(and(eq(workspaceInvite.id, input.inviteId), eq(workspaceInvite.workspaceId, ws.id)))
+          .returning({ id: workspaceInvite.id })
+        if (!deleted.length) {
+          throw new HTTPException(404, { message: "Invite not found" })
+        }
         return c.json({ ok: true })
       }),
 

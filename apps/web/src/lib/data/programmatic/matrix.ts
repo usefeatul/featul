@@ -137,16 +137,16 @@ export const COMPETITORS: CompetitorEntry[] = [
         website: "https://featurebase.app",
         tagline: "All-in-one feedback platform",
         victoryPoints: [
-            "EU-hosted with stronger privacy defaults",
-            "Simpler pricing, no hidden tiers",
-            "Unified suite without add-on complexity",
+            "Open source (MIT) and self-hostable Featurebase alternative",
+            "Flat workspace pricing instead of Featurebase per-seat plans",
+            "EU-hosted boards, public roadmap, and changelog in one workflow",
         ],
         tradeoffs: [
-            "Featurebase has an active community",
-            "Rich voting and feedback features",
+            "Featurebase has a larger help-center and AI support suite",
+            "Featurebase currently lists more marketplace integrations",
         ],
-        relatedDefinitions: ["product-feedback", "feature-voting", "changelog"],
-        relatedTools: ["nps-calculator", "churn-rate-calculator"],
+        relatedDefinitions: ["retention-rate", "churn-rate"],
+        relatedTools: ["rice-prioritization-calculator", "changelog-generator"],
     },
     {
         slug: "upvoty",
@@ -171,16 +171,16 @@ export const COMPETITORS: CompetitorEntry[] = [
         website: "https://canny.io",
         tagline: "Feature request tracking",
         victoryPoints: [
-            "EU-hosted by default for GDPR compliance",
-            "Unified feedback, roadmap, and changelog in one tool",
-            "More affordable for small teams",
+            "EU-hosted Canny alternative with Canny import",
+            "Slack, webhooks, and API without an enterprise integration maze",
+            "Unified feedback, roadmap, and changelog at workspace pricing",
         ],
         tradeoffs: [
-            "Canny has more enterprise integrations",
-            "Longer track record in the market",
+            "Canny has a longer list of native third-party integrations",
+            "Canny has a longer track record with large US enterprises",
         ],
-        relatedDefinitions: ["product-feedback", "feature-voting", "roadmap"],
-        relatedTools: ["nps-calculator", "churn-rate-calculator"],
+        relatedDefinitions: ["retention-rate", "churn-rate"],
+        relatedTools: ["rice-prioritization-calculator", "changelog-generator"],
     },
     // ── Enterprise & PM Tools ──────────────────────────────────────────────────
     {
@@ -761,13 +761,13 @@ export const INTEGRATIONS: IntegrationEntry[] = [
         name: "Canny",
         website: "https://canny.io",
         category: "project-management",
-        description: "Import Canny requests and discussions into your Featul workspace",
+        description: "Import Canny requests, votes, and discussions, then keep Slack, webhooks, and API as your Canny integrations replacement.",
         benefits: [
             "Preserve Canny feedback history during migration",
-            "Consolidate roadmap and changelog in one tool",
-            "Reduce migration friction for growing teams",
+            "Replace day-to-day Canny integrations with Slack, webhooks, and API",
+            "Consolidate roadmap and changelog in one EU-hosted workspace",
         ],
-        relatedDefinitions: ["product-feedback", "roadmap"],
+        relatedDefinitions: ["retention-rate", "churn-rate"],
     },
     {
         slug: "productboard",
@@ -956,7 +956,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Automatic changelog notifications",
         ],
         relatedDefinitions: ["product-feedback", "feature-voting", "changelog"],
-        relatedTools: ["nps-calculator", "churn-rate-calculator"],
+        relatedTools: ["rice-prioritization-calculator", "changelog-generator"],
     },
     {
         slug: "mobile-app-feedback",
@@ -992,7 +992,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Clear contribution guidelines integration",
         ],
         relatedDefinitions: ["open-source", "community-management"],
-        relatedTools: ["github-star-tracker"], // Hypothetical tool relevant to OS
+        relatedTools: ["feature-voting-bias-calculator", "roadmap-status-template"],
     },
 
     // ── Organization Stage ───────────────────────────────────────────────────
@@ -1012,7 +1012,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Build trust with transparent development",
         ],
         relatedDefinitions: ["roadmap", "product-validation"],
-        relatedTools: ["ltv-calculator", "growth-rate-calculator"],
+        relatedTools: ["rice-prioritization-calculator", "roadmap-status-template"],
     },
     {
         slug: "enterprise-changelog",
@@ -1030,7 +1030,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Track engagement and feedback on releases",
         ],
         relatedDefinitions: ["changelog", "product-updates"],
-        relatedTools: ["retention-calculator"],
+        relatedTools: ["changelog-generator"],
     },
 
     // ── Business Model ───────────────────────────────────────────────────────
@@ -1049,7 +1049,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Weight votes by MRR/ARR (Integration)",
             "Manual status updates for sales enablement",
         ],
-        relatedDefinitions: ["customer-success", "churn-reduction"],
+        relatedDefinitions: ["arr", "mrr", "churn-rate"],
         relatedTools: ["arr-calculator", "ltv-calculator"],
     },
     {
@@ -1088,7 +1088,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Slack and Discord notifications for updates",
         ],
         relatedDefinitions: ["changelog", "product-updates"],
-        relatedTools: ["retention-calculator"],
+        relatedTools: ["changelog-generator"],
     },
     {
         slug: "feature-voting-board",
@@ -1106,7 +1106,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Priority scoring to guide roadmap",
         ],
         relatedDefinitions: ["feature-voting", "product-feedback"],
-        relatedTools: ["nps-calculator"],
+        relatedTools: ["feature-voting-bias-calculator", "rice-prioritization-calculator"],
     },
     {
         slug: "customer-feedback-portal",
@@ -1124,7 +1124,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Automatic status updates to submitters",
         ],
         relatedDefinitions: ["customer-feedback", "customer-success"],
-        relatedTools: ["nps-calculator", "churn-rate-calculator"],
+        relatedTools: ["public-feedback-board-checklist", "nps-follow-up-planner"],
     },
     {
         slug: "product-team-collaboration",
@@ -1142,7 +1142,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Shared roadmap view for alignment",
         ],
         relatedDefinitions: ["team-collaboration", "roadmap"],
-        relatedTools: ["retention-calculator"],
+        relatedTools: ["rice-prioritization-calculator"],
     },
     {
         slug: "transparent-roadmap",
@@ -1160,7 +1160,7 @@ export const USE_CASES: UseCaseEntry[] = [
             "Share progress without commitments",
         ],
         relatedDefinitions: ["roadmap", "product-transparency"],
-        relatedTools: ["growth-rate-calculator"],
+        relatedTools: ["roadmap-status-template"],
     },
     {
         slug: "slack-discord-notifications",

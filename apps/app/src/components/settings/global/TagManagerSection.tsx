@@ -22,6 +22,7 @@ import {
 import { LoadingButton } from "@/components/global/LoadingButton";
 import { TagNameDialog } from "@/components/settings/global/TagNameDialog";
 import { getPlanLimits, normalizePlan } from "@/lib/plan";
+import SectionCard from "../global/SectionCard";
 
 type ManagedTag = {
   id: string;
@@ -155,35 +156,43 @@ export function TagManagerSection<T extends ManagedTag>({
   };
 
   return (
-    <div className="space-y-2">
-      <div className="text-md font-medium">{title}</div>
-      <div className="max-w-[500px] text-sm text-accent">{description}</div>
-
-      <div className="overflow-hidden rounded-md border">
-        <Table>
+    <div className="space-y-4">
+      <SectionCard
+        title={title}
+        description={description}
+        action={
+          <LoadingButton type="button" onClick={() => setCreateOpen(true)}>
+            {createButtonLabel}
+          </LoadingButton>
+        }
+      >
+        <Table variant="settings">
           <TableHeader>
             <TableRow>
               <TableHead className="px-4">Tag</TableHead>
-              <TableHead className="w-14 pl-2 pr-3 text-right" />
+              <TableHead className="w-14 px-2 text-right" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {tags.length === 0 && !isLoading ? (
               <TableRow>
-                <TableCell colSpan={2} className="px-4 py-6 text-accent">
+                <TableCell colSpan={2} className="px-4 py-8 text-accent">
                   {emptyLabel}
                 </TableCell>
               </TableRow>
             ) : (
               tags.map((tag) => (
                 <TableRow key={tag.id}>
-                  <TableCell className="px-4 text-sm">
-                    <span className="inline-flex items-center gap-2">
-                      <span className="inline-block size-3 rounded-full bg-primary" />
-                      <span>{tag.name}</span>
+                  <TableCell className="px-4">
+                    <span className="inline-flex min-w-0 items-center gap-2.5">
+                      <span
+                        aria-hidden
+                        className="inline-block size-2.5 shrink-0 rounded-full bg-primary"
+                      />
+                      <span className="truncate font-medium">{tag.name}</span>
                     </span>
                   </TableCell>
-                  <TableCell className="pl-2 pr-3 text-right">
+                  <TableCell className="px-2 text-right">
                     <Popover
                       open={actionOpenId === tag.id}
                       onOpenChange={(open) =>
@@ -195,10 +204,10 @@ export function TagManagerSection<T extends ManagedTag>({
                           type="button"
                           variant="nav"
                           size="icon-sm"
-                          aria-label="More"
+                          aria-label={`Actions for ${tag.name}`}
                           className="ml-auto"
                         >
-                          <MoreVertical className="size-4" />
+                          <MoreVertical className="size-4 opacity-70" />
                         </LoadingButton>
                       </PopoverTrigger>
                       <PopoverContent list className="min-w-0 w-fit">
@@ -218,27 +227,19 @@ export function TagManagerSection<T extends ManagedTag>({
             )}
           </TableBody>
         </Table>
-      </div>
-
+        <TagNameDialog
+          open={createOpen}
+          onOpenChange={setCreateOpen}
+          onSave={handleCreate}
+          saving={creating}
+          title={createDialogTitle}
+          description={createDialogDescription}
+          actionLabel={createActionLabel}
+          loadingLabel={createLoadingLabel}
+          disableWhenEmpty
+        />
+      </SectionCard>
       {renderPlanNotice(tags.length)}
-
-      <div className="mt-2 flex items-center justify-start">
-        <LoadingButton type="button" onClick={() => setCreateOpen(true)}>
-          {createButtonLabel}
-        </LoadingButton>
-      </div>
-
-      <TagNameDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        onSave={handleCreate}
-        saving={creating}
-        title={createDialogTitle}
-        description={createDialogDescription}
-        actionLabel={createActionLabel}
-        loadingLabel={createLoadingLabel}
-        disableWhenEmpty
-      />
     </div>
   );
 }

@@ -4,7 +4,10 @@ import React from "react";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 import RoadmapRequestItem from "@/components/roadmap/RoadmapRequestItem";
-import RoadmapColumn from "@/components/roadmap/RoadmapColumn";
+import RoadmapColumn, {
+  ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS,
+  roadmapColumnWidthClass,
+} from "@/components/roadmap/RoadmapColumn";
 import RoadmapDraggable from "@/components/roadmap/RoadmapDraggable";
 import RoadmapKeyboardShortcuts from "@/components/roadmap/RoadmapKeyboardShortcuts";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
@@ -18,6 +21,7 @@ import { useRoadmapCanvasNavigation } from "@/hooks/useRoadmapCanvasNavigation";
 import { useRoadmapFilters } from "@/hooks/useRoadmapFilters";
 import type { RequestItemData } from "@/types/request";
 import type { PostUser } from "@/types/post";
+import { cn } from "@featul/ui/lib/utils";
 
 type Item = RequestItemData;
 
@@ -34,12 +38,8 @@ export default function RoadmapBoard({
 }) {
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const [createPostStatus, setCreatePostStatus] = React.useState("pending");
-  const {
-    boardScrollRef,
-    setColumnRef,
-    jumpToStatus,
-    getCurrentStatusIndex,
-  } = useRoadmapCanvasNavigation(ROADMAP_STATUSES);
+  const { boardScrollRef, setColumnRef, jumpToStatus, getCurrentStatusIndex } =
+    useRoadmapCanvasNavigation(ROADMAP_STATUSES);
   const {
     sensors,
     items,
@@ -73,9 +73,9 @@ export default function RoadmapBoard({
   );
 
   return (
-    <section className="min-h-[72vh] min-w-0 space-y-3">
+    <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col bg-background">
       {hasActiveFilters ? (
-        <p className="text-xs text-accent">
+        <p className="shrink-0 border-b border-border/30 px-4 py-2 text-xs text-accent dark:border-white/5">
           Showing {totalVisible} of {totalItems} items
         </p>
       ) : null}
@@ -91,16 +91,20 @@ export default function RoadmapBoard({
         />
         <div
           ref={boardScrollRef}
-          className="h-full min-h-[72vh] w-full min-w-0 overflow-x-auto bg-background pb-2 [scrollbar-width:thin] snap-x snap-mandatory md:snap-none"
+          className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 touch-pan-x snap-x snap-mandatory scroll-px-3 overflow-x-auto bg-background px-3 pb-2 md:snap-none"
         >
-          <div className="flex min-h-[72vh] min-w-max gap-4 md:min-w-full md:flex-row md:items-stretch">
+          <div className="flex h-full min-h-0 min-w-max items-stretch gap-2 md:min-w-full md:flex-row">
             {(ROADMAP_STATUSES as readonly string[]).map((s) => {
               const itemsForStatus = grouped[s];
               return (
                 <div
                   key={s}
                   ref={(node) => setColumnRef(s, node)}
-                  className={`w-[85vw] shrink-0 snap-center sm:w-[320px] md:h-full md:w-auto ${collapsedByStatus[s] ? "md:w-20 md:flex-none" : "md:min-w-[300px] md:flex-1 lg:min-w-[320px]"}`}
+                  className={cn(
+                    "flex h-full min-h-0 w-[calc(100vw-2rem)] max-w-[360px] shrink-0 snap-start overflow-hidden md:w-auto md:max-w-none md:snap-center",
+                    ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS,
+                    roadmapColumnWidthClass(!!collapsedByStatus[s]),
+                  )}
                 >
                   <RoadmapColumn
                     id={s}
@@ -144,15 +148,17 @@ export default function RoadmapBoard({
         <DragOverlay dropAnimation={null}>
           {activeItem ? (
             <motion.div
-              className="pointer-events-none h-[152px] w-[min(320px,85vw)] overflow-hidden rounded-md border border-border bg-background shadow-lg"
+              className="pointer-events-none h-[108px] w-[min(300px,85vw)] overflow-hidden rounded-lg bg-muted shadow-lg ring-1 ring-border/50 dark:bg-[#232323] dark:ring-white/[0.08]"
               initial={{ scale: 0.995, opacity: 0.97 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 180, damping: 32 }}
             >
-              <RoadmapRequestItem
-                item={toRoadmapCardItem(activeItem)}
-                workspaceSlug={workspaceSlug}
-              />
+              <div className="flex h-full min-w-0 flex-col">
+                <RoadmapRequestItem
+                  item={toRoadmapCardItem(activeItem)}
+                  workspaceSlug={workspaceSlug}
+                />
+              </div>
             </motion.div>
           ) : null}
         </DragOverlay>

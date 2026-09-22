@@ -4,6 +4,10 @@ import Link from "next/link";
 import { HeroHighlights } from "@/components/shared/highlights";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
+import {
+  heroPrimaryCtaClass,
+  heroSecondaryCtaClass,
+} from "@/components/shared/cta";
 
 import { AUTH_SIGN_IN_URL } from "@/config/auth";
 
@@ -22,15 +26,15 @@ export function UseCaseHeroContent({
   return (
     <div className="text-left" data-component="UseCaseHeroContent">
       {badge ? (
-        <p className="mb-3 text-sm font-medium text-white/80">{badge}</p>
+        <p className="mb-3 text-sm font-medium text-accent">{badge}</p>
       ) : null}
 
-      <h1 className="max-w-3xl font-heading text-[1.75rem] font-semibold leading-[1.2] tracking-tight text-white text-balance sm:text-4xl sm:leading-tight md:text-5xl">
+      <h1 className="max-w-3xl font-heading text-[1.75rem] font-semibold leading-[1.2] tracking-tight text-foreground text-balance sm:text-4xl sm:leading-tight md:text-5xl">
         {title}
       </h1>
 
       {description ? (
-        <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-white/95 text-balance sm:mt-6 sm:max-w-2xl sm:text-base md:text-lg">
+        <p className="mt-4 max-w-xl text-sm font-light leading-relaxed text-accent text-balance sm:mt-6 sm:max-w-2xl sm:text-base md:text-lg">
           {description}
         </p>
       ) : null}
@@ -40,10 +44,7 @@ export function UseCaseHeroContent({
           asChild
           size="lg"
           variant="nav"
-          className={cn(
-            heroButtonClassName,
-            "border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
-          )}
+          className={cn(heroButtonClassName, heroPrimaryCtaClass)}
         >
           <Link
             href={AUTH_SIGN_IN_URL}
@@ -57,7 +58,7 @@ export function UseCaseHeroContent({
           asChild
           size="lg"
           variant="nav"
-          className={cn(heroButtonClassName, "text-accent")}
+          className={cn(heroButtonClassName, heroSecondaryCtaClass)}
         >
           <Link href="/use-cases" className="font-heading">
             All use cases

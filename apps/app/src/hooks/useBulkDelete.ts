@@ -29,6 +29,7 @@ type UseBulkDeleteResult = {
   handleBulkDelete: () => void;
 };
 
+/** Deletes selected list items via `deleteOne`, then updates local list and selection. Toasts per-item failures; refreshes the route. */
 export function useBulkDelete<T>({
   listKey,
   listItems,

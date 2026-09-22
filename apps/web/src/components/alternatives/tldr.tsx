@@ -1,5 +1,5 @@
+import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link";
-import { Container } from "@/components/global/container";
 import {
   ALTERNATIVES_UPDATED_LABEL,
   type Alternative,
@@ -10,6 +10,7 @@ import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { BookmarkIcon } from "@featul/ui/icons/bookmark";
 
 import { AUTH_SIGN_IN_URL } from "@/config/auth";
+import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
 
 export default function TLDR({ alt }: { alt: Alternative }) {
   const description = getAltDescription(alt.slug, "first");
@@ -17,7 +18,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
   const tradeoffs = alt.tradeoffs?.slice(0, 2) ?? alt.pros?.slice(0, 2) ?? [];
 
   return (
-    <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+    <MarketingContainer>
       <section className="py-16" data-component="TLDR">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -27,11 +28,12 @@ export default function TLDR({ alt }: { alt: Alternative }) {
             </p>
           </div>
           <h2 className="mt-6 text-balance text-2xl font-semibold text-foreground sm:text-3xl lg:text-3xl">
-            {alt.name} vs Featul: quick summary
+            {alt.name} vs Featul: what is the short answer?
           </h2>
 
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
-            <div className="rounded-md border border-foreground/10 bg-white p-5 sm:p-6">
+          <div className="mt-8 grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:gap-6">
+            <OverlayCard>
+              <OverlayCardPanel className="flex h-full flex-1 flex-col px-4 py-3 sm:px-5 sm:py-4">
               <div className="flex items-center gap-2.5">
                 <span className="flex size-8 items-center justify-center overflow-hidden rounded-md bg-muted/40">
                   <AlternativeIcon
@@ -56,9 +58,11 @@ export default function TLDR({ alt }: { alt: Alternative }) {
                   ))}
                 </ul>
               ) : null}
-            </div>
+              </OverlayCardPanel>
+            </OverlayCard>
 
-            <div className="rounded-md border border-primary/25 bg-primary/[0.04] p-5 sm:p-6">
+            <OverlayCard>
+              <OverlayCardPanel className="flex h-full flex-1 flex-col px-4 py-3 sm:px-5 sm:py-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <span className="flex size-8 items-center justify-center rounded-md bg-white">
@@ -95,10 +99,11 @@ export default function TLDR({ alt }: { alt: Alternative }) {
                   ))}
                 </ul>
               ) : null}
-            </div>
+              </OverlayCardPanel>
+            </OverlayCard>
           </div>
         </div>
       </section>
-    </Container>
+    </MarketingContainer>
   );
 }

@@ -2,83 +2,75 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@featul/ui/components/dialog";
-import { XMarkIcon } from "@featul/ui/icons/xmark";
+import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
+import { ImageLightbox } from "@/components/global/ImageLightbox";
 
 interface ContentImageProps {
   url: string;
   alt: string;
   className?: string;
+  onPreview?: () => void;
 }
 
 export default function ContentImage({
   url,
   alt,
   className,
+  onPreview,
 }: ContentImageProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const openPreview = () => {
+    if (onPreview) {
+      onPreview();
+      return;
+    }
+    setIsOpen(true);
+  };
 
   return (
     <>
       <div
         className={cn(
-          "relative rounded-md  border overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity",
-          className
+          overlayShellClass,
+          "relative cursor-pointer p-0.5 transition-opacity hover:opacity-90",
+          className,
         )}
-        onClick={() => setIsOpen(true)}
+        onClick={openPreview}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            setIsOpen(true);
+            openPreview();
           }
         }}
         aria-label="Click to view full size image"
       >
-        <div className="relative aspect-video w-full h-full min-h-[60px] bg-muted">
-          <Image
-            src={url}
-            alt={alt}
-            fill
-            className="object-cover"
-            unoptimized
-            loader={({ src }) => src}
-          />
+        <div className={overlayInnerClass}>
+          <div className="relative aspect-video h-full w-full min-h-[60px] bg-background">
+            <Image
+              src={url}
+              alt={alt}
+              fill
+              className="object-cover"
+              unoptimized
+              loader={({ src }) => src}
+            />
+          </div>
         </div>
       </div>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent
-          fluid
-          showCloseButton={false}
-          overlayClassName="bg-white/70 backdrop-blur-md dark:bg-black/85"
-          onOpenAutoFocus={(event) => event.preventDefault()}
-          className="fixed inset-0 top-0 left-0 flex h-dvh w-full max-w-none translate-x-0 translate-y-0 items-center justify-center border-none bg-transparent p-4 shadow-none ring-0 ring-offset-0 sm:max-w-none"
-        >
-          <DialogHeader className="sr-only">
-            <DialogTitle>{alt}</DialogTitle>
-          </DialogHeader>
-          <DialogClose
-            className="absolute top-4 right-4 z-10 inline-flex size-9 items-center justify-center rounded-full text-foreground opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label="Close image preview"
-          >
-            <XMarkIcon size={16} />
-          </DialogClose>
-          <img
-            src={url}
-            alt={alt}
-            className="max-h-[55dvh] max-w-[min(90vw,800px)] object-contain"
-          />
-        </DialogContent>
-      </Dialog>
+      {onPreview ? null : (
+        <ImageLightbox
+          open={isOpen}
+          onOpenChange={setIsOpen}
+          images={[{ url, alt }]}
+          index={0}
+          onIndexChange={() => undefined}
+        />
+      )}
     </>
   );
 }

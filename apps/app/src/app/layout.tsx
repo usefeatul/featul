@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Manrope, Sora } from "next/font/google";
+import { Inter, Inter_Tight } from "next/font/google";
 import { Providers } from "../components/providers/providers";
-import MainThemeProvider from "@/components/global/MainThemeProvider";
+import ConditionalThemeProvider from "@/components/global/ConditionalThemeProvider";
 // import WidgetTestEmbed from "@/components/widget/embed";
 import "./globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
-//
 import {
   SITE_URL,
   DEFAULT_TITLE,
@@ -16,16 +15,16 @@ import {
 } from "@/config/seo";
 import { buildSoftwareApplicationSchema } from "@/lib/structured/data";
 
-const manrope = Manrope({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
   variable: "--font-jakarta",
 });
 
-const sora = Sora({
+const interTight = Inter_Tight({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-playfair",
 });
@@ -76,7 +75,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#ffffff",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f5f5f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#202020" },
+  ],
 };
 
 export default function RootLayout({
@@ -87,7 +89,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${manrope.variable} ${sora.variable}`}
+      className={`${inter.variable} ${interTight.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -102,17 +104,12 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <Providers>
-          <MainThemeProvider>{children}</MainThemeProvider>
+          <ConditionalThemeProvider>{children}</ConditionalThemeProvider>
         </Providers>
-        {/* <WidgetTestEmbed /> */}
-        {/* <Script
-          id="userjot-widget"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html:
-              "window.$ujq=window.$ujq||[];window.uj=window.uj||new Proxy({},{get:(_,p)=>(...a)=>window.$ujq.push([p,...a])});document.head.appendChild(Object.assign(document.createElement('script'),{src:'https://cdn.userjot.com/sdk/v2/uj.js',type:'module',async:!0}));window.uj.init('cm9daudvf001drw15p5m6c2bl',{widget:!0,position:'right',theme:'light',trigger:'default'});",
-          }}
-        /> */}
+        {/* {process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||
+        process.env.NEXT_PUBLIC_FEATUL_WORKSPACE_ID ? (
+          <WidgetTestEmbed />
+        ) : null} */}
       </body>
     </html>
   );

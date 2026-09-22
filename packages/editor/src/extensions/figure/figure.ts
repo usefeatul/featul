@@ -2,6 +2,7 @@ import type { CommandProps } from "@tiptap/core";
 import { mergeAttributes, Node } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { FigureView } from "./figure-view";
+import { getSafeHttpUrlFromString } from "../../lib/safe-url";
 
 declare module "@tiptap/core" {
   // biome-ignore lint/style/useConsistentTypeDefinitions: Extending tiptap commands
@@ -76,11 +77,12 @@ export const Figure = Node.create({
       href: {
         default: null,
         parseHTML: (element) =>
-          element.querySelector("a")?.getAttribute("href") || null,
+          getSafeHttpUrlFromString(
+            element.querySelector("a")?.getAttribute("href") || "",
+          ),
         renderHTML: (attributes) => {
-          // Return attribute to make it available in HTMLAttributes
-          // Main renderHTML will apply it to anchor element
-          return { href: attributes.href };
+          const href = getSafeHttpUrlFromString(String(attributes.href || ""));
+          return href ? { href } : {};
         },
       },
       width: {
@@ -145,12 +147,14 @@ export const Figure = Node.create({
     // Prepare figcaption content
     const figcaptionContent = caption || "";
 
+    const safeHref = getSafeHttpUrlFromString(String(href || ""));
+
     // If href exists, wrap img in anchor tag
-    if (href) {
+    if (safeHref) {
       return [
         "figure",
         mergeAttributes(figureAttrs),
-        ["a", { href }, ["img", imgAttrs]],
+        ["a", { href: safeHref }, ["img", imgAttrs]],
         ["figcaption", {}, figcaptionContent],
       ];
     }

@@ -14,6 +14,7 @@ interface UseBulkSelectionHotkeysParams {
   onExitSelection: () => void;
 }
 
+/** Escape exits select mode; Delete/Backspace opens bulk-delete confirm when items are selected. */
 export function useBulkSelectionHotkeys({
   listKey,
   isSelecting,

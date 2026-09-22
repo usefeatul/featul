@@ -110,7 +110,7 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
         confirmName.trim() !== expectedName;
 
     return (
-        <>
+        <div className="h-full">
             <SettingsCard
                 icon={<DangerDelete className="size-5 text-primary" />}
                 title="Danger Zone"
@@ -201,6 +201,6 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogShell>
-        </>
+        </div>
     );
 }

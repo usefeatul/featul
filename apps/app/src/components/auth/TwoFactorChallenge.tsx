@@ -106,7 +106,8 @@ export default function TwoFactorChallenge() {
 
   return (
     <AuthLayout
-      title="Two-factor authentication"
+      title="Two-factor authentication."
+      description="Confirm it's you with an authenticator app or a backup code."
       onSubmit={(event) => {
         event.preventDefault();
         void handleSubmit();

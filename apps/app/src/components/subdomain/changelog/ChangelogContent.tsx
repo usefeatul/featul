@@ -2,6 +2,11 @@ import React from "react";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import type { JSONContent } from "@tiptap/core";
 import type { Role } from "@/types/team";
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard";
+import { cn } from "@featul/ui/lib/utils";
 
 export interface ChangelogEntryData {
   id: string;
@@ -26,45 +31,45 @@ interface ChangelogContentProps {
 
 export function ChangelogContent({ entry }: ChangelogContentProps) {
   return (
-    <div className="w-full min-w-0 max-w-none justify-self-stretch rounded-md border bg-card dark:bg-background p-4 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black">
-      {/* Cover Image */}
+    <article className={cn(settingsCardShellClass, "w-full min-w-0 max-w-none justify-self-stretch")}>
       {entry.coverImage ? (
-        <div className="aspect-video w-full overflow-hidden rounded-md bg-muted mb-4">
-          <img
-            src={entry.coverImage}
-            alt={entry.title}
-            className="h-full w-full object-cover"
-          />
-        </div>
-      ) : null}
-
-      {/* Title */}
-      <h1 className="text-xl font-semibold text-foreground mb-4">
-        {entry.title}
-      </h1>
-
-      {/* Content */}
-      {entry.content ? (
-        <div className="max-w-none">
-          <ChangelogRenderer content={entry.content} />
-        </div>
-      ) : null}
-
-      {/* Tags */}
-      {entry.tags && entry.tags.length > 0 ? (
-        <div className="pt-4 mt-4 border-t">
-          <div className="flex flex-wrap gap-2">
-            {entry.tags.map((tag) => (
-              <span
-                key={tag.id}
-                className="text-xs rounded-md bg-muted px-2 py-1 text-muted-foreground font-medium"
-              >
-                {tag.name}
-              </span>
-            ))}
+        <div className={cn(settingsCardInnerClass, "mb-2 overflow-hidden p-0")}>
+          <div className="aspect-video w-full overflow-hidden bg-muted">
+            <img
+              src={entry.coverImage}
+              alt={entry.title}
+              className="h-full w-full object-cover"
+            />
           </div>
         </div>
       ) : null}
-    </div>
+
+      <div className={settingsCardInnerClass}>
+        <h1 className="text-xl font-semibold text-foreground mb-4">
+          {entry.title}
+        </h1>
+
+        {entry.content ? (
+          <div className="max-w-none">
+            <ChangelogRenderer content={entry.content} />
+          </div>
+        ) : null}
+
+        {entry.tags && entry.tags.length > 0 ? (
+          <div className="pt-4 mt-4 border-t">
+            <div className="flex flex-wrap gap-2">
+              {entry.tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="text-xs rounded-md bg-muted px-2 py-1 text-muted-foreground font-medium"
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </article>
   );
 }

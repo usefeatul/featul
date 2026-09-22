@@ -30,10 +30,14 @@ export function BoardSelector({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="card"
+          variant="plain"
           size="sm"
-          className="h-8 gap-1 px-2 font-medium text-foreground hover:bg-muted"
+          className={cn(
+            "h-8 gap-1.5 rounded-none border-0 bg-transparent px-2.5 text-xs font-medium text-foreground shadow-none before:hidden hover:bg-black/5 dark:bg-transparent dark:hover:bg-white/5",
+            open && "bg-black/5 dark:bg-white/5",
+          )}
         >
+          <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
           {selectedBoard ? selectedBoard.name : "Select Board"}
         </Button>
       </PopoverTrigger>
@@ -48,6 +52,7 @@ export function BoardSelector({
               }}
               className={cn(selectedBoard?.slug === b.slug && "bg-muted")}
             >
+              <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
               <span className="font-medium text-sm">{b.name}</span>
             </PopoverListItem>
           ))}

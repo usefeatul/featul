@@ -1,5 +1,5 @@
 import { j, privateProcedure, publicProcedure } from "../jstack"
-import { getUploadUrlInputSchema, getCommentImageUploadUrlInputSchema, getPostImageUploadUrlInputSchema, getAvatarUploadUrlInputSchema } from "../validators/storage"
+import { getUploadUrlInputSchema, getCommentImageUploadUrlInputSchema, getPostImageUploadUrlInputSchema, getAvatarUploadUrlInputSchema, deleteUploadInputSchema } from "../validators/storage"
 import { HTTPException } from "hono/http-exception"
 import { and, eq } from "drizzle-orm"
 import { workspace, post, board } from "@featul/db"
@@ -9,9 +9,11 @@ import {
   limitStoragePublicPostAnon,
   limitStoragePublicPostUser,
   limitStorageComment,
+  limitStorageDeleteUser,
   applyRateLimitHeaders,
 } from "../services/ratelimiter"
-import { createStorageContext, buildSignedUpload } from "../services/storage-signer"
+import { createStorageContext, buildSignedUpload } from "../storage/signer"
+import { deleteUploadByPublicUrl } from "../storage/delete"
 import {
   AVATAR_UPLOAD_POLICY,
   POST_IMAGE_UPLOAD_POLICY,
@@ -19,8 +21,10 @@ import {
   WORKSPACE_UPLOAD_POLICIES,
   resolveWorkspaceUploadFolder,
   validateUploadInput,
-} from "../shared/storage-upload"
-import { getSessionUserId, hasWorkspaceContentAccess, canUploadWorkspaceAsset } from "../shared/storage-access"
+} from "../storage/upload"
+import { getSessionUserId, hasWorkspaceContentAccess, canUploadWorkspaceAsset, assertCallerCanDeleteUploadKey } from "../storage/access"
+import { objectKeyFromPublicUrl } from "../storage/object"
+import { enforceTrustedBrowserOrigin } from "../request/origin"
 
 function isAnonymousPublicPostImageUploadEnabled(): boolean {
   const raw = String(process.env.ALLOW_ANONYMOUS_PUBLIC_POST_IMAGE_UPLOADS || "").trim().toLowerCase()
@@ -110,6 +114,7 @@ export function createStorageRouter() {
     getPublicPostImageUploadUrl: publicProcedure
       .input(getPostImageUploadUrlInputSchema)
       .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw)
         const userId = await getSessionUserId(c.req.raw.headers)
         const publicPostRateLimit = userId
           ? await limitStoragePublicPostUser(userId)
@@ -226,6 +231,28 @@ export function createStorageRouter() {
           key,
           contentType: normalizedContentType,
           contentLength: input.fileSize,
+        })
+        return c.json(payload)
+      }),
+
+    deleteUpload: privateProcedure
+      .input(deleteUploadInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        const userId = String(ctx.session.user.id || "")
+        if (!userId) throw new HTTPException(401, { message: "Unauthorized" })
+        const deleteRateLimit = await limitStorageDeleteUser(userId)
+        applyRateLimitHeaders(c, deleteRateLimit, "Too many delete requests. Please try again shortly.")
+
+        const publicBase = String(process.env.R2_PUBLIC_BASE_URL || "")
+        const key = objectKeyFromPublicUrl(input.url, publicBase)
+        if (!key) {
+          throw new HTTPException(400, { message: "Invalid image URL" })
+        }
+        await assertCallerCanDeleteUploadKey({ ctx, userId, key })
+
+        const payload = await deleteUploadByPublicUrl({
+          db: ctx.db,
+          publicUrl: input.url,
         })
         return c.json(payload)
       }),

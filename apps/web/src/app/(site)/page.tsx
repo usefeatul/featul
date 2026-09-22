@@ -1,3 +1,4 @@
+import { marketingStackClass } from "@/components/layout/container";
 import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import { DEFAULT_DESCRIPTION } from "@/config/seo";
@@ -9,11 +10,12 @@ import Faq from "@/components/home/faq";
 import StatsSection from "@/components/home/cta";
 import Setup from "@/components/home/setup";
 import Create from "@/components/home/create";
+import Access from "@/components/home/access";
 import Integrations from "@/components/home/integrations";
-import Listening from "@/components/home/listening";
 import FeaturesSection from "@/components/home/features";
 import { ConversionHero } from "@/components/home/conversion";
 import { SectionStack } from "@/components/layout/stack";
+import { HomeScrollMemory } from "@/components/home/scroll-restoration";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Customer Feedback, Roadmaps & Changelogs | Featul",
@@ -29,20 +31,21 @@ export default function Home() {
 
   return (
     <main className="min-h-screen overflow-x-clip">
+      <HomeScrollMemory />
       <script
         id="home-faq-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
       <Hero />
-      <div className="relative mx-auto max-w-6xl">
+      <div className={marketingStackClass}>
         <SectionStack>
           <ConversionHero />
           <FeaturesSection />
-          <Listening />
           <Integrations />
           <Setup />
           <Create />
+          <Access />
           <Faq />
           <StatsSection />
         </SectionStack>

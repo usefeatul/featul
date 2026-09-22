@@ -1,9 +1,10 @@
 "use client"
 
 import React from "react"
-import SectionCard from "../global/SectionCard"
+import SectionCard, { settingsTableShellClass } from "../global/SectionCard"
 import { authClient, useSession } from "@featul/auth/client"
 import { toast } from "sonner"
+import { cn } from "@featul/ui/lib/utils"
 import { LoadingButton } from "@/components/global/LoadingButton"
 import { normalizePlan } from "@/lib/plan"
 import BillingCycleSegment from "./BillingCycleSegment"
@@ -162,19 +163,24 @@ export default function BillingSection({
       description="Choose the plan that fits your workspace."
       action={billingAction}
     >
-      <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 rounded-md border border-border/70 bg-background px-3 py-3">
+      <div className="space-y-4">
+        <div
+          className={cn(
+            settingsTableShellClass,
+            "flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-3",
+          )}
+        >
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-foreground">
-              <span>Current:</span>
-              <span className="font-heading font-medium text-accent">{activePlan.label}</span>
-              <span className="font-heading text-accent">${currentAmount}</span>
+              <span className="text-accent">Current:</span>
+              <span className="font-heading font-medium">{activePlan.label}</span>
+              <span className="font-heading">${currentAmount}</span>
               <span className="font-heading text-accent">{currentSuffix}</span>
               {trialEndLabel ? (
-                <span className="text-accent">•</span>
-              ) : null}
-              {trialEndLabel ? (
-                <span className="text-accent">Trial until {trialEndLabel}</span>
+                <>
+                  <span className="text-accent">•</span>
+                  <span className="text-accent">Trial until {trialEndLabel}</span>
+                </>
               ) : null}
             </div>
           </div>

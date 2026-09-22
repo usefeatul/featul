@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import RequestList from "@/components/requests/RequestList";
 import PostCountSeed from "@/components/requests/PostCountSeed";
-import RequestPagination from "@/components/requests/RequestPagination";
 import { createPageMetadata } from "@/lib/seo";
 import { readInitialSelectionState } from "@/lib/selection/server";
 import { resolveSearchParams } from "@/utils/search/params";
@@ -37,7 +36,7 @@ export default async function RequestsPage({ params, searchParams }: Props) {
   if (!data) return notFound();
 
   return (
-    <section className="space-y-4">
+    <section className="-mx-4 space-y-3 sm:-mx-8 lg:-mx-12 xl:-mx-16">
       <PostCountSeed
         slug={slug}
         statuses={data.statusFilter}
@@ -50,14 +49,9 @@ export default async function RequestsPage({ params, searchParams }: Props) {
         items={data.rows}
         workspaceSlug={slug}
         initialTotalCount={data.totalCount}
+        initialOffset={(data.page - 1) * data.pageSize + data.rows.length}
         initialIsSelecting={initialIsSelecting}
         initialSelectedIds={initialSelectedIds}
-      />
-      <RequestPagination
-        workspaceSlug={slug}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalCount={data.totalCount}
       />
     </section>
   );

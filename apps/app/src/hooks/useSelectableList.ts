@@ -36,6 +36,7 @@ type UseSelectableListResult = {
   exitSelection: () => void;
 };
 
+/** Bulk-select list: shift-range, select-all, persist, and selection hotkeys. */
 export function useSelectableList({
   listKey,
   itemIds,

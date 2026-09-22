@@ -1,3 +1,4 @@
+/** Role granted when the invite is accepted. */
 export type InviteRole = "admin" | "member" | "viewer";
 
 export type InviteUser = {
@@ -6,6 +7,7 @@ export type InviteUser = {
   image?: string | null;
 };
 
+/** Token lookup payload for the invite accept page. */
 export type InviteByTokenResponse = {
   invite?: {
     workspaceName?: string | null;
@@ -16,6 +18,7 @@ export type InviteByTokenResponse = {
   };
 };
 
+/** Accept result; workspaceSlug is where to redirect on success. */
 export type AcceptInviteResponse = {
   ok?: boolean;
   workspaceSlug?: string | null;

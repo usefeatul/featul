@@ -32,7 +32,7 @@ export function NotraImportOptionsSection({
   isPending,
 }: NotraImportOptionsSectionProps) {
   return (
-    <section className="overflow-hidden rounded-md border border-border/70 bg-background">
+    <section className="overflow-hidden rounded-xl border border-border/70 bg-background">
       {!isUsingStoredConnection ? (
         <NotraSwitchRow
           title="Save encrypted connection"

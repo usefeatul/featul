@@ -7,6 +7,7 @@ import {
   AvatarFallback,
 } from "@featul/ui/components/avatar";
 import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
+import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
 import { BoardSelector } from "./BoardSelector";
 import { StatusSelector } from "./StatusSelector";
 import { TagSelector } from "./TagSelector";
@@ -48,21 +49,29 @@ export function PostHeader({
         )}
       </Avatar>
       <ChevronRightIcon className="size-3" />
-      <BoardSelector
-        boards={boards}
-        selectedBoard={selectedBoard}
-        onSelectBoard={onSelectBoard}
-      />
-      {status && onStatusChange && (
-        <StatusSelector status={status} onStatusChange={onStatusChange} />
-      )}
-      {availableTags && selectedTags && onToggleTag && (
-        <TagSelector
-          availableTags={availableTags}
-          selectedTags={selectedTags}
-          onToggleTag={onToggleTag}
+      <Toolbar variant="soft" size="sm" className="w-fit shrink-0">
+        <BoardSelector
+          boards={boards}
+          selectedBoard={selectedBoard}
+          onSelectBoard={onSelectBoard}
         />
-      )}
+        {status && onStatusChange ? (
+          <>
+            <ToolbarSeparator className="self-stretch bg-border/80 dark:bg-white/10" />
+            <StatusSelector status={status} onStatusChange={onStatusChange} />
+          </>
+        ) : null}
+        {availableTags && selectedTags && onToggleTag ? (
+          <>
+            <ToolbarSeparator className="self-stretch bg-border/80 dark:bg-white/10" />
+            <TagSelector
+              availableTags={availableTags}
+              selectedTags={selectedTags}
+              onToggleTag={onToggleTag}
+            />
+          </>
+        ) : null}
+      </Toolbar>
     </div>
   );
 }

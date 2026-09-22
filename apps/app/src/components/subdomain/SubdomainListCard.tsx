@@ -2,6 +2,10 @@
 
 import type { ReactNode } from "react"
 import { cn } from "@featul/ui/lib/utils"
+import {
+  settingsCardInnerClass,
+  settingsCardShellClass,
+} from "@/components/settings/global/SectionCard"
 
 type SubdomainListCardProps = {
   children: ReactNode
@@ -10,13 +14,10 @@ type SubdomainListCardProps = {
 
 export function SubdomainListCard({ children, className }: SubdomainListCardProps) {
   return (
-    <div
-      className={cn(
-        "rounded-md ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black border bg-card dark:bg-background mt-4",
-        className
-      )}
-    >
-      {children}
+    <div className={cn(settingsCardShellClass, "mt-4", className)}>
+      <div className={cn(settingsCardInnerClass, "overflow-hidden p-0")}>
+        {children}
+      </div>
     </div>
   )
 }

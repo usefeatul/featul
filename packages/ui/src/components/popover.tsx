@@ -4,6 +4,7 @@ import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { cn } from "@featul/ui/lib/utils";
+import { subtleOverlayInnerClass, subtleOverlayShellClass } from "@featul/ui/lib/overlay";
 
 function Popover({
   ...props
@@ -22,9 +23,15 @@ function PopoverContent({
   align = "center",
   sideOffset = 4,
   list = false,
+  unstyled = false,
   container,
+  children,
   ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Content> & { list?: boolean; container?: HTMLElement | null }) {
+}: React.ComponentProps<typeof PopoverPrimitive.Content> & {
+  list?: boolean;
+  unstyled?: boolean;
+  container?: HTMLElement | null;
+}) {
   return (
     <PopoverPrimitive.Portal container={container}>
       <PopoverPrimitive.Content
@@ -33,13 +40,31 @@ function PopoverContent({
         sideOffset={sideOffset}
         data-variant={list ? "list" : undefined}
         className={cn(
-          list
-            ? "bg-card text-popover-foreground  z-50 w-fit min-w-0 rounded-sm border p-0  outline-hidden"
-            : "bg-card text-popover-foreground z-50 w-80 rounded-md border p-2  outline-hidden",
-          className
+          !unstyled && subtleOverlayShellClass,
+          list && "overflow-visible",
+          "z-50 flex flex-col text-popover-foreground outline-hidden",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          list ? "w-max min-w-0" : "w-80",
+          className,
         )}
         {...props}
-      />
+      >
+        {unstyled ? (
+          children
+        ) : (
+          <div className={cn(list && "w-max")}>
+            <div
+              data-slot="popover-content-inner"
+              className={cn(
+                subtleOverlayInnerClass,
+                list ? "overflow-visible p-0 w-max" : "p-3 [&>[data-slot=popover-separator]]:-mx-3",
+              )}
+            >
+              {children}
+            </div>
+          </div>
+        )}
+      </PopoverPrimitive.Content>
     </PopoverPrimitive.Portal>
   );
 }
@@ -48,7 +73,10 @@ function PopoverList({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="popover-list"
-      className={cn("max-h-[50vh] sm:max-h-64 overflow-y-auto", className)}
+      className={cn(
+        "inline-flex w-max max-h-[50vh] flex-col overflow-y-auto sm:max-h-64",
+        className,
+      )}
       {...props}
     />
   );
@@ -71,18 +99,38 @@ function PopoverListItem({
     <Component
       data-slot="popover-list-item"
       className={cn(
-        "relative group w-full text-left px-3 py-2 hover:bg-muted dark:hover:bg-black/40 flex items-center gap-3 cursor-pointer rounded-none",
-        className
+        "relative group flex cursor-pointer items-center gap-2 rounded-none px-3 py-2 text-left whitespace-nowrap hover:bg-muted/40 dark:hover:bg-muted/30",
+        className,
       )}
       {...(props as any)}
     >
       <span
         aria-hidden
-        className="absolute left-0 top-0 bottom-0 w-[2px] opacity-0 group-hover:opacity-100"
+        className="absolute bottom-0 left-0 top-0 w-[2px] opacity-0 group-hover:opacity-100"
         style={style}
       />
       {children}
     </Component>
+  );
+}
+
+function PopoverListBack({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"button">) {
+  return (
+    <button
+      type="button"
+      data-slot="popover-list-back"
+      className={cn(
+        "flex w-full cursor-pointer items-center gap-2 border-b border-border/60 px-3 py-2 text-left text-sm hover:bg-muted/40 dark:hover:bg-muted/30",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -99,7 +147,7 @@ function PopoverSeparator({
   return (
     <div
       data-slot="popover-separator"
-      className={cn("bg-border h-px my-1", className)}
+      className={cn("my-1 h-px bg-border/60", className)}
       {...props}
     />
   );
@@ -112,5 +160,6 @@ export {
   PopoverAnchor,
   PopoverList,
   PopoverListItem,
+  PopoverListBack,
   PopoverSeparator,
 };

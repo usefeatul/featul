@@ -2,9 +2,10 @@
 
 import React from "react"
 import { motion } from "framer-motion"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogInner, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
 import MaximizeIcon from "@featul/ui/icons/maximize"
 import MinimizeIcon from "@featul/ui/icons/minimize"
+import { cn } from "@featul/ui/lib/utils"
 
 const DialogExpandedContext = React.createContext(false)
 
@@ -20,7 +21,7 @@ const BASE_WIDTH_PX: Record<DialogWidth, number> = {
   wide: 490,
   widest: 650,
   xl: 750,
-  xxl: 1070,
+  xxl: 1400,
 }
 
 const EXPANDED_WIDTH_PX: Record<DialogWidth, number> = {
@@ -28,7 +29,7 @@ const EXPANDED_WIDTH_PX: Record<DialogWidth, number> = {
   wide: 640,
   widest: 800,
   xl: 880,
-  xxl: 1200,
+  xxl: 1600,
 }
 
 type SettingsDialogShellProps = {
@@ -42,6 +43,15 @@ type SettingsDialogShellProps = {
   icon?: React.ReactNode
   /** Shows an expand/collapse toggle that grows the dialog with a framer-motion animation. */
   expandable?: boolean
+  onOpenAutoFocus?: (event: Event) => void
+  /** When false, overlay / outside pointer events do not dismiss the dialog (close button and Escape still do). */
+  dismissOnOutside?: boolean
+  /** Merged onto DialogContent (e.g. taller max-height for image previews). */
+  contentClassName?: string
+  /** Merged onto DialogInner (e.g. drop default padding so a footer can span the inner surface). */
+  innerClassName?: string
+  /** Rendered inside the dialog shell, outside DialogInner (e.g. side nav). */
+  aside?: React.ReactNode
   children: React.ReactNode
 }
 
@@ -54,6 +64,11 @@ export function SettingsDialogShell({
   offsetY = "50%",
   icon,
   expandable = false,
+  onOpenAutoFocus,
+  dismissOnOutside = true,
+  contentClassName,
+  innerClassName,
+  aside,
   children,
 }: SettingsDialogShellProps) {
   const [expanded, setExpanded] = React.useState(false)
@@ -63,7 +78,7 @@ export function SettingsDialogShell({
   }, [open])
 
   const styleWidth = {
-    width: `min(92vw, ${BASE_WIDTH_PX[width]}px)`,
+    width: `min(${width === "xxl" ? "calc(100vw - 8rem)" : "92vw"}, ${BASE_WIDTH_PX[width]}px)`,
     maxWidth: "none" as const,
   }
 
@@ -83,7 +98,7 @@ export function SettingsDialogShell({
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="absolute top-3 right-8 inline-flex items-center justify-center rounded-xs opacity-70 transition-opacity hover:opacity-100 cursor-pointer"
+          className="absolute top-3 right-9 inline-flex items-center justify-center rounded-md opacity-70 transition-opacity hover:opacity-100 cursor-pointer"
           aria-label={expanded ? "Collapse dialog" : "Expand dialog"}
           title={expanded ? "Collapse" : "Expand"}
         >
@@ -94,18 +109,18 @@ export function SettingsDialogShell({
   )
 
   const body = (
-    <div
-      className={`bg-card rounded-xl p-2 dark:bg-black/60 border border-border ${expandable ? "flex min-h-0 flex-1 flex-col" : ""}`}
-    >
+    <DialogInner className={cn("flex min-h-0 flex-1 flex-col overflow-hidden", innerClassName)}>
       {description ? (
-        <DialogDescription className="text-sm mb-2">
+        <DialogDescription className="mb-2 shrink-0 text-sm">
           {description}
         </DialogDescription>
       ) : null}
-      <DialogExpandedContext.Provider value={expanded}>
-        {children}
-      </DialogExpandedContext.Provider>
-    </div>
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <DialogExpandedContext.Provider value={expanded}>
+          {children}
+        </DialogExpandedContext.Provider>
+      </div>
+    </DialogInner>
   )
 
   return (
@@ -113,11 +128,24 @@ export function SettingsDialogShell({
       <DialogContent
         fluid
         style={{ ...(expandable ? {} : styleWidth), ...positionStyle }}
-        className={`max-w-none sm:max-w-none p-1 bg-muted rounded-2xl gap-1`}
+        className={cn(
+          "flex max-h-[min(92dvh,680px)] max-w-none flex-col overflow-hidden sm:max-w-none",
+          contentClassName,
+        )}
+        onOpenAutoFocus={onOpenAutoFocus}
+        onPointerDownOutside={(event) => {
+          if (!dismissOnOutside) event.preventDefault()
+        }}
+        onInteractOutside={(event) => {
+          if (!dismissOnOutside) event.preventDefault()
+        }}
+        onFocusOutside={(event) => {
+          if (!dismissOnOutside) event.preventDefault()
+        }}
       >
         {expandable ? (
           <motion.div
-            className="flex min-w-0 flex-col gap-1"
+            className="flex min-h-0 min-w-0 flex-1 flex-col gap-2"
             initial={false}
             animate={{
               width: expanded ? EXPANDED_WIDTH_PX[width] : BASE_WIDTH_PX[width],
@@ -128,11 +156,13 @@ export function SettingsDialogShell({
           >
             {header}
             {body}
+            {aside}
           </motion.div>
         ) : (
           <>
             {header}
             {body}
+            {aside}
           </>
         )}
       </DialogContent>

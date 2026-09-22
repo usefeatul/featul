@@ -88,7 +88,8 @@ export default function Verify() {
 
   return (
     <AuthLayout
-      title="Verify your email"
+      title="Verify your email."
+      description="Enter the 6-digit code we sent to your inbox."
       onSubmit={(e) => {
         e.preventDefault();
         verify();

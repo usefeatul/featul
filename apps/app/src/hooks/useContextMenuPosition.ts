@@ -7,6 +7,7 @@ type ContextMenuPosition = {
   y: number;
 };
 
+/** Context-menu open state and cursor coordinates from a right-click. */
 export function useContextMenuPosition() {
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<ContextMenuPosition | null>(null);

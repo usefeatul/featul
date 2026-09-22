@@ -1,3 +1,4 @@
+/** Board/post tag used in filters and metadata. */
 export interface Tag {
     id: string;
     name: string;

@@ -1,469 +1,1487 @@
 "use client";
 
-import { useEffect, useMemo, useState, type RefObject } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type RefObject,
+} from "react";
+import { ArrowLeft, History as HistoryIcon, Plus } from "lucide-react";
+import { PanelIcon } from "@featul/ui/icons/panel";
+import { motion } from "framer-motion";
+import { usePanelResize } from "@/hooks/usePanelResize";
+import { Resizer } from "@/components/global/resizer";
 import { toast } from "sonner";
 import { Button } from "@featul/ui/components/button";
-import { TextareaAutosize } from "@featul/ui/components/TextareaAutosize";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@featul/ui/components/sheet";
-import { AiIcon } from "@featul/ui/icons/ai";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@featul/ui/components/tooltip";
 import { cn } from "@featul/ui/lib/utils";
-import { SelectionToolbar } from "@/components/selection/SelectionToolbar";
-import type { FeedEditorRef } from "@/components/editor/editor";
-import { AiSegmentedControl } from "@/features/changelog/components/AiSegmentedControl";
+import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
+import { PanelShortcutKeys } from "@/components/global/keys";
+import type {
+  EditorTextSelection,
+  FeedEditorRef,
+} from "@/components/editor/editor";
 import { useAiSourcePosts } from "@/features/changelog/hooks/useAiSourcePosts";
 import { runChangelogAiStream } from "@/features/changelog/hooks/useChangelogAiStream";
-import type {
-  AiAction,
-  AiDetailLevel,
-  AiPanelTab,
-  AiTone,
-} from "@/features/changelog/types";
-import AiSourcePostItem from "./AiSourcePostItem";
+import type { AiChatMessage } from "@/features/changelog/types";
+import type { AiSourcePost } from "./AiSourcePostItem";
+import type { WorkspaceTag } from "./TagSelector";
+import { Actions, type AssistantAction } from "./assistant/actions";
+import { Composer } from "./assistant/composer";
+import { ConversationHistory } from "./assistant/history";
+import { Messages, type AssistantMessage } from "./assistant/messages";
+import {
+  assistantCopy,
+  getAtQuery,
+  nextId,
+  STARTERS,
+  withoutEmDash,
+  type AtQuery,
+} from "./assistant/config";
+import { Attachments, Sources, type SourceItem } from "./assistant/sources";
+import {
+  getFallbackTagSuggestions,
+  getTagDecision,
+  getTagRemovalDecision,
+} from "./assistant/decisions";
+import {
+  detectChatIntent,
+  extractGithubUrls,
+  isSummaryRequest,
+  isWithinPastWeek,
+} from "./ai/intent";
+import {
+  clearChangelogAiChat,
+  loadChangelogAiChat,
+  saveChangelogAiChat,
+} from "./ai/persist";
+import { getPublishCheckIssues } from "./ai/publishCheck";
+import {
+  deleteChangelogAiConversation,
+  getChangelogAiConversation,
+  listChangelogAiConversations,
+  saveChangelogAiConversation,
+  type ChangelogAiConversationSummary,
+  type ChangelogAiHistoryMessage,
+} from "@/features/changelog/history";
+
+type PendingPrompt = {
+  text: string;
+  attachFeedback?: boolean;
+  attachThisWeek?: boolean;
+  publishCheck?: boolean;
+};
+
+type EditorSnapshot = {
+  markdown: string;
+  title: string;
+  tags: string[];
+};
+
+function conversationTitle(messages: AssistantMessage[]) {
+  const firstUserMessage = messages.find(
+    (message) => message.role === "user" && message.content.trim(),
+  );
+  if (!firstUserMessage) return "New conversation";
+  const title = firstUserMessage.content.replace(/\s+/g, " ").trim();
+  return title.length > 72 ? `${title.slice(0, 69)}...` : title;
+}
+
+function persistedMessages(
+  messages: AssistantMessage[],
+): ChangelogAiHistoryMessage[] {
+  return messages
+    .filter(
+      (message) =>
+        message.status !== "pending" && message.status !== "streaming",
+    )
+    .slice(-24)
+    .map((message) => ({
+      id: message.id,
+      role: message.role,
+      content: message.content,
+      attachedTitles: message.attachedTitles,
+      status: message.status === "error" ? "error" : undefined,
+      activity: message.activity,
+      durationMs: message.durationMs,
+      suggestedTags: message.suggestedTags,
+      effect: message.effect,
+    }));
+}
 
 interface ChangelogAiPanelProps {
   open: boolean;
+  initialWidth?: number;
   onOpenChange: (open: boolean) => void;
   workspaceSlug: string;
+  entryId?: string;
   title: string;
   setTitle: (value: string) => void;
+  setSummary: (value: string) => void;
+  selectedTags: string[];
+  setSelectedTags: (value: string[]) => void;
+  availableTags: WorkspaceTag[];
+  onAvailableTagsChange?: (value: WorkspaceTag[]) => void;
+  coverImage?: string | null;
   editorRef: RefObject<FeedEditorRef | null>;
   setIsDirty: (value: boolean) => void;
   onGeneratingChange?: (generating: boolean) => void;
-  initialTab?: AiPanelTab;
-  autoRunAction?: Exclude<AiAction, "prompt" | "generateFromPosts" | "summary"> | null;
-  onAutoRunActionHandled?: () => void;
+  pendingPrompt?: PendingPrompt | null;
+  onPendingPromptHandled?: () => void;
+  composerFocusRequest?: number;
 }
-
-const TONE_OPTIONS: Array<{ value: AiTone; label: string }> = [
-  { value: "user-friendly", label: "Friendly" },
-  { value: "technical", label: "Technical" },
-  { value: "brief", label: "Brief" },
-];
-
-const DETAIL_OPTIONS: Array<{ value: AiDetailLevel; label: string; hint: string }> = [
-  { value: "detailed", label: "Detailed", hint: "Full release notes" },
-  { value: "standard", label: "Standard", hint: "Balanced length" },
-];
-
-const REFINE_ACTIONS: Array<{
-  action: Exclude<AiAction, "prompt" | "generateFromPosts" | "summary">;
-  label: string;
-  description: string;
-}> = [
-  { action: "expand", label: "Expand", description: "Add depth, examples, and detail" },
-  { action: "improve", label: "Improve", description: "Polish clarity and flow" },
-  { action: "format", label: "Format", description: "Fix headings, lists, and structure" },
-];
 
 export function ChangelogAiPanel({
   open,
+  initialWidth,
   onOpenChange,
   workspaceSlug,
+  entryId,
   title,
   setTitle,
+  setSummary,
+  selectedTags,
+  setSelectedTags,
+  availableTags,
+  coverImage,
   editorRef,
   setIsDirty,
   onGeneratingChange,
-  initialTab,
-  autoRunAction,
-  onAutoRunActionHandled,
+  pendingPrompt,
+  onPendingPromptHandled,
+  composerFocusRequest = 0,
 }: ChangelogAiPanelProps) {
+  const resize = usePanelResize(open, "assistant", initialWidth);
+  const [historyReady, setHistoryReady] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState("Generating draft…");
-  const [activeTab, setActiveTab] = useState<AiPanelTab>("shipped");
-  const [tone, setTone] = useState<AiTone>("user-friendly");
-  const [detailLevel, setDetailLevel] = useState<AiDetailLevel>("detailed");
+  const [messages, setMessages] = useState<AssistantMessage[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [conversations, setConversations] = useState<
+    ChangelogAiConversationSummary[]
+  >([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
+  const [pendingTagNames, setPendingTagNames] = useState<string[]>([]);
+  const [selectionContext, setSelectionContext] =
+    useState<EditorTextSelection | null>(null);
+  const [mention, setMention] = useState<AtQuery | null>(null);
+  const [mentionIndex, setMentionIndex] = useState(0);
+  const [undoSnapshot, setUndoSnapshot] = useState<EditorSnapshot | null>(null);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const mentionRef = useRef<AtQuery | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const undoSnapshotRef = useRef<EditorSnapshot | null>(null);
+  const conversationIdRef = useRef<string | null>(null);
+  const conversationEntryIdRef = useRef<string | null>(null);
+  const conversationEpochRef = useRef(0);
+  const syncPromiseRef = useRef<Promise<string | null> | null>(null);
   const { sourcePosts, isLoadingPosts } = useAiSourcePosts(workspaceSlug, open);
 
+  mentionRef.current = mention;
+
   useEffect(() => {
-    if (open && initialTab) {
-      setActiveTab(initialTab);
+    let cancelled = false;
+    const stored = loadChangelogAiChat(workspaceSlug, entryId);
+    if (stored) {
+      setMessages(stored.messages);
+      setSelectedPostIds(stored.selectedPostIds);
+      setPendingTagNames(stored.pendingTagNames);
+      setConversationId(stored.conversationId ?? null);
+      conversationIdRef.current = stored.conversationId ?? null;
     }
-  }, [open, initialTab]);
 
-  const allSelected =
-    sourcePosts.length > 0 && selectedPostIds.length === sourcePosts.length;
+    const loadHistory = async () => {
+      setIsHistoryLoading(true);
+      try {
+        const nextConversations =
+          await listChangelogAiConversations(workspaceSlug);
+        if (cancelled) return;
+        setConversations(nextConversations);
 
-  const selectedPosts = useMemo(
-    () => sourcePosts.filter((post) => selectedPostIds.includes(post.id)),
-    [sourcePosts, selectedPostIds],
+        const hasUnsyncedLocalChat = Boolean(
+          stored?.messages.length && !stored.conversationId,
+        );
+        const preferredId =
+          stored?.conversationId ||
+          (!hasUnsyncedLocalChat
+            ? nextConversations.find(
+                (conversation) => conversation.entryId === (entryId ?? null),
+              )?.id
+            : undefined);
+
+        if (preferredId) {
+          try {
+            const conversation = await getChangelogAiConversation(
+              workspaceSlug,
+              preferredId,
+            );
+            if (cancelled) return;
+            setMessages(conversation.messages);
+            setSelectedPostIds(conversation.selectedPostIds);
+            setPendingTagNames(conversation.pendingTagNames);
+            setConversationId(conversation.id);
+            conversationIdRef.current = conversation.id;
+            conversationEntryIdRef.current = conversation.entryId;
+          } catch {
+            if (stored?.conversationId === preferredId) {
+              setConversationId(null);
+              conversationIdRef.current = null;
+            }
+          }
+        }
+      } catch {
+        // Local browser persistence remains available if history is offline.
+      } finally {
+        if (!cancelled) {
+          setHistoryReady(true);
+          setIsHistoryLoading(false);
+        }
+      }
+    };
+
+    void loadHistory();
+    return () => {
+      cancelled = true;
+    };
+  }, [workspaceSlug, entryId]);
+
+  useEffect(() => {
+    if (!open || !historyReady) return;
+    saveChangelogAiChat(workspaceSlug, entryId, {
+      conversationId: conversationId ?? undefined,
+      messages,
+      selectedPostIds,
+      pendingTagNames,
+    });
+  }, [
+    open,
+    historyReady,
+    workspaceSlug,
+    entryId,
+    conversationId,
+    messages,
+    selectedPostIds,
+    pendingTagNames,
+  ]);
+
+  const syncConversation = useCallback(() => {
+    if (syncPromiseRef.current) return syncPromiseRef.current;
+
+    const stableMessages = persistedMessages(messages);
+    if (stableMessages.length === 0) {
+      return Promise.resolve(null);
+    }
+
+    const requestConversationId = conversationIdRef.current;
+    const requestEpoch = conversationEpochRef.current;
+    const promise = saveChangelogAiConversation({
+      slug: workspaceSlug,
+      conversationId: requestConversationId ?? undefined,
+      entryId:
+        !requestConversationId ||
+        (entryId && conversationEntryIdRef.current === null)
+          ? (entryId ?? null)
+          : undefined,
+      title: conversationTitle(messages),
+      messages: stableMessages,
+      selectedPostIds,
+      pendingTagNames,
+    })
+      .then(({ conversation, summary }) => {
+        if (conversationEpochRef.current !== requestEpoch) {
+          return conversation.id;
+        }
+
+        conversationIdRef.current = conversation.id;
+        conversationEntryIdRef.current = conversation.entryId;
+        setConversationId(conversation.id);
+        setConversations((current) => [
+          summary,
+          ...current.filter((item) => item.id !== summary.id),
+        ]);
+        saveChangelogAiChat(workspaceSlug, entryId, {
+          conversationId: conversation.id,
+          messages: stableMessages,
+          selectedPostIds,
+          pendingTagNames,
+        });
+        return conversation.id;
+      })
+      .catch(() => null)
+      .finally(() => {
+        if (syncPromiseRef.current === promise) {
+          syncPromiseRef.current = null;
+        }
+      });
+
+    syncPromiseRef.current = promise;
+    return promise;
+  }, [workspaceSlug, entryId, messages, selectedPostIds, pendingTagNames]);
+
+  useEffect(() => {
+    if (!open || !historyReady || isLoading || messages.length === 0) return;
+    const timer = window.setTimeout(() => {
+      void syncConversation();
+    }, 800);
+    return () => window.clearTimeout(timer);
+  }, [
+    open,
+    historyReady,
+    isLoading,
+    messages,
+    selectedPostIds,
+    pendingTagNames,
+    syncConversation,
+  ]);
+
+  const completedThisWeek = useMemo(
+    () =>
+      sourcePosts.filter(
+        (post) =>
+          (post.roadmapStatus || "").toLowerCase() === "completed" &&
+          isWithinPastWeek(post.updatedAt || post.publishedAt),
+      ),
+    [sourcePosts],
   );
 
-  const applyAiResult = (data: {
-    title?: string;
-    contentMarkdown?: string;
-  }) => {
-    if (data.title) {
-      setTitle(data.title);
-    }
+  const filteredPosts = useMemo(() => {
+    if (!mention) return sourcePosts;
+    const query = mention.query.trim().toLowerCase();
+    if (!query) return sourcePosts;
+    return sourcePosts.filter((post) => {
+      const haystack = `${post.title} ${post.githubUrl ?? ""}`.toLowerCase();
+      return haystack.includes(query);
+    });
+  }, [mention, sourcePosts]);
 
-    if (data.contentMarkdown) {
-      editorRef.current?.setContentFromMarkdown(data.contentMarkdown);
+  const completedPosts = filteredPosts.filter(
+    (post) => (post.roadmapStatus || "").toLowerCase() === "completed",
+  );
+  const progressPosts = filteredPosts.filter(
+    (post) => (post.roadmapStatus || "").toLowerCase() !== "completed",
+  );
+
+  const mentionItems = useMemo(() => {
+    const items: SourceItem[] = [];
+    if (mention && !mention.query.trim() && completedThisWeek.length > 0) {
+      items.push({ kind: "week" });
+    }
+    for (const post of filteredPosts) {
+      items.push({ kind: "post", post });
+    }
+    return items;
+  }, [mention, completedThisWeek, filteredPosts]);
+
+  const captureSnapshot = useCallback(() => {
+    const snapshot = {
+      markdown: editorRef.current?.getMarkdown() ?? "",
+      title,
+      tags: selectedTags,
+    };
+    undoSnapshotRef.current = snapshot;
+    setUndoSnapshot(snapshot);
+  }, [editorRef, selectedTags, title]);
+
+  const restoreSnapshot = useCallback(() => {
+    const snapshot = undoSnapshotRef.current;
+    if (!snapshot) return;
+    editorRef.current?.setContentFromMarkdown(snapshot.markdown);
+    setTitle(snapshot.title);
+    setSelectedTags(snapshot.tags);
+    undoSnapshotRef.current = null;
+    setUndoSnapshot(null);
+    setIsDirty(true);
+  }, [editorRef, setIsDirty, setSelectedTags, setTitle]);
+
+  useEffect(() => {
+    setMentionIndex(0);
+  }, [mention?.query, mentionItems.length]);
+
+  useEffect(() => {
+    if (!open) {
+      if (
+        document
+          .getElementById("changelog-assistant")
+          ?.contains(document.activeElement)
+      ) {
+        document.getElementById("assistant-panel-toggle")?.focus();
+      }
+      return;
+    }
+    const frame = window.requestAnimationFrame(() => {
+      setSelectionContext(editorRef.current?.getTextSelection() ?? null);
+      inputRef.current?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [open, composerFocusRequest, editorRef]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === "z" &&
+        !event.shiftKey
+      ) {
+        const target = event.target as HTMLElement | null;
+        const inEditor = Boolean(target?.closest(".ProseMirror"));
+        if (!inEditor && undoSnapshot) {
+          event.preventDefault();
+          restoreSnapshot();
+        }
+        return;
+      }
+
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      if (mentionRef.current) {
+        setMention(null);
+        return;
+      }
+      onOpenChange(false);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onOpenChange, restoreSnapshot, undoSnapshot]);
+
+  useEffect(() => {
+    if (!open) return;
+    bottomRef.current?.scrollIntoView({ block: "end" });
+  }, [messages, isLoading, open]);
+
+  const updateMention = (value: string, caret: number) => {
+    setMention(getAtQuery(value, caret));
+  };
+
+  const resolveWorkspaceTags = (names?: string[]) => {
+    const availableByName = new Map(
+      availableTags.map((tag) => [tag.name.trim().toLowerCase(), tag]),
+    );
+    const resolved = new Map<string, WorkspaceTag>();
+    for (const value of names ?? []) {
+      const tag = availableByName.get(value.trim().toLowerCase());
+      if (tag) resolved.set(tag.id, tag);
+    }
+    return Array.from(resolved.values()).slice(0, 4);
+  };
+
+  const applyWorkspaceTags = (names: string[]) => {
+    const tags = resolveWorkspaceTags(names);
+    if (tags.length === 0) return [];
+    setSelectedTags(
+      Array.from(new Set([...selectedTags, ...tags.map((tag) => tag.id)])),
+    );
+    setIsDirty(true);
+    return tags.map((tag) => tag.name);
+  };
+
+  const insertPostMention = (post: AiSourcePost) => {
+    const field = inputRef.current;
+    const caret = field?.selectionStart ?? prompt.length;
+    const active = mention ?? getAtQuery(prompt, caret);
+    if (!active) return;
+
+    const nextValue = `${prompt.slice(0, active.start)}${prompt.slice(caret).replace(/^\s*/, " ")}`;
+    setPrompt(nextValue.trimStart());
+    setSelectedPostIds((current) =>
+      current.includes(post.id) ? current : [...current, post.id],
+    );
+    setMention(null);
+
+    window.requestAnimationFrame(() => {
+      const nextCaret = Math.min(active.start, nextValue.length);
+      inputRef.current?.focus();
+      inputRef.current?.setSelectionRange(nextCaret, nextCaret);
+    });
+  };
+
+  const attachWeekPosts = () => {
+    const ids = completedThisWeek.map((post) => post.id);
+    setSelectedPostIds((current) => Array.from(new Set([...current, ...ids])));
+    setMention(null);
+    if (!prompt.trim()) {
+      setPrompt(
+        "Draft this week's changelog from the attached completed posts.",
+      );
     }
   };
 
-  const runAction = async (action: AiAction) => {
-    if (isLoading) return;
+  const sendMessage = async (rawText: string, postIds = selectedPostIds) => {
+    const text = rawText.trim();
+    if (!text || isLoading) return;
 
-    if (action === "prompt" && !prompt.trim()) {
-      toast.error("Enter a prompt to generate content");
+    if (mention) setMention(null);
+
+    const selectedWorkspaceTags = availableTags.filter((tag) =>
+      selectedTags.includes(tag.id),
+    );
+    const removal = getTagRemovalDecision(
+      text,
+      selectedWorkspaceTags.map((tag) => tag.name),
+    );
+    if (removal) {
+      const userMessage: AssistantMessage = {
+        id: nextId(),
+        role: "user",
+        content: text,
+      };
+
+      if (removal.kind === "ask") {
+        const names = selectedWorkspaceTags
+          .map((tag) => `“${tag.name}”`)
+          .join(", ");
+        setMessages((current) => [
+          ...current,
+          userMessage,
+          {
+            id: nextId(),
+            role: "assistant",
+            content:
+              selectedWorkspaceTags.length > 0
+                ? `Which tag would you like me to remove: ${names}?`
+                : "This changelog is already untagged, so there is nothing to remove.",
+          },
+        ]);
+        setPrompt("");
+        return;
+      }
+
+      const namesToRemove =
+        removal.kind === "removeAll"
+          ? selectedWorkspaceTags.map((tag) => tag.name)
+          : removal.names;
+      const normalizedNames = new Set(
+        namesToRemove.map((name) => name.trim().toLowerCase()),
+      );
+      const removedTags = selectedWorkspaceTags.filter((tag) =>
+        normalizedNames.has(tag.name.trim().toLowerCase()),
+      );
+
+      if (removedTags.length > 0) {
+        captureSnapshot();
+        const removedIds = new Set(removedTags.map((tag) => tag.id));
+        setSelectedTags(selectedTags.filter((id) => !removedIds.has(id)));
+        setIsDirty(true);
+      }
+
+      const tagList = removedTags.map((tag) => `“${tag.name}”`).join(", ");
+      setMessages((current) => [
+        ...current,
+        userMessage,
+        {
+          id: nextId(),
+          role: "assistant",
+          content:
+            removedTags.length > 0
+              ? removal.kind === "removeAll"
+                ? "I have removed all tags from this changelog. It is now untagged."
+                : `I have removed ${tagList} from this changelog.`
+              : "This changelog is already untagged, so I have not changed anything.",
+          effect:
+            removedTags.length > 0
+              ? `${removedTags.length} tag${removedTags.length === 1 ? "" : "s"} removed`
+              : undefined,
+        },
+      ]);
+      setPendingTagNames([]);
+      setPrompt("");
       return;
     }
 
-    if (action === "generateFromPosts" && selectedPostIds.length === 0) {
-      toast.error("Select at least one shipped item");
-      return;
-    }
+    if (pendingTagNames.length > 0) {
+      const decision = getTagDecision(text, pendingTagNames);
+      if (decision) {
+        const userMessage: AssistantMessage = {
+          id: nextId(),
+          role: "user",
+          content: text,
+        };
+        if (decision.kind === "decline") {
+          setMessages((current) => [
+            ...current,
+            userMessage,
+            {
+              id: nextId(),
+              role: "assistant",
+              content:
+                "No problem. I will leave the tags unchanged. We can revisit them whenever you are ready.",
+            },
+          ]);
+          setPendingTagNames([]);
+          setPrompt("");
+          return;
+        }
 
-    if (action !== "prompt" && action !== "generateFromPosts") {
-      const markdown = editorRef.current?.getMarkdown();
-      if (!markdown || !markdown.trim()) {
-        toast.error("Add some content before using this action");
+        const applied = applyWorkspaceTags(decision.names);
+        const tagList = applied.map((name) => `“${name}”`).join(", ");
+        setMessages((current) => [
+          ...current,
+          userMessage,
+          {
+            id: nextId(),
+            role: "assistant",
+            content:
+              applied.length > 0
+                ? `I have added ${tagList} to this changelog. Would you like help with anything else?`
+                : "Those tags are no longer available in this workspace, so I have not changed anything.",
+            effect:
+              applied.length > 0
+                ? `${applied.length} tag${applied.length === 1 ? "" : "s"} added`
+                : undefined,
+          },
+        ]);
+        setPendingTagNames([]);
+        setPrompt("");
         return;
       }
     }
 
-    const messages: Partial<Record<AiAction, string>> = {
-      generateFromPosts: "Writing your changelog draft…",
-      prompt: "Generating from your prompt…",
-      expand: "Expanding with more detail…",
-      improve: "Polishing your entry…",
-      format: "Fixing formatting…",
-    };
+    const earlyIntent = detectChatIntent({ text, hasSelection: false });
+    if (earlyIntent === "tags") {
+      const lower = text.toLowerCase();
+      const mentionedTags = availableTags.filter((tag) =>
+        lower.includes(tag.name.trim().toLowerCase()),
+      );
 
-    const startMessage = messages[action] ?? "Working…";
-    const toastId = toast.loading(startMessage);
+      if (mentionedTags.length > 0) {
+        const newTags = mentionedTags.filter(
+          (tag) => !selectedTags.includes(tag.id),
+        );
+        const names = mentionedTags.map((tag) => `“${tag.name}”`).join(", ");
+        const userMessage: AssistantMessage = {
+          id: nextId(),
+          role: "user",
+          content: text,
+        };
 
-    setLoadingMessage(startMessage);
-    setIsLoading(true);
-    setIsStreaming(true);
-    onGeneratingChange?.(true);
-    onOpenChange(false);
+        setMessages((current) => [
+          ...current,
+          userMessage,
+          {
+            id: nextId(),
+            role: "assistant",
+            content:
+              newTags.length > 0
+                ? `${names} ${mentionedTags.length === 1 ? "is" : "are"} available in this workspace and could fit this changelog. Would you like me to add ${mentionedTags.length === 1 ? "it" : "them"}?`
+                : `${names} ${mentionedTags.length === 1 ? "is already" : "are already"} applied to this changelog.`,
+            suggestedTags:
+              newTags.length > 0 ? newTags.map((tag) => tag.name) : undefined,
+          },
+        ]);
+        setPendingTagNames(newTags.map((tag) => tag.name));
+        setPrompt("");
+        return;
+      }
+
+      const unselectedTags = availableTags.filter(
+        (tag) => !selectedTags.includes(tag.id),
+      );
+      if (unselectedTags.length === 0) {
+        const selectedNames = selectedWorkspaceTags
+          .map((tag) => `“${tag.name}”`)
+          .join(", ");
+        setMessages((current) => [
+          ...current,
+          { id: nextId(), role: "user", content: text },
+          {
+            id: nextId(),
+            role: "assistant",
+            content:
+              selectedWorkspaceTags.length > 0
+                ? `The available workspace ${selectedWorkspaceTags.length === 1 ? "tag is" : "tags are"} already applied: ${selectedNames}. There are no other existing tags to suggest.`
+                : "This workspace does not have any existing tags to suggest yet.",
+          },
+        ]);
+        setPendingTagNames([]);
+        setPrompt("");
+        return;
+      }
+    }
+
+    if (
+      /attached shipped feedback/i.test(text) &&
+      postIds.length === 0 &&
+      sourcePosts.length > 0
+    ) {
+      setPrompt(text.endsWith("@") ? text : `${text} @`);
+      setMention({
+        start: text.endsWith("@") ? text.length - 1 : text.length + 1,
+        query: "",
+      });
+      toast.info("Type @ and pick a post, then send.");
+      return;
+    }
 
     const contentMarkdown = editorRef.current?.getMarkdown();
-    const usesStructuredSections =
-      action === "generateFromPosts" || action === "prompt";
+    const hadContent = Boolean(contentMarkdown?.trim());
+    const textSelection: EditorTextSelection | null =
+      selectionContext ?? editorRef.current?.getTextSelection() ?? null;
+    const selectionMarkdown = textSelection?.text ?? "";
+    const intent = detectChatIntent({
+      text,
+      hasSelection: Boolean(textSelection && selectionMarkdown.trim()),
+    });
+    const summaryRequest =
+      intent === "rewrite" && !textSelection && isSummaryRequest(text);
+    const streamIntoEditor =
+      intent === "rewrite" && !hadContent && !summaryRequest;
+    const availableTagNames =
+      intent === "tags"
+        ? availableTags
+            .filter((tag) => !selectedTags.includes(tag.id))
+            .map((tag) => tag.name)
+        : availableTags.map((tag) => tag.name);
+    const history: AiChatMessage[] = messages
+      .filter((message) => !message.status)
+      .map((message) => ({
+        role: message.role,
+        content: message.content,
+      }));
+    const attachedPosts = sourcePosts.filter((post) =>
+      postIds.includes(post.id),
+    );
+    const githubUrls = Array.from(
+      new Set([
+        ...extractGithubUrls(text),
+        ...attachedPosts
+          .map((post) => post.githubUrl)
+          .filter((url): url is string => Boolean(url)),
+      ]),
+    ).filter((url) => {
+      try {
+        return Boolean(new URL(url));
+      } catch {
+        return false;
+      }
+    });
 
-    editorRef.current?.focus();
+    const userMessage: AssistantMessage = {
+      id: nextId(),
+      role: "user",
+      content: text,
+      attachedTitles: attachedPosts.map((post) => post.title),
+    };
+    const assistantId = nextId();
+    const startedAt = Date.now();
+
+    setMessages((current) => [
+      ...current,
+      userMessage,
+      {
+        id: assistantId,
+        role: "assistant",
+        content: "",
+        status: "pending",
+        phase: "reading",
+        activity: intent,
+        startedAt,
+      },
+    ]);
+    setPrompt("");
+    setIsLoading(true);
+    onGeneratingChange?.(true);
+
+    if (intent === "patch" || (intent === "rewrite" && !summaryRequest)) {
+      captureSnapshot();
+    }
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const planningTimer = window.setTimeout(() => {
+      setMessages((current) =>
+        current.map((message) =>
+          message.id === assistantId && message.status === "pending"
+            ? { ...message, phase: "planning" }
+            : message,
+        ),
+      );
+    }, 450);
 
     try {
+      let appliedTitle: string | undefined;
+      let replyText: string | undefined;
+      let suggestedTags: string[] | undefined;
+
       await runChangelogAiStream(
         {
           slug: workspaceSlug,
-          action,
-          prompt:
-            action === "prompt" || action === "generateFromPosts"
-              ? prompt.trim() || undefined
-              : undefined,
+          action: summaryRequest ? "summary" : "chat",
+          prompt: text,
           title: title.trim() || undefined,
           contentMarkdown: contentMarkdown?.trim() || undefined,
-          sourcePostIds: action === "generateFromPosts" ? selectedPostIds : undefined,
-          tone: action === "generateFromPosts" || action === "prompt" ? tone : undefined,
-          detailLevel: action === "generateFromPosts" ? detailLevel : undefined,
+          sourcePostIds: postIds.length > 0 ? postIds : undefined,
+          messages: history.length > 0 ? history : undefined,
+          intent,
+          selectionMarkdown: intent === "patch" ? selectionMarkdown : undefined,
+          githubUrls: githubUrls.length > 0 ? githubUrls : undefined,
+          availableTagNames,
         },
         {
           editorRef,
-          usesStructuredSections,
-          onTitle: setTitle,
+          usesStructuredSections: streamIntoEditor,
+          applyToEditor: streamIntoEditor,
+          patchSelection: intent === "patch",
+          signal: controller.signal,
+          onStatus: (phase) => {
+            if (phase === "generating") {
+              window.clearTimeout(planningTimer);
+              setMessages((current) =>
+                current.map((message) =>
+                  message.id === assistantId && message.status === "pending"
+                    ? { ...message, phase: "planning" }
+                    : message,
+                ),
+              );
+            }
+          },
+          onStreamStart: () => {
+            setMessages((current) =>
+              current.map((message) =>
+                message.id === assistantId
+                  ? { ...message, phase: "writing" }
+                  : message,
+              ),
+            );
+          },
+          onTitle: (value) => {
+            appliedTitle = value;
+            setTitle(value);
+          },
+          onReplyDelta: (accumulated) => {
+            if (intent === "tags") return;
+            const formalReply = withoutEmDash(accumulated);
+            replyText = formalReply;
+            setMessages((current) =>
+              current.map((message) =>
+                message.id === assistantId
+                  ? {
+                      ...message,
+                      content: formalReply,
+                      status: "streaming",
+                      phase: "writing",
+                    }
+                  : message,
+              ),
+            );
+          },
           onComplete: (result) => {
-            applyAiResult(result);
+            if (result.title) {
+              appliedTitle = result.title;
+              setTitle(result.title);
+            }
+            if (result.summary) {
+              setSummary(result.summary);
+            }
+            if (summaryRequest) {
+              replyText = withoutEmDash(result.summary || replyText || "");
+              setIsDirty(true);
+              return;
+            }
+            suggestedTags =
+              intent === "tags" ? result.suggestedTags : undefined;
+            if (intent === "ask" || intent === "tags") {
+              replyText = withoutEmDash(result.reply || replyText || "");
+              return;
+            }
+            if (intent === "patch" && result.contentMarkdown) {
+              const applied = textSelection
+                ? editorRef.current?.replaceTextRangeWithMarkdown(
+                    textSelection,
+                    result.contentMarkdown,
+                  )
+                : false;
+              if (!applied) {
+                throw new Error(
+                  "The selected text changed before the edit finished. Select it again and retry.",
+                );
+              }
+              setSelectionContext(null);
+            } else if (result.contentMarkdown) {
+              editorRef.current?.setContentFromMarkdown(result.contentMarkdown);
+            }
             setIsDirty(true);
           },
         },
       );
 
-      if (action === "prompt") setPrompt("");
+      let resolvedSuggestions =
+        intent === "tags"
+          ? resolveWorkspaceTags(suggestedTags).map((tag) => tag.name)
+          : [];
+      if (intent === "tags" && resolvedSuggestions.length === 0) {
+        resolvedSuggestions = getFallbackTagSuggestions(
+          `${title}\n${contentMarkdown ?? ""}`,
+          availableTagNames,
+        );
+      }
+      if (intent === "tags") {
+        setPendingTagNames(resolvedSuggestions);
+      }
 
-      toast.success("AI changes applied", { id: toastId });
+      setMessages((current) =>
+        current.map((message) =>
+          message.id === assistantId
+            ? {
+                ...message,
+                status: undefined,
+                phase: undefined,
+                durationMs: Date.now() - startedAt,
+                content: assistantCopy({
+                  intent,
+                  hadContent,
+                  title: appliedTitle,
+                  sourceCount: postIds.length,
+                  reply: replyText,
+                  summaryUpdated: summaryRequest,
+                  suggestedTags: resolvedSuggestions,
+                  selectedTagNames: selectedWorkspaceTags.map(
+                    (tag) => tag.name,
+                  ),
+                }),
+                suggestedTags:
+                  intent === "tags" && resolvedSuggestions.length > 0
+                    ? resolvedSuggestions
+                    : undefined,
+                effect:
+                  intent === "ask"
+                    ? undefined
+                    : intent === "tags"
+                      ? undefined
+                      : summaryRequest
+                        ? "Summary updated"
+                        : intent === "patch"
+                          ? "Selection updated"
+                          : "Entry updated",
+              }
+            : message,
+        ),
+      );
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to run AI assist";
-      toast.error(msg, { id: toastId });
+      if (err instanceof DOMException && err.name === "AbortError") {
+        if (intent === "rewrite" || intent === "patch") {
+          restoreSnapshot();
+        }
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantId
+              ? { ...message, status: undefined, content: "Stopped." }
+              : message,
+          ),
+        );
+      } else {
+        const msg =
+          err instanceof Error ? err.message : "Failed to run AI assist";
+        toast.error(msg);
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantId
+              ? { ...message, status: "error", content: msg }
+              : message,
+          ),
+        );
+      }
     } finally {
+      window.clearTimeout(planningTimer);
+      abortRef.current = null;
       setIsLoading(false);
-      setIsStreaming(false);
       onGeneratingChange?.(false);
     }
   };
 
-  useEffect(() => {
-    if (!open || !autoRunAction) return;
-    onAutoRunActionHandled?.();
-    void runAction(autoRunAction);
-  }, [open, autoRunAction, onAutoRunActionHandled]);
+  const runPublishCheck = (text: string) => {
+    const issues = getPublishCheckIssues({
+      title,
+      contentMarkdown: editorRef.current?.getMarkdown(),
+      coverImage,
+      attachedPostTitles: sourcePosts
+        .filter((post) => selectedPostIds.includes(post.id))
+        .map((post) => post.title),
+    });
+    const local = issues.length
+      ? `I found a few things worth checking before you publish:\n${issues.map((issue) => `• ${issue}`).join("\n")}`
+      : "The basic checks look good. I will take a closer look at the writing and structure now.";
+    setMessages((current) => [
+      ...current,
+      {
+        id: nextId(),
+        role: "assistant",
+        content: local,
+      },
+    ]);
+    void sendMessage(text);
+  };
 
-  const togglePostSelection = (postId: string, checked: boolean) => {
-    setSelectedPostIds((current) => {
-      if (checked) {
-        if (current.includes(postId)) return current;
-        return [...current, postId];
+  const pendingActionsRef = useRef({
+    attachWeekPosts,
+    runPublishCheck,
+    sendMessage,
+  });
+  pendingActionsRef.current = {
+    attachWeekPosts,
+    runPublishCheck,
+    sendMessage,
+  };
+
+  useEffect(() => {
+    if (!open || !historyReady || !pendingPrompt) return;
+    onPendingPromptHandled?.();
+
+    if (pendingPrompt.attachThisWeek) {
+      pendingActionsRef.current.attachWeekPosts();
+      setPrompt(pendingPrompt.text);
+      return;
+    }
+
+    if (pendingPrompt.publishCheck) {
+      pendingActionsRef.current.runPublishCheck(pendingPrompt.text);
+      return;
+    }
+
+    if (pendingPrompt.attachFeedback) {
+      const next = pendingPrompt.text.endsWith("@")
+        ? pendingPrompt.text
+        : `${pendingPrompt.text} @`;
+      setPrompt(next);
+      setMention({ start: next.lastIndexOf("@"), query: "" });
+      window.requestAnimationFrame(() => {
+        inputRef.current?.focus();
+        inputRef.current?.setSelectionRange(next.length, next.length);
+      });
+      return;
+    }
+
+    void pendingActionsRef.current.sendMessage(pendingPrompt.text);
+  }, [open, historyReady, pendingPrompt, onPendingPromptHandled]);
+
+  const handleInputKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (mention) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeAttachment();
+        return;
       }
-      return current.filter((id) => id !== postId);
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        setMentionIndex((index) =>
+          mentionItems.length === 0 ? 0 : (index + 1) % mentionItems.length,
+        );
+        return;
+      }
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        setMentionIndex((index) =>
+          mentionItems.length === 0
+            ? 0
+            : (index - 1 + mentionItems.length) % mentionItems.length,
+        );
+        return;
+      }
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        const item = mentionItems[mentionIndex];
+        if (item?.kind === "week") attachWeekPosts();
+        else if (item?.kind === "post") insertPostMention(item.post);
+        return;
+      }
+      if (event.key === "Tab") {
+        event.preventDefault();
+        const item = mentionItems[mentionIndex];
+        if (item?.kind === "week") attachWeekPosts();
+        else if (item?.kind === "post") insertPostMention(item.post);
+        return;
+      }
+    }
+
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      void sendMessage(prompt);
+    }
+  };
+
+  const selectedPosts = sourcePosts.filter((post) =>
+    selectedPostIds.includes(post.id),
+  );
+
+  const closeAttachment = () => {
+    const activeMention = mentionRef.current;
+    if (!activeMention) return;
+
+    const mentionEnd =
+      activeMention.start + activeMention.query.length + 1;
+    const before = prompt.slice(0, activeMention.start).trimEnd();
+    const after = prompt.slice(mentionEnd).trimStart();
+    const next = before && after ? `${before} ${after}` : before || after;
+    setPrompt(next);
+    setMention(null);
+    window.requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      const caret = Math.min(activeMention.start, next.length);
+      inputRef.current?.setSelectionRange(caret, caret);
     });
   };
 
-  const toggleSelectAll = () => {
-    if (allSelected) {
-      setSelectedPostIds([]);
+  const runStarter = (starter: AssistantAction) => {
+    const next = starter.attachFeedback
+      ? `${starter.prompt} @`
+      : starter.prompt;
+    setPrompt(next);
+    if (starter.attachFeedback) {
+      setMention({
+        start: next.lastIndexOf("@"),
+        query: "",
+      });
+    }
+    window.requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.setSelectionRange(next.length, next.length);
+    });
+  };
+
+  const startAttachment = () => {
+    if (mentionRef.current) {
+      closeAttachment();
       return;
     }
-    setSelectedPostIds(sourcePosts.map((post) => post.id));
+    const next = prompt.trim() ? `${prompt} @` : "@";
+    setPrompt(next);
+    setMention({ start: next.lastIndexOf("@"), query: "" });
+    window.requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.setSelectionRange(next.length, next.length);
+    });
+  };
+
+  const resetConversation = () => {
+    abortRef.current?.abort();
+    conversationEpochRef.current += 1;
+    conversationIdRef.current = null;
+    conversationEntryIdRef.current = null;
+    setConversationId(null);
+    setMessages([]);
+    setSelectedPostIds([]);
+    setPendingTagNames([]);
+    setPrompt("");
+    setSelectionContext(null);
+    setMention(null);
+    setUndoSnapshot(null);
+    undoSnapshotRef.current = null;
+    clearChangelogAiChat(workspaceSlug, entryId);
+    window.requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const clearConversation = async () => {
+    const hasMessages = persistedMessages(messages).length > 0;
+    const savedConversationId = await syncConversation();
+    if (hasMessages && !savedConversationId) {
+      toast.error("Could not sync this conversation. Please try again.");
+      return;
+    }
+    resetConversation();
+    setHistoryOpen(false);
+  };
+
+  const selectConversation = async (nextConversationId: string) => {
+    if (nextConversationId === conversationIdRef.current) {
+      setHistoryOpen(false);
+      return;
+    }
+
+    const hasMessages = persistedMessages(messages).length > 0;
+    const savedConversationId = await syncConversation();
+    if (hasMessages && !savedConversationId) {
+      toast.error("Could not sync this conversation. Please try again.");
+      return;
+    }
+    conversationEpochRef.current += 1;
+    setIsHistoryLoading(true);
+    try {
+      const conversation = await getChangelogAiConversation(
+        workspaceSlug,
+        nextConversationId,
+      );
+      conversationIdRef.current = conversation.id;
+      conversationEntryIdRef.current = conversation.entryId;
+      setConversationId(conversation.id);
+      setMessages(conversation.messages);
+      setSelectedPostIds(conversation.selectedPostIds);
+      setPendingTagNames(conversation.pendingTagNames);
+      setPrompt("");
+      setSelectionContext(null);
+      setMention(null);
+      setUndoSnapshot(null);
+      undoSnapshotRef.current = null;
+      saveChangelogAiChat(workspaceSlug, entryId, {
+        conversationId: conversation.id,
+        messages: conversation.messages,
+        selectedPostIds: conversation.selectedPostIds,
+        pendingTagNames: conversation.pendingTagNames,
+      });
+      setHistoryOpen(false);
+    } catch {
+      toast.error("Could not load that conversation");
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  };
+
+  const deleteConversation = async (deletedConversationId: string) => {
+    try {
+      await deleteChangelogAiConversation(workspaceSlug, deletedConversationId);
+      setConversations((current) =>
+        current.filter(
+          (conversation) => conversation.id !== deletedConversationId,
+        ),
+      );
+      if (deletedConversationId === conversationIdRef.current) {
+        resetConversation();
+      }
+    } catch {
+      toast.error("Could not delete that conversation");
+    }
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
-        className="flex w-full flex-col gap-0 overflow-hidden border-border p-0 sm:max-w-[460px]"
-      >
-        {isLoading && !isStreaming ? (
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-background/90 backdrop-blur-sm">
-            <LoaderIcon className="size-5 animate-spin text-primary" />
-            <p className="text-sm font-medium text-foreground">{loadingMessage}</p>
-            <p className="max-w-[240px] text-center text-xs text-muted-foreground">
-              This may take a few seconds for detailed drafts.
-            </p>
-          </div>
-        ) : null}
-
-        <SheetHeader className="space-y-3 border-b border-border bg-card/40 px-5 py-4 pr-12 text-left dark:bg-black/20">
-          <div className="flex items-start gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-md border border-border bg-background shadow-sm">
-              <AiIcon className="size-4 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <SheetTitle className="text-base font-semibold tracking-tight">
-                Write with AI
-              </SheetTitle>
-              <SheetDescription className="mt-1 text-xs leading-relaxed">
-                Turn shipped feedback into a detailed changelog, or refine what you
-                already wrote.
-              </SheetDescription>
-            </div>
-          </div>
-
-          <div className="flex rounded-md border border-border bg-background p-0.5 dark:bg-black/30">
-            {(
-              [
-                { id: "shipped", label: "From feedback" },
-                { id: "refine", label: "Refine entry" },
-              ] as const
-            ).map((tab) => (
-              <button
-                key={tab.id}
+    <motion.aside
+      ref={resize.panelRef}
+      style={resize.style}
+      id="changelog-assistant"
+      aria-label="AI assistant"
+      aria-hidden={!open}
+      inert={!open}
+      data-state={open ? "open" : "closed"}
+      className={cn(
+        "fixed inset-0 z-40 overflow-hidden bg-background transition-[translate,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+        "lg:relative lg:inset-auto lg:z-10 lg:h-full lg:shrink-0 lg:transition-[width,opacity] lg:motion-reduce:transition-none",
+        open
+          ? "translate-x-0 opacity-100 lg:w-[var(--resizable-panel-width)]"
+          : "pointer-events-none translate-x-full opacity-0 lg:w-0 lg:translate-x-0",
+        resize.isResizing && "lg:transition-none",
+      )}
+    >
+      <Resizer
+        resize={resize}
+        controls="changelog-assistant"
+        label="Resize AI sidebar"
+        className="hidden lg:flex"
+      />
+      <div className="flex h-full w-full flex-col lg:w-[var(--resizable-panel-width)] lg:border-l lg:border-border/60 dark:lg:border-white/10">
+        <header className="flex min-h-13 shrink-0 items-center gap-2 px-3">
+          {historyOpen ? (
+            <Button
+              type="button"
+              variant="plain"
+              size="icon-sm"
+              className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+              onClick={() => setHistoryOpen(false)}
+              aria-label="Back to conversation"
+              title="Back to conversation"
+            >
+              <ArrowLeft className="size-[18px]" />
+            </Button>
+          ) : null}
+          <h2 className="text-sm font-semibold">
+            {historyOpen ? "History" : "Assistant"}
+          </h2>
+          {historyOpen ? (
+            <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
+              {conversations.length}
+            </span>
+          ) : null}
+          <div className="ml-auto flex items-center gap-1">
+            {!historyOpen ? (
+              <Button
                 type="button"
-                className={cn(
-                  "flex-1 cursor-pointer rounded-sm px-3 py-1.5 text-xs font-medium transition-colors",
-                  activeTab === tab.id
-                    ? "bg-muted text-foreground shadow-sm"
-                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
-                )}
-                onClick={() => setActiveTab(tab.id)}
+                variant="plain"
+                size="icon-sm"
+                disabled={isLoading}
+                className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+                onClick={() => setHistoryOpen(true)}
+                aria-label="Conversation history"
+                title="Conversation history"
               >
-                {tab.label}
-              </button>
-            ))}
+                <HistoryIcon className="size-[18px]" />
+              </Button>
+            ) : null}
+            <Button
+              type="button"
+              variant="plain"
+              size="icon-sm"
+              disabled={isLoading}
+              className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+              onClick={() => void clearConversation()}
+              aria-label="New conversation"
+              title="New conversation"
+            >
+              <Plus className="size-[18px]" />
+            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="plain"
+                  size="icon-sm"
+                  className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+                  onClick={() => onOpenChange(false)}
+                  aria-label="Hide AI assistant"
+                  aria-keyshortcuts={PANEL_ARIA_SHORTCUTS}
+                  aria-expanded={open}
+                  aria-controls="changelog-assistant"
+                >
+                  <PanelIcon side="right" filled className="size-[18px]" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                sideOffset={6}
+                className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium"
+              >
+                <span>Hide AI assistant</span>
+                <PanelShortcutKeys />
+              </TooltipContent>
+            </Tooltip>
           </div>
-        </SheetHeader>
+        </header>
 
-        {activeTab === "shipped" ? (
+        {historyOpen ? (
+          <ConversationHistory
+            conversations={conversations}
+            activeId={conversationId}
+            loading={isHistoryLoading}
+            onSelect={(id) => void selectConversation(id)}
+            onDelete={(id) => void deleteConversation(id)}
+          />
+        ) : (
           <>
-            <div className="min-h-0 flex-1 overflow-y-auto">
-              {isLoadingPosts ? (
-                <div className="flex items-center gap-2 px-5 py-10 text-sm text-muted-foreground">
-                  <LoaderIcon className="size-4 animate-spin" />
-                  Loading shipped items…
+            <div
+              className="scrollbar-hide min-h-0 flex-1 overflow-y-auto"
+              aria-busy={!historyReady}
+            >
+              {!historyReady ? (
+                <div role="status" className="space-y-4 px-4 py-5">
+                  <span className="sr-only">Loading conversation</span>
+                  <div
+                    aria-hidden="true"
+                    className="ml-auto h-16 w-4/5 rounded-xl bg-muted/50"
+                  />
+                  <div aria-hidden="true" className="space-y-2">
+                    <div className="h-3 w-2/3 rounded bg-muted/50" />
+                    <div className="h-3 w-full rounded bg-muted/50" />
+                    <div className="h-3 w-3/4 rounded bg-muted/50" />
+                  </div>
                 </div>
-              ) : sourcePosts.length === 0 ? (
-                <div className="mx-5 my-8 rounded-sm border border-dashed border-border bg-muted/20 px-4 py-10 text-center">
-                  <p className="text-sm font-medium text-foreground">Nothing to ship yet</p>
-                  <p className="mx-auto mt-2 max-w-[280px] text-xs leading-relaxed text-muted-foreground">
-                    Mark feedback as In progress or Completed on your roadmap, then
-                    generate a changelog that references what users asked for.
+              ) : messages.length === 0 ? (
+                <div className="px-4 py-3">
+                  <h3 className="text-sm font-medium">How can I help?</h3>
+                  <p className="mt-1.5 text-sm font-light leading-relaxed text-muted-foreground/70">
+                    I can correct wording, update selected text, improve
+                    formatting, and create relevant tags from this changelog.
                   </p>
                 </div>
               ) : (
-                <div className="w-full">
-                  <SelectionToolbar
-                    allSelected={allSelected}
-                    selectedCount={selectedPostIds.length}
-                    totalCount={sourcePosts.length}
-                    itemLabel="item"
-                    itemLabelPlural="items"
-                    isPending={false}
-                    onToggleAll={toggleSelectAll}
-                    hideDelete
-                    className="px-5"
-                  />
-                  <ul className="m-0 w-full list-none p-0">
-                    {sourcePosts.map((post) => {
-                      const checked = selectedPostIds.includes(post.id);
-                      return (
-                        <AiSourcePostItem
-                          key={post.id}
-                          post={post}
-                          isSelected={checked}
-                          onToggle={(value) => togglePostSelection(post.id, value)}
-                        />
-                      );
-                    })}
-                  </ul>
-                </div>
+                <Messages
+                  messages={messages}
+                  bottomRef={bottomRef}
+                  onRetry={() => {
+                    const lastUser = [...messages]
+                      .reverse()
+                      .find((message) => message.role === "user");
+                    if (lastUser) void sendMessage(lastUser.content);
+                  }}
+                />
               )}
             </div>
 
-            {selectedPosts.length > 0 ? (
-              <div className="border-t border-b border-border/70">
-                <div className="px-5 py-3">
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                    Will write about
-                    <span className="ml-1.5 normal-case tracking-normal text-foreground/70">
-                      ({selectedPosts.length})
-                    </span>
+            <div className="shrink-0 p-3 pt-1">
+              <Attachments
+                posts={selectedPosts}
+                onRemove={(id) =>
+                  setSelectedPostIds((current) =>
+                    current.filter((postId) => postId !== id),
+                  )
+                }
+              />
+
+              {historyReady &&
+              messages.length === 0 &&
+              !selectionContext &&
+              !mention &&
+              !prompt.trim() ? (
+                <div className="mb-2">
+                  <p className="mb-2 text-[11px] font-light leading-relaxed text-muted-foreground/70">
+                    Tip: Select text in the editor, then tell me how to change it.
                   </p>
-                  <ul className="mt-2 space-y-1.5">
-                    {selectedPosts.slice(0, 4).map((post) => (
-                      <li
-                        key={post.id}
-                        className="truncate text-xs leading-relaxed text-foreground"
-                      >
-                        {post.title}
-                      </li>
-                    ))}
-                    {selectedPosts.length > 4 ? (
-                      <li className="text-xs text-muted-foreground">
-                        +{selectedPosts.length - 4} more
-                      </li>
-                    ) : null}
-                  </ul>
-                </div>
-              </div>
-            ) : null}
-
-            <div
-              className={cn(
-                "bg-muted/10 dark:bg-black/10",
-                selectedPosts.length === 0 && "border-t border-border/70",
-              )}
-            >
-              <div className="border-b border-border/70 px-5 py-4">
-                <AiSegmentedControl
-                  label="Length"
-                  options={DETAIL_OPTIONS}
-                  value={detailLevel}
-                  onChange={setDetailLevel}
-                />
-              </div>
-
-              <div className="border-b border-border/70 px-5 py-4">
-                <AiSegmentedControl
-                  label="Tone"
-                  options={TONE_OPTIONS}
-                  value={tone}
-                  onChange={setTone}
-                />
-              </div>
-
-              <div className="space-y-4 px-5 py-4">
-                <div>
-                  <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                    Context{" "}
-                    <span className="normal-case tracking-normal text-muted-foreground/80">
-                      (optional)
-                    </span>
-                  </p>
-                  <TextareaAutosize
-                    value={prompt}
-                    onChange={(event) => setPrompt(event.target.value)}
-                    minRows={2}
-                    maxRows={4}
-                    placeholder="Mention audience, rollout notes, or extra context"
-                    className="w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20"
-                  />
-                </div>
-
-                <Button
-                  className="w-full cursor-pointer"
-                  onClick={() => runAction("generateFromPosts")}
-                  disabled={isLoading || selectedPostIds.length === 0}
-                >
-                  Generate detailed draft
-                </Button>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Use these on the current entry. For thin drafts, start with{" "}
-                <span className="font-medium text-foreground">Expand</span> to add
-                depth before publishing.
-              </p>
-            </div>
-
-            <div className="border-t border-border/70 bg-muted/10 dark:bg-black/10">
-              <div className="space-y-2 border-b border-border/70 px-5 py-4">
-                <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  Quick actions
-                </p>
-                {REFINE_ACTIONS.map((item) => (
-                  <button
-                    key={item.action}
-                    type="button"
+                  <Actions
+                    actions={STARTERS}
                     disabled={isLoading}
-                    onClick={() => runAction(item.action)}
-                    className="w-full cursor-pointer rounded-md border border-border bg-card px-3 py-3 text-left transition-colors hover:border-border/80 hover:bg-muted/20 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-black/20"
-                  >
-                    <p className="text-sm font-medium text-foreground">{item.label}</p>
-                    <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
-                      {item.description}
-                    </p>
-                  </button>
-                ))}
-              </div>
-
-              <div className="space-y-4 px-5 py-4">
-                <div>
-                  <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                    Custom prompt
-                  </p>
-                  <TextareaAutosize
-                    value={prompt}
-                    onChange={(event) => setPrompt(event.target.value)}
-                    onEnterPress={() => runAction("prompt")}
-                    minRows={3}
-                    maxRows={6}
-                    placeholder="Ask for a full changelog with sections, bullets, and user benefits"
-                    className={cn(
-                      "w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring dark:bg-black/20",
-                      isLoading && "opacity-70",
-                    )}
+                    onSelect={runStarter}
                   />
                 </div>
+              ) : null}
 
-                <Button
-                  className="w-full cursor-pointer"
-                  onClick={() => runAction("prompt")}
-                  disabled={isLoading || !prompt.trim()}
-                >
-                  Run custom prompt
-                </Button>
+              <div className="relative z-20">
+                {mention ? (
+                  <Sources
+                    query={mention.query}
+                    isLoading={isLoadingPosts}
+                    items={mentionItems}
+                    selectedIndex={mentionIndex}
+                    completedThisWeekCount={completedThisWeek.length}
+                    completedPosts={completedPosts}
+                    progressPosts={progressPosts}
+                    onSelectWeek={attachWeekPosts}
+                    onSelectPost={insertPostMention}
+                    onHighlight={setMentionIndex}
+                  />
+                ) : null}
+                <Composer
+                  inputRef={inputRef}
+                  value={prompt}
+                  selectionText={selectionContext?.text}
+                  attachmentOpen={Boolean(mention)}
+                  isLoading={isLoading}
+                  canUndo={Boolean(undoSnapshot)}
+                  onChange={(value, caret) => {
+                    setPrompt(value);
+                    updateMention(value, caret);
+                  }}
+                  onClick={(event) => {
+                    const field = event.currentTarget;
+                    updateMention(
+                      field.value,
+                      field.selectionStart ?? field.value.length,
+                    );
+                  }}
+                  onKeyUp={(event) => {
+                    const field = event.currentTarget;
+                    updateMention(
+                      field.value,
+                      field.selectionStart ?? field.value.length,
+                    );
+                  }}
+                  onKeyDown={handleInputKeyDown}
+                  onAttach={startAttachment}
+                  onUndo={restoreSnapshot}
+                  onSend={() => void sendMessage(prompt)}
+                  onStop={() => abortRef.current?.abort()}
+                />
               </div>
             </div>
           </>
         )}
-      </SheetContent>
-    </Sheet>
+      </div>
+    </motion.aside>
   );
 }
 

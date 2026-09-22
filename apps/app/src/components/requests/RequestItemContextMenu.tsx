@@ -8,7 +8,6 @@ import { LayersIcon } from "@featul/ui/icons/layers";
 import { TagIcon } from "@featul/ui/icons/tag";
 import { FlagIcon } from "@featul/ui/icons/flag";
 import { EditIcon } from "@featul/ui/icons/edit";
-import { SelectBoxIcon } from "@featul/ui/icons/select-box";
 import { useRequestItemActions } from "@/hooks/useRequestItemActions";
 import { useRequestTags } from "@/hooks/useRequestTags";
 import { useRequestFlags } from "@/hooks/useRequestFlags";
@@ -21,17 +20,20 @@ import {
   ContextMenuSubmenuItem,
 } from "@/components/global/ContextMenuItem";
 import { BULK_DELETE_CONFIRM_CLASS } from "@/components/selection/constants";
-import { FlagsSubmenu, StatusSubmenu, TagsSubmenu } from "./RequestItemSubmenus";
-import { setSelecting, toggleSelectionId } from "@/lib/selection/store";
+import { FlagsSubmenu, StatusSubmenu, TagsSubmenu, SnoozeSubmenu } from "./RequestItemSubmenus";
 import type { SelectionToggleMeta } from "@/components/selection/Row";
 import type { RequestItemData } from "@/types/request";
+import { useRequestSnooze } from "@/hooks/useRequestSnooze";
+import { isActivelySnoozed } from "@featul/api/shared/snooze";
+import { Clock } from "lucide-react";
 
-type RequestSubmenu = "main" | "status" | "tags" | "flags";
+type RequestSubmenu = "main" | "status" | "tags" | "flags" | "snooze";
 
 const SUBMENU_ITEMS = [
   { id: "status" as const, label: "Status", icon: LayersIcon },
   { id: "tags" as const, label: "Tags", icon: TagIcon },
   { id: "flags" as const, label: "Flags", icon: FlagIcon },
+  { id: "snooze" as const, label: "Snooze", icon: Clock },
 ];
 
 interface RequestItemContextMenuProps {
@@ -54,7 +56,6 @@ export function RequestItemContextMenu({
   requestHref,
   className,
   onClick,
-  listKey,
   isSelecting,
   isSelected,
   onToggle,
@@ -91,6 +92,14 @@ export function RequestItemContextMenu({
 
   const { optimisticFlags, toggleFlag } = useRequestFlags({ item });
 
+  const { isUpdating: isSnoozing, snoozeForPreset, clearSnooze } =
+    useRequestSnooze({
+      postId: item.id,
+      workspaceSlug,
+      snoozedUntil: item.snoozedUntil,
+      onSuccess: closeMenu,
+    });
+
   const { updateStatus, deleteRequest, isPending } = useRequestItemActions({
     requestId: item.id,
     workspaceSlug,
@@ -115,13 +124,6 @@ export function RequestItemContextMenu({
 
   const handleOpenRequest = () => {
     router.push(requestHref);
-    closeMenu();
-  };
-
-  const handleStartSelection = () => {
-    if (!listKey) return;
-    setSelecting(listKey, true);
-    toggleSelectionId(listKey, item.id, true);
     closeMenu();
   };
 
@@ -160,6 +162,16 @@ export function RequestItemContextMenu({
             onToggleFlag={toggleFlag}
           />
         );
+      case "snooze":
+        return (
+          <SnoozeSubmenu
+            isSnoozed={isActivelySnoozed(item.snoozedUntil)}
+            isPending={isSnoozing}
+            onBack={() => setCurrentSubmenu("main")}
+            onSnooze={snoozeForPreset}
+            onClear={clearSnooze}
+          />
+        );
       default:
         return (
           <PopoverList>
@@ -168,13 +180,6 @@ export function RequestItemContextMenu({
               label="Open"
               onClick={handleOpenRequest}
             />
-            {listKey ? (
-              <ContextMenuItem
-                icon={<SelectBoxIcon className="size-4" />}
-                label="Select"
-                onClick={handleStartSelection}
-              />
-            ) : null}
 
             <PopoverSeparator />
 

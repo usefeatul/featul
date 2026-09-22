@@ -3,9 +3,14 @@ import React from 'react'
 interface DocIconProps {
   className?: string
   size?: number
+  opacity?: number
 }
 
-export const DocIcon: React.FC<DocIconProps> = ({ className = '', size = 18 }) => {
+export const DocIcon: React.FC<DocIconProps> = ({
+  className = "",
+  size = 18,
+  opacity = 1,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -13,10 +18,10 @@ export const DocIcon: React.FC<DocIconProps> = ({ className = '', size = 18 }) =
       y="0px"
       width={size}
       height={size}
-      opacity={0.6}
+      opacity={opacity}
       viewBox="0 0 18 18"
       className={className}
-   >
+    >
       <path
         d="M4.25 6.75H13.75C14.855 6.75 15.75 7.645 15.75 8.75V13.25C15.75 14.355 14.855 15.25 13.75 15.25H4.25C3.145 15.25 2.25 14.355 2.25 13.25V8.75C2.25 7.645 3.145 6.75 4.25 6.75Z"
         fill="currentColor"

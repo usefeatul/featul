@@ -1,55 +1,46 @@
 ---
 title: Create boards
-description: Organize feedback into focused boards for different purposes.
+description: Organize feedback into focused boards for different product areas.
 ---
 
-## Board Types
+## What a board is
 
-Each board serves a specific purpose in your feedback workflow:
+Boards group feedback into buckets such as Features, Bugs, or a product area. Each request belongs to one board. New workspaces start with **Features** and **Bugs**.
 
-| Type | Purpose | Use Case |
-|------|---------|----------|
-| **Feedback** | Collect requests and ideas | Feature requests, bug reports |
-| **Roadmap** | Show development pipeline | Planned, in-progress, completed work |
-| **Changelog** | Announce releases | Product updates, release notes |
+Roadmap and Changelog are built-in workspace sections, not boards you create. You cannot pick a board type when creating a board.
 
-## Board Settings
+## Board settings
 
-Configure boards to match your workflow:
+Configure feedback boards from **Settings → Board Settings**:
 
-| Setting | Options |
-|---------|---------|
-| **Privacy** | Public (customer access) or Private (team only) |
-| **Visibility** | Show/hide in portal navigation |
-| **Anonymous posts** | Allow submissions without sign-in |
-| **Comments** | Enable/disable discussion |
+| Setting | What it does |
+|---------|--------------|
+| **Public / Private** | Public boards are visible on your portal. Private boards are team-only. |
+| **Allow Anonymous** | Let visitors submit without signing in. |
+| **Allow Comments** | Enable or disable discussion on posts. |
+| **Hide Public Member Identity** | Hide member names on the public site. |
 
-## Create a Board
+Anonymous submissions, comments, and identity hiding apply across your feedback boards from this page. Public vs private is set per board.
 
-1. Navigate to **Settings → Boards**
+## Create a board
+
+1. Go to **Settings → Board Settings**
 2. Click **Create board**
-3. Set name and unique slug
-4. Choose board type
-5. Configure privacy and options
-6. Save changes
+3. Enter a name and optional slug (for example `features`)
+4. Save
 
-## Roadmap Statuses
+Free plans include a limited number of boards. Starter and Professional raise or remove that limit.
 
-Roadmap boards include default statuses:
+## Roadmap and changelog
 
-- **Pending** – New requests awaiting review
-- **Review** – Under consideration
-- **Planned** – Committed to building
-- **Progress** – Currently being worked on
-- **Completed** – Shipped and available
-- **Closed** – Won't be implemented
+Use the sidebar **Roadmap** and **Changelog** pages to plan work and publish updates. Show or hide them on the public site and widget from **Settings → Feedback** (roadmap) and **Settings → Changelog**.
 
-Customize status names, colors, and order in board settings.
-
-## Organization Tips
+## Organization tips
 
 Create separate boards for:
-- Different product areas (Mobile, Web, API)
-- Customer segments (Enterprise, SMB)
-- Internal vs. external feedback
-- Content types (feedback, roadmap, changelog)
+
+- Product areas (Mobile, Web, API)
+- Feedback types (Feature requests, Bug reports)
+- Internal vs customer-facing feedback
+
+Use [tags](/docs/getting-started/organize-feedback) when a topic cuts across boards.

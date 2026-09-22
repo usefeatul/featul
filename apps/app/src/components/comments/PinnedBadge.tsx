@@ -2,18 +2,24 @@
 
 import React from "react"
 import { cn } from "@featul/ui/lib/utils"
+import { commentBadgeClass } from "./styles"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
 import { PinIcon } from "@featul/ui/icons/pin"
 
-export default function PinnedBadge({ className, size = 12 }: { className?: string; size?: number }) {
+export default function PinnedBadge({ className, size = 10 }: { className?: string; size?: number }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className={cn("inline-flex items-center rounded-full bg-background p-0.5", className)} aria-label="Pinned">
-          <PinIcon width={size} height={size} className="text-primary" />
+        <span
+          className={cn(commentBadgeClass, className)}
+          aria-label="Pinned"
+        >
+          <PinIcon width={size} height={size} className="text-accent" />
         </span>
       </TooltipTrigger>
-      <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1">Pinned</TooltipContent>
+      <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1">
+        Pinned
+      </TooltipContent>
     </Tooltip>
   )
 }

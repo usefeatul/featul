@@ -71,6 +71,68 @@ export const changelogEntry = pgTable(
 export type ChangelogEntry = typeof changelogEntry.$inferSelect;
 export type NewChangelogEntry = typeof changelogEntry.$inferInsert;
 
+export type ChangelogAiStoredMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  attachedTitles?: string[];
+  status?: "error";
+  activity?: "ask" | "rewrite" | "patch" | "tags";
+  durationMs?: number;
+  suggestedTags?: string[];
+  effect?: string;
+};
+
+export const changelogAiConversation = pgTable(
+  "changelog_ai_conversation",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    boardId: text("board_id")
+      .notNull()
+      .references(() => board.id, { onDelete: "cascade" }),
+    entryId: text("entry_id").references(() => changelogEntry.id, {
+      onDelete: "set null",
+    }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    messages: json("messages")
+      .$type<ChangelogAiStoredMessage[]>()
+      .notNull()
+      .default([]),
+    selectedPostIds: json("selected_post_ids")
+      .$type<string[]>()
+      .notNull()
+      .default([]),
+    pendingTagNames: json("pending_tag_names")
+      .$type<string[]>()
+      .notNull()
+      .default([]),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) =>
+    ({
+      changelogAiConversationOwnerIdx: index(
+        "changelog_ai_conversation_owner_idx",
+      ).on(table.boardId, table.userId, table.updatedAt),
+      changelogAiConversationEntryIdx: index(
+        "changelog_ai_conversation_entry_idx",
+      ).on(table.entryId),
+    }) as const,
+);
+
+export type ChangelogAiConversation =
+  typeof changelogAiConversation.$inferSelect;
+export type NewChangelogAiConversation =
+  typeof changelogAiConversation.$inferInsert;
+
 // Changelog mentions for notifications
 export const changelogMention = pgTable(
   "changelog_mention",

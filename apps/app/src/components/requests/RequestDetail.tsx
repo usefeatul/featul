@@ -1,214 +1,245 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import ContentImage from "@/components/global/ContentImage"
-import RequestNavigation from "./RequestNavigation"
-import { useRequestNavigation } from "@/hooks/useRequestNavigation"
-import { buildRequestsUrl } from "@/utils/request"
-import CommentCounter from "../comments/CommentCounter"
-import { UpvoteButton } from "../upvote/UpvoteButton"
-import CommentList from "../comments/CommentList"
-import RequestDetailSidebar from "./RequestDetailSidebar"
-import type { CommentData } from "../../types/comment"
-import { Button } from "@featul/ui/components/button"
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar"
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
-import { ChevronRightIcon } from "@featul/ui/icons/chevron-right"
-import { EditIcon } from "@featul/ui/icons/edit"
-import { MergePopover } from "./MergePopover"
-import { DeletePostButton } from "./DeletePostButton"
-import { useIsMobile } from "@featul/ui/hooks/use-mobile"
-import EditPostModal from "../subdomain/request/EditPostModal"
-import type { RequestDetailData } from "@/types/request"
-import { isOnboardingPost } from "@/lib/onboarding/post"
-import { OnboardingPostContent } from "./OnboardingPostContent"
+import { useEffect, useState } from "react";
+import { PostImageGallery } from "@/components/post/PostImageGallery";
+import Header from "./header";
+import Navigator, { type RequestNavigatorPage } from "./navigator";
+import { useRequestPanel } from "@/hooks/useRequestPanel";
+import { useRequestNavigation } from "@/hooks/useRequestNavigation";
+import { buildRequestsUrl } from "@/utils/request";
+import { UpvoteButton } from "../upvote/UpvoteButton";
+import CommentList from "../comments/CommentList";
+import Properties from "./properties";
+import type { CommentData } from "../../types/comment";
+import { Button } from "@featul/ui/components/button";
+import { EditIcon } from "@featul/ui/icons/edit";
+import { useIsMobile } from "@featul/ui/hooks/use-mobile";
+import EditPostModal from "../subdomain/request/EditPostModal";
+import type { RequestDetailData } from "@/types/request";
+import { isOnboardingPost } from "@/lib/onboarding/post";
+import { OnboardingPostContent } from "./OnboardingPostContent";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@featul/ui/components/avatar";
+import { getDisplayUser, getInitials } from "@/utils/user";
+import { relativeTime } from "@/lib/time";
+import RoleBadge from "../global/RoleBadge";
+import { MergeSubmissionSection } from "./MergeSubmission";
+import { Linkify } from "@/components/post/linkify";
+import { cn } from "@featul/ui/lib/utils";
+import { usePanelShortcut } from "@/hooks/shortcut";
 
 type RequestDetailProps = {
-  post: RequestDetailData
-  workspaceSlug: string
-  readonly?: boolean
-  initialComments?: CommentData[]
-  initialCollapsedIds?: string[]
-  navigation?: { prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null }
-}
+  post: RequestDetailData;
+  workspaceSlug: string;
+  initialPanelOpen?: boolean;
+  initialPanelWidth?: number;
+  initialNavigatorPage?: RequestNavigatorPage;
+  readonly?: boolean;
+  initialComments?: CommentData[];
+  initialCollapsedIds?: string[];
+  navigation?: {
+    prev: { slug: string; title: string } | null;
+    next: { slug: string; title: string } | null;
+  };
+};
 
 export default function RequestDetail({
   post,
   workspaceSlug,
   readonly = false,
+  initialPanelOpen = false,
+  initialPanelWidth,
+  initialNavigatorPage,
   initialComments,
   initialCollapsedIds,
   navigation,
 }: RequestDetailProps) {
-  const { prevHref, nextHref, searchParams } = useRequestNavigation(workspaceSlug, navigation)
-  const backHref = buildRequestsUrl(workspaceSlug, searchParams, {})
-  const isMobile = useIsMobile()
-  const [editOpen, setEditOpen] = useState(false)
-  const canEdit = (post.role === "admin" || post.isOwner) && !readonly
-  const showOnboardingContent = isOnboardingPost(post.metadata)
+  const { prevHref, nextHref, searchParams } = useRequestNavigation(
+    workspaceSlug,
+    navigation,
+  );
+  const backHref = buildRequestsUrl(workspaceSlug, searchParams, {});
+  const isMobile = useIsMobile();
+  const [listOpen, toggleList] = useRequestPanel(initialPanelOpen);
+  usePanelShortcut(() => toggleList(!listOpen));
+  useEffect(() => {
+    document.getElementById("request-detail-scroll")?.scrollTo({ top: 0 });
+  }, [post.id]);
+  const [editOpen, setEditOpen] = useState(false);
+  const canEdit = (post.role === "admin" || post.isOwner) && !readonly;
+  const author = getDisplayUser(
+    post.author
+      ? {
+          name: post.author.name ?? undefined,
+          image: post.author.image ?? undefined,
+          email: post.author.email ?? undefined,
+        }
+      : undefined,
+  );
+  const showOnboardingContent = isOnboardingPost(post.metadata);
   const normalizedContent = showOnboardingContent
     ? post.content
-    : post.content?.replace(/\n{2,}/g, "\n")
+    : post.content?.replace(/\n{2,}/g, "\n");
   const editButtonClassName = isMobile
     ? "absolute right-0 -top-1 h-7 w-7 p-0 text-muted-foreground"
-    : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40"
+    : "absolute right-0 -top-2 h-7 w-7 p-0 text-muted-foreground opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity hover:text-foreground hover:bg-muted/40";
 
   return (
-    <section>
-      <div className="overflow-hidden rounded-sm ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-card dark:bg-black/40 border border-border">
-        <div className="grid items-stretch gap-0 md:grid-cols-[0.7fr_0.3fr]">
-          <article className="relative min-w-0 px-4 py-4 md:px-6 md:py-5">
-            <div aria-hidden className="absolute right-0 top-0 hidden h-full w-px bg-border/50 md:block" />
-            <header className="pb-4">
-              {isMobile ? (
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <Button asChild variant="nav" size="xs">
-                      <Link href={backHref} aria-label="Back to requests">
-                        <ChevronLeftIcon className="size-3" />
-                      </Link>
-                    </Button>
-                    <div className="inline-flex items-center gap-2">
-                      <Toolbar size="sm" variant="plain">
-                        <MergePopover postId={post.id} workspaceSlug={workspaceSlug} />
-                        <ToolbarSeparator />
-                        <DeletePostButton postId={post.id} workspaceSlug={workspaceSlug} backHref={backHref} />
-                      </Toolbar>
-                    </div>
-                  </div>
-                  <h1 className="text-lg font-semibold leading-tight wrap-break-word text-foreground">
+    <section
+      data-request-detail
+      className={cn(
+        "relative -mx-4 flex h-[calc(100dvh-var(--workspace-mobile-nav-height))] min-w-0 overflow-hidden sm:-mx-8 lg:-mx-12 lg:h-dvh xl:-mx-16",
+        listOpen && "lg:gap-[2px] lg:bg-muted/45 dark:lg:bg-black/25",
+      )}
+    >
+      <Navigator
+        workspaceSlug={workspaceSlug}
+        postId={post.id}
+        open={listOpen}
+        onClose={() => toggleList(false)}
+        initialWidth={initialPanelWidth}
+        initialPage={initialNavigatorPage}
+      />
+      <div
+        id="request-detail-scroll"
+        className={cn(
+          "scrollbar-hide min-w-0 flex-1 overflow-y-auto overscroll-contain bg-background",
+          listOpen && "lg:border-l lg:border-border/60 dark:lg:border-white/10",
+        )}
+      >
+        <Header
+          title={post.title}
+          postId={post.id}
+          workspaceSlug={workspaceSlug}
+          backHref={backHref}
+          prevHref={prevHref}
+          nextHref={nextHref}
+          readonly={readonly}
+          onOpenList={listOpen ? undefined : () => toggleList(true)}
+        />
+        <div className="px-4 sm:px-8">
+          <div className="mx-auto w-full max-w-[720px] pb-10 pt-5 sm:pt-7 lg:pt-8">
+            <div className="flex min-w-0 flex-col gap-4">
+              <article className="min-w-0">
+                <header className="space-y-4">
+                  <h1 className="text-xl font-semibold leading-snug tracking-tight wrap-break-word text-foreground sm:text-2xl">
                     {post.title}
                   </h1>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <h1 className="text-lg font-semibold leading-snug wrap-break-word text-foreground md:text-xl">
-                        {post.title}
-                      </h1>
+                  <div className="flex items-center gap-2.5">
+                    <Avatar className="relative size-8 overflow-visible">
+                      <AvatarImage
+                        src={author.image || undefined}
+                        alt={author.name}
+                      />
+                      <AvatarFallback>
+                        {getInitials(author.name)}
+                      </AvatarFallback>
+                      <RoleBadge
+                        role={post.role}
+                        isOwner={post.isOwner}
+                        isFeatul={post.isFeatul}
+                      />
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">
+                        {author.name}
+                      </p>
+                      <time
+                        dateTime={post.publishedAt ?? post.createdAt}
+                        className="text-xs text-accent"
+                      >
+                        {relativeTime(post.publishedAt ?? post.createdAt)}
+                      </time>
                     </div>
-                    <RequestNavigation
-                      postId={post.id}
+                  </div>
+                </header>
+
+                <div className="space-y-5 pt-5 pb-2">
+                  <div className="relative group space-y-5">
+                    {canEdit ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        className={editButtonClassName}
+                        onClick={() => setEditOpen(true)}
+                        aria-label="Edit post"
+                      >
+                        <EditIcon className="size-3.5" />
+                      </Button>
+                    ) : null}
+                    {normalizedContent ? (
+                      showOnboardingContent ? (
+                        <OnboardingPostContent content={normalizedContent} />
+                      ) : (
+                        <div className="prose min-w-0 wrap-break-word whitespace-pre-wrap text-sm leading-7 text-foreground/85 dark:prose-invert">
+                          <Linkify content={normalizedContent} />
+                        </div>
+                      )
+                    ) : null}
+                    <PostImageGallery
+                      image={post.image}
+                      metadata={post.metadata}
+                      alt={post.title}
+                      className="mt-3"
+                    />
+                  </div>
+                  <MergeSubmissionSection
+                    mergedInto={post.mergedInto}
+                    mergedIntoHref={
+                      post.mergedInto
+                        ? `/workspaces/${workspaceSlug}/requests/${post.mergedInto.slug}`
+                        : undefined
+                    }
+                    mergedSources={post.mergedSources}
+                    mergedCount={post.mergedCount}
+                    sourceHref={(slug) =>
+                      `/workspaces/${workspaceSlug}/requests/${slug}`
+                    }
+                  />
+                  <div className="pt-1">
+                    <Properties
+                      key={post.id}
+                      post={post}
                       workspaceSlug={workspaceSlug}
-                      prev={navigation?.prev}
-                      next={navigation?.next}
-                      prevHref={prevHref}
-                      nextHref={nextHref}
-                      backHref={backHref}
-                      className="shrink-0"
-                      showActions
+                      readonly={readonly}
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <UpvoteButton
+                      postId={post.id}
+                      upvotes={post.upvotes}
+                      hasVoted={post.hasVoted}
+                      className="h-8 rounded-md border border-border/50 bg-muted px-2.5 hover:bg-muted/80 dark:border-white/[0.08] dark:bg-[#242424] dark:hover:bg-[#2c2c2c]"
                     />
                   </div>
                 </div>
-              )}
-            </header>
-
-            <div className="space-y-5 pt-4">
-              <div className="relative group space-y-5">
-                {canEdit ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    className={editButtonClassName}
-                    onClick={() => setEditOpen(true)}
-                    aria-label="Edit post"
-                  >
-                    <EditIcon className="size-3.5" />
-                  </Button>
-                ) : null}
-                {normalizedContent ? (
-                  showOnboardingContent ? (
-                    <OnboardingPostContent content={normalizedContent} />
-                  ) : (
-                    <div className="prose text-sm text-accent dark:prose-invert wrap-break-word whitespace-pre-wrap leading-6 min-w-0">
-                      {normalizedContent}
-                    </div>
-                  )
-                ) : null}
-                {post.image ? (
-                  <div className="flex justify-start">
-                    <ContentImage url={post.image} alt={post.title} className="h-40 w-auto max-w-full rounded-md" />
-                  </div>
-                ) : null}
-              </div>
-              {isMobile ? (
-                <div className="flex items-center justify-between gap-3 text-sm text-accent">
-                  <div className="inline-flex items-center gap-3">
-                    <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-sm" />
-                    <CommentCounter postId={post.id} initialCount={post.commentCount} surface="workspace" />
-                  </div>
-                  <Toolbar size="sm" variant="plain">
-                    <Button
-                      asChild
-                      variant="nav"
-                      size="sm"
-                      className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
-                      disabled={!prevHref}
-                    >
-                      {prevHref ? (
-                        <Link href={prevHref} aria-label="Previous post">
-                          <ChevronLeftIcon className="size-3" />
-                          <span className="text-xs font-medium">Prev</span>
-                        </Link>
-                      ) : (
-                        <span aria-hidden="true" className="flex items-center gap-2">
-                          <ChevronLeftIcon className="size-3.5 opacity-50" />
-                          <span className="text-xs font-medium opacity-50">Prev</span>
-                        </span>
-                      )}
-                    </Button>
-                    <ToolbarSeparator />
-                    <Button
-                      asChild
-                      variant="nav"
-                      size="sm"
-                      className="h-8 px-3 gap-2 rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
-                      disabled={!nextHref}
-                    >
-                      {nextHref ? (
-                        <Link href={nextHref} aria-label="Next post">
-                          <span className="text-xs font-medium">Next</span>
-                          <ChevronRightIcon className="size-3" />
-                        </Link>
-                      ) : (
-                        <span aria-hidden="true" className="flex items-center gap-2">
-                          <span className="text-xs font-medium opacity-50">Next</span>
-                          <ChevronRightIcon className="size-3.5 opacity-50" />
-                        </span>
-                      )}
-                    </Button>
-                  </Toolbar>
-                </div>
-              ) : null}
-              {isMobile ? null : (
-                <div className="flex items-center justify-end gap-3 text-xs text-accent">
-                  <UpvoteButton postId={post.id} upvotes={post.upvotes} hasVoted={post.hasVoted} className="text-xs" />
-                  <CommentCounter postId={post.id} initialCount={post.commentCount} surface="workspace" />
-                </div>
-              )}
-              <div className="mt-2 pt-4">
-                <CommentList
-                  postId={post.id}
-                  initialCount={post.commentCount}
-                  workspaceSlug={workspaceSlug}
-                  surface="workspace"
-                  allowComments={post.allowComments}
-                  initialComments={initialComments}
-                  initialCollapsedIds={initialCollapsedIds}
-                />
-              </div>
+              </article>
+              <CommentList
+                plain
+                postId={post.id}
+                initialCount={post.commentCount}
+                workspaceSlug={workspaceSlug}
+                surface="workspace"
+                allowComments={post.allowComments}
+                initialComments={initialComments}
+                initialCollapsedIds={initialCollapsedIds}
+              />
             </div>
-          </article>
-
-          <RequestDetailSidebar post={post} workspaceSlug={workspaceSlug} readonly={readonly} />
+          </div>
         </div>
       </div>
       {canEdit ? (
-        <EditPostModal open={editOpen} onOpenChange={setEditOpen} workspaceSlug={workspaceSlug} post={post} />
+        <EditPostModal
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          workspaceSlug={workspaceSlug}
+          post={post}
+        />
       ) : null}
     </section>
-  )
+  );
 }

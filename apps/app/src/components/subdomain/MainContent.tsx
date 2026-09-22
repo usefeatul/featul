@@ -17,6 +17,7 @@ import PostCard from "@/components/subdomain/PostCard";
 import { SubdomainListEmptyState } from "./SubdomainListEmptyState";
 import { SubdomainActiveSearchHeader } from "./SubdomainActiveSearchHeader";
 import EmptyDomainPosts from "./EmptyPosts";
+import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
 
 type Item = RequestItemData;
 
@@ -102,29 +103,34 @@ export function MainContent({
         <SubdomainListHeader
           sidebarPosition={sidebarPosition}
           mobileActions={
-            <>
+            <Toolbar size="sm" className="w-fit">
               <SortPopover
                 subdomain={subdomain}
                 slug={slug}
                 basePath={paginationBasePath}
                 keepParams={sortKeepParams}
               />
+              <ToolbarSeparator />
               <SearchAction slug={slug} />
-            </>
+            </Toolbar>
           }
           mobileSecondary={
-            <BoardsDropdown
-              slug={slug}
-              initialBoards={initialBoards}
-              selectedBoard={selectedBoard || boardParam}
-            />
+            <Toolbar size="sm" className="w-fit">
+              <BoardsDropdown
+                slug={slug}
+                initialBoards={initialBoards}
+                selectedBoard={selectedBoard || boardParam}
+              />
+            </Toolbar>
           }
           desktopSecondary={
-            <BoardsDropdown
-              slug={slug}
-              initialBoards={initialBoards}
-              selectedBoard={selectedBoard || boardParam}
-            />
+            <Toolbar size="sm" className="w-fit">
+              <BoardsDropdown
+                slug={slug}
+                initialBoards={initialBoards}
+                selectedBoard={selectedBoard || boardParam}
+              />
+            </Toolbar>
           }
         />
         <div className="md:hidden mb-4">

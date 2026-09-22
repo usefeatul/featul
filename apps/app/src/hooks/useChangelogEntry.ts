@@ -6,7 +6,7 @@ import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import type { JSONContent } from "@featul/editor";
 import type { FeedEditorRef } from "@/components/editor/editor";
-import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload-policy";
+import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload/policy";
 import { uploadFileToSignedUrl } from "@/lib/upload";
 
 interface UseChangelogEntryProps {
@@ -24,6 +24,7 @@ interface UseChangelogEntryProps {
     };
 }
 
+/** Changelog editor form, signed image upload, save, and 5s dirty autosave unless suspended. */
 export function useChangelogEntry({
     workspaceSlug,
     mode,

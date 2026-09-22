@@ -4,7 +4,9 @@ import { j, publicProcedure, privateProcedure } from "../jstack"
 import { workspace, workspaceSlugReservation } from "@featul/db"
 import { reserveSlugInputSchema, tokenInputSchema, checkSlugPublicInputSchema } from "../validators/reservation"
 import { sendReservationEmail } from "@featul/auth/email"
-import { isReservedWorkspaceSlug } from "../shared/workspace-slug"
+import { isReservedWorkspaceSlug } from "../workspace/slug"
+import { isReservedSlugBlockedForEmail } from "../workspace/creator"
+import { enforceTrustedBrowserOrigin } from "../request/origin"
 const MAX_RESERVATIONS_PER_EMAIL = 3
 
 async function sendReservationEmailBestEffort(email: string, slug: string, token: string): Promise<void> {
@@ -44,9 +46,10 @@ export function createReservationRouter() {
     reserve: publicProcedure
       .input(reserveSlugInputSchema)
       .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw)
         const email = input.email.trim().toLowerCase()
         const slug = input.slug.trim().toLowerCase()
-        if (isReservedWorkspaceSlug(slug)) throw new HTTPException(403, { message: "Slug not allowed" })
+        if (isReservedSlugBlockedForEmail(slug, email)) throw new HTTPException(403, { message: "Slug not allowed" })
 
         const [ws] = await ctx.db
           .select({ id: workspace.id })
@@ -104,7 +107,7 @@ export function createReservationRouter() {
 
         await sendReservationEmailBestEffort(email, slug, token)
 
-        return c.superjson({ ok: true, token })
+        return c.superjson({ ok: true })
       }),
 
     lookupByToken: publicProcedure
@@ -124,6 +127,7 @@ export function createReservationRouter() {
     confirm: publicProcedure
       .input(tokenInputSchema)
       .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw)
         const [r] = await ctx.db
           .select({ id: workspaceSlugReservation.id, status: workspaceSlugReservation.status, expiresAt: workspaceSlugReservation.expiresAt })
           .from(workspaceSlugReservation)

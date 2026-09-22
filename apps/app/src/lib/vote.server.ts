@@ -2,6 +2,7 @@ import { db, vote } from "@featul/db"
 import { eq, and } from "drizzle-orm"
 import { getServerSession } from "@featul/auth"
 
+/** Whether the current session user has voted on the post. */
 export async function readHasVotedForPost(postId: string): Promise<boolean> {
   const session = await getServerSession()
   const userId = session?.user?.id

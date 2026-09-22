@@ -4,13 +4,20 @@ import { DEFINITIONS } from "@/content/definitions"
 import { TOOL_CATEGORIES } from "@/types/tools"
 import { SkyPageShell } from "@/components/layout/shell"
 import { createPageMetadata } from "@/lib/seo"
+import {
+  OverlayCard,
+  OverlayCardPanel,
+} from "@/components/shared/overlay-card"
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Search Featul",
-  description:
-    "Search Featul definitions, calculators, and resources for SaaS metrics, product feedback, and growth.",
-  path: "/search",
-})
+export const metadata: Metadata = {
+  ...createPageMetadata({
+    title: "Search Featul",
+    description:
+      "Search Featul definitions, calculators, and resources for SaaS metrics, product feedback, and growth.",
+    path: "/search",
+  }),
+  robots: { index: false, follow: true },
+}
 
 type Props = {
   searchParams: Promise<{ q?: string }>
@@ -95,10 +102,16 @@ export default async function SearchPage({ searchParams }: Props) {
           <ul className="space-y-3">
             {definitionResults.map((def) => (
               <li key={def.slug}>
-                <Link href={`/definitions/${def.slug}`} className="font-medium hover:text-primary">
-                  {def.name}
+                <Link href={`/definitions/${def.slug}`} className="group block">
+                  <OverlayCard>
+                    <OverlayCardPanel className="px-4 py-3">
+                      <p className="font-medium text-foreground group-hover:text-primary">
+                        {def.name}
+                      </p>
+                      <p className="mt-1 text-sm text-accent">{def.short}</p>
+                    </OverlayCardPanel>
+                  </OverlayCard>
                 </Link>
-                <p className="text-sm text-accent">{def.short}</p>
               </li>
             ))}
           </ul>
@@ -113,11 +126,17 @@ export default async function SearchPage({ searchParams }: Props) {
               <li key={`${categorySlug}-${tool.slug}`}>
                 <Link
                   href={`/tools/categories/${categorySlug}/${tool.slug}`}
-                  className="font-medium hover:text-primary"
+                  className="group block"
                 >
-                  {tool.name}
+                  <OverlayCard>
+                    <OverlayCardPanel className="px-4 py-3">
+                      <p className="font-medium text-foreground group-hover:text-primary">
+                        {tool.name}
+                      </p>
+                      <p className="mt-1 text-sm text-accent">{tool.description}</p>
+                    </OverlayCardPanel>
+                  </OverlayCard>
                 </Link>
-                <p className="text-sm text-accent">{tool.description}</p>
               </li>
             ))}
           </ul>

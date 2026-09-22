@@ -11,31 +11,18 @@ type InviteWorkspaceEmailProps = {
 }
 
 export function InviteWorkspaceEmail({ workspaceName, inviteUrl, recipientName, inviterName, brand }: InviteWorkspaceEmailProps) {
-  const eyebrow = "INVITE"
-  const title = `Join ${workspaceName}`
-  const intro = `Hello ${recipientName || "there"},`
-  const body = inviterName
-    ? `${inviterName} invited you to join the ${workspaceName} workspace.`
-    : `You have been invited to join the ${workspaceName} workspace.`
-  const paragraphs = [
-    "Click the button below to accept your invite.",
-  ]
-  const ctaText = "Accept Invite"
-  const ctaUrl = inviteUrl
-  const psText = "If you did not expect this invitation, you may safely ignore this email."
-  const signatureName = (brand?.name || "featul") + " Team"
-
   return (
     <BrandedEmail
-      eyebrow={eyebrow}
-      title={title}
-      intro={intro}
-      body={body}
-      paragraphs={paragraphs}
-      ctaText={ctaText}
-      ctaUrl={ctaUrl}
-      psText={psText}
-      signatureName={signatureName}
+      title={`Join ${workspaceName}`}
+      intro={`Hi ${recipientName || "there"},`}
+      body={
+        inviterName
+          ? `${inviterName} invited you to the ${workspaceName} workspace.`
+          : `You have been invited to the ${workspaceName} workspace.`
+      }
+      ctaText="Accept invite"
+      ctaUrl={inviteUrl}
+      psText="If you were not expecting this, you can ignore this email."
       brand={brand}
     />
   )

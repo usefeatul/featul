@@ -164,15 +164,24 @@ export default function TeamSection({
   };
 
   return (
+    <div className="space-y-4">
     <SectionCard
-      title="Manage Members"
-      description="Members have access to your workspace."
+      title="Members"
+      description="People with access to this workspace."
+      action={
+        <Button
+          type="button"
+          onClick={() => setInviteOpen(true)}
+          disabled={isLoading || inviteAccessLoading || !canInvite}
+        >
+          Invite member
+        </Button>
+      }
     >
       <div className="space-y-2">
         <div className="space-y-2">
           <Label>Members</Label>
-          <div className="rounded-md  border overflow-hidden">
-            <Table>
+          <Table variant="settings">
               <TableHeader>
                 <TableRow>
                   <TableHead className="px-4">Name</TableHead>
@@ -200,7 +209,6 @@ export default function TeamSection({
                 )}
               </TableBody>
             </Table>
-          </div>
         </div>
 
         <div className="space-y-2 mt-3">
@@ -213,26 +221,7 @@ export default function TeamSection({
           />
         </div>
 
-        <div className="pt-2 space-y-2">
-          <div className="text-sm text-accent">
-            Invite a new member to your workspace.
-          </div>
-          <PlanNotice
-            slug={slug}
-            feature="team"
-            plan={initialPlan}
-            membersCount={(data.members || []).length}
-          />
-          <div className="mt-2 flex items-center justify-start">
-            <Button
-              type="button"
-              onClick={() => setInviteOpen(true)}
-              disabled={isLoading || inviteAccessLoading || !canInvite}
-            >
-              Invite Member
-            </Button>
-          </div>
-          <InviteMemberModal
+        <InviteMemberModal
             slug={slug}
             open={inviteOpen}
             onOpenChange={setInviteOpen}
@@ -242,8 +231,14 @@ export default function TeamSection({
               await refresh();
             }}
           />
-        </div>
       </div>
     </SectionCard>
+    <PlanNotice
+      slug={slug}
+      feature="team"
+      plan={initialPlan}
+      membersCount={(data.members || []).length}
+    />
+    </div>
   );
 }

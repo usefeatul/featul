@@ -6,6 +6,7 @@ import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
 import { CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@featul/ui/components/command"
 import { MergeIcon } from "@featul/ui/icons/merge"
+import { toolbarItemClass } from "@featul/ui/components/toolbar"
 import { client } from "@featul/api/client"
 import { useQuery } from "@tanstack/react-query"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
@@ -23,9 +24,10 @@ type MergeCandidatesResponse = {
 export interface MergePopoverProps {
   postId: string
   workspaceSlug: string
+  className?: string
 }
 
-export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
+export function MergePopover({ postId, workspaceSlug, className }: MergePopoverProps) {
   const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [mode, setMode] = React.useState<"merge_into" | "merge_here" | null>(null)
@@ -88,12 +90,12 @@ export function MergePopover({ postId, workspaceSlug }: MergePopoverProps) {
         <PopoverTrigger asChild>
           <Button
             type="button"
-            variant="nav"
+            variant="plain"
             size="icon-sm"
-            className="rounded-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 hover:bg-background"
+            className={className || toolbarItemClass}
             aria-label="Merge"
           >
-            <MergeIcon className="size-3.5" />
+            <MergeIcon className="size-[18px]" />
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" list className="fit min-w-0">

@@ -2,6 +2,7 @@
 
 import React from "react";
 
+/** Ignore keys while focus is in an input, textarea, select, or textbox. */
 function isTextInputTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   return !!target.closest(

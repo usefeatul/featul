@@ -36,6 +36,7 @@ export interface ChangelogListData {
     availableTags: WorkspaceTag[];
 }
 
+/** All workspace tags, name-sorted, for changelog pickers. */
 async function getWorkspaceTags(workspaceId: string): Promise<WorkspaceTag[]> {
     const tags = await db
         .select({
@@ -56,6 +57,7 @@ async function getWorkspaceTags(workspaceId: string): Promise<WorkspaceTag[]> {
     }));
 }
 
+/** Paginated changelog entries with resolved tags; null if no changelog board. */
 export async function getChangelogListData(
     workspaceSlug: string,
     options?: { status?: "draft" | "published"; limit?: number; offset?: number }
@@ -136,6 +138,7 @@ export async function getChangelogListData(
     };
 }
 
+/** Workspace tags for changelog filters; empty if the workspace is missing. */
 export async function getChangelogTags(workspaceSlug: string): Promise<WorkspaceTag[]> {
     const [ws] = await db
         .select({ id: workspace.id })
@@ -148,6 +151,7 @@ export async function getChangelogTags(workspaceSlug: string): Promise<Workspace
     return getWorkspaceTags(ws.id);
 }
 
+/** Single changelog entry plus tag options for the editor. */
 export async function getChangelogEntryForEdit(
     workspaceSlug: string,
     entryId: string

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useId } from 'react'
 
 interface ProductBoardIconProps {
   className?: string
@@ -6,6 +6,8 @@ interface ProductBoardIconProps {
 }
 
 export const ProductBoardIcon: React.FC<ProductBoardIconProps> = ({ className = '', size = 24 }) => {
+  const clipId = `productboard-rounded-${useId().replace(/:/g, "")}`
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -16,12 +18,12 @@ export const ProductBoardIcon: React.FC<ProductBoardIconProps> = ({ className = 
       fill="none"
     >
       <defs>
-        <clipPath id="productboard-rounded">
+        <clipPath id={clipId}>
           <rect width="64" height="64" rx="12" ry="12" />
         </clipPath>
       </defs>
 
-      <g clipPath="url(#productboard-rounded)">
+      <g clipPath={`url(#${clipId})`}>
         {/* Red diamond/square */}
         <path
           d="M0 10c40.325-3.718 40.325-3.718 50.531 4.676 5.271 4.74 9.632 10.384 13.469 16.324-4.419 9.219-11.174 19.121-21 23-13.803 3.003-29.045 1.154-43 0 1.457-3.364 3.311-5.545 5.914-8.11.76-.754 1.521-1.508 2.305-2.285.794-.777 1.588-1.555 2.406-2.355.802-.793 1.604-1.586 2.43-2.403 1.977-1.954 3.959-3.903 5.945-5.847-1.453-3.362-3.29-5.502-5.914-8.04-.761-.745-1.521-1.49-2.305-2.257-.794-.768-1.588-1.537-2.406-2.328-1.58-1.529-3.156-3.063-4.727-4.602-.699-.676-1.399-1.352-2.12-2.049C1.457 12 1.457 12 0 10Z"

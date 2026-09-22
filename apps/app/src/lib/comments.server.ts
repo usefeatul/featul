@@ -1,5 +1,7 @@
+/** Reads collapsed comment-thread cookies. */
 import { cookies } from "next/headers"
 
+/** Collapsed comment ids for a post, from the httpOnly cookie. */
 export async function readInitialCollapsedCommentIds(postId: string): Promise<string[]> {
   const cookieStore = await cookies()
   const key = `cmc${postId}`

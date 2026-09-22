@@ -21,12 +21,21 @@ export interface Alternative {
   victoryPoints?: string[]
   tradeoffs?: string[]
   image?: string
+  /** Optional SERP title used as-is on comparison pages. */
+  metaTitle?: string
+  heroTitle?: string
+  heroKicker?: string
+  /** Unique long-form sections for high-intent comparison pages. */
+  guide?: { title: string; answer?: string; body: string }[]
+  /** Extractable at-a-glance rows for AI Overviews and comparison queries. */
+  snapshot?: { label: string; competitor: string; featul: string }[]
+  snapshotLead?: string
   features: ComparisonFeature[]
 }
 
 /** Displayed on comparison pages for freshness signals. */
-export const ALTERNATIVES_UPDATED_LABEL = 'August 2026'
-export const ALTERNATIVES_UPDATED_ISO = '2026-08-01'
+export const ALTERNATIVES_UPDATED_LABEL = 'September 2026'
+export const ALTERNATIVES_UPDATED_ISO = '2026-09-01'
 
 // Base features we commonly compare across tools
 const baseFeatures: Omit<ComparisonFeature, 'competitor'>[] = [
@@ -79,12 +88,102 @@ export const alternatives: Alternative[] = [
     slug: 'featurebase',
     name: 'Featurebase',
     website: 'https://featurebase.app',
+    metaTitle: 'Featurebase alternatives | Open source vs Featurebase',
+    heroTitle: 'Featurebase alternatives',
+    heroKicker: 'Open source vs Featurebase',
     summary:
-      'Featurebase is a strong feedback tool. Featul emphasizes EU hosting and privacy with a unified suite.',
-    tags: ['feedback', 'voting'],
+      'Featurebase is a hosted feedback suite with voting, roadmap, and changelog. Featul is an open source Featurebase alternative: MIT-licensed, self-hostable, EU-hosted, and priced per workspace instead of per seat.',
+    tags: ['feedback', 'voting', 'open-source'],
     image: '/image/image.jpeg',
-    pros: ['Active community', 'Rich voting'],
-    cons: ['Less EU focus'],
+    pros: ['Help center plus AI support suite', 'Large integration catalog'],
+    cons: ['Per-seat pricing as the team grows', 'Hosted-only, not self-hostable'],
+    snapshotLead:
+      'Featul is an open source Featurebase alternative. Both tools do boards, votes, a public roadmap, and a changelog. The split is pricing, self-hosting, EU defaults, and whether you also need Featurebase’s help-center suite.',
+    snapshot: [
+      {
+        label: 'Pricing model',
+        competitor: 'Per seat as more teammates join',
+        featul: 'Flat workspace; Starter $24/month, Professional $47/month',
+      },
+      {
+        label: 'Open source',
+        competitor: 'No, hosted commercial SaaS',
+        featul: 'Yes, MIT License',
+      },
+      {
+        label: 'Self-hosting',
+        competitor: 'No',
+        featul: 'Yes, or a hosted EU workspace',
+      },
+      {
+        label: 'Default hosting',
+        competitor: 'Hosted SaaS; check current data-residency docs',
+        featul: 'EU by default',
+      },
+      {
+        label: 'Feedback boards and voting',
+        competitor: 'Yes',
+        featul: 'Yes',
+      },
+      {
+        label: 'Public roadmap',
+        competitor: 'Yes',
+        featul: 'Yes',
+      },
+      {
+        label: 'Changelog',
+        competitor: 'Yes',
+        featul: 'Yes',
+      },
+      {
+        label: 'Help center and AI support suite',
+        competitor: 'Mature product surface',
+        featul: 'Not the product; feedback-to-release loop only',
+      },
+      {
+        label: 'Best for',
+        competitor: 'Teams that want feedback plus a customer help center',
+        featul: 'Teams that want an inspectable, workspace-priced Featurebase alternative',
+      },
+    ],
+    guide: [
+      {
+        title: 'Is Featul a good Featurebase alternative?',
+        answer:
+          'Yes, if you want boards, votes, a public roadmap, and a changelog without paying per seat or locking the data in a closed vendor. Featul is MIT licensed. You can self-host it or use a hosted EU workspace, and you pay per workspace. Stay on Featurebase if the help center and AI support suite are already how your team works.',
+        body: 'Most people looking at Featurebase alternatives are not hunting for any voting board. They want that same customer-facing loop with a different bill, a different host, or a way to keep the data if they leave. Featul is built for that. It is a weaker fit if you expected a drop-in help center.',
+      },
+      {
+        title: 'How much does a Featurebase alternative cost for a five-person team?',
+        answer:
+          'Featul Starter is $24 per month for the workspace, with a five-member cap on that plan. Professional is $47 per month. Featurebase mostly charges per seat, so a PM, a CSM, and two engineers can push the invoice up fast. Check both live pricing pages before you treat either number as a quote.',
+        body: 'The useful comparison is the pattern, not a screenshot of today’s list price. If five people need access, per-seat tools get expensive faster than a workspace cap. If one person will run the portal forever, seat cost may not be why you switch.',
+      },
+      {
+        title: 'Is Featul an open source Featurebase alternative I can self-host?',
+        answer:
+          'Yes. Featul is MIT licensed and can run on your own infrastructure or as a hosted EU workspace. Featurebase is a strong hosted product. It is not a self-hosted MIT codebase. That difference shows up in procurement and “can we leave later?” conversations, not in whether voting works.',
+        body: 'Open source matters when feedback is customer data you may need to move, show to security reviewers, or keep if you stop paying a vendor. Both products collect requests. Only one lets you keep the board when the contract ends.',
+      },
+      {
+        title: 'Does Featul replace a changelog tool as well as Featurebase?',
+        answer:
+          'Yes for the path from feedback to release notes. Featul includes a public or private roadmap and a changelog in the same workspace as the voting board, so you do not buy a second product just to say what shipped. It does not replace Featurebase’s broader help center suite.',
+        body: 'Point the public URL or widget at Featul, keep columns such as Planned, In Progress, and Shipped, and publish a changelog when the first migrated item ships. Customers notice that something actually shipped, not which vendor rendered the upvote.',
+      },
+      {
+        title: 'How do I migrate from Featurebase to Featul?',
+        answer:
+          'Export or import posts, then recreate categories, tags, and statuses so voters still recognize the board. Map duplicates before you go live so vote counts stay honest. Share the new URL, keep voting open, and changelog the first shipped item from the old list.',
+        body: 'Customers care that their post still exists and that something shipped. They do not care which vendor rendered the upvote. For messy Featurebase workspaces, spend the extra hour on duplicate mapping. That is the step people skip and then regret.',
+      },
+      {
+        title: 'Who should stay on Featurebase?',
+        answer:
+          'Stay if you already live in Featurebase’s help center and AI support suite and do not need self-hosting or EU-first defaults. Switch when seat cost, data residency, or “we also bought a changelog tool” is the actual pain. Switching only because a new brand exists is a bad trade.',
+        body: 'Featul is not trying to out-catalog Featurebase. It is trying to be the simpler open source option: one workflow from vote to release note, at a predictable workspace rate, with the option to host it yourself.',
+      },
+    ],
     features: withCompetitor({
       eu_hosting: 'partial',
       gdpr: 'partial',
@@ -125,12 +224,80 @@ export const alternatives: Alternative[] = [
     slug: 'canny',
     name: 'Canny',
     website: 'https://canny.io',
+    metaTitle: 'Canny alternatives & integrations | Featul vs Canny',
+    heroTitle: 'Canny alternatives',
+    heroKicker: 'Featul vs Canny integrations',
     summary:
-      'Canny is a robust feedback platform. Featul differentiates with EU hosting and streamlined privacy.',
-    tags: ['feedback', 'roadmap', 'voting'],
+      'Canny is known for feature request tracking and a large integration catalog. Featul is a Canny alternative with EU hosting, Canny import, Slack/webhooks/API, and a simpler boards-to-changelog workflow.',
+    tags: ['feedback', 'roadmap', 'voting', 'integrations'],
     image: '/image/image.jpeg',
-    pros: ['Enterprise features'],
-    cons: ['US‑centric hosting'],
+    pros: ['Broad third-party integrations', 'Long enterprise track record'],
+    cons: ['US-centric hosting', 'Seat-based pricing as teams grow'],
+    snapshotLead:
+      'Featul is a Canny alternative with Canny import. Both cover boards, votes, roadmap, and changelog. Canny still wins on native third-party apps. Featul wins on EU hosting, workspace pricing, and a shorter integration list that covers Slack, webhooks, and API.',
+    snapshot: [
+      {
+        label: 'Pricing model',
+        competitor: 'Tracked users and plan tiers',
+        featul: 'Flat workspace; Starter $24/month, Professional $47/month',
+      },
+      {
+        label: 'Default hosting',
+        competitor: 'US-centric SaaS',
+        featul: 'EU by default',
+      },
+      {
+        label: 'Canny import',
+        competitor: 'N/A',
+        featul: 'Yes, requests and discussions',
+      },
+      {
+        label: 'Daily integrations',
+        competitor: 'Large native marketplace',
+        featul: 'Slack, Discord, webhooks, and API',
+      },
+      {
+        label: 'Public roadmap and changelog',
+        competitor: 'Yes',
+        featul: 'Yes, in the same workspace',
+      },
+      {
+        label: 'Open source / self-host',
+        competitor: 'No',
+        featul: 'MIT-licensed and self-hostable',
+      },
+      {
+        label: 'Best for',
+        competitor: 'Teams whose workflow is the Canny app catalog',
+        featul: 'Teams replacing Canny for EU hosting and workspace pricing',
+      },
+    ],
+    guide: [
+      {
+        title: 'What is the difference between Canny alternatives and Canny integrations?',
+        answer:
+          '“Canny alternatives” means replace the product. “Canny integrations” means Slack, API, webhooks, and a path to import the board. Featul is a Canny alternative with Canny import plus Slack, webhooks, and API, which is what most product teams actually use day to day.',
+        body: 'Canny still wins if you need a long marketplace of native third-party apps. Featul wins if you want EU hosting, workspace pricing, and roadmap plus changelog in the same tool after you import.',
+      },
+      {
+        title: 'Which Canny integrations does Featul replace?',
+        answer:
+          'Typical Canny setups notify Slack when a post is created, push status through an API or webhook, and maybe sync an issue tracker. Featul covers Slack notifications, webhooks, and API access so triage does not require a new chat app.',
+        body: 'You do not recreate every Canny marketplace connector. You keep the workflow: request comes in, team is pinged, status is visible on a public roadmap, release notes go out. See the Canny integrations page for import steps.',
+      },
+      {
+        title: 'When should you stay on Canny?',
+        answer:
+          'Stay if your operating system is already a large set of Canny apps (Linear, Jira, Intercom, and others) and switching would break automations you cannot rebuild with webhooks. Switch when seat cost, data residency, or a second changelog tool is the pain.',
+        body: 'Featul is not trying to out-catalog Canny. It is trying to be the simpler EU-hosted replacement with import so history is not left behind.',
+      },
+      {
+        title: 'How do you migrate a Canny board to Featul?',
+        answer:
+          'Create a Featul workspace, import Canny requests and discussions, map statuses and tags, then connect Slack. Share the new board URL, keep voting open, and changelog the first shipped item from the old Canny list.',
+        body: 'Voters care that their post still exists and that something shipped. They do not care which vendor rendered the upvote.',
+      },
+    ],
     features: withCompetitor({
       eu_hosting: false,
       gdpr: 'partial',
@@ -171,13 +338,135 @@ export const alternatives: Alternative[] = [
 
 // Import from content-matrix for programmatic competitors
 import { COMPETITORS, type CompetitorEntry } from '@/lib/data/programmatic/matrix'
+import {
+  applyCompetitorDetail,
+  getCompetitorDetail,
+  type CompetitorKind,
+} from '@/config/alternatives-detail'
+
+const KIND_FEATURE_DEFAULTS: Record<CompetitorKind, Record<string, FeatureSupport>> = {
+  'voting-board': {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: true,
+    feature_voting: true,
+    public_roadmap: 'partial',
+    changelog: 'partial',
+    embeddable_widget: true,
+    api: 'partial',
+    sso: 'partial',
+    slack: 'partial',
+  },
+  'feedback-suite': {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: true,
+    feature_voting: true,
+    public_roadmap: true,
+    changelog: true,
+    embeddable_widget: true,
+    api: true,
+    sso: 'partial',
+    slack: true,
+  },
+  changelog: {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: 'partial',
+    feature_voting: 'partial',
+    public_roadmap: 'partial',
+    changelog: true,
+    embeddable_widget: true,
+    api: 'partial',
+    sso: 'partial',
+    slack: 'partial',
+  },
+  'product-management': {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: 'partial',
+    feature_voting: 'partial',
+    public_roadmap: true,
+    changelog: 'partial',
+    embeddable_widget: 'partial',
+    api: true,
+    sso: true,
+    slack: 'partial',
+  },
+  'visual-feedback': {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: 'partial',
+    feature_voting: false,
+    public_roadmap: false,
+    changelog: false,
+    embeddable_widget: true,
+    api: 'partial',
+    sso: 'partial',
+    slack: 'partial',
+  },
+  'open-source': {
+    eu_hosting: false,
+    gdpr: 'partial',
+    feedback_boards: true,
+    feature_voting: true,
+    public_roadmap: 'partial',
+    changelog: false,
+    embeddable_widget: 'partial',
+    api: 'partial',
+    sso: false,
+    slack: false,
+  },
+  'b2b-feedback': {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: true,
+    feature_voting: 'partial',
+    public_roadmap: 'partial',
+    changelog: 'partial',
+    embeddable_widget: 'partial',
+    api: true,
+    sso: true,
+    slack: true,
+  },
+  linear: {
+    eu_hosting: 'partial',
+    gdpr: 'partial',
+    feedback_boards: true,
+    feature_voting: true,
+    public_roadmap: true,
+    changelog: 'partial',
+    embeddable_widget: true,
+    api: true,
+    sso: 'partial',
+    slack: true,
+  },
+}
+
+function featuresFromVictoryPoints(competitor: CompetitorEntry): Record<string, FeatureSupport> {
+  return {
+    eu_hosting: competitor.victoryPoints.some((v) => v.toLowerCase().includes('eu')) ? 'partial' : false,
+    gdpr: competitor.victoryPoints.some((v) => v.toLowerCase().includes('gdpr')) ? 'partial' : false,
+    feedback_boards: true,
+    feature_voting: true,
+    public_roadmap: competitor.victoryPoints.some((v) => v.toLowerCase().includes('roadmap')) ? true : 'partial',
+    changelog: competitor.victoryPoints.some((v) => v.toLowerCase().includes('changelog')) ? true : 'partial',
+    embeddable_widget: true,
+    api: 'partial',
+    sso: 'partial',
+    slack: competitor.victoryPoints.some((v) => v.toLowerCase().includes('slack')) ? true : 'partial',
+  }
+}
 
 /**
  * Convert a CompetitorEntry from content-matrix to Alternative format
  * This allows new competitors to work with existing custom components
  */
 function competitorToAlternative(competitor: CompetitorEntry): Alternative {
-  return {
+  const kind = getCompetitorDetail(competitor.slug)?.kind
+  const featureDefaults = kind ? KIND_FEATURE_DEFAULTS[kind] : featuresFromVictoryPoints(competitor)
+
+  return applyCompetitorDetail({
     slug: competitor.slug,
     name: competitor.name,
     website: competitor.website,
@@ -189,35 +478,26 @@ function competitorToAlternative(competitor: CompetitorEntry): Alternative {
     victoryPoints: competitor.victoryPoints,
     tradeoffs: competitor.tradeoffs,
     image: '/image/image.jpeg',
-    features: withCompetitor({
-      eu_hosting: competitor.victoryPoints.some(v => v.toLowerCase().includes('eu')) ? 'partial' : false,
-      gdpr: competitor.victoryPoints.some(v => v.toLowerCase().includes('gdpr')) ? 'partial' : false,
-      feedback_boards: true,
-      feature_voting: true,
-      public_roadmap: competitor.victoryPoints.some(v => v.toLowerCase().includes('roadmap')) ? true : 'partial',
-      changelog: competitor.victoryPoints.some(v => v.toLowerCase().includes('changelog')) ? true : 'partial',
-      embeddable_widget: true,
-      api: 'partial',
-      sso: 'partial',
-      slack: competitor.victoryPoints.some(v => v.toLowerCase().includes('slack')) ? true : 'partial',
-    }),
-  }
+    features: withCompetitor(featureDefaults),
+  })
 }
 
 function enrichAlternative(alt: Alternative): Alternative {
   const competitor = COMPETITORS.find((c) => c.slug === alt.slug)
-  if (!competitor) return alt
+  const merged: Alternative = competitor
+    ? {
+        ...alt,
+        website: alt.website ?? competitor.website,
+        tagline: alt.tagline ?? competitor.tagline,
+        victoryPoints: alt.victoryPoints?.length ? alt.victoryPoints : competitor.victoryPoints,
+        tradeoffs: alt.tradeoffs?.length ? alt.tradeoffs : competitor.tradeoffs,
+        summary:
+          alt.summary ??
+          `${competitor.name} is known for ${competitor.tagline.toLowerCase()}. Featul offers ${competitor.victoryPoints[0]?.toLowerCase() || 'a privacy-first alternative'}.`,
+      }
+    : alt
 
-  return {
-    ...alt,
-    website: alt.website ?? competitor.website,
-    tagline: alt.tagline ?? competitor.tagline,
-    victoryPoints: alt.victoryPoints?.length ? alt.victoryPoints : competitor.victoryPoints,
-    tradeoffs: alt.tradeoffs?.length ? alt.tradeoffs : competitor.tradeoffs,
-    summary:
-      alt.summary ??
-      `${competitor.name} is known for ${competitor.tagline.toLowerCase()}. Featul offers ${competitor.victoryPoints[0]?.toLowerCase() || 'a privacy-first alternative'}.`,
-  }
+  return applyCompetitorDetail(merged)
 }
 
 export function getAlternativeBySlug(slug: string): Alternative | undefined {
@@ -250,6 +530,7 @@ export function getAlternativeSlugs(): string[] {
   return getAllAlternatives().map((alternative) => alternative.slug)
 }
 
-export function getAlternativePageTitle(name: string): string {
-  return `${name} Alternatives | Featul vs ${name}`
+export function getAlternativePageTitle(alt: Alternative): string {
+  if (alt.metaTitle) return alt.metaTitle
+  return `Best ${alt.name} alternative | Featul vs ${alt.name}`
 }

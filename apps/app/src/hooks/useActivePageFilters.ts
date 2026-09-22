@@ -44,6 +44,7 @@ function countOtherFilters({
   );
 }
 
+/** Chip list for active request/roadmap filters. Remove updates the URL without scrolling. */
 export function useActivePageFilters() {
   const pathname = usePathname() || "/";
   const sp = useSearchParams();

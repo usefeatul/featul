@@ -9,14 +9,18 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { DropdownIcon } from "@featul/ui/icons/dropdown";
 import { client } from "@featul/api/client";
 import { cn } from "@featul/ui/lib/utils";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import {
-  REQUEST_FLAG_OPTIONS,
   type RequestFlagKey,
   type RequestFlags,
 } from "@/types/request";
+import {
+  REQUEST_FLAG_VISUALS,
+  getActiveRequestFlags,
+} from "@/components/global/flag-visuals";
+import { FlagIcon } from "@featul/ui/icons/flag";
 
 export default function FlagsPicker({
   postId,
@@ -44,53 +48,59 @@ export default function FlagsPicker({
     }
   };
 
-  const activeOptions = REQUEST_FLAG_OPTIONS.filter(
-    (option) => value[option.key],
-  );
+  const activeFlags = getActiveRequestFlags(value);
   const label =
-    activeOptions.length === 0
+    activeFlags.length === 0
       ? "Flags"
-      : activeOptions.length === 1
-        ? (activeOptions.at(0)?.label ?? "Flags")
-        : `${activeOptions.length} flags`;
+      : activeFlags.length === 1
+        ? (activeFlags.at(0)?.label ?? "Flags")
+        : `${activeFlags.length} flags`;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-6 px-2.5 border text-xs font-medium transition-colors hover:bg-muted",
-            saving && "opacity-70 cursor-wait",
-            className,
-          )}
-          aria-label="Manage flags"
-          disabled={saving}
-        >
-          <span className="truncate max-w-[140px]">{label}</span>
-          <DropdownIcon className="ml-1.5 size-3" />
-        </Button>
-      </PopoverTrigger>
+    <Toolbar variant="plain" size="sm" className="w-fit rounded-md border-0 bg-black/5 dark:bg-white/5">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="plain"
+            size="sm"
+            className={cn(
+              toolbarItemClass,
+              "h-8 gap-1.5 px-2.5 text-xs font-medium",
+              saving && "opacity-70 cursor-wait",
+              className,
+            )}
+            aria-label="Manage flags"
+            disabled={saving}
+          >
+            <FlagIcon className="size-3.5 shrink-0 text-muted-foreground" />
+            <span className="max-w-[140px] truncate">{label}</span>
+          </Button>
+        </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>
-          {REQUEST_FLAG_OPTIONS.map((option) => {
-            const isChecked = !!value[option.key];
+          {REQUEST_FLAG_VISUALS.map((flag) => {
+            const isChecked = !!value[flag.key];
             return (
               <PopoverListItem
-                key={option.key}
+                key={flag.key}
                 role="menuitemcheckbox"
                 aria-checked={isChecked}
-                onClick={() => toggle(option.key)}
+                onClick={() => toggle(flag.key)}
               >
-                <span className="text-sm">{option.label}</span>
+                <flag.Icon
+                  width={14}
+                  height={14}
+                  className={`size-3.5 shrink-0 fill-current ${flag.iconClass}`}
+                />
+                <span className="text-sm">{flag.label}</span>
                 {isChecked ? <span className="ml-auto text-xs">✓</span> : null}
               </PopoverListItem>
             );
           })}
         </PopoverList>
       </PopoverContent>
-    </Popover>
+      </Popover>
+    </Toolbar>
   );
 }

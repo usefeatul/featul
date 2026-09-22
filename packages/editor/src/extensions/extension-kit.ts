@@ -105,6 +105,7 @@ export const ExtensionKit = ({
       link: {
         autolink: true,
         defaultProtocol: "https",
+        protocols: ["http", "https"],
         HTMLAttributes: {
           rel: "noopener noreferrer nofollow",
           target: "_blank",

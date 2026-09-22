@@ -3,35 +3,47 @@ import type { Transition } from "framer-motion";
 export const FILTER_ISLAND_EASE = [0.32, 0.72, 0, 1] as const;
 
 export const FILTER_ISLAND_MAX_WIDTH_CLASS =
-  "max-w-[min(24rem,calc(100vw-2rem))]";
+  "max-w-full";
+
+export const FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS = "w-80 min-w-0";
 
 export const FILTER_ISLAND_SHELL_CLASS =
-  "pointer-events-auto cursor-pointer overflow-hidden rounded-t-none rounded-b-md bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 border border-t-0 border-white/10 dark:border-black/10 shadow-[0_10px_32px_-14px_rgba(0,0,0,0.65)] dark:shadow-[0_10px_32px_-14px_rgba(0,0,0,0.2)]";
+  "isolate cursor-pointer overflow-hidden rounded-md bg-secondary text-foreground";
 
-export const FILTER_ISLAND_MUTED_ICON_CLASS =
-  "text-white/70 dark:text-neutral-950/70";
+export const FILTER_ISLAND_MUTED_ICON_CLASS = "text-muted-foreground";
+
+export const FILTER_ISLAND_BUTTON_HOVER_CLASS =
+  "cursor-pointer transition-colors hover:bg-muted/20 hover:text-accent-foreground dark:hover:bg-black/30";
 
 export const FILTER_ISLAND_CLEAR_ALL_CLASS =
-  "shrink-0 cursor-pointer rounded-sm px-1 py-px text-[11px] font-medium text-white/55 transition-colors hover:bg-white/10 hover:text-white dark:text-neutral-950/55 dark:hover:bg-black/8 dark:hover:text-neutral-950";
+  "inline-flex h-full cursor-pointer items-center justify-center whitespace-nowrap px-2 text-[11px] font-medium";
 
 export const FILTER_ISLAND_CHIP_CLASS =
-  "inline-flex h-6 max-w-[9rem] cursor-pointer items-center gap-1.5 rounded-sm border border-white/10 bg-white/10 px-2.5 py-0.5 text-[11px] leading-none text-white transition-colors hover:bg-white/18 dark:border-black/10 dark:bg-black/8 dark:text-neutral-950 dark:hover:bg-black/12";
+  "inline-flex h-full min-w-fit cursor-pointer items-center gap-1.5 whitespace-nowrap px-2 text-[11px] font-medium";
 
-export const FILTER_ISLAND_CONTENT_CLASS = "inline-flex w-max flex-col py-1.5";
+export const FILTER_ISLAND_CHIP_SHELL_CLASS =
+  "flex w-fit min-w-0 max-w-full items-stretch rounded-md bg-black/5 text-foreground dark:bg-white/5";
+
+export const FILTER_ISLAND_CHIP_INNER_CLASS =
+  "flex h-6 min-h-6 min-w-0 items-stretch overflow-hidden rounded-md";
+
+export const FILTER_ISLAND_CONTENT_CLASS =
+  "inline-flex w-max min-w-0 max-w-full flex-col overflow-hidden rounded-md";
 
 export const FILTER_ISLAND_INSET_X_CLASS = "px-2.5";
 
 export const FILTER_ISLAND_CHIPS_ROW_CLASS =
-  "flex flex-wrap items-center gap-1.5 px-2.5 pb-1.5 pt-1.5";
+  "flex flex-wrap items-center gap-2 px-2 pb-2 pt-1.5";
 
 export const FILTER_ISLAND_DIVIDER_CLASS =
-  "w-full border-t border-white/10 dark:border-black/10";
+  "h-px w-full bg-border dark:bg-white/10";
 
 export type FilterIslandTransitions = {
   layout: Transition;
   visibility: Transition;
 };
 
+/** Instant transitions when reduced-motion is on. Else the island ease curve. */
 export function getFilterIslandTransitions(
   reduceMotion: boolean | null,
 ): FilterIslandTransitions {

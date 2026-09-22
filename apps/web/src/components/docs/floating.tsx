@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -16,9 +17,14 @@ import { useIsDocsMobile } from "@/hooks/docs"
 export function DocsMobileFloatingNav() {
   const isMobile = useIsDocsMobile()
   const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [isBottomNavVisible, setIsBottomNavVisible] = useState<boolean>(true)
   const lastScrollYRef = useRef<number>(0)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const currentPageLabel = useMemo(
     () => getDocsCurrentPageLabel(pathname),
@@ -66,12 +72,14 @@ export function DocsMobileFloatingNav() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  if (!mounted || !isMobile) return null
+
   return (
     <div
       className={cn(
-        "fixed bottom-6 left-1/2 -translate-x-1/2 z-70 transition-all duration-300 ease-out",
-        !isOpen && (!isBottomNavVisible || !isMobile)
-          ? "translate-y-24 opacity-0"
+        "fixed bottom-6 left-1/2 z-70 -translate-x-1/2 transition-all duration-300 ease-out lg:hidden",
+        !isOpen && !isBottomNavVisible
+          ? "pointer-events-none translate-y-24 opacity-0"
           : "translate-y-0 opacity-100",
       )}
     >
@@ -89,7 +97,8 @@ export function DocsMobileFloatingNav() {
           },
         }}
         className={cn(
-          "bg-[#0a0a0a] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col",
+          overlayDialogClass,
+          "flex flex-col overflow-hidden shadow-2xl",
           isOpen && "w-[calc(100vw-32px)] max-w-[380px]",
         )}
       >
@@ -107,8 +116,9 @@ export function DocsMobileFloatingNav() {
               }}
               className="overflow-hidden"
             >
-              <div className="h-[min(60vh,380px)] overflow-y-auto overscroll-contain">
-                <div className="py-2">
+              <div className={cn(overlayInnerClass, "mx-2 mt-2")}>
+                <div className="h-[min(60vh,360px)] overflow-y-auto overscroll-contain">
+                  <div className="py-1">
                   {docsSections.map((section, sectionIdx) => (
                     <motion.div
                       key={section.label}
@@ -121,14 +131,12 @@ export function DocsMobileFloatingNav() {
                         delay: sectionIdx * 0.04,
                       }}
                     >
-                      {/* Section label */}
                       <div className="px-4 pt-3 pb-1.5">
-                        <span className="text-[9px] uppercase tracking-[0.2em] text-white/25 font-semibold">
+                        <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                           {section.label}
                         </span>
                       </div>
 
-                      {/* Items */}
                       {section.items.map((item, itemIdx) => {
                         const isActive = pathname === item.href
                         return (
@@ -147,10 +155,10 @@ export function DocsMobileFloatingNav() {
                               href={item.href}
                               onClick={handleClose}
                               className={cn(
-                                "block mx-2 px-3 py-2 rounded-lg text-sm transition-all duration-150",
+                                "mx-2 block rounded-lg px-3 py-2 text-sm transition-all duration-150",
                                 isActive
-                                  ? "bg-white/10 text-white font-medium"
-                                  : "text-white/50 hover:text-white/80 hover:bg-white/10 active:bg-white/20",
+                                  ? "font-medium text-foreground"
+                                  : "text-muted-foreground hover:text-foreground",
                               )}
                             >
                               {item.label}
@@ -160,24 +168,21 @@ export function DocsMobileFloatingNav() {
                       })}
                     </motion.div>
                   ))}
+                  </div>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Bottom bar - always visible, changes content based on state */}
         <motion.div
           layout
-          className={cn(
-            "shrink-0",
-            isOpen && "border-t border-white/10",
-          )}
+          className={cn(overlayInnerClass, "mx-2 mb-2 shrink-0", isOpen && "mt-2")}
         >
           <button
             type="button"
             onClick={handleToggle}
-            className="flex items-center justify-between gap-3 px-4 h-11 w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset"
+            className="flex h-11 w-full items-center justify-between gap-3 px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-inset"
             aria-label={
               isOpen
                 ? "Close navigation"
@@ -194,14 +199,14 @@ export function DocsMobileFloatingNav() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.1 }}
-                  className="flex items-center justify-between w-full"
+                  className="flex w-full items-center justify-between"
                 >
-                  <span className="text-xs uppercase tracking-[0.15em] text-white/30 font-medium">
+                  <span className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground">
                     Navigation
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-white/50 font-medium">Close</span>
-                    <XMarkIcon className="text-white/50" size={16} />
+                    <span className="text-sm font-medium text-accent">Close</span>
+                    <XMarkIcon className="text-accent" size={16} />
                   </div>
                 </motion.div>
               ) : (
@@ -213,11 +218,11 @@ export function DocsMobileFloatingNav() {
                   transition={{ duration: 0.1 }}
                   className="flex items-center gap-1.5 whitespace-nowrap"
                 >
-                  <span className="text-xs text-white/35">
+                  <span className="text-xs text-muted-foreground">
                     {currentSectionLabel}
                   </span>
-                  <span className="text-white/20">/</span>
-                  <span className="text-sm text-white/80 font-medium">
+                  <span className="text-border">/</span>
+                  <span className="text-sm font-medium text-foreground">
                     {currentPageLabel}
                   </span>
                 </motion.div>

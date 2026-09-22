@@ -2,7 +2,6 @@
 
 import React from "react"
 import { useRouter, usePathname } from "next/navigation"
-import SectionCard from "@/components/settings/global/SectionCard"
 import SettingsCard from "@/components/global/SettingsCard"
 import { KeyIcon } from "@featul/ui/icons/key"
 import TwoFactorAuth from "@/components/account/TwoFactorAuth"
@@ -22,23 +21,18 @@ export default function Security({ initialSessions, twoFactorEnabled, initialAcc
   }, [router, pathname])
 
   return (
-    <SectionCard title="Security" description="Manage your password and active sessions">
-      <div className="space-y-4">
-        {/* Password and 2FA cards in 2-column grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <SettingsCard
-            icon={<KeyIcon className="size-5 text-primary" />}
-            title="Password"
-            description="Change your account password for security."
-            buttonLabel="Change password"
-            onAction={onChangePassword}
-          />
-          <TwoFactorAuth twoFactorEnabled={twoFactorEnabled} hasPassword={hasPassword} />
-        </div>
-
-        {/* Active Sessions */}
-        <ActiveSessions initialSessions={initialSessions} />
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:auto-rows-fr md:items-stretch">
+        <SettingsCard
+          icon={<KeyIcon className="size-5 text-primary" />}
+          title="Password"
+          description="Change your account password for security."
+          buttonLabel="Change password"
+          onAction={onChangePassword}
+        />
+        <TwoFactorAuth twoFactorEnabled={twoFactorEnabled} hasPassword={hasPassword} />
       </div>
-    </SectionCard>
+      <ActiveSessions initialSessions={initialSessions} />
+    </div>
   )
 }

@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 
+/** Prev/next request links plus j/k keyboard jump. Keeps the current list query string. */
 export function useRequestNavigation(
   workspaceSlug: string,
   navigationData?: {

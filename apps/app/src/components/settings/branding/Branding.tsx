@@ -19,8 +19,10 @@ import ThemePicker from "./ThemePicker";
 import LogoUploader from "./LogoUploader";
 import LayoutStylePicker from "./LayoutStylePicker";
 import SidebarPositionPicker from "./SidebarPositionPicker";
-import { setWorkspaceLogo } from "@/lib/branding/store";
+import { setLiveWorkspaceName, setWorkspaceLogo } from "@/lib/branding/store";
 import { Input } from "@featul/ui/components/input";
+import { cn } from "@featul/ui/lib/utils";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import { getPlanLimits, normalizePlan, type PlanKey } from "@/lib/plan";
@@ -44,7 +46,7 @@ export default function BrandingSection({
   initialConfig,
   initialWorkspaceName,
 }: BrandingSectionProps) {
-  const initialPrimary = initialConfig?.primaryColor || "#3b82f6";
+  const initialPrimary = initialConfig?.primaryColor || "#4d96e8";
   const [logoUrl, setLogoUrl] = React.useState(String(initialConfig?.logoUrl || ""));
   const [primaryColor, setPrimaryColor] = React.useState(initialPrimary);
   const [theme, setTheme] = React.useState<"light" | "dark" | "system">(
@@ -86,7 +88,7 @@ export default function BrandingSection({
         const conf0 = initialConfig || null;
         if (mounted && conf0) {
           setLogoUrl(conf0.logoUrl || "");
-          const currentPrimary = conf0.primaryColor || "#3b82f6";
+          const currentPrimary = conf0.primaryColor || "#4d96e8";
           setPrimaryColor(currentPrimary);
           if (conf0.theme === "light" || conf0.theme === "dark" || conf0.theme === "system") setTheme(conf0.theme);
           setHidePoweredBy(
@@ -108,7 +110,7 @@ export default function BrandingSection({
           const conf = await loadBrandingBySlug(slug);
           if (mounted && conf) {
             setLogoUrl(conf.logoUrl || "");
-            const currentPrimary = conf.primaryColor || "#3b82f6";
+            const currentPrimary = conf.primaryColor || "#4d96e8";
             setPrimaryColor(currentPrimary);
             if (conf.theme === "light" || conf.theme === "dark" || conf.theme === "system") setTheme(conf.theme);
             setHidePoweredBy(
@@ -168,6 +170,44 @@ export default function BrandingSection({
     };
   }, [slug, initialConfig, initialHidePoweredBy, initialPlan, initialWorkspaceName]);
 
+  const persistWorkspaceName = React.useCallback(
+    async (nextName: string) => {
+      const previousName = originalNameRef.current;
+      if (!nextName) {
+        setWorkspaceName(previousName);
+        return false;
+      }
+      if (nextName === previousName) return true;
+      if (!canEditBranding) {
+        toast.error("You don’t have permission to update branding");
+        return false;
+      }
+
+      originalNameRef.current = nextName;
+      try {
+        setLiveWorkspaceName(slug, nextName);
+        updateWorkspaceNameInCache(queryClient, slug, nextName);
+      } catch {
+        // ignore cache errors
+      }
+
+      const result = await updateWorkspaceName(slug, nextName);
+      if (!result.ok) {
+        originalNameRef.current = previousName;
+        setWorkspaceName(previousName);
+        try {
+          setLiveWorkspaceName(slug, previousName);
+          updateWorkspaceNameInCache(queryClient, slug, previousName);
+        } catch {
+          // ignore cache errors
+        }
+        throw new Error(result.message || "Update failed");
+      }
+      return true;
+    },
+    [canEditBranding, queryClient, slug],
+  );
+
   const handleSave = async () => {
     if (saving) return;
     if (!canEditBranding) {
@@ -183,20 +223,7 @@ export default function BrandingSection({
     const canHidePoweredBy = limits.allowHidePoweredBy === true;
     if (canBranding) applyBrandPrimary(p);
     try {
-      const nameChanged =
-        workspaceName.trim() &&
-        workspaceName.trim() !== originalNameRef.current;
-        if (nameChanged) {
-          const nextName = workspaceName.trim();
-          const r = await updateWorkspaceName(slug, nextName);
-          if (!r.ok) throw new Error(r.message || "Update failed");
-          originalNameRef.current = nextName;
-          try {
-            updateWorkspaceNameInCache(queryClient, slug, nextName);
-          } catch {
-            //ignore
-          }
-        }
+      await persistWorkspaceName(workspaceName.trim());
       const brandingInput: BrandingConfig & { logoUrl?: string } = {};
       if (canBranding) {
         if (logoUrl.trim()) brandingInput.logoUrl = logoUrl.trim();
@@ -226,7 +253,7 @@ export default function BrandingSection({
       });
       toast.success("Settings updated");
     } catch (error: unknown) {
-      if (canBranding) applyBrandPrimary(prevP || "#3b82f6");
+      if (canBranding) applyBrandPrimary(prevP || "#4d96e8");
       const message =
         error instanceof Error && error.message
           ? error.message
@@ -238,22 +265,45 @@ export default function BrandingSection({
   };
 
   return (
+    <div className="space-y-4">
     <SectionCard title="Branding" description="Change your brand settings.">
       <div className="space-y-6">
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Workspace Name</div>
+          <div className="text-sm font-medium text-muted-foreground">Workspace Name</div>
           <div className="w-full max-w-md flex items-center justify-end">
-            <Input
-              value={workspaceName}
-              onChange={(e) => setWorkspaceName(e.target.value)}
-              className="h-8 w-auto min-w-[4ch] px-2 text-right"
-              size={workspaceNameInputSize}
-              maxLength={15}
-            />
+            <Toolbar size="sm" className="w-fit">
+              <Input
+                variant="plain"
+                value={workspaceName}
+                onChange={(e) => setWorkspaceName(e.target.value)}
+                onBlur={() => {
+                  const nextName = workspaceName.trim();
+                  if (nextName === originalNameRef.current) return;
+                  void persistWorkspaceName(nextName)
+                    .then((updated) => {
+                      if (updated) toast.success("Saved");
+                    })
+                    .catch((error: unknown) => {
+                      const message =
+                        error instanceof Error && error.message
+                          ? error.message
+                          : "Failed to update name";
+                      toast.error(message);
+                    });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") e.currentTarget.blur();
+                }}
+                className={cn(toolbarItemClass, "h-8 w-auto min-w-[4ch] px-2.5 text-right text-xs font-medium")}
+                size={workspaceNameInputSize}
+                maxLength={15}
+                disabled={!canEditBranding}
+              />
+            </Toolbar>
           </div>
         </div>
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Logo</div>
+          <div className="text-sm font-medium text-muted-foreground">Logo</div>
           <div className="w-full max-w-md flex items-center justify-end">
             <LogoUploader
               slug={slug}
@@ -264,7 +314,7 @@ export default function BrandingSection({
           </div>
         </div>
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Primary Color</div>
+          <div className="text-sm font-medium text-muted-foreground">Primary Color</div>
           <div className="w-full max-w-md flex items-center justify-end">
             <ColorPicker
               valueHex={primaryColor}
@@ -277,7 +327,7 @@ export default function BrandingSection({
           </div>
         </div>
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Sidebar Position</div>
+          <div className="text-sm font-medium text-muted-foreground">Sidebar Position</div>
           <div className="w-full max-w-md flex items-center justify-end">
             <SidebarPositionPicker value={sidebarPosition} onSelect={(p) => setSidebarPosition(p)} disabled={!canEditBranding} />
 
@@ -285,7 +335,7 @@ export default function BrandingSection({
         </div>
 
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Theme</div>
+          <div className="text-sm font-medium text-muted-foreground">Theme</div>
           <div className="w-full max-w-md flex items-center justify-end">
 
                  <ThemePicker value={theme} onSelect={(t) => setTheme(t)} disabled={!canEditBranding} />
@@ -293,7 +343,7 @@ export default function BrandingSection({
         </div>
 
         <div className="flex items-center justify-between ">
-          <div className="text-sm">Layout Style</div>
+          <div className="text-sm font-medium text-muted-foreground">Layout Style</div>
           <div className="w-full max-w-md flex items-center justify-end">
 
             <LayoutStylePicker value={layoutStyle} onSelect={(l) => setLayoutStyle(l)} disabled={!canEditBranding} />
@@ -303,7 +353,7 @@ export default function BrandingSection({
         </div>
 
         <div className="flex items-center justify-between ">
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm font-medium text-muted-foreground">
             Hide "Powered by" Branding
           </div>
           <div className="w-full max-w-md flex items-center justify-end">
@@ -317,7 +367,6 @@ export default function BrandingSection({
         </div>
 
         <div className="pt-2 space-y-2">
-          <PlanNotice slug={slug} feature="branding" plan={plan} />
           <div className="mt-2 flex items-center justify-start">
             <LoadingButton
               onClick={handleSave}
@@ -331,5 +380,7 @@ export default function BrandingSection({
       </div>
 
     </SectionCard>
+    <PlanNotice slug={slug} feature="branding" plan={plan} />
+    </div>
   );
 }

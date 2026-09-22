@@ -3,10 +3,10 @@ import { PopoverList, PopoverListItem, PopoverSeparator } from "@featul/ui/compo
 import { CheckIcon } from "@featul/ui/icons/check";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ArrowLeftIcon } from "@featul/ui/icons/arrow-left";
-import { ContextMenuCheckSlot } from "@/components/global/ContextMenuItem";
 import StatusIcon from "./StatusIcon";
 import type { TagSummary } from "@/types/post";
-import { REQUEST_FLAG_OPTIONS, type RequestFlagKey, type RequestFlags } from "@/types/request";
+import { REQUEST_FLAG_VISUALS } from "@/components/global/flag-visuals";
+import type { RequestFlagKey, RequestFlags } from "@/types/request";
 
 export const statusOptions = [
   { label: "Pending", value: "pending" },
@@ -33,10 +33,12 @@ function ChecklistSubmenuItem({
   label,
   checked,
   onToggle,
+  icon,
 }: {
   label: string;
   checked: boolean;
   onToggle: () => void;
+  icon?: React.ReactNode;
 }) {
   return (
     <PopoverListItem
@@ -46,10 +48,13 @@ function ChecklistSubmenuItem({
         onToggle();
       }}
     >
-      <ContextMenuCheckSlot checked={checked}>
-        <CheckIcon className="size-3.5" />
-      </ContextMenuCheckSlot>
+      {icon ? (
+        <span className="inline-flex size-4 shrink-0 items-center justify-center">
+          {icon}
+        </span>
+      ) : null}
       <span className="text-sm">{label}</span>
+      {checked ? <CheckIcon className="size-3.5 shrink-0" /> : null}
     </PopoverListItem>
   );
 }
@@ -141,14 +146,66 @@ export function FlagsSubmenu({ flags, onBack, onToggleFlag }: FlagsSubmenuProps)
   return (
     <PopoverList>
       <SubmenuBack onBack={onBack} />
-      {REQUEST_FLAG_OPTIONS.map((option) => (
+      {REQUEST_FLAG_VISUALS.map((flag) => (
         <ChecklistSubmenuItem
-          key={option.key}
-          label={option.label}
-          checked={Boolean(flags[option.key])}
-          onToggle={() => onToggleFlag(option.key)}
+          key={flag.key}
+          label={flag.label}
+          checked={Boolean(flags[flag.key])}
+          onToggle={() => onToggleFlag(flag.key)}
+          icon={
+            <flag.Icon
+              width={14}
+              height={14}
+              className={`size-3.5 shrink-0 fill-current ${flag.iconClass}`}
+            />
+          }
         />
       ))}
+    </PopoverList>
+  );
+}
+
+interface SnoozeSubmenuProps {
+  isSnoozed: boolean;
+  isPending: boolean;
+  onBack: () => void;
+  onSnooze: (presetId: "1d" | "7d" | "30d") => void;
+  onClear: () => void;
+}
+
+export function SnoozeSubmenu({
+  isSnoozed,
+  isPending,
+  onBack,
+  onSnooze,
+  onClear,
+}: SnoozeSubmenuProps) {
+  return (
+    <PopoverList className="max-h-none! overflow-visible">
+      <SubmenuBack onBack={onBack} />
+      {(
+        [
+          { id: "1d" as const, label: "1 day" },
+          { id: "7d" as const, label: "7 days" },
+          { id: "30d" as const, label: "30 days" },
+        ] as const
+      ).map((option) => (
+        <PopoverListItem
+          key={option.id}
+          onClick={() => onSnooze(option.id)}
+          disabled={isPending}
+        >
+          <span className="text-sm">{option.label}</span>
+        </PopoverListItem>
+      ))}
+      {isSnoozed ? (
+        <>
+          <PopoverSeparator />
+          <PopoverListItem onClick={onClear} disabled={isPending}>
+            <span className="text-sm">Clear snooze</span>
+          </PopoverListItem>
+        </>
+      ) : null}
     </PopoverList>
   );
 }

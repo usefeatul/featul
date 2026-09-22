@@ -49,6 +49,7 @@ function findIssueMessage(
   return firstIssue?.message?.trim() || null;
 }
 
+/** Best-effort API error text: field issue, then message, then body, then fallback. */
 export async function readApiErrorMessage(
   response: ApiResponseLike,
   fallback: string,

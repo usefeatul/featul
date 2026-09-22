@@ -3,12 +3,12 @@
 import React from "react"
 import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
-import { DropdownIcon } from "@featul/ui/icons/dropdown"
 import { client } from "@featul/api/client"
 import { usePathname } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
 import { getSlugFromPath } from "@/config/nav"
 import { cn } from "@featul/ui/lib/utils"
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { normalizeRoadmapStatus, type RoadmapStatus } from "@/lib/roadmap"
 import StatusIcon from "../StatusIcon"
 
@@ -48,32 +48,35 @@ export default function StatusPicker({ postId, value, onChange, className }: { p
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-8 px-2 pl-1.5 rounded-md  border text-xs font-medium transition-colors hover:bg-muted",
-            className
-          )}
-        >
-          <StatusIcon status={currentStatus} className="size-4 mr-2" />
-          <span className="capitalize">{currentStatus}</span>
-          <DropdownIcon className="ml-1.5  size-3" />
-        </Button>
-      </PopoverTrigger>
+    <Toolbar variant="plain" size="sm" className="w-fit rounded-md border-0 bg-black/5 dark:bg-white/5">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="plain"
+            size="sm"
+            className={cn(
+              toolbarItemClass,
+              "h-8 gap-1.5 px-2.5 text-xs font-medium",
+              className
+            )}
+          >
+            <StatusIcon status={currentStatus} className="size-4" />
+            <span className="capitalize">{currentStatus}</span>
+          </Button>
+        </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">
         <PopoverList>
           {STATUSES.map((s) => (
             <PopoverListItem key={s} role="menuitemradio" aria-checked={currentStatus === s} onClick={() => select(s)}>
+              <StatusIcon status={s} className="size-4 shrink-0" />
               <span className="text-sm capitalize">{s.replace(/-/g, " ")}</span>
               {currentStatus === s ? <span className="ml-auto text-xs">✓</span> : null}
             </PopoverListItem>
           ))}
         </PopoverList>
       </PopoverContent>
-    </Popover>
+      </Popover>
+    </Toolbar>
   )
 }

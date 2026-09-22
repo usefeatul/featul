@@ -26,6 +26,7 @@ export function parseSelectingValue(value: string | null | undefined): boolean {
   return value === "1" || value === "true"
 }
 
+/** Parses a cookie/storage JSON array of selected ids. */
 export function parseSelectedIdsValue(value: string | null | undefined): string[] | undefined {
   if (!value) return undefined
   try {

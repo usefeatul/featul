@@ -1,60 +1,69 @@
 "use client";
+import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link";
-import { useEffect } from "react";
-import { Container } from "../global/container";
-import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
+import { useEffect, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
+import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
 import { Button } from "@featul/ui/components/button";
-import { MenuIcon } from "@featul/ui/icons/menu";
-import { AUTH_SIGN_UP_URL } from "@/config/auth";
+import { cn } from "@featul/ui/lib/utils";
+import { APP_URL } from "@/config/auth";
 import { navigationConfig } from "@/config/homeNav";
 
 type MobileMenuProps = {
   open: boolean;
   onClose: () => void;
+  overCreate?: boolean;
+  style?: CSSProperties;
 };
 
-export function MobileMenu({ open, onClose }: MobileMenuProps) {
+export function MobileMenu({
+  open,
+  onClose,
+  overCreate = false,
+  style,
+}: MobileMenuProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevHtmlOverscroll = html.style.overscrollBehavior;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    html.style.overscrollBehavior = "none";
     return () => {
-      document.body.style.overflow = prev || "";
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      html.style.overscrollBehavior = prevHtmlOverscroll;
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-x-0 bottom-0 top-10 z-60 overflow-y-auto bg-background md:hidden"
+      className={cn(
+        "fixed bottom-0 top-16 z-[40] overflow-y-auto overscroll-contain bg-background md:hidden",
+        edgeChromeInsetClass,
+      )}
       data-component="MobileMenu"
+      data-over-create={overCreate ? "" : undefined}
+      style={style}
     >
-      {/* Sheet header */}
-      <div className="flex h-16 items-center justify-between border-b border-border px-4 sm:px-10 lg:px-12 xl:px-14">
-        <span className="inline-flex items-center gap-2">
-          <FeatulLogoIcon />
-          <span className="text-base font-semibold tracking-tight text-foreground">
-            Featul
-          </span>
-        </span>
-        <Button
-          type="button"
-          variant="nav"
-          aria-label="Close menu"
-          className="inline-flex items-center justify-center rounded-md  bg-muted"
-          onClick={onClose}
-        >
-          <MenuIcon className="text-accent size-5" />
-        </Button>
-      </div>
-      <Container maxWidth="6xl" className="px-4 sm:px-10 lg:px-12 xl:px-14">
+      <MarketingContainer>
         <nav className="py-4 grid gap-2">
           {navigationConfig.main.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="block rounded-md  px-2 py-2 text-lg text-accent hover:text-foreground hover:bg-muted"
+              className="block rounded-md px-2 py-2 text-lg text-accent hover:text-foreground hover:bg-card"
               onClick={onClose}
             >
               {item.name}
@@ -66,7 +75,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 key={item.name}
                 href={item.href}
                 aria-label={item.name}
-                className="block rounded-md  px-3 py-2.5 mb-4 text-lg font-medium text-accent hover:text-foreground hover:bg-muted min-h-[36px]"
+                className="block rounded-md px-3 py-2.5 mb-4 text-lg font-medium text-accent hover:text-foreground hover:bg-card min-h-[36px]"
                 onClick={onClose}
               >
                 {item.name}
@@ -75,10 +84,15 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
             <Button
               asChild
               variant="nav"
-              className="w-full font-semibold border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+              className={cn(
+                "w-full font-semibold",
+                overCreate
+                  ? "border-white/80 bg-white text-primary hover:bg-white/90 hover:text-primary"
+                  : "border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
+              )}
             >
               <Link
-                href={AUTH_SIGN_UP_URL}
+                href={APP_URL}
                 data-sln-event="cta: start for free clicked"
                 onClick={onClose}
               >
@@ -87,7 +101,8 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
             </Button>
           </div>
         </nav>
-      </Container>
-    </div>
+      </MarketingContainer>
+    </div>,
+    document.body
   );
 }

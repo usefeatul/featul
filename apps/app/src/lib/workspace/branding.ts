@@ -1,6 +1,7 @@
 import { db, brandingConfig, workspace } from "@featul/db";
 import { eq } from "drizzle-orm";
 
+/** Workspace theme, layout, and sidebar branding. */
 export type WorkspaceBranding = {
   primary: string;
   theme: "light" | "dark" | "system";
@@ -9,10 +10,11 @@ export type WorkspaceBranding = {
   hidePoweredBy?: boolean;
 };
 
+/** Primary color from branding config, defaulting to blue. */
 export async function getBrandingColorsBySlug(
   slug: string
 ): Promise<{ primary: string }> {
-  let primary = "#3b82f6";
+  let primary = "#4d96e8";
   const [row] = await db
     .select({ primaryColor: brandingConfig.primaryColor })
     .from(workspace)
@@ -23,10 +25,11 @@ export async function getBrandingColorsBySlug(
   return { primary };
 }
 
+/** Branding config with workspace-column fallbacks. */
 export async function getBrandingBySlug(
   slug: string
 ): Promise<WorkspaceBranding> {
-  let primary = "#3b82f6";
+  let primary = "#4d96e8";
   let theme: "light" | "dark" | "system" = "system";
   let sidebarPosition: "left" | "right" | undefined;
   let layoutStyle: "compact" | "comfortable" | "spacious" | undefined;
@@ -60,6 +63,7 @@ export async function getBrandingBySlug(
   return { primary, theme, sidebarPosition, layoutStyle, hidePoweredBy };
 }
 
+/** Sidebar side; defaults to right when unset. */
 export async function getSidebarPositionBySlug(
   slug: string
 ): Promise<"left" | "right"> {

@@ -1,19 +1,105 @@
+import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
 import Link from "next/link";
-import { Container } from "../global/container";
-import { footerNavigationConfig } from "@/config/footerNav";
+import type { ComponentType } from "react";
+
+import { cn } from "@featul/ui/lib/utils";
+import {
+  footerNavigationConfig,
+  type FooterIconName,
+  type FooterNavItem,
+} from "@/config/footerNav";
 import { StatusButton } from "@/components/home/status";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { GitHubIcon } from "@featul/ui/icons/github";
-import { TwitterIcon } from "@featul/ui/icons/twitter";
+import { FeedbackIcon } from "@featul/ui/icons/feedback";
+import { BoardIcon } from "@featul/ui/icons/board";
+import { VoteIcon } from "@featul/ui/icons/vote";
+import { RoadmapIcon } from "@featul/ui/icons/roadmap";
+import { ChangelogIcon } from "@featul/ui/icons/changelog";
+import { WidgetIcon } from "@featul/ui/icons/widget";
+import { DashboardIcon } from "@featul/ui/icons/dashboard";
+import { DocIcon } from "@featul/ui/icons/doc";
+import { BookIcon } from "@featul/ui/icons/book";
+import { WrenchIcon } from "@featul/ui/icons/wrench";
+import { MemberIcon } from "@featul/ui/icons/member";
+import { CodeIcon } from "@featul/ui/icons/code";
+import { BoxIcon } from "@featul/ui/icons/box";
+import { CreditCardIcon } from "@featul/ui/icons/credit-card";
+import { IntegrationIcon } from "@featul/ui/icons/integration";
+import { ArticleIcon } from "@featul/ui/icons/article";
+import { EnvelopeIcon } from "@featul/ui/icons/envelope";
+import { ShieldStrokeIcon } from "@featul/ui/icons/shield-stroke";
+import { PreferredSourceButton } from "@/components/preferred-source/button";
+
+type FeatulIcon = ComponentType<{
+  className?: string;
+  size?: number;
+  opacity?: number;
+}>;
+
+const footerIcons: Record<FooterIconName, FeatulIcon> = {
+  feedback: FeedbackIcon,
+  requests: BoardIcon,
+  voting: VoteIcon,
+  roadmap: RoadmapIcon,
+  changelog: ChangelogIcon,
+  widget: WidgetIcon,
+  dashboard: DashboardIcon,
+  docs: DocIcon,
+  definitions: BookIcon,
+  tools: WrenchIcon,
+  "use-cases": MemberIcon,
+  "open-source": CodeIcon,
+  start: BoxIcon,
+  pricing: CreditCardIcon,
+  integrations: IntegrationIcon,
+  blog: ArticleIcon,
+  demo: BoardIcon,
+  contact: EnvelopeIcon,
+  privacy: ShieldStrokeIcon,
+  terms: ArticleIcon,
+  gdpr: ShieldStrokeIcon,
+};
+
+const iconClassName =
+  "size-4 shrink-0 text-neutral-500 transition-colors group-hover:text-primary";
+
+function isExternalHref(item: FooterNavItem) {
+  return (
+    item.external === true ||
+    item.href.startsWith("http://") ||
+    item.href.startsWith("https://")
+  );
+}
+
+function FooterLink({ item }: { item: FooterNavItem }) {
+  const Icon = item.icon ? footerIcons[item.icon] : null;
+  const external = isExternalHref(item);
+
+  return (
+    <Link
+      href={item.href}
+      {...(external
+        ? { target: "_blank", rel: "noopener noreferrer" }
+        : undefined)}
+      className="group text-accent flex items-center gap-2.5 text-sm leading-5 transition-colors hover:text-primary"
+    >
+      {Icon ? (
+        <Icon aria-hidden className={iconClassName} size={16} />
+      ) : null}
+      <span>{item.name}</span>
+    </Link>
+  );
+}
 
 export default function FooterSection() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden bg-background">
-      <Container maxWidth="6xl" className="relative z-30 px-4 pb-6 pt-10 sm:px-10 md:pb-8 md:pt-14 lg:px-12 xl:px-14">
-        <div className="mx-auto w-full max-w-6xl px-1 sm:px-6">
-          <div className="grid items-start gap-12 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
+    <footer className="relative overflow-hidden">
+      <MarketingContainer className="relative z-30 pb-10 pt-16 md:pb-12 md:pt-20 lg:pt-24">
+        <div className={cn(marketingRailClass, "bg-background")}>
+          <div className="flex flex-col gap-12 lg:grid lg:grid-cols-[minmax(220px,0.9fr)_minmax(0,3.1fr)] lg:items-start lg:gap-x-16 xl:gap-x-20">
             <div className="max-w-sm">
               <Link
                 href="/"
@@ -21,68 +107,72 @@ export default function FooterSection() {
                 className="inline-flex items-center gap-2 text-foreground hover:text-primary"
               >
                 <FeatulLogoIcon />
-                <span className="font-heading text-sm font-medium">Featul</span>
+                <span className="font-heading text-base font-semibold tracking-tight">
+                  Featul
+                </span>
               </Link>
               <p className="text-accent mt-4 text-sm leading-6">
-                Customer feedback, roadmaps, and changelogs in one simple
-                workspace. Built and hosted in the EU.
+                Feedback, roadmaps, and changelogs. Hosted in the EU.
               </p>
+              <div className="mt-5 flex items-center gap-4">
+                {footerNavigationConfig.socials.map((social) => (
+                  <Link
+                    key={social.name}
+                    href={social.href}
+                    {...(social.href.startsWith("http")
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : undefined)}
+                    aria-label={social.name}
+                    className="group text-neutral-500 transition-colors hover:text-primary"
+                  >
+                    {social.icon === "github" ? (
+                      <GitHubIcon size={18} />
+                    ) : (
+                      <EnvelopeIcon size={18} />
+                    )}
+                  </Link>
+                ))}
+                <StatusButton
+                  label="Operational"
+                  className="h-auto rounded-none border-0 bg-transparent px-0 py-0 text-sm text-accent hover:bg-transparent hover:text-foreground"
+                />
+              </div>
+              <div className="mt-4">
+                <PreferredSourceButton />
+              </div>
             </div>
 
-            <nav aria-label="Footer">
-              <div className="grid grid-cols-2 gap-x-10 gap-y-8 sm:grid-cols-3 lg:grid-cols-5 lg:gap-x-10">
-                {footerNavigationConfig.groups.map((group, index) => (
-                  <div key={index} className="text-sm">
-                    <span className="font-heading text-foreground block font-medium">
-                      {group.title}
-                    </span>
-                    <div className="mt-3 space-y-2.5">
-                      {group.items.map((item, idx) => (
-                        <Link
-                          key={idx}
-                          href={item.href}
-                          className="text-accent block leading-5 transition-colors hover:text-primary"
-                        >
-                          <span>{item.name}</span>
-                        </Link>
-                      ))}
+            <nav
+              aria-label="Footer"
+              className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:gap-x-12 xl:gap-x-16"
+            >
+              {footerNavigationConfig.columns.map((column, columnIndex) => (
+                <div key={columnIndex} className="flex flex-col gap-12">
+                  {column.groups.map((group) => (
+                    <div key={group.title} className="text-sm">
+                      <span className="font-heading text-primary block text-xs font-semibold uppercase tracking-wider">
+                        {group.title}
+                      </span>
+                      <div className="mt-5 space-y-3">
+                        {group.items.map((item) => (
+                          <FooterLink
+                            key={`${group.title}-${item.href}`}
+                            item={item}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ))}
             </nav>
           </div>
 
-          <div className="mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-accent text-sm">© {year} Featul</p>
-
-            <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-start">
-              <Link
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="text-accent transition-colors hover:text-primary"
-              >
-                <GitHubIcon size={18} />
-              </Link>
-              <Link
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-                className="text-accent transition-colors hover:text-primary"
-              >
-                <TwitterIcon size={14} />
-              </Link>
-              <StatusButton
-                label="Operational"
-                className="h-auto rounded-none border-0 bg-transparent px-0 py-0 text-sm text-accent hover:bg-transparent hover:text-foreground"
-              />
-            </div>
-          </div>
+          <p className="text-accent mt-16 text-center text-sm sm:mt-20">
+            © {year} Featul
+          </p>
         </div>
-      </Container>
+      </MarketingContainer>
     </footer>
   );
 }

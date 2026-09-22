@@ -1,11 +1,12 @@
 "use client";
 
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
-import RoadmapSearchAction from "./actions/RoadmapSearchAction";
-import RoadmapBoardsAction from "./actions/RoadmapBoardsAction";
-import RoadmapTagsAction from "./actions/RoadmapTagsAction";
+import RoadmapFiltersAction from "./actions/RoadmapFiltersAction";
 import RoadmapSortAction from "./actions/RoadmapSortAction";
 import RoadmapShortcutsHint from "./RoadmapShortcutsHint";
+import { cn } from "@featul/ui/lib/utils";
+
+const actionButtonClass =
+  "size-8 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-[#292929] dark:hover:bg-[#303030]";
 
 export default function RoadmapHeaderActions({
   className = "",
@@ -13,16 +14,10 @@ export default function RoadmapHeaderActions({
   className?: string;
 }) {
   return (
-    <Toolbar size="sm" className={className}>
-      <RoadmapSearchAction className="h-full rounded-none border-none hover:bg-muted px-3" />
-      <ToolbarSeparator />
-      <RoadmapBoardsAction className="h-full rounded-none border-none hover:bg-muted px-3" />
-      <ToolbarSeparator />
-      <RoadmapTagsAction className="h-full rounded-none border-none hover:bg-muted px-3" />
-      <ToolbarSeparator />
-      <RoadmapSortAction className="h-full rounded-none border-none hover:bg-muted px-3" />
-      <ToolbarSeparator />
-      <RoadmapShortcutsHint className="h-full rounded-none border-none hover:bg-muted px-3" />
-    </Toolbar>
+    <div className={cn("ml-auto flex shrink-0 items-center gap-1", className)}>
+      <RoadmapFiltersAction className={actionButtonClass} />
+      <RoadmapSortAction className={actionButtonClass} />
+      <RoadmapShortcutsHint className={actionButtonClass} />
+    </div>
   );
 }

@@ -10,6 +10,7 @@ import { RoadmapIcon } from "@featul/ui/icons/roadmap"
 import { ChangelogIcon } from "@featul/ui/icons/changelog"
 import { cn } from "@featul/ui/lib/utils"
 import { Button } from "@featul/ui/components/button"
+import { toolbarItemClass } from "@featul/ui/components/toolbar"
 
 
 export function MobileBoardsMenu({
@@ -54,9 +55,9 @@ export function MobileBoardsMenu({
         <Button
           suppressHydrationWarning
           type="button"
-          variant="nav"
+          variant="plain"
           aria-label="Open boards"
-          className="inline-flex items-center justify-center rounded-md  p-2 bg-card dark:bg-black/40 disabled:opacity-50"
+          className={cn(toolbarItemClass, "inline-flex items-center justify-center px-2.5")}
           disabled={false}
         >
           <MenuIcon width={20} height={20} className="text-accent" />

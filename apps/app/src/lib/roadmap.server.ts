@@ -1,6 +1,8 @@
+/** Hydrates roadmap column collapse from cookies. */
 import { headers } from "next/headers"
 import { ROADMAP_STATUSES } from "./roadmap"
 
+/** Decodes the per-workspace collapse bitstring cookie. */
 export async function readInitialCollapsedByStatus(slug: string): Promise<Record<string, boolean>> {
   const key = `rdmpc:${slug}`
   const cookieHeader = (await headers()).get("cookie") || ""

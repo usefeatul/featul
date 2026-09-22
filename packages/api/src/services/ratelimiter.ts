@@ -1,6 +1,7 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { HTTPException } from "hono/http-exception";
+import { getClientIp } from "../request/ip";
 
 export type RateLimitResult = {
   enabled: boolean;
@@ -106,12 +107,7 @@ const ratelimitPrivate = redis
   : null;
 
 function getIp(req: Request): string {
-  const xff = req.headers.get("x-forwarded-for") || "";
-  const cf = req.headers.get("cf-connecting-ip") || "";
-  const fly = req.headers.get("fly-client-ip") || "";
-  const real = req.headers.get("x-real-ip") || "";
-  const first = String(xff.split(",")[0] || "").trim();
-  return first || cf || fly || real || "unknown";
+  return getClientIp(req) || "unknown";
 }
 
 export async function limitPublic(req: Request): Promise<RateLimitResult> {
@@ -182,6 +178,22 @@ const ratelimitStorageComment = redis
       prefix: "rl:storage:comment",
     })
   : null;
+const ratelimitStorageDeleteAnon = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, "60 s"),
+      analytics: false,
+      prefix: "rl:storage:delete:anon",
+    })
+  : null;
+const ratelimitStorageDeleteUser = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(60, "60 s"),
+      analytics: false,
+      prefix: "rl:storage:delete:user",
+    })
+  : null;
 
 export async function limitStorageAvatar(
   userId: string,
@@ -218,4 +230,18 @@ export async function limitStorageComment(
 ): Promise<RateLimitResult> {
   if (!ratelimitStorageComment) return createBypassRateLimitResult();
   return withEnabledResult(await ratelimitStorageComment.limit(userId));
+}
+
+export async function limitStorageDeleteAnon(
+  req: Request,
+): Promise<RateLimitResult> {
+  if (!ratelimitStorageDeleteAnon) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitStorageDeleteAnon.limit(getIp(req)));
+}
+
+export async function limitStorageDeleteUser(
+  userId: string,
+): Promise<RateLimitResult> {
+  if (!ratelimitStorageDeleteUser) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitStorageDeleteUser.limit(userId));
 }

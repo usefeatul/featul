@@ -43,12 +43,16 @@
     "STRIPE_PRICE_ID_STARTER_YEARLY",
     "STRIPE_PRICE_ID_PROFESSIONAL_MONTHLY",
     "STRIPE_PRICE_ID_PROFESSIONAL_YEARLY",
+    "COMPLIMENTARY_WORKSPACE_IDS",
+    "COMPLIMENTARY_WORKSPACE_PLAN",
+    "APP_CREATOR_EMAIL",
     "API_TRUSTED_ORIGINS",
     "FLAGS",
     "FLAGS_SECRET",
+    "FEATUL_WIDGET_SECRET",
     "NOTRA_CREDENTIALS_ENCRYPTION_KEY",
     "NOTRA_CREDENTIALS_ENCRYPTION_ACTIVE_VERSION",
-    "VISITORS_TOKEN",
+    "NEXT_PUBLIC_SELINE_TOKEN",
     "NODE_ENV",
     "OPENROUTER_API_KEY",
     "OPENROUTER_MODEL",
@@ -63,12 +67,15 @@
     "build": {
       "dependsOn": ["^build", "^check-types", "check-types"],
       "inputs": ["$TURBO_DEFAULT$"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {
       "dependsOn": ["transit"]
     },
     "check-types": {
+      "dependsOn": ["transit"]
+    },
+    "test": {
       "dependsOn": ["transit"]
     },
     "dev": {

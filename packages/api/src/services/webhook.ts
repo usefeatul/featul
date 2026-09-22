@@ -20,6 +20,14 @@ interface PostNotificationData {
   createdAt: Date
 }
 
+function sanitizeWebhookText(text: string, max: number): string {
+  return String(text || "")
+    .replace(/[&<>|]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, max)
+}
+
 /**
  * Send a Discord webhook notification for a new post
  */
@@ -30,31 +38,39 @@ export async function sendDiscordNotification(
   try {
     const postUrl = `https://${post.workspaceSlug}.featul.com/board/p/${post.slug}`
 
+    const title = sanitizeWebhookText(post.title, 200)
+    const description = sanitizeWebhookText(post.content, 300)
+    const boardName = sanitizeWebhookText(post.boardName, 80)
+    const authorName = sanitizeWebhookText(post.authorName || "Anonymous", 80)
+    const statusLabel = sanitizeWebhookText(
+      post.status ? post.status.charAt(0).toUpperCase() + post.status.slice(1) : "Pending",
+      40,
+    )
+
     const embed = {
       author: {
         name: "New Feedback Submission",
       },
-      title: post.title,
+      title,
       url: postUrl,
       color: 5814783, // Featul brand color (hex: #58b0ff)
-      description: post.content.length > 300
-        ? `${post.content.substring(0, 300)}...`
-        : post.content,
+      description:
+        post.content.length > 300 ? `${description}...` : description,
       ...(post.image ? { thumbnail: { url: post.image } } : {}),
       fields: [
         {
           name: "Board",
-          value: `**${post.boardName}**`,
+          value: `**${boardName}**`,
           inline: true,
         },
         {
           name: "Status",
-          value: `**${post.status ? post.status.charAt(0).toUpperCase() + post.status.slice(1) : "Pending"}**`,
+          value: `**${statusLabel}**`,
           inline: true,
         },
         {
           name: "Submitted by",
-          value: `**${post.authorName || "Anonymous"}**`,
+          value: `**${authorName}**`,
           inline: true,
         },
       ],
@@ -94,6 +110,15 @@ export async function sendSlackNotification(
   try {
     const postUrl = `https://${post.workspaceSlug}.featul.com/board/p/${post.slug}`
 
+    const title = sanitizeWebhookText(post.title, 150)
+    const content = sanitizeWebhookText(post.content, 200)
+    const boardName = sanitizeWebhookText(post.boardName, 80)
+    const authorName = sanitizeWebhookText(post.authorName || "Anonymous", 80)
+    const statusLabel = sanitizeWebhookText(
+      post.status ? post.status.charAt(0).toUpperCase() + post.status.slice(1) : "Pending",
+      40,
+    )
+
     const payload = {
       blocks: [
         {
@@ -108,7 +133,7 @@ export async function sendSlackNotification(
           type: "section",
           text: {
             type: "mrkdwn",
-            text: `*<${postUrl}|${post.title}>*`,
+            text: `*<${postUrl}|${title}>*`,
           },
         },
         {
@@ -116,9 +141,7 @@ export async function sendSlackNotification(
           text: {
             type: "mrkdwn",
             text:
-              post.content.length > 200
-                ? `${post.content.substring(0, 200)}...`
-                : post.content,
+              post.content.length > 200 ? `${content}...` : content,
           },
         },
         {
@@ -126,15 +149,15 @@ export async function sendSlackNotification(
           elements: [
             {
               type: "mrkdwn",
-              text: `*Board:* ${post.boardName}`,
+              text: `*Board:* ${boardName}`,
             },
             {
               type: "mrkdwn",
-              text: `*Status:* ${post.status ? post.status.charAt(0).toUpperCase() + post.status.slice(1) : "Pending"}`,
+              text: `*Status:* ${statusLabel}`,
             },
             {
               type: "mrkdwn",
-              text: `*Submitted by:* ${post.authorName || "Anonymous"}`,
+              text: `*Submitted by:* ${authorName}`,
             },
           ],
         },
@@ -144,7 +167,7 @@ export async function sendSlackNotification(
         ...(post.image ? [{
           type: "image",
           image_url: post.image,
-          alt_text: post.title,
+          alt_text: title,
         }] : []),
         {
           type: "context",

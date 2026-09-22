@@ -5,8 +5,9 @@ import ToolsPageShell from "@/components/tools/global/shell"
 import { createPageMetadata } from "@/lib/seo"
 
 export const metadata: Metadata = createPageMetadata({
-  title: "SaaS Calculators & Tools",
-  description: "Practical calculators for product, growth, and finance decisions.",
+  title: "Free Feedback, Roadmap & Changelog Tools",
+  description:
+    "Free calculators for feature voting, RICE prioritization, public roadmaps, and changelog writing—plus SaaS metrics for product teams.",
   path: "/tools",
 })
 
@@ -15,9 +16,9 @@ export default function ToolsIndexPage() {
   return (
     <ToolsPageShell
       dataComponent="ToolsIndex"
-      eyebrow={`Growth tools • ${totalTools} calculators`}
-      title="Practical SaaS calculators for clear, data‑led decisions"
-      description="Calculate core SaaS metrics including MRR, CAC, LTV, churn, and runway."
+      eyebrow={`Free tools • ${totalTools} calculators`}
+      title="Free tools for feedback, roadmaps, and changelogs"
+      description="Prioritize votes, plan a public roadmap, and write release notes. Also includes SaaS calculators for growth and finance."
     >
       <CategoryList />
     </ToolsPageShell>

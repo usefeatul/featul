@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { safeJson } from "@/lib/api/response";
 import { fetchWorkspaceBySlug, workspaceQueryKeys } from "@/lib/workspace/client";
 
+/** Cached workspace timezone with a mutation that invalidates workspace queries. */
 export function useWorkspaceTimezone(slug: string, initialTimezone?: string) {
     const queryClient = useQueryClient();
 

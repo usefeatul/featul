@@ -33,11 +33,53 @@ export const updateEntrySchema = z.object({
 export const aiToneSchema = z.enum(["user-friendly", "technical", "brief"]);
 export const aiDetailLevelSchema = z.enum(["standard", "detailed"]);
 
+export const aiChatMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().min(1).max(4000),
+});
+
+export const aiChatIntentSchema = z.enum(["ask", "rewrite", "patch", "tags"]);
+
+export const changelogAiStoredMessageSchema = z.object({
+  id: z.string().min(1).max(128),
+  role: z.enum(["user", "assistant"]),
+  content: z.string().max(20000),
+  attachedTitles: z.array(z.string().max(256)).max(20).optional(),
+  status: z.literal("error").optional(),
+  activity: aiChatIntentSchema.optional(),
+  durationMs: z.number().int().min(0).max(600000).optional(),
+  suggestedTags: z.array(z.string().max(64)).max(20).optional(),
+  effect: z.string().max(256).optional(),
+});
+
+export const aiConversationsListSchema = z.object({
+  slug: bySlugSchema.shape.slug,
+  limit: z.number().int().min(1).max(50).optional(),
+});
+
+export const aiConversationGetSchema = z.object({
+  slug: bySlugSchema.shape.slug,
+  conversationId: z.string().min(1),
+});
+
+export const aiConversationSaveSchema = z.object({
+  slug: bySlugSchema.shape.slug,
+  conversationId: z.string().min(1).optional(),
+  entryId: z.string().min(1).nullable().optional(),
+  title: z.string().min(1).max(120),
+  messages: z.array(changelogAiStoredMessageSchema).max(24),
+  selectedPostIds: z.array(z.string().min(1)).max(20),
+  pendingTagNames: z.array(z.string().min(1).max(64)).max(4),
+});
+
+export const aiConversationDeleteSchema = aiConversationGetSchema;
+
 export const aiAssistSchema = z
   .object({
     slug: bySlugSchema.shape.slug,
     action: z.enum([
       "prompt",
+      "chat",
       "format",
       "improve",
       "expand",
@@ -50,12 +92,17 @@ export const aiAssistSchema = z
     sourcePostIds: z.array(z.string().min(1)).min(1).max(20).optional(),
     tone: aiToneSchema.optional(),
     detailLevel: aiDetailLevelSchema.optional(),
+    messages: z.array(aiChatMessageSchema).max(20).optional(),
+    intent: aiChatIntentSchema.optional(),
+    selectionMarkdown: z.string().min(1).max(8000).optional(),
+    githubUrls: z.array(z.string().url().max(500)).max(10).optional(),
+    availableTagNames: z.array(z.string().min(1).max(40)).max(30).optional(),
   })
   .superRefine((val, ctx) => {
-    if (val.action === "prompt" && !val.prompt) {
+    if ((val.action === "prompt" || val.action === "chat") && !val.prompt) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Prompt is required for action=prompt",
+        message: "Prompt is required for this action",
         path: ["prompt"],
       });
     }
@@ -70,6 +117,7 @@ export const aiAssistSchema = z
     }
     if (
       val.action !== "prompt" &&
+      val.action !== "chat" &&
       val.action !== "generateFromPosts" &&
       !val.contentMarkdown
     ) {
@@ -77,6 +125,13 @@ export const aiAssistSchema = z
         code: z.ZodIssueCode.custom,
         message: "contentMarkdown is required for this action",
         path: ["contentMarkdown"],
+      });
+    }
+    if (val.intent === "patch" && !val.selectionMarkdown?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "selectionMarkdown is required for intent=patch",
+        path: ["selectionMarkdown"],
       });
     }
   });

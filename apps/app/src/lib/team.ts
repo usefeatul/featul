@@ -1,8 +1,9 @@
-import type { ActivityCategory } from "@featul/api/shared/member-activity"
+import type { ActivityCategory } from "@featul/api/member/activity"
 import type { Role } from "@/types/team"
 
 export type MemberActivityCategory = ActivityCategory
 
+/** Current viewer: role is null when not a member. */
 export type WorkspaceViewer = {
   role: Role | null
   isOwner: boolean

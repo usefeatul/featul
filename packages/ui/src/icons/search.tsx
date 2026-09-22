@@ -1,11 +1,14 @@
-import React from 'react'
+import React from "react";
 
 interface SearchIconProps {
-  className?: string
-  size?: number
+  className?: string;
+  size?: number;
 }
 
-export const SearchIcon: React.FC<SearchIconProps> = ({ className = '', size = 18 }) => {
+export const SearchIcon: React.FC<SearchIconProps> = ({
+  className = "",
+  size = 18,
+}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +36,7 @@ export const SearchIcon: React.FC<SearchIconProps> = ({ className = '', size = 1
         fill="none"
       ></path>
     </svg>
-  )
-}
+  );
+};
 
-export default SearchIcon
+export default SearchIcon;

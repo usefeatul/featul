@@ -31,6 +31,7 @@ import {
   type FeedbackBoardSettings,
 } from "@/hooks/useFeedbackBoardSettings";
 import { getPlanLimits, normalizePlan } from "@/lib/plan";
+import SectionCard from "../global/SectionCard";
 
 export default function ManageBoards({
   slug,
@@ -91,14 +92,22 @@ export default function ManageBoards({
   };
 
   return (
-    <div className="space-y-2">
-      <div className="text-md font-medium">Manage Boards</div>
-      <div className="text-sm text-accent">
-        Boards are the main way to organize your feedback. They are buckets that
-        contain all of the feedback for a specific product or feature.
-      </div>
-      <div className="rounded-md  border overflow-hidden">
-        <Table>
+    <div className="space-y-4">
+    <SectionCard
+      title="Boards"
+      description="Boards organize feedback into buckets for a product or feature."
+      action={
+        <LoadingButton
+          type="button"
+          variant="quiet"
+          onClick={() => setCreateOpen(true)}
+        >
+          Create board
+        </LoadingButton>
+      }
+    >
+      <div className="space-y-4">
+        <Table variant="settings">
           <TableHeader>
             <TableRow>
               <TableHead className="px-4">Board</TableHead>
@@ -216,22 +225,6 @@ export default function ManageBoards({
             )}
           </TableBody>
         </Table>
-      </div>
-      <PlanNotice
-        slug={slug}
-        feature="boards"
-        plan={plan}
-        boardsCount={(otherBoards || []).length}
-      />
-      <div className="mt-2 flex items-center justify-start">
-        <LoadingButton
-          type="button"
-          variant="quiet"
-          onClick={() => setCreateOpen(true)}
-        >
-          Create board
-        </LoadingButton>
-      </div>
       <ModalCreateBoard
         open={createOpen}
         onOpenChange={setCreateOpen}
@@ -273,6 +266,14 @@ export default function ManageBoards({
           }
         }}
       />
+      </div>
+    </SectionCard>
+    <PlanNotice
+      slug={slug}
+      feature="boards"
+      plan={plan}
+      boardsCount={(otherBoards || []).length}
+    />
     </div>
   );
 }

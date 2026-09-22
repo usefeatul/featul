@@ -7,11 +7,11 @@ import {
 export const DarkMode = () => {
   return (
     <svg
-      width="282"
-      height="193"
       viewBox="0 0 282 193"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className="block h-auto w-full"
+      aria-hidden
     >
       <ThemePreviewScene palette={darkThemePreviewPalette} />
     </svg>

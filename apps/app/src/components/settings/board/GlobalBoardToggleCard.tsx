@@ -8,6 +8,7 @@ import {
   type ToggleKey,
   type ToggleSuccessMessage,
 } from "@/hooks/useGlobalBoardToggle"
+import SectionCard from "../global/SectionCard"
 
 type GlobalBoardToggleCardProps = {
   slug: string
@@ -38,13 +39,11 @@ export default function GlobalBoardToggleCard({
   )
 
   return (
-    <div className="space-y-2">
-      <div className="text-md font-medium">{title}</div>
-      <div className="text-sm text-accent">{description}</div>
-      <div className="bg-background flex items-center justify-between rounded-md border p-3">
+    <SectionCard title={title} description={description}>
+      <div className="flex items-center justify-between">
         <div className="text-sm">{switchLabel}</div>
         <Switch checked={value} onCheckedChange={onToggle} aria-label={ariaLabel} />
       </div>
-    </div>
+    </SectionCard>
   )
 }

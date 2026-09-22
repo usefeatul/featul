@@ -13,6 +13,7 @@ interface CommentFooterProps {
   canReply: boolean
   showReplyForm: boolean
   onToggleReply: () => void
+  indentPx?: number
 }
 
 export default function CommentFooter({
@@ -25,24 +26,27 @@ export default function CommentFooter({
   canReply,
   showReplyForm,
   onToggleReply,
+  indentPx = 0,
 }: CommentFooterProps) {
   return (
-    <div className="flex items-center justify-between mt-2">
-      <CommentVote
-        commentId={commentId}
-        postId={postId}
-        surface={surface}
-        initialUpvotes={upvotes}
-        initialDownvotes={downvotes}
-        initialUserVote={userVote}
-      />
+    <div className="mt-2 flex items-center justify-between gap-2">
+      <div style={{ paddingLeft: indentPx }}>
+        <CommentVote
+          commentId={commentId}
+          postId={postId}
+          surface={surface}
+          initialUpvotes={upvotes}
+          initialDownvotes={downvotes}
+          initialUserVote={userVote}
+        />
+      </div>
 
-      {canReply && (
+      {canReply && !showReplyForm ? (
         <CommentReplyButton
           onClick={onToggleReply}
           isActive={showReplyForm}
         />
-      )}
+      ) : null}
     </div>
   )
 }

@@ -3,6 +3,7 @@
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
+import { sidebarLeadSlotClassName, sidebarRowClassName } from "@/components/sidebar/styles";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -11,6 +12,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogInner,
   DialogTitle,
 } from "@featul/ui/components/dialog";
 import {
@@ -23,6 +25,7 @@ import { toast } from "sonner";
 import { getSlugFromPath } from "@/config/nav";
 import { client } from "@featul/api/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { AccountIcon } from "@featul/ui/icons/account";
 import SignIn from "@/components/auth/SignIn";
 import SignUp from "@/components/auth/SignUp";
 import type { AuthMode } from "@/types/auth";
@@ -42,10 +45,12 @@ export default function UserDropdown({
   className = "",
   initialUser,
   initialDeviceAccounts,
+  collapsed = false,
 }: {
   className?: string;
   initialUser?: UserIdentity;
   initialDeviceAccounts?: DeviceAccount[];
+  collapsed?: boolean;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -288,30 +293,44 @@ export default function UserDropdown({
               }
             }}
           >
-            <DropdownMenuTrigger asChild className="w-full cursor-pointer">
+            <DropdownMenuTrigger
+              asChild
+              className={cn(collapsed ? "w-9" : "w-full", "cursor-pointer")}
+            >
               <button
                 suppressHydrationWarning
                 type="button"
-                className="group flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs md:text-sm text-accent hover:bg-muted dark:hover:bg-black/40"
+                className={cn(
+                  sidebarRowClassName,
+                  "text-foreground hover:bg-muted dark:hover:bg-black/40",
+                  collapsed &&
+                    "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
+                )}
+                aria-label={collapsed ? displayUser.name || "Account" : undefined}
+                title={collapsed ? displayUser.name || "Account" : undefined}
               >
-                <div className="ml-1 overflow-hidden">
-                  <Avatar className="size-5.5">
+                <span className={sidebarLeadSlotClassName}>
+                  <Avatar className="size-5">
                     {displayUser.image ? (
                       <AvatarImage
+                        key={displayUser.image}
                         src={displayUser.image}
                         alt={displayUser.name}
                       />
                     ) : null}
                     <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
-                </div>
-                <span className="truncate transition-colors">
-                  {displayUser.name || "Account"}
                 </span>
+                {!collapsed ? (
+                  <span className="truncate transition-colors">
+                    {displayUser.name || "Account"}
+                  </span>
+                ) : null}
               </button>
             </DropdownMenuTrigger>
 
             <UserDropdownMenu
+              collapsed={collapsed}
               showAccounts={showAccounts}
               accounts={accounts}
               switchingAccountUserId={switchingAccountUserId}
@@ -326,14 +345,16 @@ export default function UserDropdown({
           </DropdownMenu>
         </div>
 
-        <UserDropdownQuickSwitch
-          accounts={accounts}
-          switchingAccountUserId={switchingAccountUserId}
-          removingAccountUserId={removingAccountUserId}
-          onSwitchAccount={onSwitchAccount}
-          onOpenMenu={() => setOpen(true)}
-          onOpenAccountActions={onOpenAccountActions}
-        />
+        {!collapsed ? (
+          <UserDropdownQuickSwitch
+            accounts={accounts}
+            switchingAccountUserId={switchingAccountUserId}
+            removingAccountUserId={removingAccountUserId}
+            onSwitchAccount={onSwitchAccount}
+            onOpenMenu={() => setOpen(true)}
+            onOpenAccountActions={onOpenAccountActions}
+          />
+        ) : null}
       </div>
 
       <AccountActionsPopover
@@ -346,17 +367,14 @@ export default function UserDropdown({
       />
 
       <Dialog open={authModalOpen} onOpenChange={setAuthModalOpen}>
-        <DialogContent
-          fluid
-          showCloseButton={false}
-          className="bg-transparent border-none shadow-none ring-0 ring-offset-0 p-2"
-        >
-          <DialogHeader className="sr-only">
-            <DialogTitle>
+        <DialogContent fluid className="w-[min(90vw,400px)]">
+          <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+            <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
+              <AccountIcon className="size-3.5 text-primary" />
               {authMode === "sign-in" ? "Add account" : "Create account"}
             </DialogTitle>
           </DialogHeader>
-          <div className="w-[min(90vw,400px)] max-h-[66vh] overflow-y-auto rounded-2xl bg-background border border-border shadow-xl">
+          <DialogInner className="max-h-[66vh] overflow-y-auto pt-5 pb-4">
             {authMode === "sign-in" ? (
               <SignIn
                 redirectTo={authRedirectTo}
@@ -370,7 +388,7 @@ export default function UserDropdown({
                 onSwitchMode={() => setAuthMode("sign-in")}
               />
             )}
-          </div>
+          </DialogInner>
         </DialogContent>
       </Dialog>
     </div>
