@@ -56,6 +56,8 @@ export default function WebhookIntegrationCard({
   return (
     <>
       <SettingsCard
+        className="dark:bg-sidebar"
+        innerClassName="dark:ring-offset-sidebar"
         icon={icon}
         title={title}
         description={

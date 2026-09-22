@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@featul/ui/components/button";
 import { LoaderIcon } from "@featul/ui/icons/loader";
+import { cn } from "@featul/ui/lib/utils";
 import {
   settingsCardInnerClass,
   settingsCardShellClass,
@@ -19,6 +20,8 @@ type Props = {
   isLoading?: boolean;
   onTest?: () => void;
   children?: React.ReactNode;
+  className?: string;
+  innerClassName?: string;
 };
 
 export default function SettingsCard({
@@ -34,9 +37,11 @@ export default function SettingsCard({
   isLoading = false,
   onTest,
   children,
+  className,
+  innerClassName,
 }: Props) {
   return (
-    <div className={`${settingsCardShellClass} h-full`}>
+    <div className={cn(settingsCardShellClass, "h-full", className)}>
       <div className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex items-center justify-center size-5 shrink-0">
@@ -85,7 +90,7 @@ export default function SettingsCard({
           )}
         </div>
       </div>
-      <div className={`${settingsCardInnerClass} min-h-[60px]`}>
+      <div className={cn(settingsCardInnerClass, "min-h-[60px]", innerClassName)}>
         <div className="text-sm text-accent leading-relaxed wrap-break-word">
           {description}
         </div>
