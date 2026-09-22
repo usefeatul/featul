@@ -162,7 +162,10 @@ export default function CommentForm({
             type="button"
             size="xs"
             variant="plain"
-            className={cn(toolbarItemClass, "w-8 px-0 text-accent hover:text-foreground")}
+            className={cn(
+              toolbarItemClass,
+              "w-8 px-0 text-foreground hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/15",
+            )}
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"

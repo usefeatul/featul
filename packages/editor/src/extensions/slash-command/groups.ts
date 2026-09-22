@@ -5,13 +5,13 @@ import {
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,
-  ImageIcon,
   ListIcon,
   ListOrderedIcon,
   TableIcon,
   TextIcon,
   TextQuoteIcon,
 } from "lucide-react";
+import { ImageIcon } from "@featul/ui/icons/image";
 import { TwitterIcon as Twitter } from "@featul/ui/icons/twitter";
 import { YoutubeIcon as YouTubeIcon } from "@featul/ui/icons/youtube";
 import type { SuggestionItem } from "../../types";

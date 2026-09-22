@@ -211,7 +211,7 @@ function CommentComposer({
               type="button"
               onClick={onPickImage}
               disabled={uploading || Boolean(uploadedImage) || !canUpload}
-              className={`${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40`}
+              className={`${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center text-[rgb(var(--widget-fg))] hover:bg-[rgb(var(--widget-cta)/0.12)] hover:text-[rgb(var(--widget-cta))] disabled:cursor-not-allowed disabled:opacity-40`}
               aria-label="Add image"
             >
               {uploading ? (

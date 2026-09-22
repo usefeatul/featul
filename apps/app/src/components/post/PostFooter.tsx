@@ -3,7 +3,7 @@
 import React from "react"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
-import { ImageIcon } from "lucide-react"
+import { ImageIcon } from "@featul/ui/icons/image"
 import type { UploadedImage } from "./PostContent"
 
 export interface PostFooterProps {

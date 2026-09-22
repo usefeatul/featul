@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   ChevronsUpDown,
   Globe2,
-  Image,
   Layers3,
   Menu,
   PanelLeft,
@@ -14,6 +13,7 @@ import {
   UserRound,
   type LucideProps,
 } from "lucide-react";
+import { ImageIcon } from "./image";
 
 export type WorkspaceIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -231,7 +231,21 @@ export function WorkspaceMembersIcon({
   );
 }
 
-export const WorkspaceImageIcon = workspaceIcon(Image);
+export function WorkspaceImageIcon({
+  size = 18,
+  color,
+  opacity,
+  ...props
+}: WorkspaceIconProps) {
+  return (
+    <ImageIcon
+      size={size}
+      color={color}
+      opacity={opacity}
+      {...props}
+    />
+  );
+}
 export const WorkspaceDomainIcon = workspaceIcon(Globe2);
 export const WorkspaceArchiveIcon = workspaceIcon(Archive);
 export const WorkspaceAccountIcon = workspaceIcon(UserRound);
