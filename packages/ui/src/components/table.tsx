@@ -28,7 +28,7 @@ function Table({
           variant === "default" &&
             "rounded-xl border border-border/60 bg-background",
           variant === "settings" &&
-            "overflow-hidden rounded-xl border border-border/60 bg-background dark:border-white/10 dark:bg-black/30",
+            "overflow-hidden rounded-lg border border-border/80 bg-card dark:border-white/[0.08] dark:bg-black/30",
           containerClassName,
         )}
       >
@@ -56,7 +56,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
         "[&_tr]:border-b",
         variant === "default" && "[&_tr]:border-border/60",
         variant === "settings" &&
-          "[&_tr]:border-border/60 [&_tr]:bg-muted/20 dark:[&_tr]:border-white/10 dark:[&_tr]:bg-white/[0.02]",
+          "[&_tr]:border-border/70 [&_tr]:bg-muted/65 dark:[&_tr]:border-white/[0.08] dark:[&_tr]:bg-white/[0.055]",
         className,
       )}
       {...props}
@@ -98,7 +98,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
         variant === "default" &&
           "border-border/50 hover:bg-muted/20 data-[state=selected]:bg-muted/30",
         variant === "settings" &&
-          "border-border/50 hover:bg-muted/10 dark:border-white/10 dark:hover:bg-white/[0.03]",
+          "border-border/60 hover:bg-muted/35 dark:border-white/[0.07] dark:hover:bg-white/[0.035]",
         className,
       )}
       {...props}
@@ -115,7 +115,8 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
       className={cn(
         "h-9 px-3 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         variant === "default" && "text-muted-foreground",
-        variant === "settings" && "text-sm text-foreground",
+        variant === "settings" &&
+          "h-10 text-xs font-semibold text-muted-foreground",
         className,
       )}
       {...props}
@@ -132,7 +133,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
       className={cn(
         "px-3 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         variant === "default" && "py-2.5",
-        variant === "settings" && "py-3 text-sm text-foreground",
+        variant === "settings" && "py-3.5 text-sm text-foreground",
         className,
       )}
       {...props}
