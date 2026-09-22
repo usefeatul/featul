@@ -8,12 +8,9 @@ import { relativeTime } from "@/lib/time"
 import BoardPicker from "../requests/meta/BoardPicker"
 import StatusPicker from "../requests/meta/StatusPicker"
 import FlagsPicker from "../requests/meta/FlagsPicker"
-import TagsPicker from "../requests/meta/TagsPicker"
 import StatusIcon from "../requests/StatusIcon"
 import { PoweredBy } from "./PoweredBy"
 import RoleBadge from "../global/RoleBadge"
-import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
-import { CircleQuestionMarkIcon } from "@featul/ui/icons/circle-question-mark"
 import {
   settingsCardInnerClass,
   settingsCardShellClass,
@@ -38,7 +35,6 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
     isFeatured: !!post.isFeatured,
   })
   const [board, setBoard] = React.useState({ name: post.boardName, slug: post.boardSlug })
-  const [tags, setTags] = React.useState(post.tags || [])
 
   const displayUser = getPrivacySafeDisplayUser(
     post.author
@@ -56,8 +52,6 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
   const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest
   const authorInitials = getInitials(displayUser.name)
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt)
-  const showTags = tags.length > 0 || canEdit
-  const showFlagsDivider = showTags
 
   return (
     <aside className="hidden min-w-0 flex-col gap-4 md:flex">
@@ -138,8 +132,9 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
             {(canEdit || meta.isPinned || meta.isLocked || meta.isFeatured) && (
               <div
                 className={cn(
-                  "flex items-center justify-between",
-                  showFlagsDivider && "-mx-4 border-b border-border/50 px-4 pb-3",
+                  canEdit
+                    ? "flex items-center justify-between"
+                    : "flex flex-col gap-2",
                 )}
               >
                 <span className="text-sm font-medium text-muted-foreground">Flags</span>
@@ -150,68 +145,14 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                     onChange={(v) => setMeta((m) => ({ ...m, ...v }))}
                   />
                 ) : (
-                  <Toolbar size="sm" className="w-fit">
-                    <div className={cn(toolbarItemClass, "flex h-8 items-center gap-1.5 px-2.5 text-xs font-medium")}>
-                      <RequestFlagReadout
-                        className="inline-flex items-center gap-2"
-                        flags={meta}
-                      />
-                    </div>
-                  </Toolbar>
+                  <RequestFlagReadout
+                    flags={meta}
+                    className="flex w-full flex-wrap items-center gap-1.5"
+                    itemClassName="h-6 rounded-md bg-muted/70 px-2 text-[11px] font-medium text-foreground/85 ring-1 ring-border/50 dark:bg-white/[0.055] dark:ring-white/[0.08]"
+                  />
                 )}
               </div>
             )}
-
-            {showTags ? (
-              <div className="pt-1">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-start justify-between">
-                    <div className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
-                      <span>Tags</span>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            aria-label="About tags"
-                            className="inline-flex items-center rounded-sm text-accent hover:text-foreground"
-                          >
-                            <CircleQuestionMarkIcon className="size-4" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" sideOffset={6}>
-                          Tags categorize requests for filtering and reporting.
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    {canEdit ? (
-                      <TagsPicker
-                        workspaceSlug={workspaceSlug}
-                        postId={post.id}
-                        value={tags}
-                        onChange={setTags}
-                      />
-                    ) : null}
-                  </div>
-                  {tags.length > 0 ? (
-                    <div className="flex w-full flex-wrap justify-start gap-1.5">
-                      {tags.map((t) => (
-                        <Toolbar key={t.id} size="sm" className="w-fit">
-                          <span
-                            className={cn(
-                              toolbarItemClass,
-                              "flex h-8 items-center bg-primary/10 px-2.5 text-xs font-medium text-primary hover:bg-primary/15 dark:bg-primary/10 dark:hover:bg-primary/15",
-                            )}
-                          >
-                            {t.name}
-                          </span>
-                        </Toolbar>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
-
           </div>
         </div>
       </section>

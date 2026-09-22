@@ -8,6 +8,7 @@ import {
   StarLockIcon,
   StarPinLockIcon,
 } from "@featul/ui/icons/flag-merge"
+import { cn } from "@featul/ui/lib/utils"
 import type { RequestFlagKey, RequestFlags } from "@/types/request"
 
 export const REQUEST_FLAG_VISUALS = [
@@ -92,9 +93,11 @@ export function getFlagRibbonIcon(
 export function RequestFlagReadout({
   flags,
   className,
+  itemClassName,
 }: {
   flags: RequestFlags
   className?: string
+  itemClassName?: string
 }) {
   const active = getActiveRequestFlags(flags)
   if (active.length === 0) return null
@@ -102,7 +105,10 @@ export function RequestFlagReadout({
   return (
     <span className={className}>
       {active.map((flag) => (
-        <span key={flag.key} className="inline-flex items-center gap-1">
+        <span
+          key={flag.key}
+          className={cn("inline-flex items-center gap-1", itemClassName)}
+        >
           <flag.Icon
             width={12}
             height={12}
