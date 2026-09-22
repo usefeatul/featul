@@ -8,7 +8,7 @@ import { cn } from "@featul/ui/lib/utils"
 
 export const toolbarShellClass = cn(
   overlayShellClass,
-  "flex items-stretch overflow-visible rounded-xl p-1"
+  "flex items-stretch overflow-visible rounded-xl p-0.5"
 )
 
 export const toolbarInnerClass = cn(

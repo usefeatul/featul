@@ -6,18 +6,18 @@ export const subtleOverlayInnerClass =
   "overflow-hidden rounded-md bg-transparent"
 
 export const overlayShellClass =
-  "overflow-hidden rounded-xl border border-border bg-card text-foreground dark:border-white/10 dark:bg-black"
+  "overflow-hidden rounded-xl border border-border/60 bg-card text-foreground dark:border-white/[0.07] dark:bg-black"
 
 export const overlayInnerClass =
-  "overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black"
+  "overflow-hidden rounded-lg bg-background ring-1 ring-border/35 dark:ring-white/[0.055]"
 
-/** Inner dialog surface — `rounded-lg` to sit inside the `rounded-xl` shell. */
+/** Inner dialog surface with a restrained edge inside the `rounded-xl` shell. */
 export const overlayDialogInnerClass =
-  "overflow-hidden rounded-lg bg-background ring-1 ring-border/60 ring-offset-1 ring-offset-card dark:ring-white/10 dark:ring-offset-black"
+  "overflow-hidden rounded-lg bg-background ring-1 ring-border/35 dark:ring-white/[0.055]"
 
-/** Outer chip shell — same two-tone frame as integration cards, `rounded-md`. */
+/** Outer chip shell — a compact version of the shared subtle frame. */
 export const overlayChipShellClass =
-  "box-border inline-flex shrink-0 items-stretch rounded-md border border-border bg-card p-0.5 text-foreground"
+  "box-border inline-flex shrink-0 items-stretch rounded-md border border-border/60 bg-card p-0.5 text-foreground dark:border-white/[0.07]"
 
 /** Inner chip surface — `bg-background` on the dark shell. No ring-offset (that doubled the border at this size). */
 export const overlayChipInnerClass =
@@ -25,7 +25,7 @@ export const overlayChipInnerClass =
 
 /** Circular avatar frame — nested ring on the photo, no inset padding. */
 export const overlayAvatarShellClass =
-  "relative inline-flex shrink-0 overflow-visible rounded-full border border-border bg-card after:pointer-events-none after:absolute after:inset-px after:rounded-full after:ring-1 after:ring-border/60 after:ring-inset"
+  "relative inline-flex shrink-0 overflow-visible rounded-full border border-border/60 bg-card after:pointer-events-none after:absolute after:inset-px after:rounded-full after:ring-1 after:ring-border/35 after:ring-inset dark:border-white/[0.07] dark:after:ring-white/[0.055]"
 
 export const overlayAvatarInnerClass =
   "size-full overflow-hidden rounded-full bg-muted"
@@ -38,4 +38,4 @@ export const overlayRibbonInnerClass =
   "flex h-full w-full flex-1 items-end justify-center overflow-hidden rounded-[2px] pb-1 text-white"
 
 /** Same nested frame as settings/integration cards: `rounded-xl` shell, `p-2`, inner `rounded-lg`. */
-export const overlayDialogClass = `${overlayShellClass} p-2`
+export const overlayDialogClass = `${overlayShellClass} p-1`
