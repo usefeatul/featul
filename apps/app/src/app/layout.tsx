@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter, Inter_Tight } from "next/font/google";
+import { Geist_Mono, Inter_Tight } from "next/font/google";
 import { Providers } from "../components/providers/providers";
 import ConditionalThemeProvider from "@/components/global/ConditionalThemeProvider";
 // import WidgetTestEmbed from "@/components/widget/embed";
@@ -15,18 +15,17 @@ import {
 } from "@/config/seo";
 import { buildSoftwareApplicationSchema } from "@/lib/structured/data";
 
-const inter = Inter({
+const interTight = Inter_Tight({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-jakarta",
+  variable: "--font-inter-tight",
 });
 
-const interTight = Inter_Tight({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-playfair",
+  variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
@@ -89,7 +88,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${interTight.variable}`}
+      className={`${interTight.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
       <head>

@@ -40,12 +40,10 @@
   --sidebar-accent-foreground: #202020;
   --sidebar-border: #d8d8d4;
   --sidebar-ring: #4d96e8;
-  --font-jakarta: "Inter";
-  --font-playfair: "Inter Tight";
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-heading: var(--font-playfair), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter-tight, "Inter Tight"), var(--font-geist-mono, "Geist Mono"), "Helvetica Neue", Arial, Helvetica, -apple-system, system-ui, "Segoe UI", Roboto, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+  --font-heading: var(--font-inter-tight, "Inter Tight"), "Helvetica Neue", Arial, Helvetica, -apple-system, system-ui, "Segoe UI", Roboto, "Noto Sans", sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: roobert, roobert Fallback, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono: var(--font-geist-mono, "Geist Mono"), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --radius: 0.50rem;
   --shadow-2xs: 0 0.125rem 0.5rem 0 hsl(0 0% 0% / 0.03);
   --shadow-xs: 0 0.125rem 0.5rem 0 hsl(0 0% 0% / 0.03);
@@ -99,12 +97,6 @@
   --sidebar-accent-foreground: #f5f5f5;
   --sidebar-border: #393939;
   --sidebar-ring: #5aa2f0;
-  --font-jakarta: "Inter";
-  --font-playfair: "Inter Tight";
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-heading: var(--font-playfair), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: roobert, roobert Fallback, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --radius: 0.50rem;
   --shadow-2xs: 0 0.125rem 0.5rem 0 hsl(0 0% 0% / 0.13);
   --shadow-xs: 0 0.125rem 0.5rem 0 hsl(0 0% 0% / 0.13);
@@ -158,9 +150,9 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-heading: var(--font-playfair), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: roobert, roobert Fallback, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-sans: var(--font-inter-tight, "Inter Tight"), var(--font-geist-mono, "Geist Mono"), "Helvetica Neue", Arial, Helvetica, -apple-system, system-ui, "Segoe UI", Roboto, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+  --font-heading: var(--font-inter-tight, "Inter Tight"), "Helvetica Neue", Arial, Helvetica, -apple-system, system-ui, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  --font-mono: var(--font-geist-mono, "Geist Mono"), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 
   --radius-sm: calc(var(--radius) - 4px);
