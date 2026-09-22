@@ -91,9 +91,9 @@ export default function RoadmapBoard({
         />
         <div
           ref={boardScrollRef}
-          className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 touch-pan-x snap-x snap-mandatory scroll-px-3 overflow-x-auto bg-background px-3 pb-2 md:snap-none"
+          className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 touch-pan-x snap-x snap-mandatory scroll-px-3 overflow-x-auto bg-transparent px-3 py-2 md:snap-none"
         >
-          <div className="flex h-full min-h-0 min-w-max items-stretch gap-2 md:min-w-full md:flex-row">
+          <div className="flex h-full min-h-0 min-w-max items-start gap-2 md:min-w-full md:flex-row">
             {(ROADMAP_STATUSES as readonly string[]).map((s) => {
               const itemsForStatus = grouped[s];
               return (
@@ -101,7 +101,7 @@ export default function RoadmapBoard({
                   key={s}
                   ref={(node) => setColumnRef(s, node)}
                   className={cn(
-                    "flex h-full min-h-0 w-[calc(100vw-2rem)] max-w-[360px] shrink-0 snap-start overflow-hidden md:w-auto md:max-w-none md:snap-center",
+                    "flex max-h-full min-h-0 w-[calc(100vw-2rem)] max-w-[360px] shrink-0 snap-start self-start overflow-hidden md:w-auto md:max-w-none md:snap-center",
                     ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS,
                     roadmapColumnWidthClass(!!collapsedByStatus[s]),
                   )}
@@ -148,7 +148,7 @@ export default function RoadmapBoard({
         <DragOverlay dropAnimation={null}>
           {activeItem ? (
             <motion.div
-              className="pointer-events-none h-[108px] w-[min(300px,85vw)] overflow-hidden rounded-lg bg-muted shadow-lg ring-1 ring-border/50 dark:bg-[#232323] dark:ring-white/[0.08]"
+              className="pointer-events-none h-[108px] w-[min(300px,85vw)] overflow-hidden rounded-lg border border-border/70 bg-card shadow-lg dark:border-white/10"
               initial={{ scale: 0.995, opacity: 0.97 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 180, damping: 32 }}

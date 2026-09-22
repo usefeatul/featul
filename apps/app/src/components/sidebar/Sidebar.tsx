@@ -144,7 +144,7 @@ export default function Sidebar({
     <aside
       className={cn(
         "relative hidden w-full flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ease-out lg:flex lg:shrink-0",
-        collapsed ? "lg:w-[50px]" : "lg:w-[268px]",
+        collapsed ? "lg:w-[50px]" : "lg:w-[270px]",
         "lg:sticky lg:top-0 lg:h-dvh lg:overflow-hidden",
         className,
       )}

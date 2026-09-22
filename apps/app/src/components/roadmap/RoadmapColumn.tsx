@@ -62,10 +62,7 @@ export default function RoadmapColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex h-full min-h-0 w-full flex-col overflow-hidden text-foreground transition-colors duration-200",
-        collapsed
-          ? "rounded-lg bg-card dark:bg-[#232323]"
-          : "bg-transparent",
+        "flex max-h-full min-h-0 w-full flex-col overflow-hidden rounded-lg bg-muted/55 text-foreground transition-colors duration-200 dark:bg-black/25",
         isOver && "bg-green-500/[0.025]",
       )}
     >
