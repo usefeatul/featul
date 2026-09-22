@@ -69,7 +69,7 @@ export function CoverImageUploader({
     return (
         <div
             className={cn(
-                "relative aspect-[2/1] max-h-96 min-h-48 w-full overflow-hidden rounded-2xl bg-black/[0.025] ring-1 ring-inset ring-black/[0.06] transition-colors dark:bg-white/[0.025] dark:ring-white/[0.06]",
+                "group/cover relative aspect-[2/1] max-h-96 min-h-48 w-full overflow-hidden rounded-2xl bg-black/[0.025] ring-1 ring-inset ring-black/[0.06] transition-colors dark:bg-white/[0.025] dark:ring-white/[0.06]",
                 isDragging && "bg-black/[0.055] dark:bg-white/[0.055]",
                 isUploading && "pointer-events-none opacity-70",
             )}
@@ -125,7 +125,7 @@ export function CoverImageUploader({
                         variant="plain"
                         size="sm"
                         disabled={isUploading}
-                        className="h-8 gap-1.5 rounded-md border border-border/60 bg-card px-2.5 text-xs font-medium text-foreground shadow-none ring-0 before:hidden hover:bg-muted hover:text-foreground dark:border-white/10 dark:bg-card dark:text-foreground dark:hover:bg-muted"
+                        className="pointer-events-none h-8 gap-1.5 rounded-md border border-border/60 bg-card px-2.5 text-xs font-medium text-foreground opacity-0 shadow-none ring-0 transition-[opacity,background-color,color] before:hidden hover:bg-muted hover:text-foreground focus-visible:pointer-events-auto focus-visible:opacity-100 group-focus-within/cover:pointer-events-auto group-focus-within/cover:opacity-100 group-hover/cover:pointer-events-auto group-hover/cover:opacity-100 dark:border-white/10 dark:bg-card dark:text-foreground dark:hover:bg-muted"
                         onClick={() => inputRef.current?.click()}
                     >
                         Change cover
@@ -135,7 +135,7 @@ export function CoverImageUploader({
                         variant="plain"
                         size="icon-sm"
                         disabled={isUploading}
-                        className="size-8 rounded-md border border-border/60 bg-card p-0 text-foreground shadow-none ring-0 before:hidden hover:bg-muted hover:text-foreground dark:border-white/10 dark:bg-card dark:text-foreground dark:hover:bg-muted"
+                        className="pointer-events-none size-8 rounded-md border border-border/60 bg-card p-0 text-foreground opacity-0 shadow-none ring-0 transition-[opacity,background-color,color] before:hidden hover:bg-muted hover:text-foreground focus-visible:pointer-events-auto focus-visible:opacity-100 group-focus-within/cover:pointer-events-auto group-focus-within/cover:opacity-100 group-hover/cover:pointer-events-auto group-hover/cover:opacity-100 dark:border-white/10 dark:bg-card dark:text-foreground dark:hover:bg-muted"
                         onClick={() => onCoverImageChange(null)}
                         aria-label="Remove cover image"
                         title="Remove cover image"
