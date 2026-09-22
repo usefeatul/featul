@@ -59,7 +59,7 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
       }
     >
 
-        <div className="space-y-2">
+        <div className="space-y-4">
           <DomainHostField
             value={currentHost}
             readOnly
@@ -96,14 +96,14 @@ export default function DomainSection({ slug, initialPlan, initialInfo, initialD
               </>
             }
           />
-        </div>
 
-        {info?.host ? (
-          <div className="space-y-2 mb-3">
-            <Label>DNS Records</Label>
-            <RecordsTable info={info} />
-          </div>
-        ) : null}
+          {info?.host ? (
+            <div className="space-y-2">
+              <Label className="block">DNS Records</Label>
+              <RecordsTable info={info} />
+            </div>
+          ) : null}
+        </div>
         <AddDomainDialog
           open={open}
           onOpenChange={setOpen}
