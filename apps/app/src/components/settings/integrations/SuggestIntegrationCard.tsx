@@ -9,8 +9,6 @@ type Props = {
 export default function SuggestIntegrationCard({ onSuggest: _onSuggest }: Props) {
   return (
     <SettingsCard
-      className="dark:bg-sidebar"
-      innerClassName="dark:ring-offset-sidebar"
       icon={<IntegrationIcon className="size-5 text-primary" />}
       title="Integrations?"
       description="Tell us what integrations would help improve your workflow."
