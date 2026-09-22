@@ -64,7 +64,7 @@ function SidebarItem({
       {indicator && active ? (
         <motion.span
           layoutId="sidebar-active-pill"
-          className="absolute inset-0 z-0 rounded-md bg-sidebar-accent"
+          className="absolute inset-0 z-0 rounded-md bg-sidebar-accent dark:bg-white/[0.07]"
           transition={pillTransition(reduceMotion)}
         />
       ) : null}
