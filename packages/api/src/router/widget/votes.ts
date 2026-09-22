@@ -23,6 +23,7 @@ export const widgetVote = publicProcedure
       .where(
         and(
           eq(post.id, input.postId),
+          eq(post.status, "published"),
           eq(board.workspaceId, resolved.workspaceId),
           eq(board.isPublic, true),
         ),
@@ -103,6 +104,7 @@ export const widgetVoteComment = publicProcedure
           eq(comment.id, input.commentId),
           eq(comment.status, "published"),
           eq(comment.isInternal, false),
+          eq(post.status, "published"),
           eq(board.workspaceId, resolved.workspaceId),
           eq(board.isPublic, true),
         ),

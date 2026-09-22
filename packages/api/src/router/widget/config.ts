@@ -71,6 +71,7 @@ export const widgetSessionIdentity = privateProcedure
         and(
           eq(workspaceMember.workspaceId, workspace.id),
           eq(workspaceMember.userId, sessionUser.id),
+          eq(workspaceMember.isActive, true),
         ),
       )
       .where(eq(workspace.id, resolved.workspaceId))

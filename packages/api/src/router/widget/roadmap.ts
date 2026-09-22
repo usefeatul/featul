@@ -56,6 +56,7 @@ export const widgetRoadmap = publicProcedure
           eq(board.workspaceId, resolved.workspaceId),
           eq(board.isSystem, false),
           eq(board.isPublic, true),
+          eq(post.status, "published"),
           inArray(post.roadmapStatus, ["planned", "progress", "completed"]),
         ),
       )

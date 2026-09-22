@@ -433,7 +433,7 @@ export const auth = betterAuth({
     },
     useSecureCookies: true,
     defaultCookieAttributes: {
-      sameSite: "lax",
+      sameSite: "none",
       secure: true,
     },
     ipAddress: {

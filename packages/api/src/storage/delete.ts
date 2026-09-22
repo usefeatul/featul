@@ -1,5 +1,10 @@
-import { DeleteObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3"
-import { or, eq, isNotNull, sql, asc } from "drizzle-orm"
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3"
+import { and, or, eq, gt, isNotNull, sql, asc } from "drizzle-orm"
 import { comment, post } from "@featul/db"
 import { HTTPException } from "hono/http-exception"
 import { createStorageContext, type StorageContext } from "./signer"
@@ -116,6 +121,7 @@ const DEFAULT_ORPHAN_MAX_AGE_DAYS = 7
 const DEFAULT_ORPHAN_MAX_DELETES = 200
 const LIST_PAGE_SIZE = 1000
 const MAX_LIST_PAGES = 20
+const GC_CURSOR_KEY = "system/storage-orphan-gc-cursor.txt"
 
 export type StorageOrphanGcResult = {
   skipped?: boolean
@@ -128,16 +134,22 @@ export type StorageOrphanGcResult = {
 async function collectReferencedImageUrls(db: any): Promise<Set<string>> {
   const urls = new Set<string>()
   const pageSize = 500
-  let offset = 0
+  let lastPostId: string | undefined
 
   while (true) {
     const posts = await db
-      .select({ image: post.image, metadata: post.metadata })
+      .select({ id: post.id, image: post.image, metadata: post.metadata })
       .from(post)
-      .where(or(isNotNull(post.image), isNotNull(post.metadata)))
+      .where(
+        lastPostId
+          ? and(
+              or(isNotNull(post.image), isNotNull(post.metadata)),
+              gt(post.id, lastPostId),
+            )
+          : or(isNotNull(post.image), isNotNull(post.metadata)),
+      )
       .orderBy(asc(post.id))
       .limit(pageSize)
-      .offset(offset)
 
     if (!posts.length) break
     for (const row of posts) {
@@ -145,19 +157,22 @@ async function collectReferencedImageUrls(db: any): Promise<Set<string>> {
         urls.add(url)
       }
     }
-    offset += posts.length
+    lastPostId = posts[posts.length - 1]?.id
     if (posts.length < pageSize) break
   }
 
-  offset = 0
+  let lastCommentId: string | undefined
   while (true) {
     const comments = await db
-      .select({ metadata: comment.metadata })
+      .select({ id: comment.id, metadata: comment.metadata })
       .from(comment)
-      .where(isNotNull(comment.metadata))
+      .where(
+        lastCommentId
+          ? and(isNotNull(comment.metadata), gt(comment.id, lastCommentId))
+          : isNotNull(comment.metadata),
+      )
       .orderBy(asc(comment.id))
       .limit(pageSize)
-      .offset(offset)
 
     if (!comments.length) break
     for (const row of comments) {
@@ -165,11 +180,49 @@ async function collectReferencedImageUrls(db: any): Promise<Set<string>> {
         urls.add(url)
       }
     }
-    offset += comments.length
+    lastCommentId = comments[comments.length - 1]?.id
     if (comments.length < pageSize) break
   }
 
   return urls
+}
+
+function positiveNumberOrDefault(value: unknown, fallback: number): number {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+}
+
+async function readGcCursor(storage: StorageContext): Promise<string | undefined> {
+  try {
+    const response = await storage.s3.send(
+      new GetObjectCommand({ Bucket: storage.bucket, Key: GC_CURSOR_KEY }),
+    )
+    const value = (await response.Body?.transformToString())?.trim()
+    return value || undefined
+  } catch {
+    return undefined
+  }
+}
+
+async function saveGcCursor(
+  storage: StorageContext,
+  key: string | undefined,
+): Promise<void> {
+  if (!key) return
+  await storage.s3.send(
+    new PutObjectCommand({
+      Bucket: storage.bucket,
+      Key: GC_CURSOR_KEY,
+      Body: key,
+      ContentType: "text/plain",
+    }),
+  )
+}
+
+async function clearGcCursor(storage: StorageContext): Promise<void> {
+  await storage.s3.send(
+    new DeleteObjectCommand({ Bucket: storage.bucket, Key: GC_CURSOR_KEY }),
+  )
 }
 
 export async function runStorageOrphanGc(
@@ -181,15 +234,18 @@ export async function runStorageOrphanGc(
     return { skipped: true, scanned: 0, deleted: 0, referenced: 0, tooNew: 0 }
   }
 
-  const maxAgeDays = Math.max(
-    1,
-    options?.maxAgeDays ??
-      Number(process.env.STORAGE_ORPHAN_GC_MAX_AGE_DAYS || DEFAULT_ORPHAN_MAX_AGE_DAYS),
+  const maxAgeDays = positiveNumberOrDefault(
+    options?.maxAgeDays ?? process.env.STORAGE_ORPHAN_GC_MAX_AGE_DAYS,
+    DEFAULT_ORPHAN_MAX_AGE_DAYS,
   )
   const maxDeletes = Math.max(
     1,
-    options?.maxDeletes ??
-      Number(process.env.STORAGE_ORPHAN_GC_MAX_DELETES || DEFAULT_ORPHAN_MAX_DELETES),
+    Math.floor(
+      positiveNumberOrDefault(
+        options?.maxDeletes ?? process.env.STORAGE_ORPHAN_GC_MAX_DELETES,
+        DEFAULT_ORPHAN_MAX_DELETES,
+      ),
+    ),
   )
   const cutoff = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000
   const referenced = await collectReferencedImageUrls(db)
@@ -200,6 +256,8 @@ export async function runStorageOrphanGc(
   let referencedCount = 0
   let tooNew = 0
   let pages = 0
+  const startAfter = await readGcCursor(storage)
+  let lastVisitedKey = startAfter
 
   do {
     const listed = await storage.s3.send(
@@ -208,6 +266,7 @@ export async function runStorageOrphanGc(
         Prefix: "workspaces/",
         MaxKeys: LIST_PAGE_SIZE,
         ContinuationToken: continuationToken,
+        StartAfter: continuationToken ? undefined : startAfter,
       }),
     )
 
@@ -215,7 +274,9 @@ export async function runStorageOrphanGc(
     const contents = listed.Contents || []
     for (const object of contents) {
       const key = object.Key
-      if (!key || !isDeletableContentKey(key)) continue
+      if (!key) continue
+      lastVisitedKey = key
+      if (!isDeletableContentKey(key)) continue
       scanned += 1
       const lastModified = object.LastModified?.getTime() || 0
       if (lastModified > cutoff) {
@@ -235,6 +296,7 @@ export async function runStorageOrphanGc(
       )
       deleted += 1
       if (deleted >= maxDeletes) {
+        await saveGcCursor(storage, lastVisitedKey)
         return { scanned, deleted, referenced: referencedCount, tooNew }
       }
     }
@@ -243,6 +305,12 @@ export async function runStorageOrphanGc(
       ? listed.NextContinuationToken
       : undefined
   } while (continuationToken && pages < MAX_LIST_PAGES)
+
+  if (continuationToken) {
+    await saveGcCursor(storage, lastVisitedKey)
+  } else {
+    await clearGcCursor(storage)
+  }
 
   return { scanned, deleted, referenced: referencedCount, tooNew }
 }

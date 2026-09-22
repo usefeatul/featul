@@ -33,7 +33,10 @@ export async function loadWorkspaceBySlug(
 }
 
 /** Post select shape; coalesces widget-user over registered user. */
-export function buildPostSelect<T extends Record<string, unknown>>(extra?: T) {
+export function buildPostSelect<T extends Record<string, unknown>>(
+  extra?: T,
+  options?: { includeAuthorEmail?: boolean },
+) {
   return {
     id: post.id,
     authorId: post.authorId,
@@ -57,7 +60,10 @@ export function buildPostSelect<T extends Record<string, unknown>>(extra?: T) {
     author: {
       name: sql<string | null>`coalesce(${widgetUser.name}, ${user.name})`,
       image: sql<string | null>`coalesce(${widgetUser.image}, ${user.image})`,
-      email: sql<string | null>`coalesce(${widgetUser.email}, ${user.email})`,
+      email:
+        options?.includeAuthorEmail === false
+          ? sql<string | null>`null`
+          : sql<string | null>`coalesce(${widgetUser.email}, ${user.email})`,
     },
     ...(extra || {}),
   };
@@ -209,19 +215,36 @@ export async function loadMergedPostData({
   postId,
   duplicateOfId,
   includeSources = false,
+  publicOnly = false,
 }: {
   workspaceId: string;
   postId: string;
   duplicateOfId?: string | null;
   includeSources?: boolean;
+  publicOnly?: boolean;
 }): Promise<MergedPostData> {
-  const [mergedCountRow] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(postMerge)
-    .where(eq(postMerge.targetPostId, postId))
-    .limit(1);
+  const mergedCountRows = publicOnly
+    ? await db
+        .select({ count: sql<number>`count(*)` })
+        .from(postMerge)
+        .innerJoin(post, eq(post.id, postMerge.sourcePostId))
+        .innerJoin(board, eq(post.boardId, board.id))
+        .where(
+          and(
+            eq(postMerge.targetPostId, postId),
+            eq(board.workspaceId, workspaceId),
+            eq(board.isPublic, true),
+            eq(post.status, "published"),
+          ),
+        )
+        .limit(1)
+    : await db
+        .select({ count: sql<number>`count(*)` })
+        .from(postMerge)
+        .where(eq(postMerge.targetPostId, postId))
+        .limit(1);
 
-  const mergedCount = Number(mergedCountRow?.count || 0);
+  const mergedCount = Number(mergedCountRows[0]?.count || 0);
   let mergedInto: MergedPostSummary | null = null;
 
   if (duplicateOfId) {
@@ -262,7 +285,16 @@ export async function loadMergedPostData({
       .innerJoin(board, eq(post.boardId, board.id))
       .leftJoin(user, eq(post.authorId, user.id))
       .leftJoin(widgetUser, eq(post.widgetUserId, widgetUser.id))
-      .where(eq(postMerge.targetPostId, postId))
+      .where(
+        publicOnly
+          ? and(
+              eq(postMerge.targetPostId, postId),
+              eq(board.workspaceId, workspaceId),
+              eq(board.isPublic, true),
+              eq(post.status, "published"),
+            )
+          : eq(postMerge.targetPostId, postId),
+      )
       .orderBy(sql`${postMerge.createdAt} desc`)
       .limit(3);
 

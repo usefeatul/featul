@@ -486,7 +486,7 @@ export function createPostRouter() {
           normalizeStatus(existingPost.roadmapStatus || "pending") !==
             normalizeStatus(nextStatus)
         ) {
-          notifyPostStatusChange({
+          await notifyPostStatusChange({
             db: ctx.db,
             postId,
             fromStatus: existingPost.roadmapStatus,

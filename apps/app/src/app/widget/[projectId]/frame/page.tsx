@@ -46,11 +46,11 @@ export default async function WidgetFramePage({ params, searchParams }: Props) {
     ? sp.parentOrigin
     : "";
 
-  const initialConfig = await loadWidgetPublicConfig(
-    { db },
-    projectId,
-    parentOrigin || undefined,
-  ).catch(() => null);
+  const initialConfig = parentOrigin
+    ? await loadWidgetPublicConfig({ db }, projectId, parentOrigin).catch(
+        () => null,
+      )
+    : null;
 
   return (
     <WidgetFrame

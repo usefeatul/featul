@@ -144,6 +144,7 @@ export const widgetSimilar = publicProcedure
           eq(board.workspaceId, resolved.workspaceId),
           eq(board.isSystem, false),
           eq(board.isPublic, true),
+          eq(post.status, "published"),
           input.boardId ? eq(board.id, input.boardId) : sql`true`,
           or(ilike(post.title, q), ilike(post.content, q)),
         ),

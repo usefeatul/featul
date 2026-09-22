@@ -121,7 +121,7 @@ function buildWidgetConfig(input: {
 export async function resolveWidget(
   ctx: WidgetRouterContext,
   projectId: string,
-  _parentOrigin?: string,
+  parentOrigin?: string,
 ): Promise<ResolvedWidget> {
   const [ws] = await ctx.db
     .select({
@@ -184,6 +184,15 @@ export async function resolveWidget(
     includeDevOrigins: process.env.NODE_ENV !== "production",
   });
 
+  if (parentOrigin) {
+    const normalizedParentOrigin = new URL(parentOrigin).origin;
+    if (!allowedOrigins.includes(normalizedParentOrigin)) {
+      throw new HTTPException(403, {
+        message: "This site is not allowed to embed the widget",
+      });
+    }
+  }
+
   const roadmapVisible = isPublicSectionVisible(
     systemBoards.find(
       (row: { systemType: string | null }) => row.systemType === "roadmap",
@@ -242,7 +251,7 @@ export type WidgetPublicConfig = {
 export async function loadWidgetPublicConfig(
   ctx: WidgetRouterContext,
   projectId: string,
-  parentOrigin?: string,
+  parentOrigin: string,
 ): Promise<WidgetPublicConfig> {
   const resolved = await resolveWidget(ctx, projectId, parentOrigin);
   const boards = await ctx.db
@@ -408,6 +417,7 @@ export function publicPostWhere(
     eq(board.workspaceId, workspaceId),
     eq(board.isSystem, false),
     eq(board.isPublic, true),
+    eq(post.status, "published"),
   ];
   if (boardId) filters.push(eq(board.id, boardId));
   if (status) filters.push(eq(post.roadmapStatus, status));

@@ -1135,7 +1135,7 @@ export function createBoardRouter() {
           normalizeStatus(p.roadmapStatus || "pending") !==
             normalizeStatus(input.roadmapStatus)
         ) {
-          notifyPostStatusChange({
+          await notifyPostStatusChange({
             db: ctx.db,
             postId: input.postId,
             fromStatus: p.roadmapStatus,

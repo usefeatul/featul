@@ -82,7 +82,7 @@ export async function canUploadWorkspaceAsset({
   return false
 }
 
-/** NEXT-FILES-001: only the caller’s user prefix, or a workspace they can access, or unreferenced post/comment drafts. */
+/** NEXT-FILES-001: only the caller’s user prefix or a workspace they can access. */
 export async function assertCallerCanDeleteUploadKey({
   ctx,
   userId,
@@ -123,7 +123,6 @@ export async function assertCallerCanDeleteUploadKey({
       userId,
     })
     if (memberAccess) return
-    if (folder === "posts" || folder === "comments") return
   }
 
   throw new HTTPException(403, { message: "Forbidden" })

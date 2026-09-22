@@ -4,7 +4,8 @@ import {
   publicChangelogBaseUrl,
 } from "@/lib/changelog/rss"
 
-export const revalidate = 3600
+export const dynamic = "force-dynamic"
+export const revalidate = 0
 
 type RouteContext = {
   params: Promise<{ subdomain: string }>
@@ -37,7 +38,7 @@ export async function GET(_request: Request, context: RouteContext) {
   return new Response(xml, {
     headers: {
       "Content-Type": "application/rss+xml; charset=utf-8",
-      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      "Cache-Control": "no-store, max-age=0",
     },
   })
 }

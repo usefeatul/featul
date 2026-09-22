@@ -171,10 +171,13 @@ async function loadPostWithAuthorAndBoard(
 ): Promise<RawPostRow | null> {
   const [p] = await db
     .select(
-      buildPostSelect({
-        hidePublicMemberIdentity: board.hidePublicMemberIdentity,
-        role: workspaceMember.role,
-      }),
+      buildPostSelect(
+        {
+          hidePublicMemberIdentity: board.hidePublicMemberIdentity,
+          role: workspaceMember.role,
+        },
+        { includeAuthorEmail: false },
+      ),
     )
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
@@ -191,6 +194,8 @@ async function loadPostWithAuthorAndBoard(
       and(
         eq(board.workspaceId, workspaceId),
         sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
+        eq(board.isPublic, true),
+        eq(post.status, "published"),
         eq(post.slug, postSlug),
       ),
     )
@@ -203,6 +208,7 @@ async function loadPostWithAuthorAndBoard(
     postId: p.id,
     duplicateOfId: p.duplicateOfId,
     includeSources: true,
+    publicOnly: true,
   });
 
   return {

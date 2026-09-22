@@ -83,6 +83,7 @@ export const widgetComments = publicProcedure
       .where(
         and(
           eq(post.id, input.postId),
+          eq(post.status, "published"),
           eq(board.workspaceId, resolved.workspaceId),
           eq(board.isPublic, true),
         ),
@@ -188,6 +189,7 @@ export const widgetCreateComment = publicProcedure
       .where(
         and(
           eq(post.id, input.postId),
+          eq(post.status, "published"),
           eq(board.workspaceId, resolved.workspaceId),
           eq(board.isPublic, true),
         ),

@@ -134,7 +134,7 @@ export function buildWidgetOriginAllowlist(input: {
   addHost("app.featul.com");
   addHost("staging.featul.com");
   for (const origin of input.configuredOrigins || []) {
-    if (isSafeWidgetParentOrigin(origin)) origins.add(origin);
+    if (isSafeWidgetParentOrigin(origin)) origins.add(new URL(origin).origin);
   }
   if (input.includeDevOrigins) {
     const slug = String(input.slug || "").trim().toLowerCase();

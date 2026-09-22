@@ -9,6 +9,7 @@ const nextConfig = {
             { source: '/auth/set-password', destination: '/auth/setpassword', permanent: true },
             { source: '/auth/two-factor', destination: '/auth/twofactor', permanent: true },
             { source: '/api/changelog/ai-stream', destination: '/api/changelog/stream', permanent: true },
+            { source: '/widget/sdk.js', destination: '/widget/sdk/v1.js', permanent: true },
         ];
     },
     async headers() {
@@ -23,6 +24,7 @@ const nextConfig = {
                 "img-src 'self' data: blob: https:",
                 "font-src 'self' data:",
                 "connect-src 'self' https: wss:",
+                "frame-src 'self' https://www.youtube.com",
                 "frame-ancestors 'self'",
                 "base-uri 'self'",
                 "form-action 'self'",
@@ -38,6 +40,7 @@ const nextConfig = {
                 "img-src 'self' data: blob: https:",
                 "font-src 'self' data:",
                 "connect-src 'self' https: wss:",
+                "frame-src 'self' https://www.youtube.com",
                 "frame-ancestors *",
                 "base-uri 'self'",
                 "object-src 'none'",

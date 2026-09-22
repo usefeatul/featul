@@ -1,5 +1,5 @@
 import { and, eq, isNotNull, ne } from "drizzle-orm"
-import { board, post, user, vote, workspace } from "@featul/db"
+import { board, post, user, vote, widgetUser, workspace } from "@featul/db"
 import { normalizeStatus } from "../shared/status"
 
 function statusLabel(value: string | null | undefined): string {
@@ -21,6 +21,7 @@ async function collectRecipientEmails(
   db: any,
   postId: string,
   authorId: string | null,
+  widgetAuthorId: string | null,
   actorUserId: string,
 ): Promise<string[]> {
   const emails = new Set<string>()
@@ -30,6 +31,16 @@ async function collectRecipientEmails(
       .select({ email: user.email })
       .from(user)
       .where(eq(user.id, authorId))
+      .limit(1)
+    const email = String(author?.email || "").trim().toLowerCase()
+    if (email) emails.add(email)
+  }
+
+  if (widgetAuthorId) {
+    const [author] = await db
+      .select({ email: widgetUser.email })
+      .from(widgetUser)
+      .where(eq(widgetUser.id, widgetAuthorId))
       .limit(1)
     const email = String(author?.email || "").trim().toLowerCase()
     if (email) emails.add(email)
@@ -48,6 +59,22 @@ async function collectRecipientEmails(
     )
 
   for (const row of voterRows) {
+    const email = String(row?.email || "").trim().toLowerCase()
+    if (email) emails.add(email)
+  }
+
+  const widgetVoterRows = await db
+    .select({ email: widgetUser.email })
+    .from(vote)
+    .innerJoin(widgetUser, eq(vote.widgetUserId, widgetUser.id))
+    .where(
+      and(
+        eq(vote.postId, postId),
+        isNotNull(vote.widgetUserId),
+      ),
+    )
+
+  for (const row of widgetVoterRows) {
     const email = String(row?.email || "").trim().toLowerCase()
     if (email) emails.add(email)
   }
@@ -74,6 +101,7 @@ async function notifyPostStatusChangeInternal({
       title: post.title,
       slug: post.slug,
       authorId: post.authorId,
+      widgetUserId: post.widgetUserId,
       boardId: post.boardId,
     })
     .from(post)
@@ -102,6 +130,7 @@ async function notifyPostStatusChangeInternal({
     db,
     postId,
     postRow.authorId ?? null,
+    postRow.widgetUserId ?? null,
     actorUserId,
   )
   if (recipients.length === 0) return
@@ -126,13 +155,12 @@ async function notifyPostStatusChangeInternal({
 }
 
 /**
- * Email authenticated author + voters when roadmap status changes.
- * Fire-and-forget so request latency is not blocked.
+ * Email authenticated and widget authors/voters when roadmap status changes.
  */
-export function notifyPostStatusChange(
+export async function notifyPostStatusChange(
   params: NotifyPostStatusChangeParams,
-): void {
-  void notifyPostStatusChangeInternal(params).catch((error) => {
+): Promise<void> {
+  await notifyPostStatusChangeInternal(params).catch((error) => {
     console.error("Status change notification error:", error)
   })
 }

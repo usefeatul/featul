@@ -10,8 +10,6 @@ export default function WizardPreview() {
         src={WIZARD_PREVIEW_BACKGROUND}
         alt=""
         fill
-        priority
-        unoptimized
         sizes="50vw"
         className="object-cover"
       />
@@ -20,8 +18,6 @@ export default function WizardPreview() {
           src={WIZARD_PREVIEW_IMAGE}
           alt="Featul dashboard"
           fill
-          priority
-          unoptimized
           sizes="50vw"
           className="object-cover object-left-top"
         />

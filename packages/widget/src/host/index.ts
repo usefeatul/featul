@@ -67,6 +67,22 @@ type WidgetState = {
   listeners: Record<WidgetHostEvent, Set<(payload?: unknown) => void>>;
 };
 
+function frameOptionsChanged(
+  previous: FeatulWidgetOptions,
+  next: FeatulWidgetOptions,
+): boolean {
+  return (
+    previous.widget !== next.widget ||
+    previous.theme !== next.theme ||
+    previous.position !== next.position ||
+    previous.trigger !== next.trigger ||
+    previous.defaultSection !== next.defaultSection ||
+    previous.offset?.bottom !== next.offset?.bottom ||
+    previous.offset?.left !== next.offset?.left ||
+    previous.offset?.right !== next.offset?.right
+  );
+}
+
 function boot() {
   if (window.__featulWidgetLoaded) return;
   window.__featulWidgetLoaded = true;
@@ -1108,9 +1124,13 @@ function boot() {
 
   const api: FeatulWidgetApi = {
     init(projectId, options = {}) {
-      const prevTheme = state.options.theme || "auto";
-      const nextTheme = options.theme || "auto";
-      if (state.iframe && prevTheme !== nextTheme) api.destroy();
+      if (
+        state.iframe &&
+        (state.projectId !== projectId ||
+          frameOptionsChanged(state.options, options))
+      ) {
+        api.destroy();
+      }
       state.projectId = projectId;
       state.options = options;
       syncTheme();

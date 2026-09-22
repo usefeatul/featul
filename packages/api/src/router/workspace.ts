@@ -251,15 +251,10 @@ export function createWorkspaceRouter() {
       return c.superjson({ workspaces: Array.from(map.values()) });
     }),
 
-    statusCounts: publicProcedure
+    statusCounts: privateProcedure
       .input(workspaceSlugInputSchema)
       .get(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.json({ counts: {} });
+        const ws = await requireActiveWorkspaceMemberBySlug(ctx, input.slug);
 
         const notSnoozed = sql`(${post.snoozedUntil} IS NULL OR ${post.snoozedUntil} <= NOW())`;
         const activelySnoozed = sql`(${post.snoozedUntil} IS NOT NULL AND ${post.snoozedUntil} > NOW())`;
@@ -272,7 +267,6 @@ export function createWorkspaceRouter() {
             and(
               eq(board.workspaceId, ws.id),
               eq(board.isSystem, false),
-              eq(board.isPublic, true),
               notSnoozed,
             ),
           )
@@ -305,7 +299,6 @@ export function createWorkspaceRouter() {
             and(
               eq(board.workspaceId, ws.id),
               eq(board.isSystem, false),
-              eq(board.isPublic, true),
               notSnoozed,
               sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,
               sql`COALESCE(${post.updatedAt}, ${post.publishedAt}, ${post.createdAt}) < NOW() - (${STALE_THRESHOLD_DAYS} * INTERVAL '1 day')`,
@@ -321,7 +314,6 @@ export function createWorkspaceRouter() {
             and(
               eq(board.workspaceId, ws.id),
               eq(board.isSystem, false),
-              eq(board.isPublic, true),
               notSnoozed,
               sql`(${post.roadmapStatus} IS NULL OR ${post.roadmapStatus} NOT IN ('completed', 'closed'))`,
               sql`COALESCE(${post.publishedAt}, ${post.createdAt}) < NOW() - (${LOW_INTERACTION_THRESHOLD_DAYS} * INTERVAL '1 day')`,
@@ -341,7 +333,6 @@ export function createWorkspaceRouter() {
             and(
               eq(board.workspaceId, ws.id),
               eq(board.isSystem, false),
-              eq(board.isPublic, true),
               activelySnoozed,
             ),
           );
