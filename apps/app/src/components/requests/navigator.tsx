@@ -258,7 +258,7 @@ export default function Navigator({
           </div>
 
           {searchOpen ? (
-            <div className="px-3 pb-2 pt-0.5">
+            <div className="px-3 pb-2 pt-1">
               <label className="flex h-9 items-center gap-2 rounded-md border border-border/60 bg-muted/70 px-3 text-accent focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10 dark:bg-white/[0.07]">
                 <Search className="size-4 shrink-0" />
                 <input

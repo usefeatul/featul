@@ -30,7 +30,16 @@ import { LayoutGroup } from "framer-motion";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
-import { PanelIcon } from "@featul/ui/icons/panel";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@featul/ui/components/tooltip";
+import {
+  SIDEBAR_ARIA_SHORTCUTS,
+  useSidebarShortcut,
+} from "@/hooks/shortcut";
+import { PanelShortcutKeys } from "@/components/global/keys";
 
 const secondaryNav: NavItem[] = buildBottomNav();
 const SIDEBAR_COLLAPSED_COOKIE = "featul_sidebar_collapsed";
@@ -102,6 +111,7 @@ export default function Sidebar({
       return next;
     });
   }, []);
+  useSidebarShortcut(toggleCollapsed);
 
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
@@ -140,6 +150,28 @@ export default function Sidebar({
       )}
       data-collapsed={collapsed ? "true" : "false"}
     >
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className="group absolute inset-y-0 right-0 z-40 hidden w-2 cursor-pointer focus-visible:outline-none lg:block"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-keyshortcuts={SIDEBAR_ARIA_SHORTCUTS}
+            aria-expanded={!collapsed}
+          >
+            <span className="pointer-events-none absolute inset-y-0 right-0 w-px bg-transparent transition-colors group-hover:bg-primary/70 group-focus-visible:bg-primary" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent
+          side="right"
+          sideOffset={4}
+          className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium"
+        >
+          <span>{collapsed ? "Expand sidebar" : "Collapse sidebar"}</span>
+          <PanelShortcutKeys shift />
+        </TooltipContent>
+      </Tooltip>
       <div className={cn("px-2 py-2", collapsed && "px-1.5")}>
         <div
           className={cn(
@@ -155,23 +187,11 @@ export default function Sidebar({
               collapsed
             />
           ) : (
-            <>
-              <WorkspaceSwitcher
-                className="min-w-0 flex-1"
-                initialWorkspace={initialWorkspace}
-                initialWorkspaces={initialWorkspaces}
-              />
-              <button
-                type="button"
-                onClick={toggleCollapsed}
-                className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-neutral-600 transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-neutral-300 dark:hover:text-primary"
-                aria-label="Collapse sidebar"
-                aria-expanded={true}
-                title="Collapse sidebar"
-              >
-                <PanelIcon filled className="size-[18px]" />
-              </button>
-            </>
+            <WorkspaceSwitcher
+              className="min-w-0 flex-1"
+              initialWorkspace={initialWorkspace}
+              initialWorkspaces={initialWorkspaces}
+            />
           )}
         </div>
         {pathname.split("/")[3] === "roadmap" ? (
@@ -335,18 +355,6 @@ export default function Sidebar({
             collapsed={collapsed}
           />
         ))}
-        {collapsed ? (
-          <button
-            type="button"
-            onClick={toggleCollapsed}
-            className="mx-auto mt-2 flex size-9 cursor-pointer items-center justify-center rounded-md text-neutral-600 transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:text-neutral-300 dark:hover:text-primary"
-            aria-label="Expand sidebar"
-            aria-expanded={false}
-            title="Expand sidebar"
-          >
-            <PanelIcon filled className="size-[18px]" />
-          </button>
-        ) : null}
         <div
           className={cn(
             "flex items-center gap-1",
