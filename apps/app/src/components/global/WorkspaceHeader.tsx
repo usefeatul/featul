@@ -239,7 +239,7 @@ export default function WorkspaceHeader({
               </ol>
             </nav>
           ) : (
-            <h1 className="min-w-0 flex-1 truncate text-sm font-medium">
+            <h1 className="min-w-0 shrink-0 truncate text-sm font-medium">
               {title}
             </h1>
           )}
