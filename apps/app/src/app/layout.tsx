@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import Script from "next/script";
 import { Geist_Mono, Inter_Tight } from "next/font/google";
 import { Providers } from "../components/providers/providers";
@@ -80,11 +81,15 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerStore = await headers();
+  const isPublicWorkspace =
+    headerStore.get("x-featul-public-workspace") === "1";
+
   return (
     <html
       lang="en"
@@ -103,7 +108,9 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <Providers>
-          <ConditionalThemeProvider>{children}</ConditionalThemeProvider>
+          <ConditionalThemeProvider publicWorkspace={isPublicWorkspace}>
+            {children}
+          </ConditionalThemeProvider>
         </Providers>
         {/* {process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||
         process.env.NEXT_PUBLIC_FEATUL_WORKSPACE_ID ? (
