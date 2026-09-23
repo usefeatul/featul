@@ -213,7 +213,9 @@ function buildPostFilters({
     eq(board.workspaceId, workspaceId),
     eq(board.isSystem, false),
   ];
-  if (publicOnly) filters.push(eq(board.isPublic, true));
+  if (publicOnly) {
+    filters.push(eq(board.isPublic, true), eq(post.status, "published"));
+  }
   const wantsStale = matchStatuses.some(isStaleStatusFilter);
   const wantsLowInteraction = matchStatuses.some(isLowInteractionStatusFilter);
   const wantsSnoozed = matchStatuses.some(isSnoozedStatusFilter);
@@ -356,7 +358,7 @@ export async function listUserWorkspaces(
   );
 }
 
-/** Filtered feedback posts; publicOnly hides private-board items. */
+/** Filtered feedback posts; publicOnly returns only publicly viewable posts. */
 export async function getWorkspacePosts(
   slug: string,
   opts?: {
@@ -367,9 +369,9 @@ export async function getWorkspacePosts(
     search?: string;
     limit?: number;
     offset?: number;
-    // When true, only include posts from public boards.
-    // Used for public-facing subdomain pages so that
-    // posts in private boards are fully hidden.
+    // When true, only include published posts from public boards.
+    // Used for public-facing subdomain pages so that private, draft,
+    // pending, spam, and archived posts are fully hidden.
     publicOnly?: boolean;
     includeReportCounts?: boolean;
   },
@@ -519,9 +521,9 @@ export async function getWorkspacePostsCount(
     boardSlugs?: string[];
     tagSlugs?: string[];
     search?: string;
-    // When true, only count posts from public boards.
-    // Used for public-facing subdomain pages so that
-    // counts match the visible (public) posts.
+    // When true, only count published posts from public boards.
+    // Used for public-facing subdomain pages so that counts match the
+    // posts that can actually be opened on the public site.
     publicOnly?: boolean;
   },
 ) {
@@ -663,7 +665,10 @@ export async function getWorkspaceBoards(
       postCount: sql<number>`count(${post.id})`,
     })
     .from(board)
-    .leftJoin(post, eq(post.boardId, board.id))
+    .leftJoin(
+      post,
+      and(eq(post.boardId, board.id), eq(post.status, "published")),
+    )
     .where(
       and(
         eq(board.workspaceId, ws.id),

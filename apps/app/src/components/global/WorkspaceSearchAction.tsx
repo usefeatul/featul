@@ -44,6 +44,7 @@ type WorkspaceSearchActionProps = {
   showShortcut?: boolean;
   showNoResults?: boolean;
   compact?: boolean;
+  publicOnly?: boolean;
   onSearchSubmit: (value: string) => void;
   onResultSelect: (result: WorkspaceSearchResult) => void;
   onClearSearch?: () => void;
@@ -164,6 +165,7 @@ export function WorkspaceSearchAction({
   showShortcut = false,
   showNoResults = false,
   compact = false,
+  publicOnly = false,
   onSearchSubmit,
   onResultSelect,
   onClearSearch,
@@ -232,12 +234,13 @@ export function WorkspaceSearchAction({
   const isDebouncing = value.trim() !== debouncedQuery;
 
   const { data: results = [], isFetching } = useQuery({
-    queryKey: ["search", workspaceSlug, debouncedQuery],
+    queryKey: ["search", workspaceSlug, debouncedQuery, publicOnly],
     enabled: open && hasQuery,
     queryFn: async () => {
       const res = await client.board.searchPostsByWorkspaceSlug.$get({
         slug: workspaceSlug,
         q: debouncedQuery,
+        publicOnly,
       });
       const data = await res.json();
       return (data?.posts || []) as WorkspaceSearchResult[];

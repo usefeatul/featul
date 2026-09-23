@@ -460,6 +460,7 @@ export function createBoardRouter() {
         z.object({
           slug: checkSlugInputSchema.shape.slug,
           q: z.string().min(2).max(128),
+          publicOnly: z.boolean().optional().default(false),
         }),
       )
       .get(async ({ ctx, input, c }) => {
@@ -484,8 +485,8 @@ export function createBoardRouter() {
           eq(board.isSystem, false),
           ftsFilter,
         ];
-        if (!includePrivateBoards) {
-          filters.push(eq(board.isPublic, true));
+        if (input.publicOnly || !includePrivateBoards) {
+          filters.push(eq(board.isPublic, true), eq(post.status, "published"));
         }
 
         const rows = await ctx.db

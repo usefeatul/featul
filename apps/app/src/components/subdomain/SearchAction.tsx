@@ -41,6 +41,7 @@ export function SearchAction({ slug, className = "" }: SearchActionProps) {
           "bg-primary/10 ring-1 ring-primary/30 dark:bg-primary/15",
       )}
       buttonVariant="card"
+      publicOnly
       placeholder="Search feedback…"
       showNoResults
       onSearchSubmit={runSearch}
