@@ -10,17 +10,14 @@ export default function SubdomainThemeProvider({
   theme: "light" | "dark" | "system"
   children: React.ReactNode
 }) {
-  // Explicit workspace themes are authoritative. System mode remains
-  // user-selectable and follows the visitor's OS by default.
-  const forcedTheme = theme === "system" ? undefined : theme
-
+  // Branding supplies the public-site default; a visitor's saved selection
+  // can override it without inheriting the dashboard's app-theme preference.
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme={theme}
       enableSystem
       storageKey="theme"
-      forcedTheme={forcedTheme}
       disableTransitionOnChange
     >
       {children}
