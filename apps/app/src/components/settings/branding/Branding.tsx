@@ -73,6 +73,9 @@ export default function BrandingSection({
   const [loading, setLoading] = React.useState(!initialConfig);
   const [workspaceName, setWorkspaceName] = React.useState(String(initialWorkspaceName || ""));
   const originalNameRef = React.useRef<string>(String(initialWorkspaceName || ""));
+  const originalLogoRef = React.useRef<string>(
+    String(initialConfig?.logoUrl || ""),
+  );
   const queryClient = useQueryClient();
   const [plan, setPlan] = React.useState<PlanKey>(normalizePlan(initialPlan || "free"));
   const { loading: brandingAccessLoading, canEditBranding } = useCanEditBranding(slug);
@@ -88,6 +91,7 @@ export default function BrandingSection({
         const conf0 = initialConfig || null;
         if (mounted && conf0) {
           setLogoUrl(conf0.logoUrl || "");
+          originalLogoRef.current = conf0.logoUrl || "";
           const currentPrimary = conf0.primaryColor || "#4d96e8";
           setPrimaryColor(currentPrimary);
           if (conf0.theme === "light" || conf0.theme === "dark" || conf0.theme === "system") setTheme(conf0.theme);
@@ -110,6 +114,7 @@ export default function BrandingSection({
           const conf = await loadBrandingBySlug(slug);
           if (mounted && conf) {
             setLogoUrl(conf.logoUrl || "");
+            originalLogoRef.current = conf.logoUrl || "";
             const currentPrimary = conf.primaryColor || "#4d96e8";
             setPrimaryColor(currentPrimary);
             if (conf.theme === "light" || conf.theme === "dark" || conf.theme === "system") setTheme(conf.theme);
@@ -221,12 +226,14 @@ export default function BrandingSection({
     const limits = getPlanLimits(plan);
     const canBranding = limits.allowBranding === true;
     const canHidePoweredBy = limits.allowHidePoweredBy === true;
+    const nextLogoUrl = logoUrl.trim();
+    const logoChanged = nextLogoUrl !== originalLogoRef.current.trim();
     if (canBranding) applyBrandPrimary(p);
     try {
       await persistWorkspaceName(workspaceName.trim());
       const brandingInput: BrandingConfig & { logoUrl?: string } = {};
       if (canBranding) {
-        if (logoUrl.trim()) brandingInput.logoUrl = logoUrl.trim();
+        if (logoChanged && nextLogoUrl) brandingInput.logoUrl = nextLogoUrl;
         brandingInput.primaryColor = p;
       }
       brandingInput.theme = theme;
@@ -235,10 +242,11 @@ export default function BrandingSection({
       if (canHidePoweredBy) brandingInput.hidePoweredBy = hidePoweredBy;
       const result = await saveBranding(slug, brandingInput);
       if (!result.ok) throw new Error(result.message || "Update failed");
-      if (logoUrl.trim() && canBranding) {
-        setWorkspaceLogo(slug, logoUrl.trim());
+      if (logoChanged && nextLogoUrl && canBranding) {
+        originalLogoRef.current = nextLogoUrl;
+        setWorkspaceLogo(slug, nextLogoUrl);
         try {
-          updateWorkspaceLogoInCache(queryClient, slug, logoUrl.trim());
+          updateWorkspaceLogoInCache(queryClient, slug, nextLogoUrl);
         } catch {
           //ignore
         }
@@ -308,7 +316,10 @@ export default function BrandingSection({
             <LogoUploader
               slug={slug}
               value={logoUrl}
-              onChange={setLogoUrl}
+              onChange={(url) => {
+                setLogoUrl(url);
+                originalLogoRef.current = url;
+              }}
               disabled={!getPlanLimits(plan).allowBranding || !canEditBranding}
             />
           </div>
