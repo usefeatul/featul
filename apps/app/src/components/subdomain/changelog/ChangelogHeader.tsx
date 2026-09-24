@@ -4,6 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@featul/ui/components/button";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
+import { subdomainColumns } from "../layout";
 
 interface ChangelogHeaderProps {
     sidebarPosition: "left" | "right";
@@ -13,11 +14,7 @@ interface ChangelogHeaderProps {
 export function ChangelogHeader({ sidebarPosition, backLink = "/changelog" }: ChangelogHeaderProps) {
     return (
         <div
-            className={
-                sidebarPosition === "left"
-                    ? "grid md:grid-cols-[0.3fr_0.7fr] gap-6 mb-6"
-                    : "grid md:grid-cols-[0.7fr_0.3fr] gap-6 mb-6"
-            }
+            className={cn(subdomainColumns(sidebarPosition), "mb-4")}
         >
             {/* Left Spacer for Sidebar */}
             {sidebarPosition === "left" ? (
@@ -26,7 +23,7 @@ export function ChangelogHeader({ sidebarPosition, backLink = "/changelog" }: Ch
 
             {/* Header Content */}
             <div
-                className={`flex items-center gap-3 ${sidebarPosition === "left" ? "justify-end" : ""}`}
+                className="flex min-h-10 min-w-0 items-center gap-3"
             >
                 <Toolbar size="sm" className="w-fit">
                     <Button variant="plain" size="icon" asChild className={cn(toolbarItemClass, "px-2.5")}>

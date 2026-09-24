@@ -90,7 +90,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
 
         <div className={settingsCardInnerClass}>
           <div className="space-y-5">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-sm font-medium text-muted-foreground">Board</span>
               {canEdit ? (
                 <BoardPicker
@@ -108,7 +108,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
               )}
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-sm font-medium text-muted-foreground">Status</span>
               {canEdit ? (
                 <StatusPicker

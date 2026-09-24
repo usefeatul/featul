@@ -69,7 +69,7 @@ export function SubdomainLayoutShell({
         <style>{themeVars}</style>
         <BrandVarsEffect primary={branding.primary} />
         <SubdomainBackground />
-        <Container maxWidth={maxWidth} className="min-h-screen flex flex-col">
+        <Container maxWidth={maxWidth} className="w-full min-h-screen flex flex-col">
           <DomainHeader
             workspace={workspace}
             subdomain={subdomain}
@@ -77,7 +77,7 @@ export function SubdomainLayoutShell({
             roadmapVisible={roadmapVisible}
             initialUser={initialUser ?? null}
           />
-          <div className="mt-6 pb-10 md:pb-0 flex-1">{children}</div>
+          <div className="mt-6 min-w-0 w-full pb-10 md:pb-0 flex-1">{children}</div>
           <div className="pb-6 mt-4">
             <PoweredBy />
           </div>

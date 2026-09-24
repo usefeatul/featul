@@ -2,6 +2,7 @@
 
 import React from "react"
 import { DomainSidebar } from "./DomainSidebar"
+import { subdomainColumns } from "./layout"
 
 type SubdomainListLayoutProps = {
   subdomain: string
@@ -28,15 +29,12 @@ export function SubdomainListLayout({
   sortBasePath,
   sortKeepParams,
 }: SubdomainListLayoutProps) {
-  const grid =
-    sidebarPosition === "left"
-      ? "md:grid md:grid-cols-[minmax(0,0.3fr)_minmax(0,0.7fr)] md:gap-6"
-      : "md:grid md:grid-cols-[minmax(0,0.7fr)_minmax(0,0.3fr)] md:gap-6"
+  const grid = subdomainColumns(sidebarPosition)
   return (
     <section>
       <div className={grid}>
         {sidebarPosition === "left" ? (
-          <aside className="hidden md:block mt-10 md:mt-0">
+          <aside className="hidden min-w-0 md:block">
             <DomainSidebar
               subdomain={subdomain}
               slug={slug}
@@ -49,9 +47,9 @@ export function SubdomainListLayout({
             />
           </aside>
         ) : null}
-        <div>{children}</div>
+        <div className="min-w-0">{children}</div>
         {sidebarPosition === "right" ? (
-          <aside className="hidden md:block mt-10 md:mt-0">
+          <aside className="hidden min-w-0 md:block">
             <DomainSidebar
               subdomain={subdomain}
               slug={slug}
