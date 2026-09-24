@@ -32,11 +32,14 @@ export function BoardsDropdown({
 
   function go(value: string) {
     setOpen(false)
-    if (value === "__all__") {
-      router.push("/")
-    } else {
-      router.push(`/board/${value}`)
+    const pathname = value === "__all__" ? "/" : `/board/${value}`
+    const params = new URLSearchParams()
+    for (const key of ["order", "search", "status"]) {
+      const currentValue = search.get(key)
+      if (currentValue) params.set(key, currentValue)
     }
+    const query = params.toString()
+    router.push(`${pathname}${query ? `?${query}` : ""}`)
   }
 
   return (
@@ -54,7 +57,12 @@ export function BoardsDropdown({
           <ChevronDownIcon className="size-3" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent id={`popover-${slug}-boards`} align="start" list className="min-w-[9rem] w-fit">
+      <PopoverContent
+        id={`popover-${slug}-boards`}
+        align="start"
+        list
+        className="w-fit min-w-0"
+      >
         <div className="px-3 py-2 text-xs font-medium text-accent">Boards</div>
         <PopoverList>
           <PopoverListItem onClick={() => go("__all__")}>

@@ -17,7 +17,17 @@ import {
 } from "@featul/db";
 import { resolvePostAuthorImage } from "@/lib/author/avatar";
 import { isOnboardingPost, getOnboardingPostKind } from "@/lib/onboarding/post";
-import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
+import {
+  eq,
+  and,
+  or,
+  isNull,
+  inArray,
+  desc,
+  asc,
+  sql,
+  type SQL,
+} from "drizzle-orm";
 import type { RequestItemRow } from "@/lib/request/item";
 import type {
   ChangelogTag,
@@ -225,6 +235,15 @@ function buildPostFilters({
       !isLowInteractionStatusFilter(s) &&
       !isSnoozedStatusFilter(s),
   );
+  const roadmapStatusFilter =
+    roadmapStatuses.length === 0
+      ? undefined
+      : roadmapStatuses.includes("pending")
+        ? or(
+            inArray(post.roadmapStatus, roadmapStatuses),
+            isNull(post.roadmapStatus),
+          )
+        : inArray(post.roadmapStatus, roadmapStatuses);
 
   if (wantsSnoozed) {
     filters.push(buildActiveSnoozeCondition());
@@ -234,11 +253,9 @@ function buildPostFilters({
 
   if (wantsStale) {
     filters.push(buildStalePostCondition());
-    if (roadmapStatuses.length > 0) {
-      filters.push(inArray(post.roadmapStatus, roadmapStatuses));
-    }
-  } else if (roadmapStatuses.length > 0) {
-    filters.push(inArray(post.roadmapStatus, roadmapStatuses));
+    if (roadmapStatusFilter) filters.push(roadmapStatusFilter);
+  } else if (roadmapStatusFilter) {
+    filters.push(roadmapStatusFilter);
   }
   if (wantsLowInteraction) {
     filters.push(buildLowInteractionPostCondition());
