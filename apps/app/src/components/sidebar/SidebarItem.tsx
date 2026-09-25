@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@featul/ui/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
 import type { NavItem } from "../../types/nav";
 import { SidebarBadge } from "./badge";
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
@@ -98,37 +99,44 @@ function SidebarItem({
     onMouseLeave: () => setHovered(false),
   };
 
-  if (item.external) {
-    return (
-      <a
-        href={item.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={classes}
-        aria-current={active ? "page" : undefined}
-        aria-label={collapsed ? item.label : undefined}
-        title={collapsed ? item.label : undefined}
-        onClick={onClick}
-        {...hoverProps}
-      >
-        {content}
-      </a>
-    );
-  }
-
-  return (
+  const link = item.external ? (
+    <a
+      href={item.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={classes}
+      aria-current={active ? "page" : undefined}
+      aria-label={collapsed ? item.label : undefined}
+      onClick={onClick}
+      {...(!collapsed ? hoverProps : {})}
+    >
+      {content}
+    </a>
+  ) : (
     <Link
       href={item.href}
       replace={item.replace}
       className={classes}
       aria-current={active ? "page" : undefined}
       aria-label={collapsed ? item.label : undefined}
-      title={collapsed ? item.label : undefined}
       onClick={onClick}
-      {...hoverProps}
+      {...(!collapsed ? hoverProps : {})}
     >
       {content}
     </Link>
+  );
+
+  if (!collapsed) return link;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild {...hoverProps}>
+        {link}
+      </TooltipTrigger>
+      <TooltipContent side="right" sideOffset={10} className="text-xs">
+        {item.label}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 export default React.memo(SidebarItem);

@@ -12,6 +12,7 @@ import {
 import { LoaderIcon } from "@featul/ui/icons/loader";
 
 import { Button } from "@featul/ui/components/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
 import {
   CommandDialog,
   CommandInput,
@@ -292,46 +293,57 @@ export function WorkspaceSearchAction({
 
   return (
     <>
-      <Button
-        ref={buttonRef}
-        type="button"
-        variant={buttonVariant}
-        size="icon-sm"
-        aria-label={`Search (${platformKey}K)`}
-        title={`Search (${platformKey}K)`}
-        aria-pressed={isSearchActive}
-        className={cn(
-          filterToolbarButtonClass(isSearchActive && !compact, className),
-          compact &&
-            "group border-0 bg-transparent text-neutral-400 shadow-none ring-0 before:hidden hover:bg-muted/60 hover:text-primary dark:bg-transparent dark:text-neutral-300 dark:hover:bg-white/[0.05] dark:hover:text-primary",
-        )}
-        onClick={() => setOpen(true)}
-      >
-        <SearchIcon
-          className={cn(
-            "size-4",
-            compact && "size-5 transition-colors duration-200",
-          )}
-          size={compact ? 20 : 16}
-        />
-        {showLabel ? (
-          <span
+      <Tooltip open={compact && !open ? undefined : false}>
+        <TooltipTrigger asChild>
+          <Button
+            ref={buttonRef}
+            type="button"
+            variant={buttonVariant}
+            size="icon-sm"
+            aria-label={`Search (${platformKey}K)`}
+            title={compact ? undefined : `Search (${platformKey}K)`}
+            aria-pressed={isSearchActive}
             className={cn(
-              "min-w-0 truncate text-left font-normal",
-              currentSearch ? "text-foreground" : "text-muted-foreground",
+              filterToolbarButtonClass(isSearchActive && !compact, className),
+              compact &&
+                "group border-0 bg-transparent text-neutral-400 shadow-none ring-0 before:hidden hover:bg-muted/60 hover:text-primary dark:bg-transparent dark:text-neutral-300 dark:hover:bg-white/[0.05] dark:hover:text-primary",
             )}
+            onClick={() => setOpen(true)}
           >
-            {currentSearch || placeholder}
+            <SearchIcon
+              className={cn(
+                "size-4",
+                compact && "size-5 transition-colors duration-200",
+              )}
+              size={compact ? 20 : 16}
+            />
+            {showLabel ? (
+              <span
+                className={cn(
+                  "min-w-0 truncate text-left font-normal",
+                  currentSearch ? "text-foreground" : "text-muted-foreground",
+                )}
+              >
+                {currentSearch || placeholder}
+              </span>
+            ) : null}
+            {showShortcut ? (
+              <span aria-hidden="true" className="ml-auto inline-flex shrink-0 items-center gap-1">
+                {[platformKey, "K"].map((key) => (
+                  <ShortcutKey key={key} className="bg-muted text-muted-foreground dark:bg-black/30 dark:text-muted-foreground">{key}</ShortcutKey>
+                ))}
+              </span>
+            ) : null}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={10} className="flex items-center gap-2 text-xs">
+          <span>Search</span>
+          <span className="flex items-center gap-1" aria-hidden="true">
+            <ShortcutKey>{platformKey}</ShortcutKey>
+            <ShortcutKey>K</ShortcutKey>
           </span>
-        ) : null}
-        {showShortcut ? (
-          <span aria-hidden="true" className="ml-auto inline-flex shrink-0 items-center gap-1">
-            {[platformKey, "K"].map((key) => (
-              <ShortcutKey key={key} className="bg-muted text-muted-foreground dark:bg-black/30 dark:text-muted-foreground">{key}</ShortcutKey>
-            ))}
-          </span>
-        ) : null}
-      </Button>
+        </TooltipContent>
+      </Tooltip>
 
       <CommandDialog
         open={open}

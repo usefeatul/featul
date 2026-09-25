@@ -212,27 +212,33 @@ export default function Sidebar({
           />
         )}
         <div className={cn("mt-4 px-1", collapsed && "px-0")}>
-          <button
-            type="button"
-            className={cn(
-              sidebarRowClassName,
-              "cursor-pointer text-foreground hover:bg-muted dark:hover:bg-white/5",
-              collapsed &&
-                "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
-            )}
-            onClick={openCreatePost}
-            aria-label={collapsed ? "Create post" : undefined}
-            title={collapsed ? "Create post" : undefined}
-          >
-            <span className={sidebarLeadSlotClassName}>
-              <WorkspaceCreateIcon className="size-5 text-neutral-600 transition-colors group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
-            </span>
-            {!collapsed ? (
-              <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
-                Create Posts
-              </span>
-            ) : null}
-          </button>
+          <Tooltip open={collapsed ? undefined : false}>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className={cn(
+                  sidebarRowClassName,
+                  "cursor-pointer text-foreground hover:bg-muted dark:hover:bg-white/5",
+                  collapsed &&
+                    "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
+                )}
+                onClick={openCreatePost}
+                aria-label={collapsed ? "Create post" : undefined}
+              >
+                <span className={sidebarLeadSlotClassName}>
+                  <WorkspaceCreateIcon className="size-5 text-neutral-600 transition-colors group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
+                </span>
+                {!collapsed ? (
+                  <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
+                    Create Posts
+                  </span>
+                ) : null}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={10} className="text-xs">
+              Create post
+            </TooltipContent>
+          </Tooltip>
           {boardItem ? (
             <SidebarItem
               item={boardItem}

@@ -56,16 +56,7 @@ function TooltipTrigger({
 			<BaseTooltip.Trigger
 				data-slot="tooltip-trigger"
 				{...props}
-				render={(triggerProps) => {
-					const child = React.Children.only(
-						children,
-					) as React.ReactElement<any>;
-					const triggerAttrs = triggerProps as Record<string, unknown>;
-					return React.cloneElement(
-						child,
-						Object.assign({}, triggerAttrs, child.props),
-					);
-				}}
+				render={React.Children.only(children) as React.ReactElement}
 			/>
 		);
 	}
