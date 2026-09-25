@@ -32,6 +32,7 @@ type UseSelectableListResult = {
   selectedCount: number;
   selectedIdsSet: Set<string>;
   toggleAll: () => void;
+  setRangeSelected: (fromIndex: number, toIndex: number, checked: boolean) => void;
   getItemSelectionProps: (id: string, index: number) => SelectionItemProps;
   exitSelection: () => void;
 };
@@ -135,6 +136,19 @@ export function useSelectableList({
       itemIds.length > 0 ? itemIds.length - 1 : null;
   }, [allSelected, listKey, itemIds]);
 
+  const setRangeSelected = useCallback(
+    (fromIndex: number, toIndex: number, checked: boolean) => {
+      const start = Math.min(fromIndex, toIndex);
+      const end = Math.max(fromIndex, toIndex);
+      const ids = itemIds.slice(start, end + 1);
+      if (ids.length === 0) return;
+      if (checked) selectAllForKey(listKey, ids);
+      else removeSelectedIds(listKey, ids);
+      lastToggledIndexRef.current = toIndex;
+    },
+    [itemIds, listKey],
+  );
+
   const getItemSelectionProps = useCallback(
     (id: string, index: number): SelectionItemProps => ({
       isSelecting: isSelectingForRender,
@@ -151,6 +165,7 @@ export function useSelectableList({
     selectedCount,
     selectedIdsSet,
     toggleAll,
+    setRangeSelected,
     getItemSelectionProps,
     exitSelection,
   };

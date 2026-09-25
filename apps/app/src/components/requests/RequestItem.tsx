@@ -37,6 +37,7 @@ import { requestBadgeClass } from "./styles";
 
 interface RequestItemProps {
   item: RequestItemData;
+  selectionIndex?: number;
   workspaceSlug: string;
   linkBase?: string;
   isSelecting?: boolean;
@@ -157,6 +158,7 @@ export function RequestEngagementChip({
 
 function RequestItemBase({
   item,
+  selectionIndex,
   workspaceSlug,
   linkBase,
   isSelecting,
@@ -215,7 +217,10 @@ function RequestItemBase({
   const publishedLabel = relativeTime(item.publishedAt ?? item.createdAt);
 
   return (
-    <li className="list-none">
+    <li
+      className="list-none"
+      data-request-select-index={isSelectingMode ? selectionIndex : undefined}
+    >
       <RequestItemContextMenu
         item={item}
         workspaceSlug={workspaceSlug}

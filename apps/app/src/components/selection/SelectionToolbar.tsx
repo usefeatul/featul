@@ -18,6 +18,7 @@ export interface SelectionToolbarProps {
   onConfirmDelete?: () => void
   hideDelete?: boolean
   extraActions?: ReactNode
+  emptySelectionHint?: string
   className?: string
 }
 
@@ -32,6 +33,7 @@ export function SelectionToolbar({
   onConfirmDelete,
   hideDelete = false,
   extraActions,
+  emptySelectionHint = "Tap rows to select",
   className,
 }: SelectionToolbarProps) {
   const hasSelection = selectedCount > 0
@@ -66,7 +68,7 @@ export function SelectionToolbar({
           {selectedCount} {pluralLabel}
         </span>
       ) : (
-        <span className="text-xs text-muted-foreground">Tap rows to select</span>
+        <span className="text-xs text-muted-foreground">{emptySelectionHint}</span>
       )}
 
       {showActions ? (

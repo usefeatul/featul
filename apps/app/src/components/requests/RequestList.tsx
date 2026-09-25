@@ -12,6 +12,7 @@ import { SelectableListShell } from "@/components/selection/SelectableListShell"
 import { useBulkDeleteRequests } from "@/hooks/useBulkDeleteList";
 import { useBulkStatusUpdate } from "@/hooks/useBulkStatusUpdate";
 import { useSelectableList } from "@/hooks/useSelectableList";
+import { useRequestDragSelection } from "@/hooks/useRequestDragSelection";
 
 interface RequestListProps {
   items: RequestItemData[];
@@ -74,6 +75,12 @@ function RequestListBase(props: RequestListProps) {
     confirmOpen,
     setConfirmOpen,
   });
+  const dragSelection = useRequestDragSelection({
+    enabled: selection.isSelectingForRender && !isBusy && !confirmOpen,
+    selectedIds: selection.selectedIdsSet,
+    itemIds,
+    setRangeSelected: selection.setRangeSelected,
+  });
 
   if (listItems.length === 0) {
     if (isRefetching) {
@@ -94,6 +101,7 @@ function RequestListBase(props: RequestListProps) {
       setConfirmOpen={setConfirmOpen}
       handleBulkDelete={handleBulkDelete}
       itemLabel="post"
+      emptySelectionHint="Click or drag rows to select"
       deleteDescription="This action cannot be undone. Comments, votes, and activity for these posts will be removed."
       totalCount={listItems.length}
       extraActions={
@@ -104,11 +112,15 @@ function RequestListBase(props: RequestListProps) {
         />
       }
     >
-      <ul className="m-0 min-w-0 list-none p-0 [&>li+li]:border-t [&>li+li]:border-border/40 dark:[&>li+li]:border-white/6">
+      <ul
+        className="m-0 min-w-0 list-none p-0 [&>li+li]:border-t [&>li+li]:border-border/40 dark:[&>li+li]:border-white/6"
+        {...dragSelection}
+      >
         {listItems.map((item, index) => (
           <RequestItem
             key={item.id}
             item={item}
+            selectionIndex={index}
             workspaceSlug={workspaceSlug}
             linkBase={linkBase}
             disableLink={selection.isSelectingForRender}
