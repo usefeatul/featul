@@ -223,8 +223,8 @@ export default function Navigator({
                 }
                 aria-expanded={searchOpen}
                 className={cn(
-                  "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] dark:hover:bg-white/[0.03]",
-                  search && "bg-primary/15 text-primary",
+                  "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03]",
+                  search && "text-primary",
                 )}
               >
                 <Search className="size-[18px]" />
@@ -263,7 +263,7 @@ export default function Navigator({
 
           {searchOpen ? (
             <div className="px-3 pb-2 pt-1">
-              <label className="flex h-9 items-center gap-2 rounded-md border border-border/60 bg-muted/70 px-3 text-accent focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10 dark:bg-white/[0.07]">
+              <label className="flex h-9 items-center gap-2 rounded-md border border-border/60 bg-transparent px-3 text-accent focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10">
                 <Search className="size-4 shrink-0" />
                 <input
                   autoFocus
@@ -294,7 +294,7 @@ export default function Navigator({
                   key={chip.key}
                   type="button"
                   onClick={() => clearFilter(chip.key)}
-                  className="inline-flex h-6 shrink-0 items-center gap-1 rounded-md bg-primary/10 px-2 text-[10px] font-medium capitalize text-primary transition-colors hover:bg-primary/15"
+                  className="inline-flex h-6 shrink-0 items-center gap-1 rounded-md bg-black/5 px-2 text-[10px] font-medium capitalize text-muted-foreground transition-colors hover:bg-black/10 hover:text-foreground dark:bg-white/[0.05] dark:hover:bg-white/[0.08]"
                   aria-label={`Remove ${chip.label} filter`}
                 >
                   {chip.label}
