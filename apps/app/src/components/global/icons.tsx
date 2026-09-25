@@ -55,8 +55,8 @@ import {
   Mail as LucideMail,
   Maximize2 as LucideMaximize2,
   Menu as LucideMenu,
+  MessageCircle as LucideMessageCircle,
   MessageCircleOff as LucideMessageCircleOff,
-  MessageSquare as LucideMessageSquare,
   MessageSquareText as LucideMessageSquareText,
   MoreHorizontal as LucideMoreHorizontal,
   MoreVertical as LucideMoreVertical,
@@ -195,7 +195,7 @@ export const ChevronRightIcon = ChevronRight;
 export const CircleQuestionMarkIcon = outline(LucideCircleHelp);
 export const ClipboardIcon = outline(LucideClipboard);
 export const CloudIcon = outline(LucideCloud);
-export const CommentsIcon = outline(LucideMessageSquare);
+export const CommentsIcon = outline(LucideMessageCircle);
 export const CsvIcon = outline(LucideFileSpreadsheet);
 export const DocumentTextIcon = FileText;
 export const EditIcon = outline(LucidePencil);

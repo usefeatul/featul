@@ -134,7 +134,7 @@ export function RequestEngagementChip({
       <span
         className={cn(
           requestBadgeClass,
-          "gap-1",
+          "gap-1 text-muted-foreground/70",
           !showComments && "hidden sm:inline-flex",
         )}
         title={`${commentCount} comments`}
