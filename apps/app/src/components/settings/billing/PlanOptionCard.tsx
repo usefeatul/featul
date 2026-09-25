@@ -51,7 +51,6 @@ export default function PlanOptionCard({
       className={cn(
         overlayDialogClass,
         "relative flex h-full min-w-0 flex-col",
-        isCurrent && "border-foreground/35 dark:border-white/30",
       )}
     >
       <div
