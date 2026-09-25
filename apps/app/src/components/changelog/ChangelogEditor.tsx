@@ -24,6 +24,7 @@ import { cn } from "@featul/ui/lib/utils";
 import { useAssistantPanel } from "@/hooks/useAssistantPanel";
 import { PANEL_SHORTCUT_LABEL, usePanelShortcut } from "@/hooks/shortcut";
 
+import { Related } from "./related";
 import { Timeline } from "./timeline";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -40,6 +41,7 @@ interface ChangelogEditorProps {
     summary?: string | null;
     coverImage?: string | null;
     tags: string[];
+    relatedPostIds?: string[];
     status: "draft" | "published";
   };
   availableTags: WorkspaceTag[];
@@ -80,6 +82,8 @@ export function ChangelogEditor({
     setCoverImage,
     selectedTags,
     setSelectedTags,
+    relatedPostIds,
+    setRelatedPostIds,
     isDraft,
     setIsDraft,
     isSaving,
@@ -270,6 +274,14 @@ export function ChangelogEditor({
                   selectedTags={selectedTags}
                   onTagsChange={(tags) => {
                     setSelectedTags(tags);
+                    setIsDirty(true);
+                  }}
+                />
+                <Related
+                  workspaceSlug={workspaceSlug}
+                  selectedIds={relatedPostIds}
+                  onChange={(ids) => {
+                    setRelatedPostIds(ids);
                     setIsDirty(true);
                   }}
                 />

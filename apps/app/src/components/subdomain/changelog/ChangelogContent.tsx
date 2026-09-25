@@ -1,4 +1,8 @@
 import React from "react";
+import Link from "next/link";
+import StatusIcon from "@/components/requests/StatusIcon";
+import { ArrowIcon } from "@/components/global/icons";
+import type { RelatedPost } from "@featul/api/changelog/related";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import type { JSONContent } from "@tiptap/core";
 import type { Role } from "@/types/team";
@@ -22,6 +26,7 @@ export interface ChangelogEntryData {
     role?: Role | null;
     isOwner?: boolean;
   };
+  relatedPosts?: RelatedPost[];
   tags?: Array<{ id: string; name: string }>;
 }
 
@@ -31,7 +36,12 @@ interface ChangelogContentProps {
 
 export function ChangelogContent({ entry }: ChangelogContentProps) {
   return (
-    <article className={cn(settingsCardShellClass, "w-full min-w-0 max-w-none justify-self-stretch")}>
+    <article
+      className={cn(
+        settingsCardShellClass,
+        "w-full min-w-0 max-w-none justify-self-stretch",
+      )}
+    >
       {entry.coverImage ? (
         <div className={cn(settingsCardInnerClass, "mb-2 overflow-hidden p-0")}>
           <div className="aspect-video w-full overflow-hidden bg-muted">
@@ -55,6 +65,33 @@ export function ChangelogContent({ entry }: ChangelogContentProps) {
           </div>
         ) : null}
 
+        {entry.relatedPosts?.length ? (
+          <section
+            className="mt-6 border-t border-border/60 pt-4"
+            aria-label="Related posts"
+          >
+            <h2 className="mb-3 text-sm font-medium">Related posts</h2>
+            <ul className="divide-y divide-border/40">
+              {entry.relatedPosts.map((post) => (
+                <li key={post.id}>
+                  <Link
+                    href={`/board/p/${encodeURIComponent(post.slug)}`}
+                    className="group flex items-center gap-2.5 rounded-md px-2 py-3 text-sm transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <StatusIcon
+                      status={post.roadmapStatus ?? undefined}
+                      className="size-4 shrink-0"
+                    />
+                    <span className="min-w-0 flex-1 break-words">
+                      {post.title}
+                    </span>
+                    <ArrowIcon className="size-3.5 shrink-0 text-muted-foreground/60 group-hover:text-foreground" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
         {entry.tags && entry.tags.length > 0 ? (
           <div className="pt-4 mt-4 border-t">
             <div className="flex flex-wrap gap-2">

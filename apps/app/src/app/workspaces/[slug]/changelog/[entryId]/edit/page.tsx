@@ -41,6 +41,7 @@ export default async function EditChangelogPage({ params }: Props) {
                 summary: entry.summary,
                 coverImage: entry.coverImage,
                 tags: entry.tags,
+                relatedPostIds: entry.relatedPostIds,
                 status: entry.status,
             }}
             availableTags={availableTags}

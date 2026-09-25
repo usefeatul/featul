@@ -20,6 +20,7 @@ interface UseChangelogEntryProps {
         summary?: string | null;
         coverImage?: string | null;
         tags: string[];
+        relatedPostIds?: string[];
         status: "draft" | "published";
     };
 }
@@ -39,6 +40,7 @@ export function useChangelogEntry({
     const [summary, setSummary] = useState(initialData?.summary || "");
     const [coverImage, setCoverImage] = useState<string | null>(initialData?.coverImage || null);
     const [selectedTags, setSelectedTags] = useState<string[]>(initialData?.tags || []);
+    const [relatedPostIds, setRelatedPostIds] = useState<string[]>(initialData?.relatedPostIds || []);
     const [isDraft, setIsDraft] = useState(initialData?.status !== "published");
     const [isSaving, setIsSaving] = useState(false);
     const [isDirty, setIsDirty] = useState(false);
@@ -91,6 +93,7 @@ export function useChangelogEntry({
                     summary: summary.trim() ? summary.trim() : undefined,
                     coverImage: coverImage || undefined,
                     tags: selectedTags,
+                    relatedPostIds,
                     status: isDraft ? "draft" : "published",
                 });
                 const data = await res.json();
@@ -110,6 +113,7 @@ export function useChangelogEntry({
                     summary: summary.trim() ? summary.trim() : null,
                     coverImage: coverImage,
                     tags: selectedTags,
+                    relatedPostIds,
                     status: isDraft ? "draft" : "published",
                 });
                 const data = await res.json();
@@ -126,7 +130,7 @@ export function useChangelogEntry({
         } finally {
             setIsSaving(false);
         }
-    }, [mode, workspaceSlug, entryId, title, summary, coverImage, selectedTags, isDraft, router]);
+    }, [mode, workspaceSlug, entryId, title, summary, coverImage, selectedTags, relatedPostIds, isDraft, router]);
 
     // Auto-save effect
     useEffect(() => {
@@ -148,6 +152,8 @@ export function useChangelogEntry({
         setCoverImage,
         selectedTags,
         setSelectedTags,
+        relatedPostIds,
+        setRelatedPostIds,
         isDraft,
         setIsDraft,
         isSaving,

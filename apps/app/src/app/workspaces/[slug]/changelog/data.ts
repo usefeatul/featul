@@ -21,6 +21,7 @@ export interface ChangelogEntryData {
     authorImage?: string | null;
     status: "draft" | "published";
     tags: string[]; // Tag IDs
+    relatedPostIds?: string[];
     publishedAt?: Date | null;
     createdAt: Date;
     updatedAt: Date;

@@ -5,6 +5,7 @@ import type { JSONContent } from "@tiptap/core";
 import SubdomainChangelogDetail from "@/components/subdomain/changelog/SubdomainChangelogDetail";
 import { createPageMetadata } from "@/lib/seo";
 import { client } from "@featul/api/client";
+import type { RelatedPost } from "@featul/api/changelog/related";
 import type { Role } from "@/types/team";
 
 export const revalidate = 60;
@@ -79,6 +80,7 @@ export default async function ChangelogEntryPage({ params }: Props) {
           isOwner: rawAuthor.isOwner,
         }
       : undefined,
+    relatedPosts: (rawEntry.relatedPosts || []) as RelatedPost[],
     tags: rawEntry.tags as Array<{ id: string; name: string }> | undefined,
   };
 
