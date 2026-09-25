@@ -77,7 +77,7 @@ export function SubdomainLayoutShell({
             roadmapVisible={roadmapVisible}
             initialUser={initialUser ?? null}
           />
-          <div className="mt-6 min-w-0 w-full pb-10 md:pb-0 flex-1">{children}</div>
+          <div className="mt-6 min-w-0 w-full pb-10 md:pb-0 flex-1 has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-col">{children}</div>
           <div className="pb-6 mt-4">
             <PoweredBy />
           </div>

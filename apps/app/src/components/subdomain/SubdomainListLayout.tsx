@@ -31,8 +31,8 @@ export function SubdomainListLayout({
 }: SubdomainListLayoutProps) {
   const grid = subdomainColumns(sidebarPosition)
   return (
-    <section>
-      <div className={grid}>
+    <section className="has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-1 has-[[data-page-empty]]:flex-col">
+      <div className={`${grid} has-[[data-page-empty]]:flex-1`}>
         {sidebarPosition === "left" ? (
           <aside className="hidden min-w-0 md:block">
             <DomainSidebar
@@ -47,7 +47,7 @@ export function SubdomainListLayout({
             />
           </aside>
         ) : null}
-        <div className="min-w-0">{children}</div>
+        <div className="min-w-0 self-stretch has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-col [&>div:has([data-page-empty])]:flex [&>div:has([data-page-empty])]:flex-1 [&>div:has([data-page-empty])]:flex-col">{children}</div>
         {sidebarPosition === "right" ? (
           <aside className="hidden min-w-0 md:block">
             <DomainSidebar

@@ -16,7 +16,8 @@ export default function EmptyDomainPosts({ subdomain, slug }: { subdomain: strin
       >
         <Button
           onClick={() => setOpen(true)}
-          className="h-9 px-4 bg-primary hover:bg-primary/90 ring-ring/60 hover:ring-ring"
+          variant="default"
+          className="h-9 px-4"
         >
           Submit a Post
         </Button>

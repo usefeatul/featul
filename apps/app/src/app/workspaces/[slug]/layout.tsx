@@ -91,7 +91,7 @@ export default async function WorkspaceLayout({
           <WorkspaceHeader workspaceName={ws?.name ?? slug} />
           <div
             data-workspace-scroll
-            className="min-h-0 flex-1 overflow-y-auto overscroll-none px-4 pb-[var(--workspace-mobile-nav-height)] sm:px-8 lg:px-12 lg:pb-8 xl:px-16 has-[[data-changelog-editor]]:px-0 has-[[data-changelog-editor]]:pb-0 has-[[data-request-detail]]:overflow-hidden has-[[data-request-detail]]:pb-0 has-[[data-member-detail]]:overflow-hidden has-[[data-member-detail]]:pb-0"
+            className="min-h-0 flex-1 overflow-y-auto overscroll-none px-4 pb-[var(--workspace-mobile-nav-height)] sm:px-8 lg:px-12 lg:pb-8 xl:px-16 has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-col has-[[data-page-empty]]:lg:pb-0 [&>section:has([data-page-empty])]:flex [&>section:has([data-page-empty])]:flex-1 [&>section:has([data-page-empty])]:flex-col [&>section:has([data-page-empty])]:space-y-0 [&>section:has([data-page-empty])]:pb-36 has-[[data-changelog-editor]]:px-0 has-[[data-changelog-editor]]:pb-0 has-[[data-request-detail]]:overflow-hidden has-[[data-request-detail]]:pb-0 has-[[data-member-detail]]:overflow-hidden has-[[data-member-detail]]:pb-0"
           >
             {children}
           </div>
