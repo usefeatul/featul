@@ -57,6 +57,8 @@ export default function RoleBadge({
     <Tooltip>
       <TooltipTrigger asChild>
         <OverlayChip
+          tabIndex={0}
+          aria-label={getTooltipText(role, isOwner, isFeatul)}
           className={cn(
             "absolute -bottom-1 -right-1 z-10 rounded-lg p-px pointer-events-auto",
             className,
@@ -65,7 +67,7 @@ export default function RoleBadge({
         >
           <StarIcon
             className={cn("size-2.5", getRoleColor(role, isOwner, isFeatul))}
-            aria-label={getTooltipText(role, isOwner, isFeatul)}
+            aria-hidden="true"
           />
         </OverlayChip>
       </TooltipTrigger>
