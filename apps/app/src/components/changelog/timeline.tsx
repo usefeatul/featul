@@ -72,7 +72,7 @@ export function Timeline({
           <TooltipContent
             side="right"
             sideOffset={8}
-            className="w-64 max-w-full bg-sidebar p-3 text-sidebar-foreground dark:bg-popover dark:text-popover-foreground"
+            className="w-64 max-w-full bg-sidebar p-3 text-sidebar-foreground dark:bg-sidebar dark:text-sidebar-foreground"
           >
             <p className="line-clamp-2 text-xs font-medium">{section.title}</p>
             {section.preview && section.preview !== section.title ? (
