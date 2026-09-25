@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import SettingsCard from "../../../global/SettingsCard";
-import { TimezoneIcon as Timezone } from "@featul/ui/icons/timezone";
+import { TimezoneIcon as Timezone } from "@/components/global/icons";
 import { TimezoneSelectPanel } from "../../../wizard/TimezoneSelectPanel";
 import { SettingsDialogShell } from "../../global/SettingsDialogShell";
 import { useWorkspaceTimezone } from "@/hooks/useWorkspaceTimezone";

@@ -2,7 +2,7 @@
 
 import React from "react"
 import { commentBadgeClass } from "./styles"
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
+import { ChevronLeftIcon } from "@/components/global/icons"
 import { cn } from "@featul/ui/lib/utils"
 
 export default function CommentCollapseToggle({

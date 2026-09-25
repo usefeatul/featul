@@ -6,7 +6,7 @@ import SettingsCard from "@/components/global/SettingsCard"
 import { authClient } from "@featul/auth/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { ShieldIcon } from "@featul/ui/icons/shield"
+import { ShieldIcon } from "@/components/global/icons"
 import { EnableTwoFactorDialog, DisableTwoFactorDialog, BackupCodesDialog } from "./twofactor"
 
 type TwoFactorAuthProps = {

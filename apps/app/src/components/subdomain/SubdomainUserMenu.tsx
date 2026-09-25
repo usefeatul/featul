@@ -1,10 +1,13 @@
 import React from "react"
 import { DropdownMenuItem } from "@featul/ui/components/dropdown-menu"
-import { IdeaIcon } from "@featul/ui/icons/idea"
-import { SettingIcon } from "@featul/ui/icons/setting"
-import { HomeIcon } from "@featul/ui/icons/home"
+import {
+  IdeaIcon,
+  SettingIcon,
+  HomeIcon,
+  LogoutIcon,
+} from "@/components/global/icons";
+
 import { FillPlusIcon } from "@featul/ui/icons/fill-plus"
-import { LogoutIcon } from "@featul/ui/icons/logout"
 
 type SubdomainUserMenuProps = {
   themeLabel: string

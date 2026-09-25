@@ -2,9 +2,12 @@
 
 import * as React from "react";
 import { client } from "@featul/api/client";
-import { ImageIcon } from "@featul/ui/icons/image";
+import {
+  ImageIcon,
+  X,
+} from "@/components/global/icons";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { X } from "lucide-react";
+
 import { VoteIcon } from "@/components/upvote/VoteIcon";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import type { IdentifiedUser, WidgetApiBase, WidgetComment } from "./types";
@@ -215,7 +218,7 @@ function CommentComposer({
               aria-label="Add image"
             >
               {uploading ? (
-                <LoaderIcon className="size-3.5 animate-spin" />
+                <LoaderIcon className="size-3.5" />
               ) : (
                 <ImageIcon className="size-3.5" />
               )}
@@ -233,7 +236,7 @@ function CommentComposer({
             className="inline-flex h-8 shrink-0 cursor-pointer items-center rounded-md px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-[rgb(var(--widget-fg)/0.12)] disabled:text-[rgb(var(--widget-fg)/0.35)] disabled:opacity-100"
             style={{ backgroundColor: canSubmit ? accent : undefined }}
           >
-            {submitting ? <LoaderIcon className="size-3.5 animate-spin" /> : submitLabel}
+            {submitting ? <LoaderIcon className="size-3.5" /> : submitLabel}
           </button>
         </div>
       </div>

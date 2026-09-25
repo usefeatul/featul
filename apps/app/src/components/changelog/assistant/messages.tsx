@@ -1,7 +1,7 @@
 "use client";
 
 import type { RefObject } from "react";
-import { Check } from "lucide-react";
+import { Check } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 import { Content } from "./content";
 import { withoutEmDash } from "./config";

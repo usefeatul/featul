@@ -3,7 +3,7 @@
 import React from "react"
 import { overlayRibbonInnerClass, overlayRibbonShellClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
-import { StarIcon } from "@featul/ui/icons/star"
+import { StarIcon } from "@/components/global/icons"
 
 type PlanFlagRibbonTone = "popular"
 

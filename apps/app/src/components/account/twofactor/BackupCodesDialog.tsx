@@ -3,7 +3,7 @@
 import React from "react"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
 import { Button } from "@featul/ui/components/button"
-import { ShieldIcon } from "@featul/ui/icons/shield"
+import { ShieldIcon } from "@/components/global/icons"
 import { toast } from "sonner"
 
 type BackupCodesDialogProps = {

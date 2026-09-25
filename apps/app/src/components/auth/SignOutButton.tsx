@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
-import { LogoutIcon } from "@featul/ui/icons/logout";
+import { LogoutIcon } from "@/components/global/icons";
 import { authClient } from "@featul/auth/client";
 import { toast } from "sonner";
 

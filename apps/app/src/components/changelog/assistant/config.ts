@@ -5,7 +5,7 @@ import {
   Sparkles,
   Tags,
   Wand2,
-} from "lucide-react";
+} from "@/components/global/icons";
 import type { AssistantAction } from "./actions";
 
 export type AtQuery = {

@@ -3,15 +3,17 @@
 import * as React from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
-import { MenuIcon } from "@featul/ui/icons/menu"
+import {
+  MenuIcon,
+  CommentsIcon,
+  RoadmapIcon,
+  ChangelogIcon,
+} from "@/components/global/icons";
 import { AccentBar } from "@featul/ui/components/cardElements"
-import { CommentsIcon } from "@featul/ui/icons/comments"
-import { RoadmapIcon } from "@featul/ui/icons/roadmap"
-import { ChangelogIcon } from "@featul/ui/icons/changelog"
+
 import { cn } from "@featul/ui/lib/utils"
 import { Button } from "@featul/ui/components/button"
 import { toolbarItemClass } from "@featul/ui/components/toolbar"
-
 
 export function MobileBoardsMenu({
   slug,

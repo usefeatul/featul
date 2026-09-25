@@ -4,7 +4,7 @@ import React from "react"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
 import { Button } from "@featul/ui/components/button"
 import { Input } from "@featul/ui/components/input"
-import { ShieldIcon } from "@featul/ui/icons/shield"
+import { ShieldIcon } from "@/components/global/icons"
 
 type DisableTwoFactorDialogProps = {
     open: boolean

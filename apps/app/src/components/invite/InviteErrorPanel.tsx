@@ -1,6 +1,6 @@
 import { Button } from "@featul/ui/components/button";
 import { motion } from "framer-motion";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle } from "@/components/global/icons";
 import {
   getInviteMotionProps,
   getInviteTransition,

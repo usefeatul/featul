@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { X } from "lucide-react";
+import { X } from "@/components/global/icons";
 import { ImageLightbox } from "@/components/global/ImageLightbox";
 import { WidgetImage } from "./image";
 import { isSafeImageUrl, postToParent, useParentOrigin } from "./messaging";

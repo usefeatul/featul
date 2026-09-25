@@ -2,8 +2,10 @@ import type { ComponentType } from "react";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { NoltIcon } from "@featul/ui/icons/nolt";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
-import { CsvIcon } from "@featul/ui/icons/csv";
-import { FileExportIcon } from "@featul/ui/icons/file-export";
+import {
+  CsvIcon,
+  FileExportIcon,
+} from "@/components/global/icons";
 
 type DataCardContext = {
   allowProviderImports: boolean;

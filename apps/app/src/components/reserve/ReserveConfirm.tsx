@@ -6,7 +6,7 @@ import { client } from "@featul/api/client"
 import { Button } from "@featul/ui/components/button"
 import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
-import { Link2, Mail } from "lucide-react"
+import { Link2, Mail } from "@/components/global/icons"
 
 export default function ReserveConfirm() {
   const router = useRouter()

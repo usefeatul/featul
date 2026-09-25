@@ -11,9 +11,12 @@ import {
 } from "@featul/ui/components/popover";
 import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
 import { LayersIcon } from "@featul/ui/icons/layers";
-import { ListFilterIcon } from "@featul/ui/icons/list-filter";
+import {
+  ListFilterIcon,
+  SearchIcon,
+} from "@/components/global/icons";
 import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
-import { SearchIcon } from "@featul/ui/icons/search";
+
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";
 import { getBrowserFingerprint } from "@/utils/fingerprint";

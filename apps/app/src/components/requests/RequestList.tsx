@@ -128,7 +128,7 @@ function RequestListBase(props: RequestListProps) {
           </Button>
         ) : isLoading ? (
           <span role="status" className="text-accent">
-            <LoaderIcon className="size-5 animate-spin motion-reduce:animate-none" size={20} />
+            <LoaderIcon className="size-5" size={20} />
             <span className="sr-only">Loading requests</span>
           </span>
         ) : null}

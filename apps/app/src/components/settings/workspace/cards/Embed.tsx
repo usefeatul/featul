@@ -2,7 +2,7 @@
 
 import React from "react";
 import SettingsCard from "../../../global/SettingsCard";
-import { ClipboardIcon as Clipboard } from "@featul/ui/icons/clipboard";
+import { ClipboardIcon as Clipboard } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 import { toast } from "sonner";
 

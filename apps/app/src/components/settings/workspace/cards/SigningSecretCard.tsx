@@ -2,7 +2,7 @@
 
 import React from "react";
 import SettingsCard from "../../../global/SettingsCard";
-import { KeyIcon } from "@featul/ui/icons/key";
+import { KeyIcon } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
 import { toast } from "sonner";

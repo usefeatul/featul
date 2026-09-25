@@ -1,6 +1,7 @@
 "use client";
 
-import { History, Loader2, MessageSquareText, Trash2 } from "lucide-react";
+import { History, MessageSquareText, Trash2 } from "@/components/global/icons";
+import { LoaderIcon } from "@featul/ui/icons/loader";
 import { cn } from "@featul/ui/lib/utils";
 import { relativeTime } from "@/lib/time";
 import type { ChangelogAiConversationSummary } from "@/features/changelog/history";
@@ -37,8 +38,8 @@ export function ConversationHistory({
           </span>
           <span>Synced to your account</span>
           {loading ? (
-            <Loader2
-              className="ml-auto size-3.5 animate-spin"
+            <LoaderIcon
+              className="ml-auto size-3.5"
               aria-label="Loading conversations"
             />
           ) : (

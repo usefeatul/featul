@@ -9,8 +9,13 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from "react";
-import { ArrowLeft, History as HistoryIcon, Plus } from "lucide-react";
-import { PanelIcon } from "@featul/ui/icons/panel";
+import {
+  ArrowLeft,
+  History as HistoryIcon,
+  Plus,
+  PanelIcon,
+} from "@/components/global/icons";
+
 import { motion } from "framer-motion";
 import { usePanelResize } from "@/hooks/usePanelResize";
 import { Resizer } from "@/components/global/resizer";

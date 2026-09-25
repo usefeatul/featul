@@ -22,7 +22,7 @@ export function LoadingButton({
       className={className}
       {...props}
     >
-      {loading ? <LoaderIcon className="size-4 animate-spin" /> : null}
+      {loading ? <LoaderIcon className="size-4" /> : null}
       {children}
     </Button>
   )

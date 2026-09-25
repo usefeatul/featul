@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@featul/ui/components/button";
-import { Bell } from "lucide-react";
+import { Bell } from "@/components/global/icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import NotificationsPanel, {

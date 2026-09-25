@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { ImageIcon } from "@featul/ui/icons/image";
+import { ImageIcon } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
 import { widgetImageInnerClass, widgetImageShellClass } from "./chrome";

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useQuery, type QueryKey } from "@tanstack/react-query";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical } from "@/components/global/icons";
 import { toast } from "sonner";
 import {
   Popover,

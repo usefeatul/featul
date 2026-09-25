@@ -9,7 +9,7 @@ import {
   AlertDialogInner,
   AlertDialogTitle,
 } from "@featul/ui/components/alert-dialog"
-import { TrashIcon } from "@featul/ui/icons/trash"
+import { TrashIcon } from "@/components/global/icons"
 
 type AlertDialogShellProps = {
   open: boolean

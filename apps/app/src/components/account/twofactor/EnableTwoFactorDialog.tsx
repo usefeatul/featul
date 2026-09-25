@@ -5,7 +5,7 @@ import { SettingsDialogShell } from "@/components/settings/global/SettingsDialog
 import { Button } from "@featul/ui/components/button"
 import { Input } from "@featul/ui/components/input"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@featul/ui/components/opt"
-import { ShieldIcon } from "@featul/ui/icons/shield"
+import { ShieldIcon } from "@/components/global/icons"
 import { QRCodeSVG } from "qrcode.react"
 import { toast } from "sonner"
 

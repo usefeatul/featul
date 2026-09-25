@@ -1,10 +1,14 @@
 "use client";
 
 import React from "react";
-import { ArrowBigUp } from "lucide-react";
-import { SearchIcon } from "@featul/ui/icons/search";
+import {
+  ArrowBigUp,
+  SearchIcon,
+  CommentsIcon,
+} from "@/components/global/icons";
+
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { CommentsIcon } from "@featul/ui/icons/comments";
+
 import { Button } from "@featul/ui/components/button";
 import {
   CommandDialog,
@@ -382,7 +386,7 @@ export function WorkspaceSearchAction({
           {isSearching ? (
             <SearchStatusMessage>
               <LoaderIcon
-                className="size-4 animate-spin opacity-70"
+                className="size-4 opacity-70"
                 size={16}
               />
               Searching…

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 import { MobileBoardsMenu } from "./MobileBoardsMenu";
-import { HomeIcon } from "@featul/ui/icons/home";
+import { HomeIcon } from "@/components/global/icons";
 import React from "react";
 import SubdomainUserDropdown from "@/components/subdomain/SubdomainUserDropdown";
 import { client } from "@featul/api/client";

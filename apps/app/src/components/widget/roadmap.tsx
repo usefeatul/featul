@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "@/components/global/icons";
 import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
 import StatusIcon from "@/components/requests/StatusIcon";
 import { normalizeRoadmapStatus } from "@/lib/roadmap";

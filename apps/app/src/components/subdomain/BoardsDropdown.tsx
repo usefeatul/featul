@@ -4,8 +4,11 @@ import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
-import { ChevronDownIcon } from "@featul/ui/icons/chevron-down"
-import { ListIcon } from "@featul/ui/icons/list"
+import {
+  ChevronDownIcon,
+  ListIcon,
+} from "@/components/global/icons";
+
 import { useBoards, type Board } from "@/hooks/useBoards"
 import { cn } from "@featul/ui/lib/utils"
 import { toolbarItemClass } from "@featul/ui/components/toolbar"

@@ -13,8 +13,11 @@ import {
   AlertDialogCancel,
   AlertDialogFooter,
 } from "@featul/ui/components/alert-dialog";
-import { AccountIcon } from "@featul/ui/icons/account";
-import { TrashIcon } from "@featul/ui/icons/trash";
+import {
+  AccountIcon,
+  TrashIcon,
+} from "@/components/global/icons";
+
 import { AlertDialogShell } from "@/components/global/AlertDialogShell";
 import type { UserDropdownAccount } from "./types";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import type { KeyboardEvent, MouseEvent, RefObject } from "react";
-import { ArrowUp, Paperclip, Square, Undo2 } from "lucide-react";
+import { ArrowUp, Paperclip, Square, Undo2 } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 import TextareaAutosize from "react-textarea-autosize";

@@ -3,7 +3,7 @@
 import React from "react"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
 import WorkspaceWizard from "@/components/wizard/Wizard"
-import { PlusIcon } from "@featul/ui/icons/plus"
+import { PlusIcon } from "@/components/global/icons"
 
 interface CreateWorkspaceDialogProps {
   open?: boolean

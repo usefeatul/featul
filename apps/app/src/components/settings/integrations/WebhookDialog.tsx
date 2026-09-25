@@ -119,7 +119,7 @@ export default function WebhookDialog({
             Cancel
           </Button>
           <Button type="submit" disabled={isPending || !webhookUrl.trim()}>
-            {isPending ? <LoaderIcon className="w-4 h-4 animate-spin" /> : "Connect"}
+            {isPending ? <LoaderIcon className="w-4 h-4" /> : "Connect"}
           </Button>
         </div>
       </form>

@@ -11,11 +11,14 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@featul/ui/components/avatar";
-import { AccountIcon } from "@featul/ui/icons/account";
-import { LogoutIcon } from "@featul/ui/icons/logout";
-import { PlusIcon } from "@featul/ui/icons/plus";
+import {
+  AccountIcon,
+  LogoutIcon,
+  PlusIcon,
+} from "@/components/global/icons";
+
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { TickIcon } from "@featul/ui/icons/tick";
+import { TickIcon } from "@/components/global/icons";
 import { getInitials } from "@/utils/user";
 import { cn } from "@featul/ui/lib/utils";
 import type { UserDropdownAccount } from "./types";
@@ -132,10 +135,10 @@ export default function UserDropdownMenu({
                     </div>
                     {switchingAccountUserId === account.userId ||
                     removingAccountUserId === account.userId ? (
-                      <LoaderIcon className="size-4 animate-spin text-accent" />
+                      <LoaderIcon className="size-4 text-accent" />
                     ) : account.isCurrent ? (
                       <TickIcon
-                        className="size-4 shrink-0"
+                        className="size-4 shrink-0 text-emerald-500"
                         aria-label="Current account"
                       />
                     ) : null}

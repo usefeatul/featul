@@ -12,11 +12,14 @@ import {
   PopoverListBack,
 } from "@featul/ui/components/popover";
 import { Button } from "@featul/ui/components/button";
-import { ListFilterIcon } from "@featul/ui/icons/list-filter";
+import {
+  ListFilterIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@/components/global/icons";
 import { LayersIcon } from "@featul/ui/icons/layers";
 import { TagIcon } from "@featul/ui/icons/tag";
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
-import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
+
 import { client } from "@featul/api/client";
 import { getSlugFromPath } from "@/config/nav";
 import { filterToolbarButtonClass } from "@/utils/filter/toolbar";

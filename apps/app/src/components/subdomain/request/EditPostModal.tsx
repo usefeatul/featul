@@ -10,7 +10,7 @@ import { useCreatePostData } from "@/hooks/useCreatePostData";
 import { usePostUpdate } from "@/hooks/usePostUpdate";
 import { usePostUpload } from "@/hooks/usePostUpload";
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard";
-import DocumentTextIcon from "@featul/ui/icons/document-text";
+import { DocumentTextIcon } from "@/components/global/icons";
 import { createPostImageTransferHandlers } from "@/lib/post/transfer";
 import { listPostImages } from "@/lib/post/images";
 

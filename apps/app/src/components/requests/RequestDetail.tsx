@@ -12,7 +12,7 @@ import CommentList from "../comments/CommentList";
 import Properties from "./properties";
 import type { CommentData } from "../../types/comment";
 import { Button } from "@featul/ui/components/button";
-import { EditIcon } from "@featul/ui/icons/edit";
+import { EditIcon } from "@/components/global/icons";
 import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 import EditPostModal from "../subdomain/request/EditPostModal";
 import type { RequestDetailData } from "@/types/request";

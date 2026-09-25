@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { Button } from "@featul/ui/components/button"
 import { ToolbarSeparator } from "@featul/ui/components/toolbar"
-import { CalendarIcon } from "@featul/ui/icons/calendar"
+import { CalendarIcon } from "@/components/global/icons"
 import {
   Tooltip,
   TooltipTrigger,

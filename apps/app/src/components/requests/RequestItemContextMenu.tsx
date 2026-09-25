@@ -3,11 +3,15 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { PopoverList, PopoverSeparator } from "@featul/ui/components/popover";
-import { TrashIcon } from "@featul/ui/icons/trash";
+import {
+  TrashIcon,
+  FlagIcon,
+  EditIcon,
+  Clock,
+} from "@/components/global/icons";
 import { LayersIcon } from "@featul/ui/icons/layers";
 import { TagIcon } from "@featul/ui/icons/tag";
-import { FlagIcon } from "@featul/ui/icons/flag";
-import { EditIcon } from "@featul/ui/icons/edit";
+
 import { useRequestItemActions } from "@/hooks/useRequestItemActions";
 import { useRequestTags } from "@/hooks/useRequestTags";
 import { useRequestFlags } from "@/hooks/useRequestFlags";
@@ -25,7 +29,6 @@ import type { SelectionToggleMeta } from "@/components/selection/Row";
 import type { RequestItemData } from "@/types/request";
 import { useRequestSnooze } from "@/hooks/useRequestSnooze";
 import { isActivelySnoozed } from "@featul/api/shared/snooze";
-import { Clock } from "lucide-react";
 
 type RequestSubmenu = "main" | "status" | "tags" | "flags" | "snooze";
 

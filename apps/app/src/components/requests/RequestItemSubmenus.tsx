@@ -1,8 +1,11 @@
 import * as React from "react";
 import { PopoverList, PopoverListItem, PopoverSeparator } from "@featul/ui/components/popover";
-import { CheckIcon } from "@featul/ui/icons/check";
+import {
+  CheckIcon,
+  ArrowLeftIcon,
+} from "@/components/global/icons";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { ArrowLeftIcon } from "@featul/ui/icons/arrow-left";
+
 import StatusIcon from "./StatusIcon";
 import type { TagSummary } from "@/types/post";
 import { REQUEST_FLAG_VISUALS } from "@/components/global/flag-visuals";
@@ -89,7 +92,7 @@ export function StatusSubmenu({
           >
             <span className="inline-flex size-4 shrink-0 items-center justify-center">
               {isUpdating ? (
-                <LoaderIcon className="size-4 animate-spin" />
+                <LoaderIcon className="size-4" />
               ) : isCurrent ? (
                 <CheckIcon className="size-3.5" />
               ) : (

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ListFilterIcon } from "@featul/ui/icons/list-filter";
+import { ListFilterIcon } from "@/components/global/icons";
 import {
   RequestMultiSelectFilter,
   useRequestMultiSelectFilter,

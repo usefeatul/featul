@@ -34,7 +34,7 @@ import {
 	type MentionSuggestionItem,
 } from "@featul/editor";
 import { Button } from "@featul/ui/components/button";
-import { Sparkles } from "lucide-react";
+import { Sparkles } from "@/components/global/icons";
 import {
 	forwardRef,
 	type ForwardedRef,

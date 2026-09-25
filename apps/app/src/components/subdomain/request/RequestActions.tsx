@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical } from "@/components/global/icons";
 import {
   Popover,
   PopoverTrigger,

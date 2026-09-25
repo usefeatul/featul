@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Input } from "@featul/ui/components/input"
-import BoardDialogIcon from "@featul/ui/icons/board-dialog"
+import { BoardDialogIcon } from "@/components/global/icons"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
 import { LoadingButton } from "@/components/global/LoadingButton"
 import { toSlug } from "@/lib/slug"

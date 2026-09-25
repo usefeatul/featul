@@ -2,8 +2,12 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, X } from "lucide-react";
-import { PanelIcon } from "@featul/ui/icons/panel";
+import {
+  Search,
+  X,
+  PanelIcon,
+} from "@/components/global/icons";
+
 import { Button } from "@featul/ui/components/button";
 import {
   Tooltip,
@@ -352,7 +356,7 @@ export default function Navigator({
               ) : null}
               {!isError && data && isFetching ? (
                 <LoaderIcon
-                  className="size-3.5 animate-spin text-muted-foreground motion-reduce:animate-none"
+                  className="size-3.5 text-muted-foreground"
                   size={14}
                 />
               ) : null}

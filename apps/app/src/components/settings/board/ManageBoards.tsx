@@ -23,7 +23,7 @@ import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 import { LoadingButton } from "@/components/global/LoadingButton";
 import PlanNotice from "../global/PlanNotice";
 import ModalCreateBoard from "../feedback/ModalCreateBoard";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical } from "@/components/global/icons";
 import {
   assertBoardMutationOk,
   setFeedbackBoardsCache,

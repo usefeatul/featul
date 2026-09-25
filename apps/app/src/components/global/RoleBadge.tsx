@@ -8,7 +8,7 @@ import {
   TooltipContent,
 } from "@featul/ui/components/tooltip";
 import { OverlayChip } from "@featul/ui/components/overlay-chip";
-import { StarIcon } from "@featul/ui/icons/star";
+import { StarIcon } from "@/components/global/icons";
 
 interface RoleBadgeProps {
   role?: Role | null;

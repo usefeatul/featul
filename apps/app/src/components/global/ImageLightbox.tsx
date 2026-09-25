@@ -2,8 +2,11 @@
 
 import { useEffect } from "react";
 import { Button } from "@featul/ui/components/button";
-import { ImageIcon } from "@featul/ui/icons/image";
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import {
+  ImageIcon,
+  ChevronLeftIcon,
+} from "@/components/global/icons";
+
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
 

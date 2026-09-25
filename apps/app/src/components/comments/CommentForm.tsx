@@ -5,13 +5,17 @@ import MentionList from "./MentionList"
 import { MentionTextarea } from "./MentionTextarea"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
-import { ImageIcon } from "@featul/ui/icons/image"
-import { LockIcon } from "@featul/ui/icons/lock"
+import {
+  ImageIcon,
+  LockIcon,
+  XMarkIcon,
+} from "@/components/global/icons";
+
 import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip"
 import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import ContentImage from "@/components/global/ContentImage"
-import { XMarkIcon } from "@featul/ui/icons/xmark"
+
 import { useImageUpload } from "../../hooks/useImageUpload"
 import { useMentions } from "../../hooks/useMentions"
 import { useCommentSubmit } from "../../hooks/useCommentSubmit"
@@ -171,7 +175,7 @@ export default function CommentForm({
             aria-label="Add image"
           >
             {uploadingImage ? (
-              <LoaderIcon className="h-4 w-4 animate-spin" />
+              <LoaderIcon className="h-4 w-4" />
             ) : (
               <ImageIcon className="size-4" />
             )}
@@ -245,7 +249,7 @@ export default function CommentForm({
             }
           >
             {isPending ? (
-              <LoaderIcon className="h-3 w-3 animate-spin" />
+              <LoaderIcon className="h-3 w-3" />
             ) : (
               buttonText
             )}

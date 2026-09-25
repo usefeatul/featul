@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
-import { Plus } from "lucide-react";
+import { Plus } from "@/components/global/icons";
 
 interface EmptyChangelogProps {
   workspaceSlug?: string;

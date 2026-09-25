@@ -2,7 +2,7 @@
 
 import React, { useState, useTransition } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { TrashIcon } from "@featul/ui/icons/trash"
+import { TrashIcon } from "@/components/global/icons"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 import { PopoverListItem } from "@featul/ui/components/popover"

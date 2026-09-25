@@ -3,9 +3,12 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { PopoverList, PopoverSeparator } from "@featul/ui/components/popover";
-import { EditIcon } from "@featul/ui/icons/edit";
+import {
+  EditIcon,
+  TrashIcon,
+} from "@/components/global/icons";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { TrashIcon } from "@featul/ui/icons/trash";
+
 import { PenIcon } from "@featul/ui/icons/pen";
 import { useChangelogEntryActions } from "@/hooks/useChangelogEntryActions";
 import { useContextMenuPosition } from "@/hooks/useContextMenuPosition";
@@ -70,7 +73,7 @@ export function ChangelogItemContextMenu({
               <ContextMenuItem
                 icon={
                   isPending ? (
-                    <LoaderIcon className="size-4 animate-spin" />
+                    <LoaderIcon className="size-4" />
                   ) : (
                     <LoaderIcon className="size-4" />
                   )
@@ -84,7 +87,7 @@ export function ChangelogItemContextMenu({
               <ContextMenuItem
                 icon={
                   isPending ? (
-                    <LoaderIcon className="size-4 animate-spin" />
+                    <LoaderIcon className="size-4" />
                   ) : (
                     <PenIcon className="size-4" />
                   )

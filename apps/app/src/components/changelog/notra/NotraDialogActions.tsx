@@ -38,7 +38,7 @@ export function NotraDialogActions({
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitDisabled}>
-          {isPending ? <LoaderIcon className="size-4 animate-spin" /> : null}
+          {isPending ? <LoaderIcon className="size-4" /> : null}
           Sync Now
         </Button>
       </div>

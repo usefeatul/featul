@@ -12,7 +12,7 @@ import {
 import { useWorkspaceSwitcher } from "../../hooks/useWorkspaceSwitcher";
 import Image from "next/image";
 import { getSlugFromPath } from "../../config/nav";
-import { PlusIcon } from "@featul/ui/icons/plus";
+import { PlusIcon } from "@/components/global/icons";
 import { WorkspaceSwitcherIcon } from "@featul/ui/icons/workspace";
 import type { Ws } from "../../hooks/useWorkspaceSwitcher";
 import { SidebarBadge } from "./badge";

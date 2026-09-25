@@ -6,10 +6,14 @@ import { Button } from "@featul/ui/components/button";
 import { client } from "@featul/api/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CsvIcon } from "@featul/ui/icons/csv";
+import {
+  CsvIcon,
+  Upload,
+  X,
+} from "@/components/global/icons";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X } from "lucide-react";
+
 import {
   type ImportResult,
   invalidateWorkspaceImportQueries,
@@ -211,7 +215,7 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
               transition={{ duration: 0.2 }}
               className="flex flex-col items-center justify-center py-6 gap-3"
             >
-              <LoaderIcon className="animate-spin text-muted-foreground size-5" />
+              <LoaderIcon className="text-muted-foreground size-5" />
               <p className="text-sm text-accent">Importing your data...</p>
             </motion.div>
           )}

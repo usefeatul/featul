@@ -10,7 +10,7 @@ import { Label } from "@featul/ui/components/label";
 import DomainActions from "./DomainActions";
 import AddDomainDialog from "./AddDomainDialog";
 import DomainHostField from "./DomainHostField";
-import { ArrowIcon } from "@featul/ui/icons/arrow";
+import { ArrowIcon } from "@/components/global/icons";
 import { normalizePlan } from "@/lib/plan";
 import { useCanEditDomain } from "@/hooks/useWorkspaceAccess";
 import { LoadingButton } from "@/components/global/LoadingButton";

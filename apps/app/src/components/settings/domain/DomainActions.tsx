@@ -8,7 +8,7 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical } from "@/components/global/icons";
 import { LoadingButton } from "@/components/global/LoadingButton";
 
 export default function DomainActions({

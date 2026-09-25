@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
 import { client } from "@featul/api/client"
 import SettingsCard from "@/components/global/SettingsCard"
-import { CloudIcon } from "@featul/ui/icons/cloud"
+import { CloudIcon } from "@/components/global/icons"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import type { SessionItem } from "@/types/session"
@@ -78,7 +78,7 @@ export default function ActiveSessions({ initialSessions }: { initialSessions?: 
                     </div>
                     {isFetching ? (
                         <div className="flex items-center gap-2 text-sm text-accent py-4">
-                            <LoaderIcon className="animate-spin size-4" />
+                            <LoaderIcon className="size-4" />
                             Loading sessions...
                         </div>
                     ) : (

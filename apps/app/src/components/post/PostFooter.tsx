@@ -3,7 +3,7 @@
 import React from "react"
 import { Button } from "@featul/ui/components/button"
 import { LoaderIcon } from "@featul/ui/icons/loader"
-import { ImageIcon } from "@featul/ui/icons/image"
+import { ImageIcon } from "@/components/global/icons"
 import type { UploadedImage } from "./PostContent"
 
 export interface PostFooterProps {
@@ -54,7 +54,7 @@ export function PostFooter({
             aria-label="Add image"
           >
             {uploadingImage ? (
-              <LoaderIcon className="h-4 w-4 animate-spin" />
+              <LoaderIcon className="h-4 w-4" />
             ) : (
               <ImageIcon className="size-4" />
             )}
@@ -74,7 +74,7 @@ export function PostFooter({
         aria-keyshortcuts="Meta+Enter Control+Enter"
         className="bg-primary px-6 text-primary-foreground hover:bg-primary/90"
       >
-        {isPending && <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />}
+        {isPending && <LoaderIcon className="mr-2 h-4 w-4" />}
         {isPending ? (submitLabel === "Create" ? "Creating..." : "Saving...") : submitLabel}
       </Button>
     </div>

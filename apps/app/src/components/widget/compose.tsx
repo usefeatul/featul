@@ -4,9 +4,14 @@ import * as React from "react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
 import { Textarea } from "@featul/ui/components/textarea";
-import { ImageIcon } from "@featul/ui/icons/image";
+import {
+  ImageIcon,
+  ArrowBigUp,
+  Camera,
+  Check,
+} from "@/components/global/icons";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { ArrowBigUp, Camera, Check } from "lucide-react";
+
 import { ScreenshotAnnotator } from "./annotate";
 import {
   IMAGE_UPLOAD_CONTENT_TYPES,
@@ -282,7 +287,7 @@ export function WidgetFeedbackCompose({
     return (
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-2 text-center">
         <div className="flex size-11 items-center justify-center rounded-full bg-emerald-500 text-white">
-          <Check className="size-5" strokeWidth={2.5} />
+          <Check className="size-5" />
         </div>
         <p className="mt-4 text-[15px] font-semibold tracking-tight text-[rgb(var(--widget-fg))]">
           Thanks for the feedback
@@ -396,7 +401,7 @@ export function WidgetFeedbackCompose({
             aria-label="Add image"
           >
             {uploading ? (
-              <LoaderIcon className="size-4 animate-spin" />
+              <LoaderIcon className="size-4" />
             ) : (
               <ImageIcon className="size-4" />
             )}
@@ -418,9 +423,9 @@ export function WidgetFeedbackCompose({
             aria-label="Capture screenshot"
           >
             {capturing ? (
-              <LoaderIcon className="size-4 animate-spin" />
+              <LoaderIcon className="size-4" />
             ) : (
-              <Camera className="size-4" strokeWidth={1.75} />
+              <Camera className="size-4" />
             )}
           </button>
           </div>
@@ -435,7 +440,7 @@ export function WidgetFeedbackCompose({
             disabled={!canSubmit}
             className="h-10 shrink-0 cursor-pointer rounded-md bg-[rgb(var(--widget-cta))] px-5 text-sm font-semibold text-[rgb(var(--widget-cta-fg))] hover:opacity-90 disabled:bg-[rgb(var(--widget-fg)/0.2)] disabled:text-[rgb(var(--widget-fg)/0.35)]"
           >
-            {submitting ? <LoaderIcon className="size-4 animate-spin" /> : "Post"}
+            {submitting ? <LoaderIcon className="size-4" /> : "Post"}
           </Button>
         </div>
       </div>

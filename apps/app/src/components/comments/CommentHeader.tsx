@@ -4,8 +4,11 @@ import PinnedBadge from "./PinnedBadge"
 import CommentCollapseToggle from "./CommentCollapseToggle"
 import { commentBadgeClass } from "./styles"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
-import { EditIcon } from "@featul/ui/icons/edit"
-import { LockIcon } from "@featul/ui/icons/lock"
+import {
+  EditIcon,
+  LockIcon,
+} from "@/components/global/icons";
+
 import { ReportIndicator } from "../requests/ReportIndicator"
 import type { CommentData } from "../../types/comment"
 

@@ -12,7 +12,7 @@ interface LoadingSpinnerProps {
 export function LoadingSpinner({ label = "Loading...", className }: LoadingSpinnerProps) {
   return (
     <div className={cn("flex items-center justify-center gap-2 py-6 text-sm text-accent", className)}>
-      <LoaderIcon className="size-4 animate-spin" />
+      <LoaderIcon className="size-4" />
       <span>{label}</span>
     </div>
   )

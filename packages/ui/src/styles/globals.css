@@ -7,6 +7,33 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer components {
+  .featul-circular-dots {
+    display: inline-block;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+  }
+
+  .featul-circular-dots__dot {
+    animation: featul-circular-dots-fade 800ms linear infinite;
+    animation-delay: calc((var(--dots-step) - 8) * 100ms);
+  }
+}
+
+@keyframes featul-circular-dots-fade {
+  from { opacity: 1; }
+  to { opacity: 0.2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featul-circular-dots__dot {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
 :root {
   --background: #f5f5f2;
   --foreground: #202020;

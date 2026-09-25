@@ -6,13 +6,16 @@ import { Button } from "@featul/ui/components/button";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 
 import { Switch } from "@featul/ui/components/switch";
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import {
+  ChevronLeftIcon,
+  Plus,
+} from "@/components/global/icons";
 import { SECTIONS, WORKSPACE_TITLES, getSectionMeta } from "@/config/sections";
 import { getAccountSectionMeta } from "@/config/account/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
 import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
 import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
-import { Plus } from "lucide-react";
+
 import {
   useEditorHeaderActionsOptional,
   type EditorAction,

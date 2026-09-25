@@ -4,7 +4,7 @@ import React from "react"
 import ContentImage from "@/components/global/ContentImage"
 import { ImageLightbox } from "@/components/global/ImageLightbox"
 import { listPostImages } from "@/lib/post/images"
-import { XMarkIcon } from "@featul/ui/icons/xmark"
+import { XMarkIcon } from "@/components/global/icons"
 import { cn } from "@featul/ui/lib/utils"
 
 type GalleryImage = {

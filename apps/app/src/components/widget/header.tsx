@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, X } from "lucide-react";
+import { ChevronLeft, X } from "@/components/global/icons";
 import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
 import { FillPenIcon } from "@featul/ui/icons/fill-pen";
 import { WidgetImage } from "./image";

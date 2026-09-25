@@ -1,7 +1,7 @@
 "use client";
 
 import { PopoverListItem } from "@featul/ui/components/popover";
-import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
+import { ChevronRightIcon } from "@/components/global/icons";
 
 export const CONTEXT_MENU_DESTRUCTIVE_CLASS =
   "text-destructive hover:text-destructive focus:text-destructive hover:bg-destructive/10 focus:bg-destructive/10";

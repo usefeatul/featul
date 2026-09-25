@@ -1,6 +1,7 @@
 import { cn } from "@featul/ui/lib/utils";
 import { motion } from "framer-motion";
-import { Check, LoaderCircle, X } from "lucide-react";
+import { Check, X } from "@/components/global/icons";
+import { LoaderIcon } from "@featul/ui/icons/loader";
 import {
   getInviteMotionProps,
   getInviteTransition,
@@ -61,7 +62,7 @@ export default function InviteActionState({
         )}
       >
         {isPending ? (
-          <LoaderCircle className="size-6 animate-spin" />
+          <LoaderIcon className="size-6" />
         ) : isAccepted ? (
           <Check className="size-7" />
         ) : (

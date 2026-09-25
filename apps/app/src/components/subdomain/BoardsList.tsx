@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { DocumentTextIcon } from "@featul/ui/icons/document-text"
+import { DocumentTextIcon } from "@/components/global/icons"
 import { useBoards, type Board } from "@/hooks/useBoards"
 import { cn } from "@featul/ui/lib/utils"
 import {

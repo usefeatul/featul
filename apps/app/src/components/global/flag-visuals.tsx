@@ -1,7 +1,10 @@
 import type { FC, SVGProps } from "react"
-import { LockIcon } from "@featul/ui/icons/lock"
+import {
+  LockIcon,
+  StarIcon,
+} from "@/components/global/icons";
 import { PinIcon } from "@featul/ui/icons/pin"
-import { StarIcon } from "@featul/ui/icons/star"
+
 import { StarPinIcon } from "@featul/ui/icons/star-pin"
 import {
   PinLockIcon,

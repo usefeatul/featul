@@ -1,11 +1,11 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
+import type { AppIcon } from "@/components/global/icons";
 
 export type AssistantAction = {
   label: string;
   prompt: string;
-  icon: LucideIcon;
+  icon: AppIcon;
   attachFeedback?: boolean;
   attachThisWeek?: boolean;
   publishCheck?: boolean;

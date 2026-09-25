@@ -3,7 +3,7 @@
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { useReducedMotion } from "framer-motion";
-import { MoveVerticalIcon } from "@featul/ui/icons/vertical";
+import { MoveVerticalIcon } from "@/components/global/icons";
 import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";

@@ -4,8 +4,12 @@ import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
 import { Button } from "@featul/ui/components/button";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import {
+  ArrowRight,
+  Sparkles,
+  ChevronLeftIcon,
+} from "@/components/global/icons";
+
 import {
   buildWelcomeTourSteps,
   type WelcomeTourStep,

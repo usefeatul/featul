@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronsUp, ChevronsDown } from "lucide-react";
-import { PanelIcon } from "@featul/ui/icons/panel";
+import {
+  ChevronsUp,
+  ChevronsDown,
+  PanelIcon,
+} from "@/components/global/icons";
+
 import { Button } from "@featul/ui/components/button";
 import {
   Tooltip,

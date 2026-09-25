@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ShareIcon } from "@featul/ui/icons/share";
+import { ShareIcon } from "@/components/global/icons";
 import { PopoverListItem } from "@featul/ui/components/popover";
 import { toast } from "sonner";
 

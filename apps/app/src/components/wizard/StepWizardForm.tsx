@@ -17,8 +17,11 @@ import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import TimezonePicker from "./TimezonePicker"
 import WizardPreview from "./WizardPreview"
-import { CheckIcon } from "@featul/ui/icons/check"
-import { XMarkIcon } from "@featul/ui/icons/xmark"
+import {
+  CheckIcon,
+  XMarkIcon,
+} from "@/components/global/icons";
+
 import { LoaderIcon } from "@featul/ui/icons/loader"
 import { WebsiteFavicon } from "./WebsiteFavicon"
 import {
@@ -318,7 +321,7 @@ export default function StepWizardForm({
                     )}
                   >
                     {!slugLocked && slugChecking ? (
-                      <LoaderIcon className="size-3.5 animate-spin text-accent" />
+                      <LoaderIcon className="size-3.5 text-accent" />
                     ) : !slugLocked && slug && slugAvailable === true ? (
                       <span className="inline-flex size-3.5 items-center justify-center rounded-full bg-emerald-500 text-white">
                         <CheckIcon className="size-2" />
@@ -360,7 +363,7 @@ export default function StepWizardForm({
             </Button>
             <Button type="button" onClick={onNext} disabled={isCreating || !canNext}>
               {isCreating ? (
-                <LoaderIcon className="size-4 animate-spin" />
+                <LoaderIcon className="size-4" />
               ) : step === steps.length - 1 ? (
                 "Create"
               ) : (

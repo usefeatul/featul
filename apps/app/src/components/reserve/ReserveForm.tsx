@@ -6,7 +6,7 @@ import { Input } from "@featul/ui/components/input"
 import { Button } from "@featul/ui/components/button"
 import { toast } from "sonner"
 import { isSlugValid } from "@/lib/validators"
-import { Link2, Mail } from "lucide-react"
+import { Link2, Mail } from "@/components/global/icons"
 
 type CheckSlugResponse = {
   available?: boolean

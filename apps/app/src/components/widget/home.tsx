@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from "@/components/global/icons";
 import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
 import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
 import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";

@@ -1,10 +1,13 @@
 "use client";
 
 import type { MouseEvent } from "react";
-import { CalendarCheck2 } from "lucide-react";
+import {
+  CalendarCheck2,
+  XMarkIcon,
+} from "@/components/global/icons";
 import { PopoverList, PopoverListItem } from "@featul/ui/components/popover";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { XMarkIcon } from "@featul/ui/icons/xmark";
+
 import { GitHubIcon } from "@featul/ui/icons/github";
 import { cn } from "@featul/ui/lib/utils";
 import StatusIcon from "@/components/requests/StatusIcon";
@@ -101,7 +104,7 @@ export function Sources({
     >
       {isLoading ? (
         <div className="flex items-center justify-center gap-2 px-3 py-6 text-xs text-muted-foreground">
-          <LoaderIcon className="size-3.5 animate-spin" />
+          <LoaderIcon className="size-3.5" />
           Loading posts…
         </div>
       ) : items.length === 0 ? (

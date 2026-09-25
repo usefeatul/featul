@@ -78,7 +78,7 @@ export default function SettingsCard({
                   onClick={onAction}
                   disabled={disabled || isLoading}
                 >
-                  {isLoading ? <LoaderIcon className="animate-spin" size={16} /> : buttonLabel}
+                  {isLoading ? <LoaderIcon size={16} /> : buttonLabel}
                 </Button>
               )}
             </>

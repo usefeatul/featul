@@ -41,7 +41,7 @@ export function NotraConnectionSection({
           <div className="flex items-center gap-2">
             <span className="inline-flex size-4 items-center justify-center">
               {isLoadingConnection ? (
-                <LoaderIcon className="size-3.5 animate-spin text-muted-foreground" />
+                <LoaderIcon className="size-3.5 text-muted-foreground" />
               ) : null}
             </span>
             <Switch

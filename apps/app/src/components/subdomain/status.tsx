@@ -11,9 +11,12 @@ import {
   PopoverTrigger,
 } from "@featul/ui/components/popover";
 import { toolbarItemClass } from "@featul/ui/components/toolbar";
-import { CheckIcon } from "@featul/ui/icons/check";
-import { ChevronDownIcon } from "@featul/ui/icons/chevron-down";
-import { ListFilterIcon } from "@featul/ui/icons/list-filter";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  ListFilterIcon,
+} from "@/components/global/icons";
+
 import { cn } from "@featul/ui/lib/utils";
 import StatusIcon from "@/components/requests/StatusIcon";
 import {

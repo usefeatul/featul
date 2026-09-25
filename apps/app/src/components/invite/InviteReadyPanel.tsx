@@ -5,7 +5,7 @@ import {
   AvatarImage,
 } from "@featul/ui/components/avatar";
 import { motion } from "framer-motion";
-import { ArrowRight, Mail, UserRoundPlus } from "lucide-react";
+import { ArrowRight, Mail, UserRoundPlus } from "@/components/global/icons";
 import {
   getInviteMotionProps,
   getInviteTransition,

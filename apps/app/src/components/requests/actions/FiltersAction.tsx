@@ -13,16 +13,21 @@ import {
   PopoverSeparator,
 } from "@featul/ui/components/popover";
 import { Button } from "@featul/ui/components/button";
-import { FilterIcon } from "@featul/ui/icons/filter";
-import { ListFilterIcon } from "@featul/ui/icons/list-filter";
+import {
+  FilterIcon,
+  ListFilterIcon,
+  CalendarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Clock,
+  MessageCircleOff,
+} from "@/components/global/icons";
+
 import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
 import { SORT_OPTIONS, type SortOrder } from "@/types/sort";
 import { LayersIcon } from "@featul/ui/icons/layers";
 import { TagIcon } from "@featul/ui/icons/tag";
-import { CalendarIcon } from "@featul/ui/icons/calendar";
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
-import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
-import { Clock, MessageCircleOff } from "lucide-react";
+
 import { client } from "@featul/api/client";
 import { STALE_STATUS_KEY } from "@featul/api/shared/stale";
 import { LOW_INTERACTION_STATUS_KEY } from "@featul/api/shared/low-interaction";
@@ -389,10 +394,7 @@ export default function FiltersAction({
                   )
                 }
               >
-                <MessageCircleOff
-                  className="size-4 shrink-0"
-                  strokeWidth={2.25}
-                />
+                <MessageCircleOff className="size-4 shrink-0" />
                 <span className="text-sm">Low Traction</span>
                 <span aria-hidden="true" className="ml-auto w-3 text-xs">{isLowInteractionActive ? "✓" : null}</span>
               </PopoverListItem>
@@ -406,7 +408,7 @@ export default function FiltersAction({
                   toggleSpecialStatus(SNOOZED_STATUS_KEY, isSnoozedActive)
                 }
               >
-                <Clock className="size-4 shrink-0" strokeWidth={2.25} />
+                <Clock className="size-4 shrink-0" />
                 <span className="text-sm">Snoozed</span>
                 <span aria-hidden="true" className="ml-auto w-3 text-xs">{isSnoozedActive ? "✓" : null}</span>
               </PopoverListItem>

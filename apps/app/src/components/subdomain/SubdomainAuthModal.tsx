@@ -8,7 +8,7 @@ import {
   DialogInner,
   DialogTitle,
 } from "@featul/ui/components/dialog";
-import { AccountIcon } from "@featul/ui/icons/account";
+import { AccountIcon } from "@/components/global/icons";
 import SignIn from "@/components/auth/SignIn";
 import SignUp from "@/components/auth/SignUp";
 import type { AuthMode } from "@/types/auth";

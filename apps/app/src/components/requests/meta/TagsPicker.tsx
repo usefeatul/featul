@@ -7,7 +7,7 @@ import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem }
 import { cn } from "@featul/ui/lib/utils"
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { client } from "@featul/api/client"
-import { XMarkIcon } from "@featul/ui/icons/xmark"
+import { XMarkIcon } from "@/components/global/icons"
 import { TagIcon } from "@featul/ui/icons/tag"
 import { toast } from "sonner"
 

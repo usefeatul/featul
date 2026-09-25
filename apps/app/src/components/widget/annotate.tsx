@@ -2,15 +2,20 @@
 
 import * as React from "react";
 import { FillPenIcon } from "@featul/ui/icons/fill-pen";
-import { ArrowIcon } from "@featul/ui/icons/arrow";
+import {
+  ArrowIcon,
+  DocumentTextIcon,
+  LockIcon,
+  TrashIcon,
+  PlusIcon,
+  XMarkIcon,
+  Redo2,
+  Undo2,
+} from "@/components/global/icons";
 import { SelectBoxIcon } from "@featul/ui/icons/select-box";
-import { DocumentTextIcon } from "@featul/ui/icons/document-text";
-import { LockIcon } from "@featul/ui/icons/lock";
-import { TrashIcon } from "@featul/ui/icons/trash";
-import { PlusIcon } from "@featul/ui/icons/plus";
-import { XMarkIcon } from "@featul/ui/icons/xmark";
+
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { Redo2, Undo2 } from "lucide-react";
+
 import {
   widgetChipInnerClass,
   widgetChipShellClass,
@@ -626,7 +631,7 @@ export function ScreenshotAnnotator({
           </div>
         </div>
         {!ready ? (
-          <LoaderIcon className="size-5 animate-spin text-[rgb(var(--widget-fg)/0.4)]" />
+          <LoaderIcon className="size-5 text-[rgb(var(--widget-fg)/0.4)]" />
         ) : null}
       </div>
 
@@ -686,7 +691,7 @@ export function ScreenshotAnnotator({
                   aria-label="Undo"
                   className={`${toolButtonClass(false)} disabled:cursor-not-allowed disabled:opacity-30`}
                 >
-                  <Undo2 className="size-3.5" strokeWidth={1.75} />
+                  <Undo2 className="size-3.5" />
                 </button>
                 <button
                   type="button"
@@ -696,7 +701,7 @@ export function ScreenshotAnnotator({
                   aria-label="Redo"
                   className={`${toolButtonClass(false)} disabled:cursor-not-allowed disabled:opacity-30`}
                 >
-                  <Redo2 className="size-3.5" strokeWidth={1.75} />
+                  <Redo2 className="size-3.5" />
                 </button>
                 <button
                   type="button"
@@ -780,7 +785,7 @@ export function ScreenshotAnnotator({
             className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] transition-opacity hover:opacity-90 disabled:opacity-40"
           >
             {busy ? (
-              <LoaderIcon className="size-3.5 animate-spin" />
+              <LoaderIcon className="size-3.5" />
             ) : (
               <>
                 <PlusIcon className="size-3.5" size={14} />

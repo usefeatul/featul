@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import StatusIcon from "./StatusIcon";
-import { CommentsIcon } from "@featul/ui/icons/comments";
+import { CommentsIcon } from "@/components/global/icons";
 import {
   Avatar,
   AvatarImage,

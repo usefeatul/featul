@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { TrashIcon } from "@featul/ui/icons/trash";
+import { TrashIcon } from "@/components/global/icons";
 import { PopoverListItem } from "@featul/ui/components/popover";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { toast } from "sonner";

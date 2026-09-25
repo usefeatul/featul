@@ -6,7 +6,7 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@featul/ui/components/avatar";
-import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
+import { ChevronRightIcon } from "@/components/global/icons";
 import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
 import { BoardSelector } from "./BoardSelector";
 import { StatusSelector } from "./StatusSelector";

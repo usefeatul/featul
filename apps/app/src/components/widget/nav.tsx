@@ -3,7 +3,7 @@
 import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
 import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
 import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
-import { HomeIcon } from "@featul/ui/icons/home";
+import { HomeIcon } from "@/components/global/icons";
 import type { Section, WidgetLayoutStyle } from "./types";
 
 type Props = {

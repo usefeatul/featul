@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Clock } from "lucide-react"
+import { Clock } from "@/components/global/icons"
 import { cn } from "@featul/ui/lib/utils"
 import {
   Tooltip,
@@ -42,7 +42,7 @@ export function SnoozeIndicator({
           )}
           aria-label={label}
         >
-          <Clock className="size-3.5" strokeWidth={2.25} aria-hidden />
+          <Clock className="size-3.5" aria-hidden />
           <span className="text-[10px] tabular-nums">{untilLabel}</span>
         </div>
       </TooltipTrigger>

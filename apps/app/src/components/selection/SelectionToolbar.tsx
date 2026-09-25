@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import { Button } from "@featul/ui/components/button"
-import { TrashIcon } from "@featul/ui/icons/trash"
+import { TrashIcon } from "@/components/global/icons"
 import { cn } from "@featul/ui/lib/utils"
 import { SelectionControl } from "./SelectionControl"
 import { pluralizeItemLabel } from "./pluralize"

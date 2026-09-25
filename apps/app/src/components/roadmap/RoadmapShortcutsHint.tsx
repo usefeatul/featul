@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@featul/ui/components/popover";
-import CircleQuestionMarkIcon from "@featul/ui/icons/circle-question-mark";
+import { CircleQuestionMarkIcon } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 
 const SHORTCUTS = [
