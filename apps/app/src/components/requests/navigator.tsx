@@ -223,7 +223,7 @@ export default function Navigator({
                 }
                 aria-expanded={searchOpen}
                 className={cn(
-                  "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03]",
+                  "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] hover:text-foreground focus-visible:text-foreground dark:bg-transparent dark:hover:bg-white/[0.03]",
                   search && "text-primary",
                 )}
               >
@@ -233,7 +233,7 @@ export default function Navigator({
                 query={query}
                 onQueryChange={setFilterQuery}
                 showClear
-                className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03] [&_svg]:size-[18px]"
+                className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground focus-visible:text-foreground data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03] [&_svg]:size-[18px]"
               />
               <Tooltip>
                 <TooltipTrigger asChild>

@@ -335,7 +335,8 @@ export default function FiltersAction({
           aria-pressed={isActive}
           className={cn(
             className,
-            isActive && "text-foreground ring-0",
+            "text-accent hover:text-foreground focus-visible:text-foreground dark:text-accent dark:hover:text-foreground dark:focus-visible:text-foreground",
+            isActive && "ring-0",
           )}
         >
           <FilterIcon className="size-4" size={16} />
