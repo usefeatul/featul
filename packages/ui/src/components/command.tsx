@@ -37,6 +37,7 @@ type CommandDialogProps = Omit<
   offsetY?: string | number
   icon?: React.ReactNode
   shouldFilter?: boolean
+  contentClassName?: string
 }
 
 function CommandDialog({
@@ -47,6 +48,7 @@ function CommandDialog({
   offsetY = "15%",
   icon,
   shouldFilter,
+  contentClassName,
   ...props
 }: CommandDialogProps) {
   const styleWidth =
@@ -73,7 +75,7 @@ function CommandDialog({
           </DialogTitle>
         </DialogHeader>
         <DialogInner className="p-0">
-          <div className="p-2">
+          <div className={cn("p-2", contentClassName)}>
             <Command shouldFilter={shouldFilter}>
               {children}
             </Command>

@@ -28,6 +28,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@featul/ui/lib/utils";
 import { filterToolbarButtonClass } from "@/utils/filter/toolbar";
 import StatusIcon from "@/components/requests/StatusIcon";
+import { requestBadgeClass } from "@/components/requests/styles";
 
 export type WorkspaceSearchResult = {
   id: string;
@@ -72,27 +73,26 @@ function SearchResultItem({
     <>
       <StatusIcon
         status={status}
-        className="size-[18px] shrink-0 self-center text-foreground/80"
+        className="size-4 shrink-0 text-foreground/80"
       />
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-foreground">
-          <HighlightMatch text={result.title} query={query} />
-        </p>
+      <p className="min-w-0 flex-1 truncate text-sm font-medium leading-5 text-foreground" title={result.title}>
+        <HighlightMatch text={result.title} query={query} />
+      </p>
+      <div className="flex shrink-0 items-center gap-1.5 tabular-nums">
+        <span className={cn(requestBadgeClass, "gap-1 text-muted-foreground/70")} title={`${result.upvotes ?? 0} upvotes`}>
+          <ArrowBigUp className="size-3" aria-hidden />
+          <span>{result.upvotes ?? 0}</span>
+        </span>
+        <span className={cn(requestBadgeClass, "gap-1 text-muted-foreground/70")} title={`${result.commentCount ?? 0} comments`}>
+          <CommentsIcon className="size-3" aria-hidden />
+          <span>{result.commentCount ?? 0}</span>
+        </span>
         {result.boardName ? (
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">
-            {result.boardName}
-          </p>
+          <span className={cn(requestBadgeClass, "hidden max-w-20 sm:inline-flex")} title={result.boardName}>
+            <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+            <span className="truncate uppercase tracking-wide">{result.boardName}</span>
+          </span>
         ) : null}
-      </div>
-      <div className="flex shrink-0 items-center gap-3 self-center text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1">
-          <ArrowBigUp className="size-3.5 opacity-70" aria-hidden />
-          <span className="tabular-nums">{result.upvotes ?? 0}</span>
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <CommentsIcon className="size-3.5 opacity-70" aria-hidden />
-          <span className="tabular-nums">{result.commentCount ?? 0}</span>
-        </span>
       </div>
     </>
   );
@@ -338,6 +338,7 @@ export function WorkspaceSearchAction({
         onOpenChange={handleOpenChange}
         title="Search"
         shouldFilter={false}
+        contentClassName="px-0"
         width="wide"
         icon={<SearchIcon className="size-3.5 opacity-80" />}
         footer={
@@ -365,7 +366,7 @@ export function WorkspaceSearchAction({
           onValueChange={setValue}
           placeholder={placeholder}
           aria-label={placeholder}
-          wrapperClassName="px-4 [&>svg]:size-[18px]"
+          wrapperClassName="px-6 [&>svg]:size-4"
           className="px-0 text-sm"
           onKeyDown={(event) => {
             if (event.key === "Enter") {
@@ -395,7 +396,7 @@ export function WorkspaceSearchAction({
             </SearchStatusMessage>
           ) : null}
           {!isSearching && hasQuery && results.length > 0 ? (
-            <CommandGroup className="gap-0.5 px-1 py-1">
+            <CommandGroup className="py-1">
               {results.map((result) => (
                 <CommandItem
                   key={result.id}
@@ -404,7 +405,7 @@ export function WorkspaceSearchAction({
                     setOpen(false);
                     onResultSelect(result);
                   }}
-                  className="my-0.5 items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-muted/40 aria-selected:bg-muted/70 aria-selected:text-foreground"
+                  className="my-0 min-h-10 items-center gap-3 rounded-none border-t border-border/40 first:border-t-0 dark:border-white/6 px-6 py-2 hover:bg-muted/50 hover:text-foreground aria-selected:bg-muted/50 aria-selected:text-foreground dark:hover:bg-white/[0.04] dark:aria-selected:bg-white/[0.04]"
                 >
                   <SearchResultItem result={result} query={debouncedQuery} />
                 </CommandItem>
@@ -418,8 +419,8 @@ export function WorkspaceSearchAction({
           ) : null}
           {canSubmit && !isSearching ? (
             <>
-              {hasQuery && results.length > 0 ? <CommandSeparator className="bg-foreground/10" /> : null}
-              <CommandGroup>
+              {hasQuery && results.length > 0 ? <CommandSeparator className="mx-0 bg-foreground/10" /> : null}
+              <CommandGroup className="px-2">
                 <CommandItem onSelect={handleSubmit} className="text-primary">
                   <SearchIcon className="size-3.5 opacity-70" size={14} />
                   <span>View all results for &ldquo;{trimmedValue}&rdquo;</span>
