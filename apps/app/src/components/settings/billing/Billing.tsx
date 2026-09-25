@@ -189,7 +189,7 @@ export default function BillingSection({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
           {PLAN_ORDER.map((planKey) => (
             <PlanOptionCard
               key={planKey}
