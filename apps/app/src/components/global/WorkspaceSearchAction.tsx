@@ -341,7 +341,7 @@ export function WorkspaceSearchAction({
         width="wide"
         icon={<SearchIcon className="size-3.5 opacity-80" />}
         footer={
-          <div className="flex items-center justify-between bg-muted/25 px-4 py-2.5 text-sm text-muted-foreground">
+          <div className="flex items-center justify-between border-t border-foreground/10 bg-sidebar px-4 py-2.5 text-sm text-muted-foreground">
             <span>
               {currentSearch ? (
                 <>
@@ -418,7 +418,7 @@ export function WorkspaceSearchAction({
           ) : null}
           {canSubmit && !isSearching ? (
             <>
-              {hasQuery && results.length > 0 ? <CommandSeparator /> : null}
+              {hasQuery && results.length > 0 ? <CommandSeparator className="bg-foreground/10" /> : null}
               <CommandGroup>
                 <CommandItem onSelect={handleSubmit} className="text-primary">
                   <SearchIcon className="size-3.5 opacity-70" size={14} />
