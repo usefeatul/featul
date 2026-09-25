@@ -27,4 +27,43 @@ describe.skipIf(!process.env.DATABASE_URL)("request search prefixes", () => {
     `);
     expect(rows.rows[0]?.matched).toBe(expected);
   });
+  test("ranks matching names above popular content-only matches", async () => {
+    const { db } = await import("@featul/db");
+    const { buildPostFtsFilter, buildPostSearchRelevance } = await import("../src/post/search");
+    const rows = await db.execute(sql`
+      with post(title, content, upvotes) as (
+        values
+          ('Unrelated popular request', 'Duplicate of comments', 1000),
+          ('Fix duplicate of comments', '', 100),
+          ('Duplicate of comments in the inbox', '', 50),
+          ('Duplicate of comments', '', 0)
+      )
+      select title from post where ${buildPostFtsFilter("duplicate of comments")}
+      order by ${buildPostSearchRelevance("duplicate of comments")} desc, upvotes desc
+    `);
+    expect(rows.rows.map((row) => row.title)).toEqual([
+      "Duplicate of comments",
+      "Duplicate of comments in the inbox",
+      "Fix duplicate of comments",
+      "Unrelated popular request",
+    ]);
+  });
+
+  test("three-character title prefixes outrank body matches", async () => {
+    const { db } = await import("@featul/db");
+    const { buildPostFtsFilter, buildPostSearchRelevance } = await import("../src/post/search");
+    const rows = await db.execute(sql`
+      with post(title, content, upvotes) as (
+        values
+          ('Popular request', 'Duplicate of comments', 1000),
+          ('Duplicate of comments', '', 0)
+      )
+      select title from post where ${buildPostFtsFilter("dup")}
+      order by ${buildPostSearchRelevance("dup")} desc, upvotes desc
+    `);
+    expect(rows.rows.map((row) => row.title)).toEqual([
+      "Duplicate of comments", "Popular request",
+    ]);
+  });
+
 });

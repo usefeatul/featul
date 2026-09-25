@@ -20,6 +20,28 @@ export function buildPostFtsFilter(search: string | undefined | null): SQL | und
   return sql`(${wholeWords} or ${document} @@ to_tsquery('english', ${prefixQuery}))`
 }
 
+/** Title relevance takes priority over votes or recency in search suggestions. */
+export function buildPostSearchRelevance(search: string): SQL {
+  const query = search.trim()
+  const escaped = query.replace(/[\\%_]/g, "\\$&")
+  const title = sql`coalesce(${post.title}, '')`
+  const titleDocument = sql`to_tsvector('english', ${title})`
+  const prefix = buildPrefixQuery(query)
+  const terms = prefix
+    ? sql`to_tsquery('english', ${prefix})`
+    : sql`plainto_tsquery('english', ${query})`
+
+  return sql`(
+    case
+      when lower(${title}) = lower(${query}) then 4
+      when ${title} ilike ${escaped + "%"} then 3
+      when ${title} ilike ${"%" + escaped + "%"} then 2
+      when ${titleDocument} @@ ${terms} then 1
+      else 0
+    end + ts_rank_cd(${titleDocument}, ${terms}, 32) * 0.5
+  )`
+}
+
 /** When a text search is active, board filters are ignored so results aren't over-narrowed. */
 export function boardSlugsForSearch<T extends string>(
   search: string | undefined | null,

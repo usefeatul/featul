@@ -56,7 +56,7 @@ type WorkspaceSearchActionProps = {
   onClearSearch?: () => void;
 };
 
-const MIN_QUERY_LENGTH = 2;
+const MIN_QUERY_LENGTH = 3;
 const DEBOUNCE_MS = 150;
 
 function SearchResultItem({
@@ -236,7 +236,7 @@ export function WorkspaceSearchAction({
     });
   }, [open]);
 
-  const hasQuery = debouncedQuery.length >= MIN_QUERY_LENGTH;
+  const hasQuery = value.trim().length >= MIN_QUERY_LENGTH && debouncedQuery.length >= MIN_QUERY_LENGTH;
   const isDebouncing = value.trim() !== debouncedQuery;
 
   const { data: results = [], isFetching } = useQuery({
@@ -254,9 +254,9 @@ export function WorkspaceSearchAction({
     staleTime: 10_000,
   });
 
-  const isSearching = isDebouncing || isFetching;
+  const isSearching = value.trim().length >= MIN_QUERY_LENGTH && (isDebouncing || isFetching);
   const trimmedValue = value.trim();
-  const canSubmit = trimmedValue.length > 0;
+  const canSubmit = trimmedValue.length >= MIN_QUERY_LENGTH;
   const canClear = trimmedValue.length > 0 || currentSearch.length > 0;
 
   const handleSubmit = () => {

@@ -32,7 +32,7 @@ import {
 } from "../shared/access";
 import { createHash } from "crypto";
 import { ACTIVITY_ACTIONS } from "../activity/actions";
-import { buildPostFtsFilter, boardSlugsForSearch } from "../post/search";
+import { buildPostFtsFilter, buildPostSearchRelevance, boardSlugsForSearch } from "../post/search";
 import { resolveIncludePrivateBoardPosts } from "../workspace/access";
 import { hasWorkspaceContentAccess } from "../storage/access";
 import { notifyPostStatusChange } from "../status/notify";
@@ -459,7 +459,7 @@ export function createBoardRouter() {
       .input(
         z.object({
           slug: checkSlugInputSchema.shape.slug,
-          q: z.string().min(2).max(128),
+          q: z.string().trim().min(3).max(128),
           publicOnly: z.boolean().optional().default(false),
         }),
       )
@@ -505,6 +505,7 @@ export function createBoardRouter() {
           .innerJoin(board, eq(post.boardId, board.id))
           .where(and(...filters))
           .orderBy(
+            sql`${buildPostSearchRelevance(input.q)} desc`,
             sql`least(100, ${post.upvotes}) desc`,
             sql`${post.createdAt} desc`,
           )
