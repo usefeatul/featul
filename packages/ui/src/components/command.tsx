@@ -33,7 +33,7 @@ type CommandDialogProps = Omit<
   title?: string
   children?: React.ReactNode
   footer?: React.ReactNode
-  width?: "default" | "wide" | "widest" | "xl" | "xxl"
+  width?: "default" | "wide" | "search" | "widest" | "xl" | "xxl"
   offsetY?: string | number
   icon?: React.ReactNode
   shouldFilter?: boolean
@@ -58,6 +58,8 @@ function CommandDialog({
       ? { width: "min(92vw, 780px)", maxWidth: "none" as const }
       : width === "widest"
       ? { width: "min(92vw, 680px)", maxWidth: "none" as const }
+      : width === "search"
+      ? { width: "min(92vw, 560px)", maxWidth: "none" as const }
       : width === "wide"
       ? { width: "min(92vw, 520px)", maxWidth: "none" as const }
       : { width: "min(92vw, 450px)", maxWidth: "none" as const }

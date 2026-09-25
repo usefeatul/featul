@@ -339,7 +339,7 @@ export function WorkspaceSearchAction({
         title="Search"
         shouldFilter={false}
         contentClassName="px-0"
-        width="wide"
+        width="search"
         icon={<SearchIcon className="size-3.5 opacity-80" />}
         footer={
           <div className="flex items-center justify-between border-t border-foreground/10 bg-sidebar px-4 py-2.5 text-sm text-muted-foreground">
@@ -379,7 +379,7 @@ export function WorkspaceSearchAction({
             }
           }}
         />
-        <CommandList className="scrollbar-hide max-h-[min(50vh,360px)]">
+        <CommandList className="scrollbar-hide max-h-[min(55vh,400px)]">
           <CommandEmpty />
           {!hasQuery && !isSearching ? (
             <SearchStatusMessage variant="placeholder">
