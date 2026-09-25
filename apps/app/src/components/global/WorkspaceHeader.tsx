@@ -215,7 +215,7 @@ export default function WorkspaceHeader({
   if (isCompactListHeader) {
     const changelogTitle = editorTitle?.trim() || "Untitled changelog";
     return (
-      <header className="relative z-20 shrink-0 bg-background px-4 sm:px-6">
+      <header className="relative z-40 shrink-0 bg-background px-4 sm:px-6">
         <div className="flex min-h-12 min-w-0 items-center justify-between gap-2 sm:gap-3">
           {embeddedInEditor && showChangelogEditActions ? (
             <nav aria-label="Changelog navigation" className="min-w-0 flex-1">
@@ -256,7 +256,7 @@ export default function WorkspaceHeader({
   }
 
   return (
-    <header className="relative z-20 shrink-0 bg-background">
+    <header className="relative z-40 shrink-0 bg-background">
       <div className="flex min-h-12 items-center gap-2 px-4 text-sm sm:px-6">
         <Link
           href={`/workspaces/${workspaceSlug}`}
