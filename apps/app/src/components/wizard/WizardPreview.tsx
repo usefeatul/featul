@@ -23,7 +23,7 @@ export default function WizardPreview() {
         cell={3}
         opacity={0.16}
       />
-      <div className="absolute right-0 bottom-0 left-[7%] top-[6%] overflow-hidden rounded-tl-xl">
+      <div className="absolute right-0 bottom-0 left-[12%] top-[8%] overflow-hidden rounded-tl-xl">
         <Image
           src={WIZARD_PREVIEW_IMAGE}
           alt="Featul dashboard"

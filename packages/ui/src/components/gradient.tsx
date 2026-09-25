@@ -41,13 +41,15 @@ function paintGradient(
   width: number,
   height: number,
   spec: PaintSpec,
-): void {
+): boolean {
   const ctx = canvas.getContext("2d");
-  if (!ctx || width <= 0 || height <= 0) return;
+  if (!ctx || ctx.isContextLost?.() || width <= 0 || height <= 0) return false;
   const cols = Math.min(MAX_COLS, Math.max(4, Math.round(width / spec.cell)));
   const rows = Math.min(MAX_ROWS, Math.max(4, Math.round(height / spec.cell)));
   if (canvas.width !== cols) canvas.width = cols;
   if (canvas.height !== rows) canvas.height = rows;
+
+  ctx.clearRect(0, 0, cols, rows);
 
   const fromFill = fillOf(spec.from);
   const toFill = spec.to === "transparent" ? null : fillOf(spec.to);
@@ -85,6 +87,7 @@ function paintGradient(
     bloomCtx.clearRect(0, 0, cols, rows);
     bloomCtx.drawImage(canvas, 0, 0);
   }
+  return true;
 }
 
 const canvasLayout: CSSProperties = {
@@ -110,26 +113,26 @@ export function DitherGradient({
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bloomRef = useRef<HTMLCanvasElement>(null);
+  const fallbackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const wrap = wrapRef.current;
     const canvas = canvasRef.current;
     if (!wrap || !canvas) return;
 
-    let visible = false;
     let frame = 0;
 
     const paint = () => {
-      if (!visible) return;
       const box = wrap.getBoundingClientRect();
       if (box.width < 1 || box.height < 1) return;
-      paintGradient(canvas, bloomRef.current, box.width, box.height, {
+      const painted = paintGradient(canvas, bloomRef.current, box.width, box.height, {
         from,
         to,
         direction,
         cell,
         opacity,
       });
+      if (fallbackRef.current) fallbackRef.current.hidden = painted;
     };
 
     const schedule = () => {
@@ -140,31 +143,55 @@ export function DitherGradient({
       });
     };
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        visible = entries.some((entry) => entry.isIntersecting);
-        if (visible) schedule();
-      },
-      { rootMargin: "120px" },
-    );
-    io.observe(wrap);
-
-    const ro =
-      typeof ResizeObserver === "undefined"
-        ? null
-        : new ResizeObserver(() => {
-            if (visible) schedule();
-          });
+    // Draw on mount rather than waiting for a visibility notification. Resize
+    // observation also handles containers that initially have no dimensions.
+    paint();
+    const ro = typeof ResizeObserver === "undefined"
+      ? null
+      : new ResizeObserver(schedule);
     ro?.observe(wrap);
 
+    const restore = () => {
+      if (fallbackRef.current) fallbackRef.current.hidden = false;
+      schedule();
+    };
+    const resume = () => {
+      if (document.visibilityState === "visible") schedule();
+    };
+    const contextLost = (event: Event) => {
+      event.preventDefault();
+      if (fallbackRef.current) fallbackRef.current.hidden = false;
+    };
+    window.addEventListener("pageshow", restore);
+    window.addEventListener("resize", schedule);
+    document.addEventListener("visibilitychange", resume);
+    canvas.addEventListener("contextlost", contextLost);
+    canvas.addEventListener("contextrestored", restore);
+
     return () => {
-      io.disconnect();
       ro?.disconnect();
+      window.removeEventListener("pageshow", restore);
+      window.removeEventListener("resize", schedule);
+      document.removeEventListener("visibilitychange", resume);
+      canvas.removeEventListener("contextlost", contextLost);
+      canvas.removeEventListener("contextrestored", restore);
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, [from, to, direction, cell, opacity, bloom]);
 
   const bloomStyle = pixelBloomStyle(bloom);
+  // An inline tile is rendered on the server, so refreshes never start with an
+  // empty canvas. The full-resolution canvas replaces it after its first paint.
+  const fill = fillOf(from);
+  const pixels = BAYER4.flatMap((row, y) =>
+    row.map((threshold, x) =>
+      `<rect x="${x}" y="${y}" width="1" height="1" fill="${rgb(fill, 1, 0.2 + 0.8 * threshold)}"/>`,
+    ),
+  ).join("");
+  const tile = `<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4">${pixels}</svg>`;
+  const fadeDirection = {
+    up: "top", down: "bottom", left: "left", right: "right",
+  }[direction];
 
   return (
     <div
@@ -175,6 +202,17 @@ export function DitherGradient({
         className,
       )}
     >
+      <div
+        ref={fallbackRef}
+        className="absolute inset-0"
+        style={{
+          backgroundColor: to === "transparent" ? undefined : rgb(fillOf(to)),
+          backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(tile)}")`,
+          backgroundSize: `${cell * 4}px ${cell * 4}px`,
+          maskImage: to === "transparent" ? `linear-gradient(to ${fadeDirection}, black, transparent)` : undefined,
+          opacity,
+        }}
+      />
       <canvas ref={canvasRef} style={canvasLayout} />
       {bloomStyle ? (
         <canvas ref={bloomRef} style={{ ...canvasLayout, ...bloomStyle }} />
