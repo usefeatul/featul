@@ -55,7 +55,7 @@ export default function MentionList({ candidates, selectedIndex, onSelect, class
           tabIndex={-1}
           aria-activedescendant={selectedCandidate ? mentionOptionId(selectedCandidate.id) : undefined}
         >
-          <PopoverList>
+          <PopoverList className="w-full">
             {candidates.map((user, index) => (
               <PopoverListItem
                 key={user.id}

@@ -130,7 +130,7 @@ export const EditorMentionMenu = ({
           ) : (
             <PopoverList
               ref={listRef}
-              className="flex max-h-[260px] flex-col overflow-y-auto"
+              className="flex max-h-[260px] w-full flex-col overflow-y-auto"
             >
               {items.map((item, index) => (
                 <PopoverListItem
