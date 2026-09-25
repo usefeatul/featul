@@ -1,5 +1,7 @@
 "use client";
 
+import { ShortcutKey } from "./keys";
+
 import React from "react";
 import {
   ArrowBigUp,
@@ -323,13 +325,11 @@ export function WorkspaceSearchAction({
           </span>
         ) : null}
         {showShortcut ? (
-          <kbd
-            aria-hidden="true"
-            className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded border border-border/50 px-1 py-0.5 font-sans text-[10px] leading-none text-accent"
-          >
-            <span>{platformKey}</span>
-            <span>K</span>
-          </kbd>
+          <span aria-hidden="true" className="ml-auto inline-flex shrink-0 items-center gap-1">
+            {[platformKey, "K"].map((key) => (
+              <ShortcutKey key={key} className="bg-muted text-muted-foreground dark:bg-black/30 dark:text-muted-foreground">{key}</ShortcutKey>
+            ))}
+          </span>
         ) : null}
       </Button>
 

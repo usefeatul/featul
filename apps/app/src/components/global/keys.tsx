@@ -1,13 +1,14 @@
 "use client";
 
 import { type ReactNode, useEffect, useState } from "react";
+import { cn } from "@featul/ui/lib/utils";
 import { ArrowBigUp } from "@/components/global/icons";
 
 const keyClassName =
   "inline-flex h-5 min-w-5 items-center justify-center rounded-[4px] bg-white/25 px-1 text-[10px] font-medium leading-none text-white dark:bg-black/[0.14] dark:text-zinc-700";
 
-export function ShortcutKey({ children }: { children: ReactNode }) {
-  return <kbd className={keyClassName}>{children}</kbd>;
+export function ShortcutKey({ children, className }: { children: ReactNode; className?: string }) {
+  return <kbd className={cn(keyClassName, className)}>{children}</kbd>;
 }
 
 export function PanelShortcutKeys({ shift = false }: { shift?: boolean }) {
