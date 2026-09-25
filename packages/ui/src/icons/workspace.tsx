@@ -7,7 +7,6 @@ import {
   Layers3,
   Menu,
   PanelLeft,
-  Search,
   Settings,
   ShieldCheck,
   UserRound,
@@ -397,5 +396,5 @@ export function WorkspaceTimerIcon({
   );
 }
 export const WorkspaceMoreIcon = workspaceIcon(Menu);
-export const WorkspaceSearchIcon = workspaceIcon(Search);
+export { SearchIcon as WorkspaceSearchIcon } from "./search";
 export const WorkspaceSwitcherIcon = workspaceIcon(ChevronsUpDown);

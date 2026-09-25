@@ -66,7 +66,6 @@ import {
   Redo2 as LucideRedo2,
   Save as LucideSave,
   ScanFace as LucideScanFace,
-  Search as LucideSearch,
   Share2 as LucideShare2,
   ShieldCheck as LucideShieldCheck,
   Sparkles as LucideSparkles,
@@ -157,7 +156,7 @@ export const Paperclip = outline(LucidePaperclip);
 export const Plus = outline(LucidePlus);
 export const Redo2 = outline(LucideRedo2);
 export const Save = outline(LucideSave);
-export const Search = outline(LucideSearch);
+export const Search = WorkspaceSearchIcon;
 export const Sparkles = outline(LucideSparkles);
 export const Square = outline(LucideSquare);
 export const Tags = outline(LucideTags);
