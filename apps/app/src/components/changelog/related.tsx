@@ -115,6 +115,7 @@ export function Related({
       <PopoverContent
         list
         align="start"
+        onOpenAutoFocus={(event) => event.preventDefault()}
         className="w-80 max-w-[calc(100vw-2rem)] [&>div]:w-full [&_[data-slot=popover-content-inner]]:w-full"
       >
         <div className="flex items-center gap-2 border-b border-border/50 px-3 py-2">

@@ -71,12 +71,12 @@ export function ChangelogContent({ entry }: ChangelogContentProps) {
             aria-label="Related posts"
           >
             <h2 className="mb-3 text-sm font-medium">Related posts</h2>
-            <ul className="divide-y divide-border/40">
+            <ul className="space-y-1">
               {entry.relatedPosts.map((post) => (
                 <li key={post.id}>
                   <Link
                     href={`/board/p/${encodeURIComponent(post.slug)}`}
-                    className="group flex items-center gap-2.5 rounded-md px-2 py-3 text-sm transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring"
+                    className="group flex items-center gap-2.5 rounded-md px-2 py-3 text-sm transition-colors hover:bg-muted/40 dark:hover:bg-muted/30 focus-visible:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                   >
                     <StatusIcon
                       status={post.roadmapStatus ?? undefined}
