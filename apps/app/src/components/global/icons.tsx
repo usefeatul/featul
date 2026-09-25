@@ -72,7 +72,6 @@ import {
   Sparkles as LucideSparkles,
   Square as LucideSquare,
   SquarePlus as LucideSquarePlus,
-  Star as LucideStar,
   Tags as LucideTags,
   Trash2 as LucideTrash2,
   Undo2 as LucideUndo2,
@@ -217,7 +216,7 @@ export const MoveVerticalIcon = outline(LucideGripVertical);
 export const PlusIcon = outline(LucideSquarePlus);
 export const ShareIcon = outline(LucideShare2);
 export const ShieldIcon = outline(LucideShieldCheck);
-export const StarIcon = outline(LucideStar);
+export { StarIcon } from "@featul/ui/icons/star";
 export const TimezoneIcon = outline(LucideClock3);
 export const TickIcon = CheckCircle;
 export const TrashIcon = Trash2;
