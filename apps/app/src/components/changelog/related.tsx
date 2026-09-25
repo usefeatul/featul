@@ -118,15 +118,15 @@ export function Related({
         onOpenAutoFocus={(event) => event.preventDefault()}
         className="w-80 max-w-[calc(100vw-2rem)] [&>div]:w-full [&_[data-slot=popover-content-inner]]:w-full"
       >
-        <div className="flex items-center gap-2 border-b border-border/50 px-3 py-2">
-          <Search className="size-3.5 shrink-0 text-muted-foreground" />
+        <div className="m-2 flex h-9 items-center gap-2 rounded-md border border-border/60 bg-muted/70 px-3 transition-colors focus-within:border-border dark:border-white/10 dark:bg-white/[0.07] dark:focus-within:border-white/25">
+          <Search className="size-3.5 shrink-0 text-neutral-600 dark:text-neutral-300" />
           <input
             aria-label="Search related posts"
-            placeholder="Link a request…"
+            placeholder="Search requests…"
             value={search}
             maxLength={200}
             onChange={(event) => setSearch(event.target.value)}
-            className="h-7 min-w-0 flex-1 bg-transparent text-xs outline-none placeholder:text-muted-foreground focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-full min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
           />
         </div>
         <PopoverList
