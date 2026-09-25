@@ -54,7 +54,7 @@ export function Timeline({
                 ?.querySelectorAll<HTMLButtonElement>("button");
               buttons?.[Math.max(0, Math.min(sections.length - 1, next))]?.focus();
             }}
-            className="group flex h-5 w-9 cursor-pointer items-center rounded-sm pl-1.5 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+            className="group flex h-2.5 w-9 cursor-pointer items-center rounded-sm pl-1.5 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
           >
             <span
               aria-hidden
