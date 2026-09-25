@@ -1,3 +1,4 @@
+import { getPlanLimits } from "@featul/api/shared/plan";
 import type { PlanKey } from "@/lib/plan";
 
 export type BillingCycle = "monthly" | "yearly";
@@ -26,22 +27,16 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
     yearlyPrice: 0,
     features: [
       {
-        title: "Up to 3 team members",
-        description: "Invite your core team to collaborate in one workspace.",
+        title: "Public feedback portal",
+        description: "Public feedback portal",
       },
+      { title: "Roadmap and changelog", description: "Roadmap and changelog" },
+      { title: "In-app widget", description: "In-app widget" },
+      { title: "Voting and comments", description: "Voting and comments" },
+      { title: "File attachments", description: "File attachments" },
       {
-        title: "File attachments",
-        description: "Capture richer context with attachments on feedback.",
-      },
-      {
-        title: "Essential tagging and changelog tools",
-        description:
-          "Organize feedback with tags and structure release updates with changelog tags.",
-      },
-      {
-        title: "No integrations or imports",
-        description:
-          "Third-party integrations and data imports are not included.",
+        title: "Guest and anonymous feedback",
+        description: "Guest and anonymous feedback",
       },
     ],
   },
@@ -53,27 +48,20 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
     yearlyPrice: 240,
     trialDays: 7,
     features: [
+      { title: "Everything in Free", description: "Everything in Free" },
+      { title: "Custom domain", description: "Custom domain" },
+      { title: "Branding controls", description: "Branding controls" },
       {
-        title: "Up to 5 team members",
-        description: "Scale collaboration with support for a larger team.",
+        title: "Hide Powered by Featul",
+        description: "Hide Powered by Featul",
       },
       {
-        title: "Up to 10 boards",
-        description: "Create up to 10 non-system boards for your workflow.",
+        title: "Slack and Discord alerts",
+        description: "Slack and Discord alerts",
       },
       {
-        title: "Branding controls",
-        description: "Customize branding and hide the 'Powered by' label.",
-      },
-      {
-        title: "Integrations and imports",
-        description:
-          "Use integrations and provider imports (Canny, Nolt, ProductBoard).",
-      },
-      {
-        title: "Advanced organization and publishing",
-        description:
-          "Unlock richer tagging and changelog capabilities for a faster release cadence.",
+        title: "Canny, Nolt, and ProductBoard import",
+        description: "Canny, Nolt, and ProductBoard import",
       },
     ],
   },
@@ -85,31 +73,20 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
     yearlyPrice: 470,
     trialDays: 3,
     features: [
+      { title: "Everything in Starter", description: "Everything in Starter" },
+      { title: "Custom domain", description: "Custom domain" },
+      { title: "Branding controls", description: "Branding controls" },
       {
-        title: "Everything in Starter",
-        description: "Includes all Starter features and capabilities.",
+        title: "Hide Powered by Featul",
+        description: "Hide Powered by Featul",
       },
       {
-        title: "Up to 10 team members",
-        description: "Support larger teams with added collaboration capacity.",
+        title: "Slack and Discord alerts",
+        description: "Slack and Discord alerts",
       },
       {
-        title: "Unlimited boards",
-        description: "Create as many non-system boards as your workflow needs.",
-      },
-      {
-        title: "Comprehensive tagging controls",
-        description:
-          "Support complex categorization across feedback workflows and changelog updates.",
-      },
-      {
-        title: "Unlimited changelog entries",
-        description: "Publish product updates freely as your product evolves.",
-      },
-      {
-        title: "Best for scale",
-        description:
-          "Designed for teams with higher volume and governance needs.",
+        title: "Canny, Nolt, and ProductBoard import",
+        description: "Canny, Nolt, and ProductBoard import",
       },
     ],
   },
@@ -139,4 +116,17 @@ export function getCheckoutSlug(
   if (plan === "professional")
     return cycle === "yearly" ? "professional-yearly" : "professional-monthly";
   return null;
+}
+
+/** Use the enforced limits for the comparison rows. */
+export function getPlanHighlights(plan: PlanKey) {
+  const limits = getPlanLimits(plan);
+  const value = (limit: number | null) =>
+    limit === null ? "Unlimited" : String(limit);
+  return [
+    { label: "Team members", value: value(limits.maxMembers) },
+    { label: "Boards", value: value(limits.maxNonSystemBoards) },
+    { label: "Changelog entries", value: value(limits.maxChangelogEntries) },
+    { label: "Tags", value: value(limits.maxTags) },
+  ];
 }

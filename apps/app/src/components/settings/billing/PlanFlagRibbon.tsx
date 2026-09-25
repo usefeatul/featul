@@ -5,7 +5,7 @@ import { overlayRibbonInnerClass, overlayRibbonShellClass } from "@featul/ui/lib
 import { cn } from "@featul/ui/lib/utils"
 import { StarIcon } from "@/components/global/icons"
 
-type PlanFlagRibbonTone = "popular"
+type PlanFlagRibbonTone = "popular" | "value"
 
 type PlanFlagRibbonProps = {
   label: string
@@ -27,7 +27,7 @@ export default function PlanFlagRibbon({
       <span
         className={cn(
           overlayRibbonInnerClass,
-          tone === "popular" && "bg-primary",
+          tone === "value" ? "bg-orange-500" : "bg-blue-500",
         )}
       >
         <StarIcon width={10} height={10} className="fill-current" />
