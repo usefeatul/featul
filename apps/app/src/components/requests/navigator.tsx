@@ -263,15 +263,15 @@ export default function Navigator({
 
           {searchOpen ? (
             <div className="px-3 pb-2 pt-1">
-              <label className="flex h-9 items-center gap-2 rounded-md border border-border/60 bg-transparent px-3 text-accent focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10">
-                <Search className="size-4 shrink-0" />
+              <label className="flex h-9 items-center gap-2 rounded-md border border-border/60 bg-muted/70 px-3 text-muted-foreground hover:bg-muted focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10 dark:bg-white/[0.07] dark:hover:bg-white/[0.1]">
+                <Search className="size-4 shrink-0 text-neutral-600 dark:text-neutral-300" />
                 <input
                   autoFocus
                   aria-label="Search request queue"
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search requests…"
-                  className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-accent"
+                  className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 />
                 {search ? (
                   <button
