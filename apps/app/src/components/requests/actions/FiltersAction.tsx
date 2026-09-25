@@ -339,7 +339,6 @@ export default function FiltersAction({
           )}
         >
           <FilterIcon className="size-4" size={16} />
-          {isActive ? <span aria-hidden className="absolute right-1 top-1 size-1.5 rounded-full bg-primary" /> : null}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" list className="w-fit min-w-0">
@@ -501,7 +500,7 @@ export default function FiltersAction({
         {showClear && isActive ? (
           <>
             <PopoverSeparator />
-            <PopoverList>
+            <PopoverList className="w-full">
               <PopoverListItem onClick={() => {
                 const href = buildRequestsUrl(slug, sp, { status: [], board: [], tag: [], order: "newest", page: 1 });
                 if (onQueryChange) onQueryChange(href.split("?")[1] || "");

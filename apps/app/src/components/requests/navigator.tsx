@@ -294,7 +294,7 @@ export default function Navigator({
                   key={chip.key}
                   type="button"
                   onClick={() => clearFilter(chip.key)}
-                  className="inline-flex h-6 shrink-0 items-center gap-1 rounded-md bg-black/5 px-2 text-[10px] font-medium capitalize text-muted-foreground transition-colors hover:bg-black/10 hover:text-foreground dark:bg-white/[0.05] dark:hover:bg-white/[0.08]"
+                  className="inline-flex h-6 shrink-0 cursor-pointer items-center gap-1 rounded-md bg-black/5 px-2 text-[10px] font-medium capitalize text-muted-foreground transition-colors hover:bg-black/10 hover:text-foreground dark:bg-white/[0.05] dark:hover:bg-white/[0.08]"
                   aria-label={`Remove ${chip.label} filter`}
                 >
                   {chip.label}
