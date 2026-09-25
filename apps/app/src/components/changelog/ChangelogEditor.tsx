@@ -8,8 +8,8 @@ import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 import type { EditorAction } from "./EditorHeaderContext";
 import { CoverImageUploader } from "./CoverImageUploader";
-import { InfoIcon } from "@/components/global/icons";
-import { TickIcon } from "@/components/global/icons";
+import { InfoIcon } from "@featul/ui/icons/info";
+import { TickIcon } from "@featul/ui/icons/tick";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ChevronLeftIcon, PanelIcon } from "@/components/global/icons";
 
@@ -213,9 +213,9 @@ export function ChangelogEditor({
       icon: isSaving ? (
         <LoaderIcon className="size-4" />
       ) : isDirty ? (
-        <InfoIcon className="size-4 text-amber-500" />
+        <InfoIcon className="size-4" />
       ) : (
-        <TickIcon className="size-4 text-emerald-500" />
+        <TickIcon className="size-4" />
       ),
       onClick: saveWithCheck,
       disabled: isSaving,
