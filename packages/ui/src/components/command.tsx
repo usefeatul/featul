@@ -36,6 +36,7 @@ type CommandDialogProps = Omit<
   width?: "default" | "wide" | "widest" | "xl" | "xxl"
   offsetY?: string | number
   icon?: React.ReactNode
+  shouldFilter?: boolean
 }
 
 function CommandDialog({
@@ -45,6 +46,7 @@ function CommandDialog({
   width = "default",
   offsetY = "15%",
   icon,
+  shouldFilter,
   ...props
 }: CommandDialogProps) {
   const styleWidth =
@@ -72,7 +74,7 @@ function CommandDialog({
         </DialogHeader>
         <DialogInner className="p-0">
           <div className="p-2">
-            <Command className="">
+            <Command shouldFilter={shouldFilter}>
               {children}
             </Command>
           </div>
@@ -85,12 +87,13 @@ function CommandDialog({
 
 function CommandInput({
   className,
+  wrapperClassName,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+}: React.ComponentProps<typeof CommandPrimitive.Input> & { wrapperClassName?: string }) {
   return (
     <div
       data-slot="command-input-wrapper"
-      className="flex h-8 items-center gap-3 px-6"
+      className={cn("flex h-8 items-center gap-3 px-6", wrapperClassName)}
     >
       <SearchIcon className="size-5 shrink-0 opacity-50" />
       <CommandPrimitive.Input

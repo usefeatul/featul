@@ -57,7 +57,7 @@ type WorkspaceSearchActionProps = {
 };
 
 const MIN_QUERY_LENGTH = 2;
-const DEBOUNCE_MS = 300;
+const DEBOUNCE_MS = 150;
 
 function SearchResultItem({
   result,
@@ -337,6 +337,7 @@ export function WorkspaceSearchAction({
         open={open}
         onOpenChange={handleOpenChange}
         title="Search"
+        shouldFilter={false}
         width="wide"
         icon={<SearchIcon className="size-3.5 opacity-80" />}
         footer={
@@ -364,7 +365,8 @@ export function WorkspaceSearchAction({
           onValueChange={setValue}
           placeholder={placeholder}
           aria-label={placeholder}
-          className="text-sm"
+          wrapperClassName="px-4 [&>svg]:size-[18px]"
+          className="px-0 text-sm"
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               event.preventDefault();
@@ -376,7 +378,7 @@ export function WorkspaceSearchAction({
             }
           }}
         />
-        <CommandList className="max-h-[min(50vh,360px)]">
+        <CommandList className="scrollbar-hide max-h-[min(50vh,360px)]">
           <CommandEmpty />
           {!hasQuery && !isSearching ? (
             <SearchStatusMessage variant="placeholder">
