@@ -112,7 +112,7 @@ export function Home({
         <button
           type="button"
           onClick={onSeeRoadmap}
-          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
+          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-primary"
         >
           See roadmap
         </button>
@@ -179,7 +179,7 @@ export function Home({
         <button
           type="button"
           onClick={onSeeUpdates}
-          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
+          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-primary"
         >
           See updates
         </button>
