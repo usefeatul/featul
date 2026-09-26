@@ -28,6 +28,7 @@ import {
 import { WidgetFeedbackList } from "./list";
 import { MessagingProvider, postToParent, readHostMessage } from "./messaging";
 import { Nav } from "./nav";
+import { WidgetPanel } from "./panel";
 import { WidgetRoadmap, type WidgetRoadmapItem } from "./roadmap";
 import {
   WidgetFeedbackListSkeleton,
@@ -716,7 +717,7 @@ export default function WidgetFrame({
 
             {!loading && !loadFailed ? (
               <>
-                <div className={section === "home" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
+                <WidgetPanel active={section === "home"}>
                   <Home
                     featuredEntry={featuredEntry}
                     homeRoadmap={homeRoadmap}
@@ -763,15 +764,9 @@ export default function WidgetFrame({
                       );
                     }}
                   />
-                </div>
+                </WidgetPanel>
 
-                <div
-                  className={
-                    section === "feedback"
-                      ? "relative flex min-h-0 flex-1 flex-col"
-                      : "hidden"
-                  }
-                >
+                <WidgetPanel active={section === "feedback"} className="relative">
                   <div
                     className={
                       feedbackView === "list"
@@ -867,15 +862,9 @@ export default function WidgetFrame({
                       />
                     </motion.div>
                   ) : null}
-                </div>
+                </WidgetPanel>
 
-                <div
-                  className={
-                    section === "roadmap"
-                      ? "flex min-h-0 flex-1 flex-col"
-                      : "hidden"
-                  }
-                >
+                <WidgetPanel active={section === "roadmap"}>
                   {!roadmapReady ? (
                     <WidgetRoadmapSkeleton />
                   ) : (
@@ -915,15 +904,9 @@ export default function WidgetFrame({
                       }}
                     />
                   )}
-                </div>
+                </WidgetPanel>
 
-                <div
-                  className={
-                    section === "changelog"
-                      ? "flex min-h-0 flex-1 flex-col"
-                      : "hidden"
-                  }
-                >
+                <WidgetPanel active={section === "changelog"}>
                   {!changelogReady ? (
                     <WidgetUpdatesSkeleton />
                   ) : (
@@ -935,7 +918,7 @@ export default function WidgetFrame({
                       onBack={() => setSelectedChangelogId(null)}
                     />
                   )}
-                </div>
+                </WidgetPanel>
               </>
             ) : null}
           </div>
