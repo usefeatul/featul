@@ -60,7 +60,7 @@ export default function WidgetTestEmbed() {
     if (!initializedRef.current) {
       window.featul?.init(TEST_WIDGET_PROJECT_ID, {
         widget: true,
-        theme: "dark",
+        theme: "auto",
         position: "right",
       });
       initializedRef.current = true;
