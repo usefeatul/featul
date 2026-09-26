@@ -263,7 +263,7 @@ export default function Navigator({
 
           {searchOpen ? (
             <div className="px-3 pb-2 pt-1">
-              <label className="flex h-9 items-center gap-2 rounded-md border border-border/60 bg-muted/70 px-3 text-muted-foreground hover:bg-muted focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10 dark:bg-white/[0.07] dark:hover:bg-white/[0.1]">
+              <label className="flex h-9 items-center gap-2 rounded-md border border-border/60 bg-background px-3 text-muted-foreground hover:bg-card focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10 dark:bg-white/[0.07] dark:hover:bg-white/[0.1]">
                 <Search className="size-5 shrink-0 text-neutral-600 dark:text-neutral-300" />
                 <input
                   autoFocus

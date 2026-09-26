@@ -8,4 +8,4 @@ export const sidebarSectionLabelClassName =
   "flex min-h-5 items-center gap-2 px-2 text-xs font-medium text-accent";
 
 export const sidebarSearchClassName =
-  "mt-3 h-9 w-full justify-start gap-2 rounded-md border border-border/60 bg-muted/70 px-3 text-sm text-foreground shadow-none ring-0 before:hidden hover:bg-muted dark:border-white/10 dark:bg-white/[0.07] dark:hover:bg-white/[0.1] [&>svg]:size-5 [&>svg]:shrink-0 [&_svg]:text-neutral-600 dark:[&_svg]:text-neutral-300 [&_kbd]:h-5 [&_kbd]:min-w-5 [&_kbd]:rounded-[4px] [&_kbd]:border-0 [&_kbd]:bg-background/90 [&_kbd]:px-1 [&_kbd]:text-muted-foreground [&_kbd]:shadow-none dark:[&_kbd]:bg-black/30";
+  "mt-3 h-9 w-full justify-start gap-2 rounded-md border border-border/60 bg-background px-3 text-sm text-foreground shadow-none ring-0 before:hidden hover:bg-card dark:border-white/10 dark:bg-white/[0.07] dark:hover:bg-white/[0.1] [&>svg]:size-5 [&>svg]:shrink-0 [&_svg]:text-neutral-600 dark:[&_svg]:text-neutral-300 [&_kbd]:h-5 [&_kbd]:min-w-5 [&_kbd]:rounded-[4px] [&_kbd]:border-0 [&_kbd]:bg-muted [&_kbd]:px-1 [&_kbd]:text-muted-foreground [&_kbd]:shadow-none dark:[&_kbd]:bg-black/30";

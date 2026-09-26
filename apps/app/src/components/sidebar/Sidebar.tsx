@@ -22,6 +22,7 @@ import UserDropdown from "@/components/account/UserDropdown";
 import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
 import Timezone from "./Timezone";
 import SidebarItem from "./SidebarItem";
+import Upgrade from "./upgrade";
 import SidebarSection from "./SidebarSection";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
@@ -329,6 +330,13 @@ export default function Sidebar({
           )}
         </LayoutGroup>
       </div>
+
+      <Upgrade
+        slug={slug}
+        collapsed={collapsed}
+        initialPlan={initialWorkspace?.plan}
+        userKey={initialDeviceAccounts?.find((account) => account.isCurrent)?.userId ?? initialUser?.email ?? "default"}
+      />
 
       <SidebarSection
         className={cn(
