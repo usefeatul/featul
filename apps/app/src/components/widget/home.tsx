@@ -208,7 +208,7 @@ export function Home({
               onClick={() => onOpenChangelog(entry.id)}
               className={`flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] ${px} py-3.5 text-left last:border-b-0`}
             >
-              <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
+              <UpdateMetaRow entry={entry} accent={accent} />
               <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
                 {entry.title}
               </span>
@@ -287,7 +287,7 @@ export function Home({
           onClick={() => onOpenChangelog(featured.id)}
           className={`group w-full border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${px} pb-6 text-left`}
         >
-          <UpdateMetaRow entry={featured} accent={accent} fallbackBadge="Just Shipped" />
+          <UpdateMetaRow entry={featured} accent={accent} />
           <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
             {featured.title}
           </h2>

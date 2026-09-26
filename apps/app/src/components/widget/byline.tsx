@@ -1,22 +1,21 @@
+import { useReleaseBadge } from "@/hooks/useReleaseBadge";
 import { WidgetAuthorAvatar } from "./avatar";
 import type { WidgetChangelogEntry } from "./updates";
 
 export function UpdateByline({
   entry,
   accent,
-  fallbackBadge = "Just shipped",
 }: {
   entry: WidgetChangelogEntry;
   accent: string;
-  fallbackBadge?: string | null;
 }) {
   const date = entry.publishedAt ? new Date(entry.publishedAt) : null;
   const dateLabel =
     date && !Number.isNaN(date.getTime())
       ? date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
       : "";
-  const releaseTag = entry.tags?.find((tag) => tag.name?.trim());
-  const badgeLabel = releaseTag?.name.trim() || fallbackBadge;
+  const badge = useReleaseBadge(entry);
+  const badgeLabel = badge?.name;
   if (!entry.authorName && !dateLabel && !badgeLabel) return null;
 
   return (
@@ -73,7 +72,7 @@ export function UpdateByline({
           <span
             className="truncate"
             title={badgeLabel}
-            style={{ color: releaseTag?.color || accent }}
+            style={{ color: badge?.color || accent }}
           >
             {badgeLabel}
           </span>

@@ -7,6 +7,7 @@ import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
 import { CheckIcon } from "@/components/global/icons";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import { UpdateByline } from "./byline";
+import { useReleaseBadge } from "@/hooks/useReleaseBadge";
 import { WidgetEmpty, WidgetEmptyPlaceholders } from "./empty";
 import { WidgetImage } from "./image";
 
@@ -41,39 +42,17 @@ function formatUpdateDate(value: string | Date | null | undefined, uppercase = t
   return uppercase ? label.toUpperCase() : label;
 }
 
-function primaryTag(entry: WidgetChangelogEntry): {
-  name: string;
-  color?: string | null;
-} | null {
-  const tag = entry.tags?.find((item) => item.name?.trim());
-  if (!tag) return null;
-  return { name: tag.name.trim().toUpperCase(), color: tag.color };
-}
-
-export function changelogBadge(
-  entry: WidgetChangelogEntry,
-  options?: { fallback?: string | null },
-): { name: string; color?: string | null } | null {
-  const tag = primaryTag(entry);
-  if (tag) return tag;
-  const fallback = options?.fallback;
-  if (!fallback) return null;
-  return { name: fallback.toUpperCase(), color: null };
-}
-
 export function UpdateMetaRow({
   entry,
   accent = "#4d96e8",
-  fallbackBadge = "Just Shipped",
   className = "",
 }: {
   entry: WidgetChangelogEntry;
   accent?: string;
-  fallbackBadge?: string | null;
   className?: string;
 }) {
   const dateLabel = formatUpdateDate(entry.publishedAt);
-  const badge = changelogBadge(entry, { fallback: fallbackBadge });
+  const badge = useReleaseBadge(entry);
   if (!dateLabel && !badge) return null;
 
   return (
@@ -155,7 +134,6 @@ export function WidgetUpdates({
           >
             {entries.map((entry, index) => {
               const preview = (entry.summary || entry.preview || "").trim();
-              const isRecent = index < 5;
 
               return (
                 <button
@@ -173,7 +151,6 @@ export function WidgetUpdates({
                   <UpdateByline
                     entry={entry}
                     accent={accent}
-                    fallbackBadge={isRecent ? "Just shipped" : null}
                   />
 
                   {preview ? (
@@ -246,7 +223,7 @@ function UpdateDetail({
             <span className="inline-flex size-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white" aria-hidden="true">
               <CheckIcon className="size-2" />
             </span>
-            <h2 className="text-sm font-semibold text-[rgb(var(--widget-fg))]">Recently shipped</h2>
+            <h2 className="text-sm font-semibold text-[rgb(var(--widget-fg))]">Latest updates</h2>
           </div>
           <div>
             {shipped.map((item) => {
