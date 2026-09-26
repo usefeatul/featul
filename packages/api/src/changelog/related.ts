@@ -29,6 +29,7 @@ export async function getRelatedPosts(
         eq(post.status, "published"),
         options.publicOnly ? eq(board.isPublic, true) : undefined,
         options.publicOnly ? eq(board.isVisible, true) : undefined,
+        options.publicOnly ? eq(board.isSystem, false) : undefined,
         options.ids ? inArray(post.id, options.ids) : undefined,
         options.search
           ? ilike(post.title, `%${options.search.replace(/[\\%_]/g, "\\$&")}%`)
@@ -36,7 +37,7 @@ export async function getRelatedPosts(
       ),
     )
     .orderBy(desc(post.createdAt))
-    .limit(options.ids ? 20 : 30);
+    .limit(options.ids ? options.ids.length : 30);
   return options.ids
     ? options.ids.flatMap((id) => rows.filter((row) => row.id === id))
     : rows;

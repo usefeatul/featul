@@ -128,6 +128,11 @@ export function mapChangelogEntries(
             ? entry.publishedAt
             : null,
       tags,
+      relatedPosts: Array.isArray(entry.relatedPosts)
+        ? entry.relatedPosts.filter((post): post is { id: string; title: string; slug: string; roadmapStatus: string | null } =>
+            isRecord(post) && typeof post.id === "string" && typeof post.title === "string" &&
+            typeof post.slug === "string" && (post.roadmapStatus === null || typeof post.roadmapStatus === "string"))
+        : [],
       authorName,
       authorImage,
       authorRoleLabel,

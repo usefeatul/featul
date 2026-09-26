@@ -8,6 +8,9 @@ import { CheckIcon } from "@/components/global/icons";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import { UpdateByline } from "./byline";
 import { useReleaseBadge } from "@/hooks/useReleaseBadge";
+import type { RelatedPost } from "@featul/api/changelog/related";
+import StatusIcon from "@/components/requests/StatusIcon";
+import { ChevronRight } from "@/components/global/icons";
 import { WidgetEmpty, WidgetEmptyPlaceholders } from "./empty";
 import { WidgetImage } from "./image";
 
@@ -23,6 +26,7 @@ export type WidgetChangelogEntry = {
   tags?: Array<{ id: string; name: string; color?: string | null }>;
   authorName?: string | null;
   authorImage?: string | null;
+  relatedPosts?: RelatedPost[];
   authorRoleLabel?: string | null;
 };
 
@@ -32,6 +36,7 @@ type Props = {
   selectedId?: string | null;
   onOpen: (entry: WidgetChangelogEntry) => void;
   onBack: () => void;
+  onOpenRelatedPost: (post: RelatedPost) => void;
 };
 
 function formatUpdateDate(value: string | Date | null | undefined, uppercase = true): string {
@@ -80,6 +85,7 @@ export function WidgetUpdates({
   selectedId = null,
   onOpen,
   onBack: _onBack,
+  onOpenRelatedPost,
 }: Props) {
   const reduceMotion = useReducedMotion();
   const selected = selectedId
@@ -121,6 +127,7 @@ export function WidgetUpdates({
               accent={accent}
               recentEntries={entries.slice(0, 5)}
               onOpen={onOpen}
+              onOpenRelatedPost={onOpenRelatedPost}
             />
           </motion.div>
         ) : (
@@ -175,11 +182,13 @@ function UpdateDetail({
   accent,
   recentEntries,
   onOpen,
+  onOpenRelatedPost,
 }: {
   entry: WidgetChangelogEntry;
   accent: string;
   recentEntries: WidgetChangelogEntry[];
   onOpen: (entry: WidgetChangelogEntry) => void;
+  onOpenRelatedPost: (post: RelatedPost) => void;
 }) {
   const content = entry.content && typeof entry.content === "object" ? entry.content : null;
   const shipped = recentEntries.slice(0, 5);
@@ -216,6 +225,24 @@ function UpdateDetail({
           </p>
         ) : null}
       </div>
+
+      {entry.relatedPosts?.length ? (
+        <section className="border-t border-dashed border-[rgb(var(--widget-fg)/0.14)] px-5 py-4" aria-label="Related feedback">
+          <h2 className="text-sm font-semibold text-[rgb(var(--widget-fg))]">Related feedback</h2>
+          <p className="mt-1 text-xs text-[rgb(var(--widget-fg)/0.5)]">The requests behind this update.</p>
+          <ul className="-mx-2 mt-3 space-y-1">
+            {entry.relatedPosts.map((post) => (
+              <li key={post.id}>
+                <button type="button" onClick={() => onOpenRelatedPost(post)} className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-2.5 text-left transition-colors hover:bg-[rgb(var(--widget-fg)/0.05)] focus-visible:bg-[rgb(var(--widget-fg)/0.05)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--widget-accent)]">
+                  <StatusIcon status={post.roadmapStatus ?? undefined} className="size-[18px] shrink-0" />
+                  <span className="min-w-0 flex-1 truncate text-sm text-[rgb(var(--widget-fg)/0.85)]" title={post.title}>{post.title}</span>
+                  <ChevronRight className="size-3.5 shrink-0 text-[rgb(var(--widget-fg)/0.4)]" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {shipped.length ? (
         <section className="mt-2 border-t border-dashed border-[rgb(var(--widget-fg)/0.14)] pb-6">

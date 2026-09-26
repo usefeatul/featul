@@ -8,6 +8,7 @@ import {
 } from "@featul/db";
 import { publicProcedure } from "../../jstack";
 import { findTagsByIds, getChangelogTags } from "../../changelog/types";
+import { getRelatedPosts } from "../../changelog/related";
 import {
   extractTiptapPlainText,
   resolveAuthorRoleLabel,
@@ -39,6 +40,7 @@ export const widgetChangelog = publicProcedure
         content: changelogEntry.content,
         publishedAt: changelogEntry.publishedAt,
         tags: changelogEntry.tags,
+        relatedPostIds: changelogEntry.relatedPostIds,
         coverImage: changelogEntry.coverImage,
         authorId: changelogEntry.authorId,
         authorName: user.name,
@@ -68,9 +70,11 @@ export const widgetChangelog = publicProcedure
       ),
     );
 
-    const members =
+    const relatedIds = [...new Set<string>(rows.flatMap((row: { relatedPostIds: string[] | null }) => row.relatedPostIds ?? []))];
+    const [relatedPosts, members] = await Promise.all([
+      getRelatedPosts(ctx.db, resolved.workspaceId, { ids: relatedIds, publicOnly: true }),
       authorIds.length > 0
-        ? await ctx.db
+        ? ctx.db
             .select({
               userId: workspaceMember.userId,
               role: workspaceMember.role,
@@ -82,7 +86,9 @@ export const widgetChangelog = publicProcedure
                 inArray(workspaceMember.userId, authorIds),
               ),
             )
-        : [];
+        : Promise.resolve([]),
+    ]);
+    const relatedById = new Map(relatedPosts.map((post) => [post.id, post]));
 
     const memberRoleMap = new Map(
       members.map((member: { userId: string; role: string | null }) => [
@@ -127,6 +133,10 @@ export const widgetChangelog = publicProcedure
           coverImage: row.coverImage || null,
           publishedAt: row.publishedAt,
           tags,
+          relatedPosts: (row.relatedPostIds ?? []).flatMap((id: string) => {
+            const post = relatedById.get(id);
+            return post ? [post] : [];
+          }),
           authorName: row.authorName || null,
           authorImage: row.authorImage || null,
           authorRole: role,
