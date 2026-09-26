@@ -100,7 +100,7 @@ function SearchResultItem({
 }
 
 function useIsMac() {
-  const [isMac, setIsMac] = React.useState(false);
+  const [isMac, setIsMac] = React.useState<boolean | null>(null);
 
   React.useEffect(() => {
     setIsMac(/Mac|iPhone|iPad|iPod/i.test(navigator.userAgent));
@@ -287,6 +287,7 @@ export function WorkspaceSearchAction({
 
   const isMac = useIsMac();
   const platformKey = isMac ? "⌘" : "Ctrl";
+  const searchLabel = isMac === null ? "Search" : `Search (${platformKey}K)`;
   const enterKey = isMac ? "Return" : "Enter";
   const escKey = "Esc";
   const isSearchActive = Boolean(currentSearch.trim());
@@ -300,8 +301,8 @@ export function WorkspaceSearchAction({
             type="button"
             variant={buttonVariant}
             size="icon-sm"
-            aria-label={`Search (${platformKey}K)`}
-            title={compact ? undefined : `Search (${platformKey}K)`}
+            aria-label={searchLabel}
+            title={compact ? undefined : searchLabel}
             aria-pressed={isSearchActive}
             className={cn(
               filterToolbarButtonClass(isSearchActive && !compact),
@@ -329,7 +330,7 @@ export function WorkspaceSearchAction({
               </span>
             ) : null}
             {showShortcut ? (
-              <span aria-hidden="true" className="ml-auto inline-flex shrink-0 items-center gap-1">
+              <span aria-hidden="true" className={cn("ml-auto inline-flex shrink-0 items-center gap-1", isMac === null && "invisible")}>
                 {[platformKey, "K"].map((key) => (
                   <ShortcutKey key={key} className="bg-muted text-muted-foreground dark:bg-black/30 dark:text-muted-foreground">{key}</ShortcutKey>
                 ))}
@@ -339,7 +340,7 @@ export function WorkspaceSearchAction({
         </TooltipTrigger>
         <TooltipContent side="right" sideOffset={10} className="flex items-center gap-2 text-xs">
           <span>Search</span>
-          <span className="flex items-center gap-1" aria-hidden="true">
+          <span className={cn("flex items-center gap-1", isMac === null && "invisible")} aria-hidden="true">
             <ShortcutKey>{platformKey}</ShortcutKey>
             <ShortcutKey>K</ShortcutKey>
           </span>
