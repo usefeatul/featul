@@ -1,8 +1,9 @@
 "use client";
 
+import { WidgetButton } from "./button";
+
 import * as React from "react";
 import { client } from "@featul/api/client";
-import { Button } from "@featul/ui/components/button";
 import { Textarea } from "@featul/ui/components/textarea";
 import {
   ImageIcon,
@@ -295,14 +296,13 @@ export function WidgetFeedbackCompose({
         <p className="mt-1.5 max-w-[240px] text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.5)]">
           The team will take a look. You can keep browsing or open your request.
         </p>
-        <Button
+        <WidgetButton
           type="button"
-          variant="plain"
           onClick={() => onView(created)}
-          className="mt-6 h-10 cursor-pointer rounded-md bg-[rgb(var(--widget-cta))] px-5 text-sm font-semibold text-[rgb(var(--widget-cta-fg))] hover:opacity-90"
+          className="mt-6 h-10 px-5 text-sm font-semibold"
         >
           View request
-        </Button>
+        </WidgetButton>
       </div>
     );
   }
@@ -434,14 +434,13 @@ export function WidgetFeedbackCompose({
           {message ? (
             <p className="truncate text-xs text-[rgb(var(--widget-fg)/0.5)]">{message}</p>
           ) : null}
-          <Button
+          <WidgetButton
             type="submit"
-            variant="plain"
             disabled={!canSubmit}
-            className="h-10 shrink-0 cursor-pointer rounded-md bg-[rgb(var(--widget-cta))] px-5 text-sm font-semibold text-[rgb(var(--widget-cta-fg))] hover:opacity-90 disabled:bg-[rgb(var(--widget-fg)/0.2)] disabled:text-[rgb(var(--widget-fg)/0.35)]"
+            className="h-10 px-5 text-sm font-semibold"
           >
             {submitting ? <LoaderIcon className="size-4" /> : "Post"}
-          </Button>
+          </WidgetButton>
         </div>
       </div>
     </form>

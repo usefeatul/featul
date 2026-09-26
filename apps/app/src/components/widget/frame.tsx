@@ -225,6 +225,8 @@ export default function WidgetFrame({
   }, [hasBootstrap, parentOrigin]);
 
   React.useEffect(() => {
+    // The server already validated and loaded this config for the frame request.
+    if (hasBootstrap) return;
     let canceled = false;
     async function load() {
       if (!hasBootstrap) {
@@ -233,6 +235,7 @@ export default function WidgetFrame({
       }
       try {
         const res = await client.widget.config.$get(apiBase);
+        if (!res.ok) throw new Error("Could not load widget configuration");
         const data = await res.json();
         if (canceled) return;
         const next = readBootstrap(data, projectId);

@@ -4,7 +4,7 @@ import Script from "next/script";
 import { Geist_Mono, Inter_Tight } from "next/font/google";
 import { Providers } from "../components/providers/providers";
 import ConditionalThemeProvider from "@/components/global/ConditionalThemeProvider";
-// import WidgetTestEmbed from "@/components/widget/embed";
+import WidgetTestEmbed from "@/components/widget/embed";
 import "./globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 import {
@@ -112,10 +112,10 @@ export default async function RootLayout({
             {children}
           </ConditionalThemeProvider>
         </Providers>
-        {/* {process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||
+        {process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||
         process.env.NEXT_PUBLIC_FEATUL_WORKSPACE_ID ? (
           <WidgetTestEmbed />
-        ) : null} */}
+        ) : null}
       </body>
     </html>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import { WidgetButton } from "./button";
+
 import * as React from "react";
 import { FillPenIcon } from "@featul/ui/icons/fill-pen";
 import {
@@ -778,11 +780,11 @@ export function ScreenshotAnnotator({
               ) : null}
             </div>
           </div>
-          <button
+          <WidgetButton
             type="button"
             onClick={attach}
             disabled={busy || !ready}
-            className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-md bg-[rgb(var(--widget-cta))] px-3 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] transition-opacity hover:opacity-90 disabled:opacity-40"
+            className="h-8 gap-1.5 px-3 text-xs font-semibold"
           >
             {busy ? (
               <LoaderIcon className="size-3.5" />
@@ -792,7 +794,7 @@ export function ScreenshotAnnotator({
                 Attach
               </>
             )}
-          </button>
+          </WidgetButton>
         </div>
       </div>
     </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import { WidgetButton } from "./button";
+
 import { ChevronLeft, X } from "@/components/global/icons";
 import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
 import { FillPenIcon } from "@featul/ui/icons/fill-pen";
@@ -108,15 +110,15 @@ export function Header({
           )}
 
           {!showSubpageHeader && !hideCompose ? (
-            <button
+            <WidgetButton
               type="button"
               onClick={onCompose}
               aria-label="Give feedback"
-              className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md bg-[rgb(var(--widget-cta))] px-2.5 text-xs font-semibold text-[rgb(var(--widget-cta-fg))] transition-opacity hover:opacity-90 min-[380px]:px-3"
+              className="h-8 gap-1.5 px-2.5 text-xs font-semibold min-[380px]:px-3"
             >
               <FillPenIcon className="size-3.5" size={14} />
               <span className="hidden min-[360px]:inline">Give feedback</span>
-            </button>
+            </WidgetButton>
           ) : null}
 
           <button

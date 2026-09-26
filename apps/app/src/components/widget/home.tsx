@@ -1,5 +1,7 @@
 "use client";
 
+import { WidgetButton } from "./button";
+
 import { ChevronRight } from "@/components/global/icons";
 import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
 import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
@@ -84,12 +86,9 @@ export function Home({
       className={`flex w-full cursor-pointer items-center justify-between gap-3 border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${px} py-4 text-left`}
     >
       <span className="text-sm text-[rgb(var(--widget-fg)/0.35)]">What’s on your mind?</span>
-      <span
-        className="inline-flex h-8 shrink-0 items-center rounded-md px-3 text-xs font-semibold text-white"
-        style={{ backgroundColor: accent }}
-      >
-        Post
-      </span>
+      <WidgetButton asChild className="h-8 px-3 text-xs font-semibold">
+        <span>Post</span>
+      </WidgetButton>
     </button>
   );
 

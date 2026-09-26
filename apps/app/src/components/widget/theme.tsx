@@ -49,6 +49,8 @@ export function widgetAccentVars(accent: string): Record<string, string> {
   const [r, g, b] = rgb;
   const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
   return {
+    "--primary": accent,
+    "--primary-foreground": luminance > 0.62 ? "#171717" : "#ffffff",
     "--widget-accent": accent,
     "--widget-cta": `${r} ${g} ${b}`,
     "--widget-cta-fg": luminance > 0.62 ? "23 23 23" : "255 255 255",
