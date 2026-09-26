@@ -151,12 +151,12 @@ function NavbarFrame({ scrolled, decorative = false, onMenuClick }: NavbarFrameP
               <Button
                 asChild
                 size="sm"
-                variant="nav"
+                variant={decorative ? "nav" : "default"}
                 className={cn(
                   "font-heading",
                   decorative
                     ? "border-white/80 bg-white text-primary hover:bg-white hover:text-primary"
-                    : "border-primary/80 bg-primary text-white hover:bg-primary/90 hover:text-white",
+                    : "",
                 )}
               >
                 {decorative ? (

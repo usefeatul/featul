@@ -44,8 +44,8 @@ export function ConversionHero() {
             </p>
             <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
               <HotkeyLink
-                variant="nav"
-                className="h-10 min-h-[40px] w-full min-w-[40px] border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground sm:w-auto"
+                variant="default"
+                className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto"
               />
               <Button
                 asChild

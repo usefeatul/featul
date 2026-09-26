@@ -5,7 +5,7 @@ import { LiveDemo } from "@/components/global/demo";
 import { cn } from "@featul/ui/lib/utils";
 
 export const heroPrimaryCtaClass =
-  "border-primary/80 bg-primary text-primary-foreground ring-primary/30 hover:bg-primary/90 hover:text-primary-foreground";
+  "ring-primary/30";
 
 export const heroSecondaryCtaClass =
   "border-border bg-muted text-foreground ring-border/50 hover:bg-muted/80 hover:text-foreground";
@@ -55,7 +55,7 @@ export function HeroCta({
       )}
     >
       <HotkeyLink
-        variant="nav"
+        variant="default"
         className={cn(heroButtonClassName, heroPrimaryCtaClass)}
         kbdClassName={heroKbdClassName}
         label={hotkeyLabel}

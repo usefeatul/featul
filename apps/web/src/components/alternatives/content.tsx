@@ -84,7 +84,7 @@ export function AlternativeHeroContent({
         <Button
           asChild
           size="lg"
-          variant="nav"
+          variant="default"
           className={cn(heroButtonClassName, heroPrimaryCtaClass)}
         >
           <Link

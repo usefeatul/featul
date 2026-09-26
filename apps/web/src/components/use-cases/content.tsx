@@ -43,7 +43,7 @@ export function UseCaseHeroContent({
         <Button
           asChild
           size="lg"
-          variant="nav"
+          variant="default"
           className={cn(heroButtonClassName, heroPrimaryCtaClass)}
         >
           <Link

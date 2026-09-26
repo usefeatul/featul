@@ -1,6 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { buttonVariants } from "@featul/ui/components/button";
+import { cn } from "@featul/ui/lib/utils";
 import {
   ConsentManagerDialog,
   type ConsentManagerOptions,
@@ -14,8 +16,10 @@ type MarketingConsentManagerProps = {
 
 type ConsentTheme = NonNullable<NonNullable<ConsentManagerOptions["react"]>["theme"]>;
 
-const primaryButtonClassName =
-  "inline-flex min-h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:pointer-events-none disabled:opacity-50";
+const primaryButtonClassName = cn(
+  buttonVariants({ variant: "default", size: "lg" }),
+  "min-h-10 px-4 py-2",
+);
 
 const secondaryButtonClassName =
   "inline-flex min-h-10 items-center justify-center rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:pointer-events-none disabled:opacity-50";

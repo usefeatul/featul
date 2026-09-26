@@ -83,12 +83,12 @@ export function MobileMenu({
             ))}
             <Button
               asChild
-              variant="nav"
+              variant={overCreate ? "nav" : "default"}
               className={cn(
                 "w-full font-semibold",
                 overCreate
                   ? "border-white/80 bg-white text-primary hover:bg-white/90 hover:text-primary"
-                  : "border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
+                  : "",
               )}
             >
               <Link
