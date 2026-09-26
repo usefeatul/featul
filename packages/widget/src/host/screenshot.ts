@@ -90,6 +90,24 @@ function assertDataUrl(dataUrl: string): string {
   return dataUrl;
 }
 
+/** A DOM render can succeed without painting anything except its background. */
+export function assertScreenshotContent(canvas: HTMLCanvasElement): void {
+  if (!canvas.width || !canvas.height) {
+    throw new ScreenshotCaptureError("capture-failed", "Screenshot was empty");
+  }
+  const sample = document.createElement("canvas");
+  sample.width = 64;
+  sample.height = 64;
+  const ctx = sample.getContext("2d");
+  if (!ctx) throw new ScreenshotCaptureError("capture-failed");
+  ctx.drawImage(canvas, 0, 0, 64, 64);
+  const pixels = ctx.getImageData(0, 0, 64, 64).data;
+  for (let index = 4; index < pixels.length; index += 4) {
+    if ([0, 1, 2, 3].some((channel) => Math.abs(pixels[index + channel]! - pixels[channel]!) > 2)) return;
+  }
+  throw new ScreenshotCaptureError("capture-failed", "Screenshot was blank");
+}
+
 async function captureWithHtml(ignore: Element[]): Promise<string> {
   await waitFrames(2);
   const width = Math.max(1, Math.round(window.innerWidth));
@@ -107,8 +125,8 @@ async function captureWithHtml(ignore: Element[]): Promise<string> {
     height,
     windowWidth: width,
     windowHeight: height,
-    scrollX: -window.scrollX,
-    scrollY: -window.scrollY,
+    scrollX: window.scrollX,
+    scrollY: window.scrollY,
     scale,
     useCORS: true,
     allowTaint: false,
@@ -123,6 +141,7 @@ async function captureWithHtml(ignore: Element[]): Promise<string> {
       });
     },
   });
+  assertScreenshotContent(canvas);
   return assertDataUrl(jpegDataUrlFromCanvas(canvas));
 }
 
@@ -175,6 +194,7 @@ async function captureWithDisplayMedia(
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new ScreenshotCaptureError("capture-failed");
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    assertScreenshotContent(canvas);
     return assertDataUrl(jpegDataUrlFromCanvas(canvas));
   } finally {
     for (const track of stream.getTracks()) track.stop();
