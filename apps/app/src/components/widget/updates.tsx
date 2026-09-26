@@ -4,7 +4,7 @@ import * as React from "react";
 import type { JSONContent } from "@tiptap/core";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
-import { TickIcon } from "@/components/global/icons";
+import { CheckIcon } from "@/components/global/icons";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import { WidgetAuthorAvatar } from "./avatar";
 import { WidgetEmpty, WidgetEmptyPlaceholders } from "./empty";
@@ -282,7 +282,9 @@ function UpdateDetail({
       {shipped.length ? (
         <section className="mt-2 border-t border-dashed border-[rgb(var(--widget-fg)/0.14)] pb-6">
           <div className="flex items-center gap-2 px-5 py-4">
-            <TickIcon className="size-4 shrink-0 text-emerald-500" width={16} height={16} />
+            <span className="inline-flex size-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white" aria-hidden="true">
+              <CheckIcon className="size-2" />
+            </span>
             <h2 className="text-sm font-semibold text-[rgb(var(--widget-fg))]">Recently shipped</h2>
           </div>
           <div>
@@ -304,7 +306,9 @@ function UpdateDetail({
                   <p className="min-w-0 flex-1 truncate text-sm text-[rgb(var(--widget-fg)/0.9)]">
                     {item.title}
                   </p>
-                  <TickIcon className="size-4 shrink-0 text-emerald-500" width={16} height={16} aria-label="Done" />
+                  <span className="inline-flex size-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white" role="img" aria-label="Done">
+                    <CheckIcon className="size-2" />
+                  </span>
                 </button>
               );
             })}
