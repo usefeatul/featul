@@ -247,8 +247,8 @@ function UpdateDetail({
       {shipped.length ? (
         <section className="mt-2 border-t border-dashed border-[rgb(var(--widget-fg)/0.14)] pb-6">
           <div className="flex items-center gap-2 px-5 py-4">
-            <span className="inline-flex size-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white" aria-hidden="true">
-              <CheckIcon className="size-2" />
+            <span className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white" aria-hidden="true">
+              <CheckIcon className="size-2.5" />
             </span>
             <h2 className="text-sm font-semibold text-[rgb(var(--widget-fg))]">Latest updates</h2>
           </div>
@@ -271,8 +271,8 @@ function UpdateDetail({
                   <p className="min-w-0 flex-1 truncate text-sm text-[rgb(var(--widget-fg)/0.9)]">
                     {item.title}
                   </p>
-                  <span className="inline-flex size-3.5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white" role="img" aria-label="Done">
-                    <CheckIcon className="size-2" />
+                  <span className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white" role="img" aria-label="Done">
+                    <CheckIcon className="size-2.5" />
                   </span>
                 </button>
               );
