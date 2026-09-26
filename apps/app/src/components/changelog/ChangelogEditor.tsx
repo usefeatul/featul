@@ -11,7 +11,8 @@ import { CoverImageUploader } from "./CoverImageUploader";
 import { InfoIcon } from "@featul/ui/icons/info";
 import { TickIcon } from "@featul/ui/icons/tick";
 import { LoaderIcon } from "@featul/ui/icons/loader";
-import { ChevronLeftIcon, PanelIcon } from "@/components/global/icons";
+import { ChevronLeftIcon } from "@/components/global/icons";
+import { IconAi } from "@tabler/icons-react";
 
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
@@ -190,7 +191,7 @@ export function ChangelogEditor({
             type: "button" as const,
             variant: "plain" as const,
             shortcut: PANEL_SHORTCUT_LABEL,
-            icon: <PanelIcon side="right" filled className="size-[18px]" />,
+            icon: <IconAi className="size-[18px]" viewBox="4 4 16 16" stroke={1.8} aria-hidden="true" />,
             onClick: openAiPanel,
           },
         ]
