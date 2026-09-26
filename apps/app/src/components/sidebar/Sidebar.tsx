@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import type { NavItem } from "../../types/nav";
 import {
@@ -27,7 +27,7 @@ import SidebarSection from "./SidebarSection";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
 import { WorkspaceCreateIcon } from "@featul/ui/icons/workspace";
-import { LayoutGroup } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
@@ -86,9 +86,19 @@ export default function Sidebar({
   initialDeviceAccounts?: DeviceAccount[] | undefined;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const slug = getSlugFromPath(pathname);
   const isSettings = isWorkspaceSettingsPath(pathname);
   const isAccount = isWorkspaceAccountPath(pathname);
+  const reduceMotion = useReducedMotion();
+  const navView = isSettings ? "settings" : isAccount ? "account" : "workspace";
+  const navDirection = navView === "workspace" ? -1 : 1;
+
+  React.useEffect(() => {
+    if (!slug) return;
+    const base = workspaceBase(slug);
+    router.prefetch(navView === "workspace" ? `${base}/settings/branding` : base);
+  }, [router, slug, navView]);
 
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
     slug,
@@ -252,82 +262,105 @@ export default function Sidebar({
         </div>
       </div>
 
-      <div ref={navRef} className="flex-1 overflow-y-auto scrollbar-hide">
+      <div ref={navRef} className="relative flex-1 overflow-x-hidden overflow-y-auto scrollbar-hide">
         <LayoutGroup id="desktop-sidebar-nav">
-          {isSettings || isAccount ? (
-            <>
-              <SidebarSection
-                className={collapsed ? "border-t border-sidebar-border" : ""}
-                collapsed={collapsed}
-              >
-                <SidebarItem
-                  item={{
-                    label: "Back",
-                    href: workspaceBase(slug),
-                    icon: ArrowBackIcon,
-                    exact: true,
-                  }}
-                  pathname={pathname}
-                  mutedIcon
-                  indicator={false}
-                  collapsed={collapsed}
-                />
-              </SidebarSection>
-              <SidebarSection
-                title={isSettings ? "SETTINGS" : "ACCOUNT"}
-                className={
-                  collapsed ? "border-t border-sidebar-border" : "mt-4"
-                }
-                collapsed={collapsed}
-              >
-                {isSettings ? (
-                  <SettingsNav collapsed={collapsed} />
-                ) : (
-                  <AccountNav collapsed={collapsed} />
-                )}
-              </SidebarSection>
-            </>
-          ) : (
-            <>
-              <SidebarSection
-                title="Requests"
-                className={collapsed ? "border-t border-sidebar-border" : ""}
-                collapsed={collapsed}
-              >
-                {primaryNav.map((item) => (
-                  <SidebarItem
-                    key={item.label}
-                    item={item}
-                    pathname={pathname}
-                    count={
-                      statusCounts
-                        ? statusCounts[statusKey(item.label)]
-                        : undefined
+          <AnimatePresence initial={false} mode="popLayout" custom={navDirection}>
+            <motion.div
+              key={navView}
+              custom={navDirection}
+              initial="enter"
+              animate="visible"
+              exit="exit"
+              variants={{
+                enter: (direction: number) => ({ opacity: 0, x: reduceMotion ? 0 : direction * 12 }),
+                visible: {
+                  opacity: 1,
+                  x: 0,
+                  transition: { duration: reduceMotion ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] },
+                },
+                exit: (direction: number) => ({
+                  opacity: 0,
+                  x: reduceMotion ? 0 : direction * -8,
+                  transition: { duration: reduceMotion ? 0 : 0.1, ease: "easeOut" },
+                }),
+              }}
+            >
+              {isSettings || isAccount ? (
+                <>
+                  <SidebarSection
+                    className={collapsed ? "border-t border-sidebar-border" : ""}
+                    collapsed={collapsed}
+                  >
+                    <SidebarItem
+                      item={{
+                        label: "Back",
+                        href: workspaceBase(slug),
+                        icon: ArrowBackIcon,
+                        exact: true,
+                      }}
+                      pathname={pathname}
+                      mutedIcon
+                      indicator={false}
+                      collapsed={collapsed}
+                    />
+                  </SidebarSection>
+                  <SidebarSection
+                    title={isSettings ? "SETTINGS" : "ACCOUNT"}
+                    className={
+                      collapsed ? "border-t border-sidebar-border" : "mt-4"
                     }
-                    mutedIcon={false}
                     collapsed={collapsed}
-                  />
-                ))}
-              </SidebarSection>
-              <SidebarSection
-                title="Workspace"
-                className={
-                  collapsed ? "border-t border-sidebar-border" : "mt-3"
-                }
-                collapsed={collapsed}
-              >
-                {workspaceNav.map((item) => (
-                  <SidebarItem
-                    key={item.label}
-                    item={item}
-                    pathname={pathname}
-                    mutedIcon
+                  >
+                    {isSettings ? (
+                      <SettingsNav collapsed={collapsed} />
+                    ) : (
+                      <AccountNav collapsed={collapsed} />
+                    )}
+                  </SidebarSection>
+                </>
+              ) : (
+                <>
+                  <SidebarSection
+                    title="Requests"
+                    className={collapsed ? "border-t border-sidebar-border" : ""}
                     collapsed={collapsed}
-                  />
-                ))}
-              </SidebarSection>
-            </>
-          )}
+                  >
+                    {primaryNav.map((item) => (
+                      <SidebarItem
+                        key={item.label}
+                        item={item}
+                        pathname={pathname}
+                        count={
+                          statusCounts
+                            ? statusCounts[statusKey(item.label)]
+                            : undefined
+                        }
+                        mutedIcon={false}
+                        collapsed={collapsed}
+                      />
+                    ))}
+                  </SidebarSection>
+                  <SidebarSection
+                    title="Workspace"
+                    className={
+                      collapsed ? "border-t border-sidebar-border" : "mt-3"
+                    }
+                    collapsed={collapsed}
+                  >
+                    {workspaceNav.map((item) => (
+                      <SidebarItem
+                        key={item.label}
+                        item={item}
+                        pathname={pathname}
+                        mutedIcon
+                        collapsed={collapsed}
+                      />
+                    ))}
+                  </SidebarSection>
+                </>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </LayoutGroup>
       </div>
 

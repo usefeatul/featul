@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { db, workspace } from "@featul/db";
 import { eq } from "drizzle-orm";
 import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
@@ -18,7 +19,7 @@ export type WorkspaceBySlugRecord = WorkspaceSummaryBySlug & {
 };
 
 /** Full workspace row by slug, with effective billing plan. */
-export async function getWorkspaceBySlugRecord(
+export const getWorkspaceBySlugRecord = cache(async function getWorkspaceBySlugRecord(
   slug: string
 ): Promise<WorkspaceBySlugRecord | null> {
   const [ws] = await db
@@ -43,7 +44,7 @@ export async function getWorkspaceBySlugRecord(
     ...ws,
     plan: await getEffectiveWorkspacePlan(ws.id),
   };
-}
+});
 
 /** Id, name, and owner only — cheaper lookup for access checks. */
 export async function getWorkspaceSummaryBySlug(

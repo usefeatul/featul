@@ -35,13 +35,15 @@ export default async function WorkspacePage({ params, searchParams }: Props) {
   const offset = (page - 1) * pageSize;
 
   const statuses = [...DEFAULT_REQUEST_STATUSES];
-  const rows = await getWorkspacePosts(slug, {
-    statuses,
-    order: "newest",
-    limit: pageSize,
-    offset,
-  });
-  const totalCount = await getWorkspacePostsCount(slug, { statuses });
+  const [rows, totalCount] = await Promise.all([
+    getWorkspacePosts(slug, {
+      statuses,
+      order: "newest",
+      limit: pageSize,
+      offset,
+    }),
+    getWorkspacePostsCount(slug, { statuses }),
+  ]);
 
   const items: RequestItemData[] = rows.map((row) =>
     toRequestItemData({

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@featul/ui/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
@@ -34,6 +35,7 @@ function SidebarItem({
   collapsed?: boolean;
 }) {
   const Icon = item.icon;
+  const router = useRouter();
   const reduceMotion = useReducedMotion();
   const [mounted, setMounted] = React.useState(false);
   const [hovered, setHovered] = React.useState(false);
@@ -95,7 +97,10 @@ function SidebarItem({
   );
 
   const hoverProps = {
-    onMouseEnter: () => setHovered(true),
+    onMouseEnter: () => {
+      setHovered(true);
+      if (!item.external) router.prefetch(item.href);
+    },
     onMouseLeave: () => setHovered(false),
   };
 
@@ -115,6 +120,8 @@ function SidebarItem({
   ) : (
     <Link
       href={item.href}
+      prefetch={item.label === "Settings" || item.label === "Back" ? true : undefined}
+      onFocus={() => router.prefetch(item.href)}
       replace={item.replace}
       className={classes}
       aria-current={active ? "page" : undefined}

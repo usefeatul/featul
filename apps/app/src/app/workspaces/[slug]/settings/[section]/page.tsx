@@ -39,7 +39,7 @@ export default async function SettingsSectionPage({ params }: Props) {
     initialFeedbackBoards,
     initialFeedbackTags,
     initialIntegrations,
-  } = await getSettingsInitialData(slug, session?.user?.id)
+  } = await getSettingsInitialData(slug, session?.user?.id, section)
 
   return (
     <SettingsServer

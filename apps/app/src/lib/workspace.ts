@@ -769,6 +769,7 @@ export async function getBoardByWorkspaceSlug(
 export async function getSettingsInitialData(
   slug: string,
   meId?: string,
+  section?: string,
 ): Promise<{
   initialPlan?: string;
   initialWorkspaceId?: string;
@@ -799,6 +800,8 @@ export async function getSettingsInitialData(
   const ws = await getWorkspaceBySlugRecord(slug);
   if (!ws?.id) return {};
 
+  const needs = (...sections: string[]) => !section || sections.includes(section);
+
   const feedbackBoardSelect = {
     id: board.id,
     name: board.name,
@@ -827,7 +830,7 @@ export async function getSettingsInitialData(
     effectivePlan,
     branding,
   ] = await Promise.all([
-    db
+    needs("changelog") ? db
       .select({
         isVisible: board.isVisible,
         isPublic: board.isPublic,
@@ -837,13 +840,13 @@ export async function getSettingsInitialData(
       .where(
         and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")),
       )
-      .limit(1),
-    db
+      .limit(1) : Promise.resolve([]),
+    needs("branding") ? db
       .select({ hidePoweredBy: brandingConfig.hidePoweredBy })
       .from(brandingConfig)
       .where(eq(brandingConfig.workspaceId, ws.id))
-      .limit(1),
-    db
+      .limit(1) : Promise.resolve([]),
+    needs("team") ? db
       .select({
         userId: workspaceMember.userId,
         role: workspaceMember.role,
@@ -855,8 +858,8 @@ export async function getSettingsInitialData(
       })
       .from(workspaceMember)
       .innerJoin(user, eq(user.id, workspaceMember.userId))
-      .where(eq(workspaceMember.workspaceId, ws.id)),
-    db
+      .where(eq(workspaceMember.workspaceId, ws.id)) : Promise.resolve([]),
+    needs("team") ? db
       .select({
         id: workspaceInvite.id,
         email: workspaceInvite.email,
@@ -867,8 +870,8 @@ export async function getSettingsInitialData(
         createdAt: workspaceInvite.createdAt,
       })
       .from(workspaceInvite)
-      .where(eq(workspaceInvite.workspaceId, ws.id)),
-    db
+      .where(eq(workspaceInvite.workspaceId, ws.id)) : Promise.resolve([]),
+    needs("domain", "changelog") ? db
       .select({
         id: workspaceDomain.id,
         host: workspaceDomain.host,
@@ -880,22 +883,22 @@ export async function getSettingsInitialData(
       })
       .from(workspaceDomain)
       .where(eq(workspaceDomain.workspaceId, ws.id))
-      .limit(1),
-    db
+      .limit(1) : Promise.resolve([]),
+    needs("feedback", "board") ? db
       .select(feedbackBoardSelect)
       .from(board)
       .leftJoin(post, eq(post.boardId, board.id))
       .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
       .groupBy(board.id)
-      .orderBy(asc(board.sortOrder), asc(board.createdAt)),
-    db
+      .orderBy(asc(board.sortOrder), asc(board.createdAt)) : Promise.resolve([]),
+    needs("feedback", "board") ? db
       .select(feedbackBoardSelect)
       .from(board)
       .leftJoin(post, eq(post.boardId, board.id))
       .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "roadmap")))
       .groupBy(board.id)
-      .orderBy(asc(board.sortOrder), asc(board.createdAt)),
-    db
+      .orderBy(asc(board.sortOrder), asc(board.createdAt)) : Promise.resolve([]),
+    needs("feedback") ? db
       .select({
         id: tag.id,
         name: tag.name,
@@ -915,8 +918,8 @@ export async function getSettingsInitialData(
         ),
       )
       .where(eq(tag.workspaceId, ws.id))
-      .groupBy(tag.id, tag.name, tag.slug, tag.color),
-    db
+      .groupBy(tag.id, tag.name, tag.slug, tag.color) : Promise.resolve([]),
+    needs("integrations") ? db
       .select({
         id: workspaceIntegration.id,
         type: workspaceIntegration.type,
@@ -925,8 +928,8 @@ export async function getSettingsInitialData(
         createdAt: workspaceIntegration.createdAt,
       })
       .from(workspaceIntegration)
-      .where(eq(workspaceIntegration.workspaceId, ws.id)),
-    db
+      .where(eq(workspaceIntegration.workspaceId, ws.id)) : Promise.resolve([]),
+    needs("billing") ? db
       .select({
         id: subscription.id,
         plan: subscription.plan,
@@ -945,9 +948,9 @@ export async function getSettingsInitialData(
         ),
       )
       .orderBy(desc(subscription.updatedAt), desc(subscription.createdAt))
-      .limit(1),
-    getEffectiveWorkspacePlan(ws.id),
-    getBrandingBySlug(slug),
+      .limit(1) : Promise.resolve([]),
+    Promise.resolve(ws.plan ?? "free"),
+    needs("branding") ? getBrandingBySlug(slug) : Promise.resolve(null),
   ]);
 
   const b = changelogRows[0];
@@ -1006,14 +1009,14 @@ export async function getSettingsInitialData(
       ? (b.changelogTags as ChangelogTag[])
       : [],
     initialHidePoweredBy: Boolean(br?.hidePoweredBy),
-    initialBrandingConfig: {
+    initialBrandingConfig: branding ? {
       logoUrl: ws?.logo || undefined,
       primaryColor: branding.primary,
       theme: branding.theme,
       layoutStyle: branding.layoutStyle,
       sidebarPosition: branding.sidebarPosition,
       hidePoweredBy: branding.hidePoweredBy,
-    },
+    } : undefined,
     initialDomainInfo: d || null,
     initialDefaultDomain: String(ws?.domain || ""),
     initialFeedbackBoards: feedbackBoards.map((b) => ({
