@@ -77,23 +77,28 @@ export async function loadRequestDetailPageData({
   if (!rawPost) return null;
 
   const postWithAuthor = ensureAuthorAvatar(rawPost);
-  const { role, isOwner } = await loadAuthorRoleAndOwnership({
-    workspaceId: ws.id,
-    workspaceOwnerId: ws.ownerId,
-    authorId: rawPost.authorId,
-  });
-
-  const tags = await loadPostTags(rawPost.id);
-  const hasVoted = await readHasVotedForPost(rawPost.id);
-  const { initialComments, initialCollapsedIds } = await loadPostComments(
-    rawPost.id,
-    "workspace",
-  );
-  const navigation = await loadNavigation({
-    workspaceSlug,
-    postId: rawPost.id,
-    searchParams,
-  });
+  // These reads only depend on the resolved post, not on one another.
+  const [
+    { role, isOwner },
+    tags,
+    hasVoted,
+    { initialComments, initialCollapsedIds },
+    navigation,
+  ] = await Promise.all([
+    loadAuthorRoleAndOwnership({
+      workspaceId: ws.id,
+      workspaceOwnerId: ws.ownerId,
+      authorId: rawPost.authorId,
+    }),
+    loadPostTags(rawPost.id),
+    readHasVotedForPost(rawPost.id),
+    loadPostComments(rawPost.id, "workspace"),
+    loadNavigation({
+      workspaceSlug,
+      postId: rawPost.id,
+      searchParams,
+    }),
+  ]);
 
   let reportCount = 0;
   if (isOwner) {

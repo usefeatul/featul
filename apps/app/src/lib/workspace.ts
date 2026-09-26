@@ -327,33 +327,35 @@ export async function listUserWorkspaces(
     plan?: "free" | "starter" | "professional" | null;
   }>
 > {
-  const owned = await db
-    .select({
-      id: workspace.id,
-      name: workspace.name,
-      slug: workspace.slug,
-      logo: workspace.logo,
-      plan: workspace.plan,
-    })
-    .from(workspace)
-    .where(eq(workspace.ownerId, userId));
-
-  const memberRows = await db
-    .select({
-      id: workspace.id,
-      name: workspace.name,
-      slug: workspace.slug,
-      logo: workspace.logo,
-      plan: workspace.plan,
-    })
-    .from(workspaceMember)
-    .innerJoin(workspace, eq(workspaceMember.workspaceId, workspace.id))
-    .where(
-      and(
-        eq(workspaceMember.userId, userId),
-        eq(workspaceMember.isActive, true),
+  // Ownership and membership reads are independent; keep their merge order below.
+  const [owned, memberRows] = await Promise.all([
+    db
+      .select({
+        id: workspace.id,
+        name: workspace.name,
+        slug: workspace.slug,
+        logo: workspace.logo,
+        plan: workspace.plan,
+      })
+      .from(workspace)
+      .where(eq(workspace.ownerId, userId)),
+    db
+      .select({
+        id: workspace.id,
+        name: workspace.name,
+        slug: workspace.slug,
+        logo: workspace.logo,
+        plan: workspace.plan,
+      })
+      .from(workspaceMember)
+      .innerJoin(workspace, eq(workspaceMember.workspaceId, workspace.id))
+      .where(
+        and(
+          eq(workspaceMember.userId, userId),
+          eq(workspaceMember.isActive, true),
+        ),
       ),
-    );
+  ]);
 
   const map = new Map<
     string,
