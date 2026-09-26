@@ -185,7 +185,7 @@ export default function Navigator({
         aria-hidden={!open}
         inert={!open}
         className={cn(
-          "absolute inset-x-0 bottom-0 z-30 h-[min(78dvh,44rem)] overflow-hidden rounded-t-2xl bg-background shadow-2xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none dark:bg-sidebar",
+          "absolute inset-x-0 bottom-0 z-30 h-[min(78dvh,44rem)] overflow-hidden rounded-t-2xl bg-sidebar shadow-2xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none dark:bg-sidebar",
           "md:relative md:inset-auto md:z-10 md:h-full md:shrink-0 md:rounded-none md:bg-transparent md:shadow-none md:transition-[width,opacity] md:duration-200",
           open
             ? "translate-y-0 opacity-100 md:w-[var(--resizable-panel-width)] md:translate-y-0"
@@ -199,7 +199,7 @@ export default function Navigator({
           label="Resize request sidebar"
           className="hidden md:flex"
         />
-        <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-background md:w-[var(--resizable-panel-width)] md:rounded-none md:border-0 md:border-r md:border-border/60 md:shadow-none dark:border-sidebar-border dark:bg-sidebar">
+        <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-sidebar md:w-[var(--resizable-panel-width)] md:rounded-none md:border-0 md:border-r md:border-border/60 md:shadow-none dark:border-sidebar-border dark:bg-sidebar">
           <div
             aria-hidden
             className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-border md:hidden"
@@ -263,7 +263,7 @@ export default function Navigator({
 
           {searchOpen ? (
             <div className="px-3 pb-2 pt-1">
-              <label className="flex h-9 items-center gap-2 rounded-md border border-border/60 bg-background px-3 text-muted-foreground hover:bg-card focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10 dark:bg-white/[0.07] dark:hover:bg-white/[0.1]">
+              <label className="flex h-9 items-center gap-2 rounded-md border border-border/60 bg-background px-3 text-muted-foreground hover:bg-background focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10 dark:bg-background dark:hover:bg-background">
                 <Search className="size-5 shrink-0 text-neutral-600 dark:text-neutral-300" />
                 <input
                   autoFocus

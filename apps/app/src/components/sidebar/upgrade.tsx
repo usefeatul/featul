@@ -69,7 +69,7 @@ export default function Upgrade({ slug, collapsed, initialPlan, userKey }: {
 
   const href = `/workspaces/${slug}/settings/billing`;
   const content = collapsed ? (
-      <div className="flex shrink-0 justify-center px-1.5 pt-3">
+      <div className="flex shrink-0 justify-center px-1.5 py-3">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button asChild size="icon-sm" variant="default" aria-label="Upgrade plan">
