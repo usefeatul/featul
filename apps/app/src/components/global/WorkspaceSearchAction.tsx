@@ -304,7 +304,8 @@ export function WorkspaceSearchAction({
             title={compact ? undefined : `Search (${platformKey}K)`}
             aria-pressed={isSearchActive}
             className={cn(
-              filterToolbarButtonClass(isSearchActive && !compact, className),
+              filterToolbarButtonClass(isSearchActive && !compact),
+              className,
               compact &&
                 "group border-0 bg-transparent text-neutral-400 shadow-none ring-0 before:hidden hover:bg-muted/60 hover:text-primary dark:bg-transparent dark:text-neutral-300 dark:hover:bg-white/[0.05] dark:hover:text-primary",
             )}
