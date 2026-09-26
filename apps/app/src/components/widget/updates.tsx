@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
 import { CheckIcon } from "@/components/global/icons";
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
-import { WidgetAuthorAvatar } from "./avatar";
+import { UpdateByline } from "./byline";
 import { WidgetEmpty, WidgetEmptyPlaceholders } from "./empty";
 import { WidgetImage } from "./image";
 
@@ -33,13 +33,12 @@ type Props = {
   onBack: () => void;
 };
 
-function formatUpdateDate(value: string | Date | null | undefined): string {
+function formatUpdateDate(value: string | Date | null | undefined, uppercase = true): string {
   if (!value) return "";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-  return date
-    .toLocaleDateString("en-US", { month: "short", day: "numeric" })
-    .toUpperCase();
+  const label = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return uppercase ? label.toUpperCase() : label;
 }
 
 function primaryTag(entry: WidgetChangelogEntry): {
@@ -110,7 +109,7 @@ export function WidgetUpdates({
 
   const viewTransition = reduceMotion
     ? { duration: 0 }
-    : { duration: 0.22, ease: [0.22, 1, 0.36, 1] as const };
+    : { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const };
 
   if (!entries.length && !selected) {
     return (
@@ -128,13 +127,13 @@ export function WidgetUpdates({
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
-      <AnimatePresence mode="wait" initial={false}>
+      <AnimatePresence mode="sync" initial={false}>
         {selected ? (
           <motion.div
             key={`detail-${selected.id}`}
-            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={reduceMotion ? undefined : { opacity: 0, y: 6 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: 2, pointerEvents: "none" }}
             transition={viewTransition}
             className="absolute inset-0 flex min-h-0 flex-col"
           >
@@ -150,7 +149,7 @@ export function WidgetUpdates({
             key="list"
             initial={reduceMotion ? false : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={reduceMotion ? undefined : { opacity: 0, y: 4 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: 2, pointerEvents: "none" }}
             transition={viewTransition}
             className="absolute inset-0 flex min-h-0 flex-col overflow-y-auto scrollbar-hide"
           >
@@ -167,41 +166,23 @@ export function WidgetUpdates({
                     index > 0 ? "border-t border-dashed border-[rgb(var(--widget-fg)/0.12)]" : ""
                   }`}
                 >
-                  <UpdateMetaRow
-                    entry={entry}
-                    accent={accent}
-                    fallbackBadge={isRecent ? "Just Shipped" : null}
-                  />
-
-                  <h3 className="mt-2 text-[17px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
+                  <h3 className="text-[17px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
                     {entry.title}
                   </h3>
 
+                  <UpdateByline
+                    entry={entry}
+                    accent={accent}
+                    fallbackBadge={isRecent ? "Just shipped" : null}
+                  />
+
                   {preview ? (
-                    <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.5)]">
+                    <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.5)]">
                       {preview}
                     </p>
                   ) : null}
 
-                  {entry.authorName ? (
-                    <div className="mt-4 flex items-center gap-2.5">
-                      <WidgetAuthorAvatar
-                        name={entry.authorName}
-                        image={entry.authorImage}
-                        className="size-7"
-                      />
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
-                          {entry.authorName}
-                        </p>
-                        {entry.authorRoleLabel ? (
-                          <p className="truncate font-heading text-xs text-[rgb(var(--widget-fg)/0.4)]">
-                            {entry.authorRoleLabel}
-                          </p>
-                        ) : null}
-                      </div>
-                    </div>
-                  ) : null}
+
                 </button>
               );
             })}
@@ -229,31 +210,11 @@ function UpdateDetail({
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide" data-widget-scroll="">
       <div className="px-5 pb-4 pt-1">
-        <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
-
-        <h1 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
+        <h1 className="text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
           {entry.title}
         </h1>
 
-        {entry.authorName ? (
-          <div className="mt-4 flex items-center gap-2.5">
-            <WidgetAuthorAvatar
-              name={entry.authorName}
-              image={entry.authorImage}
-              className="size-8"
-            />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
-                {entry.authorName}
-              </p>
-              {entry.authorRoleLabel ? (
-                <p className="truncate font-heading text-xs text-[rgb(var(--widget-fg)/0.4)]">
-                  {entry.authorRoleLabel}
-                </p>
-              ) : null}
-            </div>
-          </div>
-        ) : null}
+        <UpdateByline entry={entry} accent={accent} />
       </div>
 
       <div className="border-t border-dashed border-[rgb(var(--widget-fg)/0.14)]" />

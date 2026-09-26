@@ -30,5 +30,5 @@ export function ChangelogRenderer({
 		return null;
 	}
 
-	return <EditorContent editor={editor} />;
+	return <EditorContent editor={editor} className="min-w-0 max-w-full" />;
 }

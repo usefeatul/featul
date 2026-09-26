@@ -4,6 +4,7 @@ import type {
   FeatulWidgetSection,
   FeatulWidgetUser,
 } from "../index";
+import { animatePanelResize } from "./motion";
 import {
   FRAME_SOURCE,
   HOST_SOURCE,
@@ -550,9 +551,23 @@ function boot() {
     if (state.expanded === next) return;
     state.expanded = next;
     if (!state.open || state.overlay) return;
+    const previous = state.iframe?.getBoundingClientRect();
+    cancelPanelAnim();
     applyPanelRect();
     applyShellPanelRect();
     syncFrameLayout();
+    if (state.iframe && previous && !state.animating) {
+      const animation = animatePanelResize(
+        state.iframe,
+        previous,
+        getPanelRect(state.position),
+        prefersReducedMotion(),
+      );
+      state.panelAnim = animation;
+      if (animation) animation.onfinish = () => {
+        if (state.panelAnim === animation) state.panelAnim = null;
+      };
+    }
   }
 
   function setPanelOverlay(overlay: boolean) {
@@ -560,6 +575,7 @@ function boot() {
     if (state.overlay === next) return;
     state.overlay = next;
     if (!state.open) return;
+    cancelPanelAnim();
     applyPanelRect();
     applyShellPanelRect();
     setHostScrollLocked(true);
@@ -1160,6 +1176,7 @@ function boot() {
       state.listeners[event]?.delete(listener);
     },
     destroy() {
+      cancelPanelAnim();
       clearTimers();
       closeImageLightbox();
       setHostScrollLocked(false);
