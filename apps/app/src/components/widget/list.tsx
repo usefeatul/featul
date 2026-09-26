@@ -1,6 +1,9 @@
 "use client";
 
 import { WidgetButton } from "./button";
+import { Button } from "@featul/ui/components/button";
+import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
+import { cn } from "@featul/ui/lib/utils";
 
 import * as React from "react";
 import { client } from "@featul/api/client";
@@ -43,13 +46,9 @@ const STATUS_OPTIONS = [
 
 type StatusFilter = (typeof STATUS_OPTIONS)[number]["value"] | "";
 
-const toolbarControlClass =
-  "border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.05)]";
+const toolbarBtnClass = cn(toolbarItemClass, "size-8 p-2");
 
-const toolbarBtnClass = `inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-md ${toolbarControlClass} text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.08)] hover:text-[rgb(var(--widget-fg)/0.8)]`;
-
-const toolbarBtnActiveClass =
-  "border-[rgb(var(--widget-fg)/0.18)] bg-[rgb(var(--widget-fg)/0.1)] text-[rgb(var(--widget-fg)/0.9)]";
+const toolbarBtnActiveClass = "bg-primary/10 text-primary dark:bg-primary/15";
 
 const popoverClass =
   "z-[80] min-w-0 w-fit border border-[rgb(var(--widget-fg)/0.12)] bg-[rgb(var(--widget-surface))] p-0 text-[rgb(var(--widget-fg))] shadow-lg";
@@ -229,44 +228,49 @@ export function WidgetFeedbackList({
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
       <div className="relative z-10 flex items-center gap-2 px-4 pb-3 pt-1">
-        <div className="relative min-w-0 flex-1">
-          <SearchIcon
-            className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[rgb(var(--widget-fg)/0.35)]"
-            size={14}
-          />
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search feedback"
-            aria-label="Search feedback"
-            className={`h-9 w-full rounded-md ${toolbarControlClass} pl-9 pr-9 text-sm text-[rgb(var(--widget-fg))] outline-none placeholder:text-[rgb(var(--widget-fg)/0.3)] focus:bg-[rgb(var(--widget-fg)/0.07)]`}
-          />
-          {search ? (
-            <button
-              type="button"
-              aria-label="Clear search"
-              onClick={() => {
-                setSearch("");
-                setQuery("");
-              }}
-              className="absolute right-1 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded text-[rgb(var(--widget-fg)/0.55)] hover:bg-[rgb(var(--widget-fg)/0.08)]"
-            >
-              <X className="size-3.5" />
-            </button>
-          ) : null}
-        </div>
+        <Toolbar className="min-w-0 flex-1">
+          <div className="relative min-w-0 flex-1">
+            <SearchIcon
+              className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-[rgb(var(--widget-fg)/0.35)]"
+              size={14}
+            />
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search feedback"
+              aria-label="Search feedback"
+              className={cn(toolbarItemClass, "h-8 w-full pl-9 pr-8 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary")}
+            />
+            {search ? (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => {
+                  setSearch("");
+                  setQuery("");
+                }}
+                className="absolute right-1 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded text-[rgb(var(--widget-fg)/0.55)] hover:bg-[rgb(var(--widget-fg)/0.08)]"
+              >
+                <X className="size-3.5" />
+              </button>
+            ) : null}
+          </div>
+        </Toolbar>
 
         <Popover open={sortOpen} onOpenChange={setSortOpen}>
-          <PopoverTrigger asChild>
-            <button
-              type="button"
-              className={toolbarBtnClass}
-              aria-label={`Sort by ${sortLabel}`}
-              title={sortLabel}
-            >
-              <ArrowUpDownIcon className="size-3.5" size={14} />
-            </button>
-          </PopoverTrigger>
+          <Toolbar className="shrink-0">
+            <PopoverTrigger asChild>
+              <Button
+                variant="plain"
+                type="button"
+                className={toolbarBtnClass}
+                aria-label={`Sort by ${sortLabel}`}
+                title={sortLabel}
+              >
+                <ArrowUpDownIcon className="size-4" size={16} />
+              </Button>
+            </PopoverTrigger>
+          </Toolbar>
           <PopoverContent
             list
             align="end"
@@ -298,16 +302,19 @@ export function WidgetFeedbackList({
         </Popover>
 
         <Popover open={statusOpen} onOpenChange={setStatusOpen}>
-          <PopoverTrigger asChild>
-            <button
-              type="button"
-              className={`${toolbarBtnClass}${status ? ` ${toolbarBtnActiveClass}` : ""}`}
-              aria-label={`Filter by status: ${statusFilterLabel}`}
-              title={statusFilterLabel}
-            >
-              <ListFilterIcon className="size-3.5" size={14} />
-            </button>
-          </PopoverTrigger>
+          <Toolbar className="shrink-0">
+            <PopoverTrigger asChild>
+              <Button
+                variant="plain"
+                type="button"
+                className={cn(toolbarBtnClass, status && toolbarBtnActiveClass)}
+                aria-label={`Filter by status: ${statusFilterLabel}`}
+                title={statusFilterLabel}
+              >
+                <ListFilterIcon className="size-4" size={16} />
+              </Button>
+            </PopoverTrigger>
+          </Toolbar>
           <PopoverContent
             list
             align="end"
@@ -360,16 +367,19 @@ export function WidgetFeedbackList({
 
         {boards.length > 1 ? (
           <Popover open={boardOpen} onOpenChange={setBoardOpen}>
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                className={`${toolbarBtnClass}${boardId ? ` ${toolbarBtnActiveClass}` : ""}`}
-                aria-label={`Filter by board: ${boardLabel}`}
-                title={boardLabel}
-              >
-                <LayersIcon className="size-3.5" size={14} />
-              </button>
-            </PopoverTrigger>
+            <Toolbar className="shrink-0">
+              <PopoverTrigger asChild>
+                <Button
+                  variant="plain"
+                  type="button"
+                  className={cn(toolbarBtnClass, boardId && toolbarBtnActiveClass)}
+                  aria-label={`Filter by board: ${boardLabel}`}
+                  title={boardLabel}
+                >
+                  <LayersIcon className="size-4" size={16} />
+                </Button>
+              </PopoverTrigger>
+            </Toolbar>
             <PopoverContent
               list
               align="end"
