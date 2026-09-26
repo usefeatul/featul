@@ -239,7 +239,7 @@ export function WidgetFeedbackList({
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search feedback"
               aria-label="Search feedback"
-              className={cn(toolbarItemClass, "h-8 w-full pl-9 pr-8 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary")}
+              className={cn(toolbarItemClass, "h-8 w-full pl-9 pr-8 text-sm text-foreground outline-none placeholder:text-muted-foreground")}
             />
             {search ? (
               <button
