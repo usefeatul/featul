@@ -65,6 +65,7 @@ type WidgetState = {
   placeTimer: number | null;
   accent: string;
   theme: "light" | "dark";
+  themeReady: boolean;
   listeners: Record<WidgetHostEvent, Set<(payload?: unknown) => void>>;
 };
 
@@ -118,6 +119,7 @@ function boot() {
     placeTimer: null,
     accent: "#4d96e8",
     theme: "dark",
+    themeReady: false,
     listeners: { ready: new Set(), open: new Set(), close: new Set() },
   };
 
@@ -188,7 +190,9 @@ function boot() {
   }
 
   function syncTheme() {
-    state.theme = resolveTheme(state.options.theme || "auto");
+    const mode = state.options.theme || "auto";
+    if (mode !== "auto" || !state.themeReady) state.theme = resolveTheme(mode);
+    if (mode !== "auto") state.themeReady = true;
     if (state.iframe) {
       state.iframe.style.background = shellBackground();
       state.iframe.style.colorScheme = state.theme;
@@ -828,7 +832,7 @@ function boot() {
   }
 
   function syncButtonVisibility() {
-    setButtonHidden(state.open || state.animating);
+    setButtonHidden(!state.themeReady || state.open || state.animating);
   }
 
   function buildFrame() {
@@ -1090,11 +1094,14 @@ function boot() {
       "theme" in data.payload
     ) {
       const theme = (data.payload as { theme?: string }).theme;
-      state.theme = theme === "light" ? "light" : "dark";
+      if (theme !== "light" && theme !== "dark") return;
+      state.theme = theme;
+      state.themeReady = true;
       if (state.iframe) state.iframe.style.colorScheme = state.theme;
       if (state.shell && state.open)
         state.shell.style.background = shellBackground();
       syncLauncherTheme();
+      syncButtonVisibility();
     }
     if (data.type === "close") {
       state.expanded = false;
@@ -1193,6 +1200,7 @@ function boot() {
       state.lightbox = null;
       state.safeProbe = null;
       state.ready = false;
+      state.themeReady = false;
       state.open = false;
       state.expanded = false;
       state.overlay = false;

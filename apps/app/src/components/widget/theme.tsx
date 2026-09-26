@@ -108,7 +108,9 @@ function ThemeSync({
   }, [mode, setTheme]);
 
   React.useEffect(() => {
-    const resolved = resolvedTheme === "light" || resolvedTheme === "dark" ? resolvedTheme : null;
+    const resolved = mode === "light" || mode === "dark"
+      ? mode
+      : resolvedTheme === "light" || resolvedTheme === "dark" ? resolvedTheme : null;
     if (!resolved) return;
     const root = document.documentElement;
     root.style.colorScheme = resolved;
