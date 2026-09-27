@@ -1,6 +1,7 @@
 import { pgTable, text, timestamp, boolean, integer, index, uniqueIndex, jsonb } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2'
 import { workspace } from './workspace'
+import { user } from './auth'
 
 // Plan tiers
 export const planTier = ['free', 'starter', 'professional'] as const
@@ -44,6 +45,14 @@ export const subscription = pgTable('subscription', {
 }))
 
 export type Subscription = typeof subscription.$inferSelect
+
+// Survives workspace deletion so an account cannot reset its trial allowance.
+export const billingAccount = pgTable('billing_account', {
+    userId: text('user_id').primaryKey().references(() => user.id, { onDelete: 'cascade' }),
+    trialUsedAt: timestamp('trial_used_at'),
+    lockedUntil: timestamp('locked_until'),
+    lockToken: text('lock_token'),
+})
 
 export const billingNotification = pgTable('billing_notification', {
     id: text('id')

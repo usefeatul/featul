@@ -176,6 +176,13 @@
       "when": 1790500603504,
       "tag": "0024_billing_reliability",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1790505697881,
+      "tag": "0025_account_trial",
+      "breakpoints": true
     }
   ]
 }

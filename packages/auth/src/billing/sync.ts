@@ -5,6 +5,7 @@ import { getStripeClient } from "../stripe"
 import { getComplimentarySubscriptionPlan, getComplimentaryWorkspacePlan } from "./complimentary"
 import { BillingBusyError, ownsBillingLease, withBillingLock, type BillingLease } from "./lock"
 import { belongsToWorkspace, getSubscriptionProjection, hasPaidAccess, strongestPlan, type BillingPlan } from "./policy"
+import { markAccountTrialUsed } from "./trial"
 
 export async function getBillingContext(workspaceId: string) {
   const [owner] = await db.select({
@@ -108,6 +109,9 @@ export async function syncBillingUnderLease(lease: BillingLease) {
       .where(and(eq(billingState.workspaceId, workspaceId), guard)),
   ])
   if (!result[0].length) throw new BillingBusyError()
+  if (liveSubscriptions.some((live) => live.trial_start || live.trial_end || live.status === "trialing")) {
+    await markAccountTrialUsed(context.owner.ownerId)
+  }
   return { plan, subscriptions: projections, ...context }
 }
 

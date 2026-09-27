@@ -67,6 +67,7 @@ describe.skipIf(!testUrl)("billing integration", () => {
   let billing: typeof import("@featul/auth/billing")
   let http: typeof import("@featul/auth/billing/http")
   let webhook: typeof import("@featul/auth/billing/webhook")
+  let trials: typeof import("@featul/auth/billing/trial")
   const env = { ...process.env }
   beforeAll(async () => {
     process.env.STRIPE_PRICE_ID_STARTER_MONTHLY = "price_starter"
@@ -87,6 +88,7 @@ describe.skipIf(!testUrl)("billing integration", () => {
     billing = await import("@featul/auth/billing")
     http = await import("@featul/auth/billing/http")
     webhook = await import("@featul/auth/billing/webhook")
+    trials = await import("@featul/auth/billing/trial")
 
     await connection.unsafe(`
       create table "user" (id text primary key, name text, email text, stripe_customer_id text);
@@ -96,17 +98,18 @@ describe.skipIf(!testUrl)("billing integration", () => {
     await connection.unsafe(cutover.slice(cutover.indexOf('CREATE TABLE "subscription"'))).simple()
     await connection.unsafe(await readFile(new URL("../../db/drizzle/0016_cute_frightful_four.sql", import.meta.url), "utf8")).simple()
     await connection.unsafe(await readFile(new URL("../../db/drizzle/0024_billing_reliability.sql", import.meta.url), "utf8")).simple()
+    await connection.unsafe(await readFile(new URL("../../db/drizzle/0025_account_trial.sql", import.meta.url), "utf8")).simple()
   })
 
   beforeEach(async () => {
-    await connection`truncate billing_event, billing_notification, billing_state, subscription, workspace, "user" cascade`
+    await connection`truncate billing_account, billing_event, billing_notification, billing_state, subscription, workspace, "user" cascade`
     await connection`insert into "user" (id, name, email, stripe_customer_id) values ('owner', 'Owner', 'owner@example.test', 'cus_owner')`
     await connection`insert into workspace (id, owner_id, name, slug) values ('ws_one', 'owner', 'One', 'one'), ('ws_two', 'owner', 'Two', 'two')`
     subscriptions = []; openCheckouts = []; delivered.length = 0
     stripeFailure = false; emailFailure = false; sessionUser = "owner"; returnedCheckout = null
   })
   afterAll(async () => {
-    await connection.unsafe('drop table billing_event, billing_notification, billing_state, subscription, workspace, "user" cascade').simple()
+    await connection.unsafe('drop table billing_account, billing_event, billing_notification, billing_state, subscription, workspace, "user" cascade').simple()
     await connection.close()
     for (const key of ["STRIPE_PRICE_ID_STARTER_MONTHLY", "STRIPE_PRICE_ID_PROFESSIONAL_MONTHLY", "STRIPE_WEBHOOK_SECRET"]) {
       if (env[key] === undefined) delete process.env[key]
@@ -303,6 +306,52 @@ describe.skipIf(!testUrl)("billing integration", () => {
     expect(mismatch.status).toBe(400)
     sessionUser = "other"
     expect((await http.handleBillingReturn(new Request("https://app.test/api/billing/success?workspaceId=ws_one"))).status).toBe(403)
+  })
+
+  test("account trial history survives workspace deletion and blocks both trial lengths", async () => {
+    expect(await trials.isAccountTrialEligible("owner")).toBe(true)
+    expect((await trials.getAccountTrialCheckoutParams("owner", "ws_one", "pending", 7)).subscription_data.trial_period_days).toBe(7)
+    expect((await trials.getAccountTrialCheckoutParams("owner", "ws_one", "pending", 3)).subscription_data.trial_period_days).toBe(3)
+    subscriptions = [live("sub_one", "ws_one", "canceled")]
+    // Catch trial use in Stripe before any webhook writes local subscription history.
+    expect(await trials.isAccountTrialEligible("owner")).toBe(false)
+    await mutations.deleteWorkspaceAfterBillingCheck("ws_one")
+    subscriptions = []
+    stripeFailure = true
+    for (const days of [7, 3]) {
+      const params = await trials.getAccountTrialCheckoutParams("owner", "ws_two", "pending_two", days)
+      expect(params.subscription_data.trial_period_days).toBeUndefined()
+      expect(params.subscription_data.metadata).toEqual({ userId: "owner", referenceId: "ws_two", subscriptionId: "pending_two" })
+      expect(params.payment_method_collection).toBe("always")
+    }
+    await connection`insert into "user" (id) values ('new_owner')`
+    expect(await trials.isAccountTrialEligible("new_owner")).toBe(true)
+  })
+
+  test("trial verification fails closed when Stripe history is unavailable", async () => {
+    stripeFailure = true
+    await expect(trials.getAccountTrialCheckoutParams("owner", "ws_two", "pending", 7)).rejects.toThrow("Stripe unavailable")
+    expect((await connection`select trial_used_at from billing_account`).length).toBe(0)
+  })
+
+  test("account checkouts serialize across workspaces and replace abandoned checkout offers", async () => {
+    const request = (referenceId: string) => new Request("https://app.test/api/auth/subscription/upgrade", {
+      method: "POST", headers: { origin: "https://app.test", "content-type": "application/json" },
+      body: JSON.stringify({ referenceId, plan: "starter" }),
+    })
+    const first = await http.handleBillingUpgrade(request("ws_one"), async () => {
+      const concurrent = await http.handleBillingUpgrade(request("ws_two"), async () => { throw new Error("Must not create parallel checkout") })
+      expect(concurrent.status).toBe(409)
+      openCheckouts.push({ id: "cs_first", mode: "subscription", client_reference_id: "ws_one", metadata: { userId: "owner" } } as unknown as Stripe.Checkout.Session)
+      return Response.json({ ok: true })
+    })
+    expect(first.status).toBe(200)
+    const second = await http.handleBillingUpgrade(request("ws_two"), async () => {
+      expect(openCheckouts).toHaveLength(0)
+      expect(await trials.isAccountTrialEligible("owner")).toBe(true)
+      return Response.json({ ok: true })
+    })
+    expect(second.status).toBe(200)
   })
 
   test("checkout resolves the existing subscription on the server and blocks unpaid replacements", async () => {

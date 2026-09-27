@@ -5,6 +5,7 @@ import { BillingBusyError, withBillingLock } from "./lock"
 import { BillingConflictError, prepareWorkspaceCheckout } from "./mutations"
 import { getBillingContext, syncWorkspaceBilling } from "./sync"
 import { stripeId } from "./policy"
+import { expireAccountCheckouts, withAccountCheckoutLock } from "./trial"
 
 export async function handleBillingUpgrade(request: Request, next: (request: Request) => Promise<Response>) {
   // The wrapper performs Stripe mutations before Better Auth runs its own CSRF checks.
@@ -31,7 +32,8 @@ export async function handleBillingUpgrade(request: Request, next: (request: Req
     return Response.json({ message: "Workspace billing uses user customers" }, { status: 400 })
   }
   try {
-    return await withBillingLock(workspaceId, async (lease) => {
+    return await withAccountCheckoutLock(session.user.id, () => withBillingLock(workspaceId, async (lease) => {
+      await expireAccountCheckouts(session.user.id)
       const subscriptionId = await prepareWorkspaceCheckout(lease)
       const headers = new Headers(request.headers)
       headers.delete("content-length")
@@ -41,7 +43,7 @@ export async function handleBillingUpgrade(request: Request, next: (request: Req
         method: "POST", headers,
         body: JSON.stringify({ ...body, subscriptionId, customerType: "user" }),
       }))
-    })
+    }))
   } catch (error) {
     if (error instanceof BillingConflictError || error instanceof BillingBusyError) {
       return Response.json({ message: error.message }, { status: 409 })

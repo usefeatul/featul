@@ -33,6 +33,7 @@ import { getAuthRateLimitStorage } from "./rate/storage";
 import { isAuthRateLimitEnabled } from "./rate/config";
 import { isWorkspaceBillingOwner } from "./billing";
 import { getStripeClient } from "./stripe";
+import { getAccountTrialCheckoutParams } from "./billing/trial";
 import { captureServerAnalyticsEvent } from "./posthog";
 
 function resolveCookieDomain() {
@@ -147,7 +148,7 @@ const stripePlugin = (() => {
     subscription: {
       enabled: true,
       plans: stripePlans,
-      getCheckoutSessionParams: async ({ plan, subscription }) => {
+      getCheckoutSessionParams: async ({ user, plan, subscription }) => {
         const appUrl = process.env.NEXT_PUBLIC_APP_URL;
         if (!appUrl) throw new Error("NEXT_PUBLIC_APP_URL is required for billing");
         const successUrl = new URL("/api/billing/success", appUrl);
@@ -156,7 +157,7 @@ const stripePlugin = (() => {
           params: {
             // Bypass the plugin's customer-wide first-active-subscription lookup.
             success_url: `${successUrl.toString()}&session_id={CHECKOUT_SESSION_ID}`,
-            ...(plan.freeTrial ? { payment_method_collection: "if_required" as const } : {}),
+            ...await getAccountTrialCheckoutParams(user.id, subscription.referenceId, subscription.id, plan.freeTrial?.days),
           },
         };
       },

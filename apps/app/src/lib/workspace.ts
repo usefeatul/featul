@@ -56,6 +56,7 @@ import {
 } from "@featul/api/shared/snooze";
 import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
 import { isWorkspaceTrialEligible } from "@featul/auth/billing/policy";
+import { isAccountTrialEligible } from "@featul/auth/billing/trial";
 import {
   getBrandingBySlug,
   getBrandingColorsBySlug,
@@ -967,7 +968,8 @@ export async function getSettingsInitialData(
     initialPlan: effectivePlan,
     initialWorkspaceId: ws.id,
     initialWorkspaceOwnerId: ws.ownerId,
-    initialTrialEligible: needs("billing") && isWorkspaceTrialEligible(billingSubscriptions),
+    initialTrialEligible: needs("billing") && isWorkspaceTrialEligible(billingSubscriptions)
+      && await isAccountTrialEligible(ws.ownerId).catch(() => false),
     initialBillingSubscription: activeBillingSubscription[0]
       ? {
           id: activeBillingSubscription[0].id,

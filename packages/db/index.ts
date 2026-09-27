@@ -37,6 +37,7 @@ export const {
   subscription,
   billingNotification,
   billingState,
+  billingAccount,
   billingEvent,
   brandingConfig,
   workspaceSlugReservation,
