@@ -22,45 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SettingsSectionPage({ params }: Props) {
   const { slug, section } = await params
   const session = await getServerSession()
-  const {
-    initialPlan,
-    initialWorkspaceId,
-    initialWorkspaceOwnerId,
-    initialBillingSubscription,
-    initialWorkspaceName,
-    initialTimezone,
-    initialTeam,
-    initialChangelogVisible,
-    initialChangelogTags,
-    initialHidePoweredBy,
-    initialBrandingConfig,
-    initialDomainInfo,
-    initialDefaultDomain,
-    initialFeedbackBoards,
-    initialFeedbackTags,
-    initialIntegrations,
-  } = await getSettingsInitialData(slug, session?.user?.id, section)
+  const initialData = await getSettingsInitialData(slug, session?.user?.id, section)
 
-  return (
-    <SettingsServer
-      slug={slug}
-      selectedSection={section}
-      initialChangelogVisible={initialChangelogVisible}
-      initialHidePoweredBy={initialHidePoweredBy}
-      initialPlan={initialPlan}
-      initialWorkspaceId={initialWorkspaceId}
-      initialWorkspaceOwnerId={initialWorkspaceOwnerId}
-      initialBillingSubscription={initialBillingSubscription}
-      initialWorkspaceName={initialWorkspaceName}
-      initialTimezone={initialTimezone}
-      initialTeam={initialTeam}
-      initialChangelogTags={initialChangelogTags}
-      initialBrandingConfig={initialBrandingConfig}
-      initialDomainInfo={initialDomainInfo}
-      initialDefaultDomain={initialDefaultDomain}
-      initialFeedbackBoards={initialFeedbackBoards}
-      initialFeedbackTags={initialFeedbackTags}
-      initialIntegrations={initialIntegrations}
-    />
-  )
+  return <SettingsServer slug={slug} selectedSection={section} {...initialData} />
 }

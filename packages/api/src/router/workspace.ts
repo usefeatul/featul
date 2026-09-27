@@ -1,3 +1,5 @@
+import { BillingConflictError, deleteWorkspaceAfterBillingCheck } from "@featul/auth/billing/mutations";
+import { BillingBusyError } from "@featul/auth/billing/lock";
 import { HTTPException } from "hono/http-exception";
 import { eq, and, sql, ne } from "drizzle-orm";
 import { j, privateProcedure, publicProcedure } from "../jstack";
@@ -887,7 +889,14 @@ export function createWorkspaceRouter() {
           });
         }
 
-        await ctx.db.delete(workspace).where(eq(workspace.id, ws.id));
+        try {
+          await deleteWorkspaceAfterBillingCheck(ws.id);
+        } catch (error) {
+          if (error instanceof BillingConflictError || error instanceof BillingBusyError) {
+            throw new HTTPException(409, { message: error.message });
+          }
+          throw error;
+        }
         return c.superjson({ ok: true });
       }),
 

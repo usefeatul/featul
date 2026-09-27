@@ -1,11 +1,13 @@
 import Stripe from "stripe"
-import { eq } from "drizzle-orm"
+import { randomUUID } from "node:crypto"
+import { and, eq, isNull, sql } from "drizzle-orm"
 import { billingNotification, db, subscription, user, workspace } from "@featul/db"
 import {
-  sendBillingPaymentDueEmail,
-  sendBillingPaymentFailedEmail,
-  sendBillingUpgradeEmail,
-} from "../email"
+  renderBillingPaymentDueEmail,
+  renderBillingPaymentFailedEmail,
+  renderBillingUpgradeEmail,
+} from "../email/billingemail"
+import { sendEmail, type EmailPayload } from "../email/transport"
 import { type StripeBillingPlanName } from "../stripe"
 
 type BillingNotificationKind = "upgrade" | "payment_failed" | "payment_due"
@@ -80,7 +82,7 @@ function getStripeSubscriptionId(
   return String(value?.id || "").trim()
 }
 
-function getInvoiceSubscriptionId(invoice: Stripe.Invoice) {
+export function getInvoiceSubscriptionId(invoice: Stripe.Invoice) {
   const parentSubscriptionId = getStripeSubscriptionId(
     invoice.parent?.subscription_details?.subscription || null,
   )
@@ -142,6 +144,7 @@ async function claimBillingNotification(params: {
   stripeEventId: string
   stripeInvoiceId?: string | null
 }) {
+  const token = randomUUID()
   const [row] = await db
     .insert(billingNotification)
     .values({
@@ -149,25 +152,43 @@ async function claimBillingNotification(params: {
       kind: params.kind,
       stripeEventId: params.stripeEventId,
       stripeInvoiceId: params.stripeInvoiceId || null,
+      lockToken: token,
+      lockedUntil: sql`now() + interval '2 minutes'`,
     })
-    .onConflictDoNothing()
-    .returning({ id: billingNotification.id })
+    .onConflictDoUpdate({
+      target: billingNotification.stripeEventId,
+      set: { lockToken: token, lockedUntil: sql`now() + interval '2 minutes'` },
+      setWhere: and(isNull(billingNotification.sentAt), sql`${billingNotification.lockedUntil} is null or ${billingNotification.lockedUntil} < now()`),
+    })
+    .returning({ id: billingNotification.id, payload: billingNotification.payload })
 
-  return row?.id || null
+  if (row) return { ...row, token, key: params.stripeEventId }
+  const [existing] = await db.select({ sentAt: billingNotification.sentAt }).from(billingNotification)
+    .where(eq(billingNotification.stripeEventId, params.stripeEventId)).limit(1)
+  if (!existing?.sentAt) throw new Error("Billing notification is already being delivered")
+  return null
 }
 
-async function releaseBillingNotification(claimId: string) {
-  await db.delete(billingNotification).where(eq(billingNotification.id, claimId))
-}
-
-async function sendClaimedNotification(claimId: string | null, send: () => Promise<void>) {
-  if (!claimId) return false
+async function sendClaimedNotification(
+  claim: { id: string; token: string; key: string; payload: EmailPayload | null } | null,
+  build: () => Promise<EmailPayload>,
+) {
+  if (!claim) return false
+  const condition = and(eq(billingNotification.id, claim.id), eq(billingNotification.lockToken, claim.token))
 
   try {
-    await send()
+    const payload = claim.payload || { ...await build(), from: process.env.RESEND_FROM || "featul <no-reply@featul.com>" }
+    if (!claim.payload) {
+      const saved = await db.update(billingNotification).set({ payload }).where(condition).returning({ id: billingNotification.id })
+      if (!saved.length) throw new Error("Billing notification lease expired")
+    }
+    // Keep the exact payload across retries: Resend rejects a reused key with
+    // different content, e.g. after the owner changes their billing email.
+    await sendEmail({ ...payload, idempotencyKey: claim.key })
+    await db.update(billingNotification).set({ sentAt: new Date(), lockedUntil: null, lockToken: null }).where(condition)
     return true
   } catch (error) {
-    await releaseBillingNotification(claimId)
+    await db.update(billingNotification).set({ lockedUntil: null, lockToken: null }).where(condition)
     throw error
   }
 }
@@ -192,28 +213,31 @@ export async function sendWorkspaceUpgradeNotification(params: {
     return false
   }
 
-  const upgradeNotificationKey = [
-    "upgrade",
-    recipient.workspaceId,
-    String(params.stripeSubscriptionId || "").trim() || "no-subscription",
-    params.plan,
-    String(params.billingInterval || "").trim() || "no-interval",
-  ].join(":")
+  // Respect activation notifications sent by the pre-migration implementation.
+  // Later plan changes use event IDs and must not be suppressed by this key.
+  if (params.stripeEventId.startsWith("activation:")) {
+    const legacyKey = ["upgrade", params.workspaceId, params.stripeSubscriptionId || "no-subscription",
+      params.plan, params.billingInterval || "no-interval"].join(":")
+    const [legacy] = await db.select({ sentAt: billingNotification.sentAt }).from(billingNotification)
+      .where(eq(billingNotification.stripeEventId, legacyKey)).limit(1)
+    if (legacy?.sentAt) return false
+  }
 
   const claimId = await claimBillingNotification({
     workspaceId: recipient.workspaceId,
     kind: "upgrade",
-    stripeEventId: upgradeNotificationKey,
+    stripeEventId: params.stripeEventId,
   })
 
   return sendClaimedNotification(claimId, async () => {
-    await sendBillingUpgradeEmail(recipient.ownerEmail!, {
+    const rendered = await renderBillingUpgradeEmail({
       recipientName: recipient.ownerName || undefined,
       workspaceName: recipient.workspaceName,
       planLabel: formatPlanLabel(params.plan),
       billingIntervalLabel: formatBillingIntervalLabel(params.billingInterval),
       billingUrl: buildBillingUrl(recipient.workspaceSlug),
     })
+    return { to: recipient.ownerEmail!, subject: `Your workspace upgraded to ${formatPlanLabel(params.plan)}`, ...rendered }
   })
 }
 
@@ -252,7 +276,7 @@ export async function sendFailedPaymentNotificationForInvoice(event: Stripe.Even
         fromUnixTimestamp(invoice.due_date),
     )
 
-    await sendBillingPaymentFailedEmail(context.ownerEmail!, {
+    const rendered = await renderBillingPaymentFailedEmail({
       recipientName: context.ownerName || undefined,
       workspaceName: context.workspaceName,
       planLabel: formatPlanLabel(context.plan),
@@ -260,6 +284,7 @@ export async function sendFailedPaymentNotificationForInvoice(event: Stripe.Even
       dueDateLabel: renewalDate ? `Renewal date: ${renewalDate}` : undefined,
       billingUrl: buildBillingUrl(context.workspaceSlug),
     })
+    return { to: context.ownerEmail!, subject: `Payment failed for ${context.workspaceName}`, ...rendered }
   })
 }
 
@@ -298,7 +323,7 @@ export async function sendUpcomingPaymentNotificationForInvoice(event: Stripe.Ev
         fromUnixTimestamp(invoice.due_date),
     )
 
-    await sendBillingPaymentDueEmail(context.ownerEmail!, {
+    const rendered = await renderBillingPaymentDueEmail({
       recipientName: context.ownerName || undefined,
       workspaceName: context.workspaceName,
       planLabel: formatPlanLabel(context.plan),
@@ -306,5 +331,6 @@ export async function sendUpcomingPaymentNotificationForInvoice(event: Stripe.Ev
       dueDateLabel: renewalDate ? `Renewal date: ${renewalDate}` : undefined,
       billingUrl: buildBillingUrl(context.workspaceSlug),
     })
+    return { to: context.ownerEmail!, subject: `Upcoming renewal for ${context.workspaceName}`, ...rendered }
   })
 }

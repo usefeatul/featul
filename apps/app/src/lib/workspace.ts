@@ -55,6 +55,7 @@ import {
   isSnoozedStatusFilter,
 } from "@featul/api/shared/snooze";
 import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
+import { isWorkspaceTrialEligible } from "@featul/auth/billing/policy";
 import {
   getBrandingBySlug,
   getBrandingColorsBySlug,
@@ -776,6 +777,7 @@ export async function getSettingsInitialData(
   initialPlan?: string;
   initialWorkspaceId?: string;
   initialWorkspaceOwnerId?: string;
+  initialTrialEligible?: boolean;
   initialBillingSubscription?: {
     id: string;
     plan: string;
@@ -803,6 +805,8 @@ export async function getSettingsInitialData(
   if (!ws?.id) return {};
 
   const needs = (...sections: string[]) => !section || sections.includes(section);
+  // Refresh billing before reading the subscription details used by settings.
+  const verifiedPlan = await getEffectiveWorkspacePlan(ws.id);
 
   const feedbackBoardSelect = {
     id: board.id,
@@ -828,7 +832,7 @@ export async function getSettingsInitialData(
     feedbackRoadmap,
     feedbackTagsRows,
     integrationsRows,
-    activeBillingSubscription,
+    billingSubscriptions,
     effectivePlan,
     branding,
   ] = await Promise.all([
@@ -940,18 +944,14 @@ export async function getSettingsInitialData(
         billingInterval: subscription.billingInterval,
         periodEnd: subscription.periodEnd,
         cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+        trialStart: subscription.trialStart,
         trialEnd: subscription.trialEnd,
       })
       .from(subscription)
-      .where(
-        and(
-          eq(subscription.referenceId, ws.id),
-          sql`${subscription.status} in ('active', 'trialing', 'past_due')`,
-        ),
-      )
-      .orderBy(desc(subscription.updatedAt), desc(subscription.createdAt))
-      .limit(1) : Promise.resolve([]),
-    Promise.resolve(ws.plan ?? "free"),
+      .where(eq(subscription.referenceId, ws.id))
+      .orderBy(sql`case when ${subscription.plan} = ${verifiedPlan} then 0 else 1 end`, desc(subscription.createdAt))
+      : Promise.resolve([]),
+    Promise.resolve(verifiedPlan),
     needs("branding") ? getBrandingBySlug(slug) : Promise.resolve(null),
   ]);
 
@@ -959,11 +959,15 @@ export async function getSettingsInitialData(
   const br = brandingRows[0];
   const d = domainRows[0];
   const feedbackBoards = [...feedbackRoadmap, ...feedbackBoardsNonSystem];
+  const activeBillingSubscription = billingSubscriptions.filter((row) =>
+    row.status !== null && row.status !== "canceled" && row.status !== "incomplete_expired",
+  );
 
   return {
     initialPlan: effectivePlan,
     initialWorkspaceId: ws.id,
     initialWorkspaceOwnerId: ws.ownerId,
+    initialTrialEligible: needs("billing") && isWorkspaceTrialEligible(billingSubscriptions),
     initialBillingSubscription: activeBillingSubscription[0]
       ? {
           id: activeBillingSubscription[0].id,

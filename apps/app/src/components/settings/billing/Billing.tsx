@@ -29,6 +29,7 @@ type BillingSectionProps = {
   workspaceId?: string
   workspaceOwnerId?: string
   initialSubscription?: BillingSubscription | null
+  trialEligible?: boolean
 }
 
 export default function BillingSection({
@@ -37,13 +38,14 @@ export default function BillingSection({
   workspaceId,
   workspaceOwnerId,
   initialSubscription = null,
+  trialEligible = false,
 }: BillingSectionProps) {
   const normalizedPlan = normalizePlan(String(currentPlan || "free"))
   const activePlan = getPlan(normalizedPlan)
   const initialBillingCycle: BillingCycle =
     initialSubscription?.billingInterval === "year" ? "yearly" : "monthly"
   const [billingCycle, setBillingCycle] = React.useState<BillingCycle>(initialBillingCycle)
-  const [subscription, setSubscription] = React.useState<BillingSubscription | null>(initialSubscription)
+  const subscription = initialSubscription
   const [isOpeningPortal, setIsOpeningPortal] = React.useState(false)
   const { data: session } = useSession()
 
@@ -51,50 +53,12 @@ export default function BillingSection({
     workspaceOwnerId && session?.user?.id && workspaceOwnerId === session.user.id,
   )
 
-  React.useEffect(() => {
-    let cancelled = false
-
-    async function loadSubscription() {
-      if (!workspaceId || !isOwner) {
-        if (!cancelled) setSubscription(null)
-        return
-      }
-
-      try {
-        const { data, error } = await authClient.subscription.list({
-          query: {
-            referenceId: workspaceId,
-          },
-        })
-
-        if (cancelled) return
-        if (error) {
-          setSubscription(null)
-          return
-        }
-
-        const subscriptions = Array.isArray(data) ? data : []
-        setSubscription((subscriptions[0] as BillingSubscription | undefined) || null)
-      } catch {
-        if (!cancelled) setSubscription(null)
-      }
-    }
-
-    loadSubscription()
-
-    return () => {
-      cancelled = true
-    }
-  }, [isOwner, workspaceId])
-
-  const billingUrl = React.useMemo(() => `/workspaces/${slug}/settings/billing`, [slug])
-
   const handleOpenPortal = async () => {
     if (!workspaceId || !isOwner || isOpeningPortal) return
 
     try {
       setIsOpeningPortal(true)
-      const returnUrl = `${window.location.origin}${billingUrl}`
+      const returnUrl = `${window.location.origin}/api/billing/success?workspaceId=${encodeURIComponent(workspaceId)}`
       const { data, error } = await authClient.subscription.billingPortal({
         referenceId: workspaceId,
         returnUrl,
@@ -199,6 +163,7 @@ export default function BillingSection({
               workspaceId={workspaceId}
               workspaceSlug={slug}
               canManageBilling={isOwner}
+              trialEligible={trialEligible}
               currentSubscriptionId={subscription?.stripeSubscriptionId || undefined}
             />
           ))}

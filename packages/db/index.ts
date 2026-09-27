@@ -36,6 +36,8 @@ export const {
   vote,
   subscription,
   billingNotification,
+  billingState,
+  billingEvent,
   brandingConfig,
   workspaceSlugReservation,
   changelogEntry,

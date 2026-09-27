@@ -9,7 +9,6 @@ import {
 } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
 import { stripe } from "@better-auth/stripe";
-import Stripe from "stripe";
 import {
   db,
   user,
@@ -32,20 +31,8 @@ import { getValidatedTrustedOrigins } from "./origins/trusted";
 import { setSessionCookie } from "better-auth/cookies";
 import { getAuthRateLimitStorage } from "./rate/storage";
 import { isAuthRateLimitEnabled } from "./rate/config";
-import {
-  sendFailedPaymentNotificationForInvoice,
-  sendUpcomingPaymentNotificationForInvoice,
-  sendWorkspaceUpgradeNotification,
-} from "./billing/notifications";
-import {
-  isWorkspaceBillingOwner,
-  syncWorkspacePlanFromSubscription,
-} from "./billing";
-import {
-  getStripeClient,
-  getStripePlanNameFromItems,
-  type StripeBillingPlanName,
-} from "./stripe";
+import { isWorkspaceBillingOwner } from "./billing";
+import { getStripeClient } from "./stripe";
 import { captureServerAnalyticsEvent } from "./posthog";
 
 function resolveCookieDomain() {
@@ -148,46 +135,10 @@ const stripePlans = [
   };
 }>;
 
-function toPaidStripePlanName(plan: unknown): StripeBillingPlanName | null {
-  if (plan === "starter" || plan === "professional") {
-    return plan;
-  }
-
-  return null;
-}
-
-function getPreviousPlanFromSubscriptionUpdateEvent(event: Stripe.Event) {
-  if (event.type !== "customer.subscription.updated") return null;
-
-  const previousAttributes = (
-    event.data as { previous_attributes?: { items?: unknown } }
-  ).previous_attributes;
-  const items = previousAttributes?.items;
-
-  if (Array.isArray(items)) {
-    return getStripePlanNameFromItems(items);
-  }
-
-  if (
-    items &&
-    typeof items === "object" &&
-    Array.isArray((items as { data?: unknown[] }).data)
-  ) {
-    return getStripePlanNameFromItems((items as { data?: unknown[] }).data);
-  }
-
-  return null;
-}
-
 const stripePlugin = (() => {
-  if (!stripeSecretKey || !stripeWebhookSecret || stripePlans.length === 0) {
-    return null;
-  }
-
+  if (!stripeSecretKey || !stripeWebhookSecret || stripePlans.length === 0) return null;
   const stripeClient = getStripeClient();
-  if (!stripeClient) {
-    return null;
-  }
+  if (!stripeClient) return null;
 
   return stripe({
     stripeClient,
@@ -196,194 +147,26 @@ const stripePlugin = (() => {
     subscription: {
       enabled: true,
       plans: stripePlans,
-      getCheckoutSessionParams: async ({ plan }) => {
-        if (!plan.freeTrial) {
-          return {};
-        }
-
+      getCheckoutSessionParams: async ({ plan, subscription }) => {
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+        if (!appUrl) throw new Error("NEXT_PUBLIC_APP_URL is required for billing");
+        const successUrl = new URL("/api/billing/success", appUrl);
+        successUrl.searchParams.set("workspaceId", subscription.referenceId);
         return {
           params: {
-            payment_method_collection: "if_required",
+            // Bypass the plugin's customer-wide first-active-subscription lookup.
+            success_url: `${successUrl.toString()}&session_id={CHECKOUT_SESSION_ID}`,
+            ...(plan.freeTrial ? { payment_method_collection: "if_required" as const } : {}),
           },
         };
       },
       authorizeReference: async ({ user, referenceId }) => {
         const workspaceId = String(referenceId || "").trim();
-        if (!workspaceId) return false;
-        return isWorkspaceBillingOwner(workspaceId, user.id);
-      },
-      onSubscriptionComplete: async ({
-        event,
-        subscription,
-      }: {
-        event: Stripe.Event;
-        subscription: {
-          referenceId?: unknown;
-          plan?: unknown;
-          status?: unknown;
-          billingInterval?: unknown;
-          stripeSubscriptionId?: unknown;
-        };
-      }) => {
-        await syncWorkspacePlanFromSubscription(subscription);
-
-        const workspaceId = String(subscription.referenceId || "").trim();
-        if (!workspaceId) return;
-
-        const plan = toPaidStripePlanName(subscription.plan);
-        if (plan) {
-          await sendWorkspaceUpgradeNotification({
-            workspaceId,
-            plan,
-            billingInterval:
-              String(subscription.billingInterval || "").trim() || null,
-            stripeSubscriptionId:
-              String(subscription.stripeSubscriptionId || "").trim() || null,
-            stripeEventId: event.id,
-          });
-        }
-        await captureServerAnalyticsEvent(
-          "subscription_upgraded",
-          `workspace:${workspaceId}`,
-          {
-            workspace_id: workspaceId,
-            plan: String(subscription.plan || ""),
-            status: String(subscription.status || ""),
-            source: "stripe_complete",
-          },
-        );
-      },
-      onSubscriptionCreated: async ({
-        event,
-        subscription,
-      }: {
-        event: Stripe.Event;
-        subscription: {
-          referenceId?: unknown;
-          plan?: unknown;
-          status?: unknown;
-          billingInterval?: unknown;
-          stripeSubscriptionId?: unknown;
-        };
-      }) => {
-        await syncWorkspacePlanFromSubscription(subscription);
-
-        const workspaceId = String(subscription.referenceId || "").trim();
-        const plan = toPaidStripePlanName(subscription.plan);
-        if (!workspaceId || !plan) return;
-
-        await sendWorkspaceUpgradeNotification({
-          workspaceId,
-          plan,
-          billingInterval:
-            String(subscription.billingInterval || "").trim() || null,
-          stripeSubscriptionId:
-            String(subscription.stripeSubscriptionId || "").trim() || null,
-          stripeEventId: event.id,
-        });
-      },
-      onSubscriptionUpdate: async ({
-        event,
-        subscription,
-      }: {
-        event: Stripe.Event;
-        subscription: {
-          referenceId?: unknown;
-          plan?: unknown;
-          status?: unknown;
-          billingInterval?: unknown;
-          stripeSubscriptionId?: unknown;
-        };
-      }) => {
-        await syncWorkspacePlanFromSubscription(subscription);
-
-        const workspaceId = String(subscription.referenceId || "").trim();
-        const currentPlan = toPaidStripePlanName(subscription.plan);
-        const previousPlan = getPreviousPlanFromSubscriptionUpdateEvent(event);
-
-        if (
-          !workspaceId ||
-          !currentPlan ||
-          !previousPlan ||
-          previousPlan === currentPlan
-        ) {
-          return;
-        }
-
-        await sendWorkspaceUpgradeNotification({
-          workspaceId,
-          plan: currentPlan,
-          billingInterval:
-            String(subscription.billingInterval || "").trim() || null,
-          stripeSubscriptionId:
-            String(subscription.stripeSubscriptionId || "").trim() || null,
-          stripeEventId: event.id,
-        });
-      },
-      onSubscriptionCancel: async ({
-        subscription,
-      }: {
-        subscription: {
-          referenceId?: unknown;
-          plan?: unknown;
-          status?: unknown;
-        };
-      }) => {
-        await syncWorkspacePlanFromSubscription(subscription);
-      },
-      onSubscriptionDeleted: async ({
-        subscription,
-      }: {
-        subscription: {
-          referenceId?: unknown;
-          plan?: unknown;
-          status?: unknown;
-        };
-      }) => {
-        await syncWorkspacePlanFromSubscription(subscription);
-      },
-      onTrialStart: async (subscription: {
-        referenceId?: unknown;
-        plan?: unknown;
-        status?: unknown;
-      }) => {
-        await syncWorkspacePlanFromSubscription(subscription);
-      },
-      onTrialEnd: async ({
-        subscription,
-      }: {
-        subscription: {
-          referenceId?: unknown;
-          plan?: unknown;
-          status?: unknown;
-        };
-      }) => {
-        await syncWorkspacePlanFromSubscription(subscription);
-      },
-      onTrialExpired: async (subscription: {
-        referenceId?: unknown;
-        plan?: unknown;
-        status?: unknown;
-      }) => {
-        await syncWorkspacePlanFromSubscription(subscription);
+        return Boolean(workspaceId) && isWorkspaceBillingOwner(workspaceId, user.id);
       },
     },
-    onEvent: async (event) => {
-      switch (event.type) {
-        case "invoice.payment_failed":
-          await sendFailedPaymentNotificationForInvoice(
-            event,
-            event.data.object as Stripe.Invoice,
-          );
-          break;
-        case "invoice.upcoming":
-          await sendUpcomingPaymentNotificationForInvoice(
-            event,
-            event.data.object as Stripe.Invoice,
-          );
-          break;
-      }
-    },
+    // Webhooks and checkout returns are handled by explicit app routes. They
+    // share billing/sync.ts and propagate failures instead of plugin callbacks.
   });
 })();
 

@@ -17,6 +17,8 @@
     "./auth": "./src/auth.ts",
     "./server": "./src/auth.ts",
     "./billing": "./src/billing.ts",
+    "./billing/*": "./src/billing/*.ts",
+    "./stripe": "./src/stripe.ts",
     "./workspace": "./src/workspace.ts",
     "./password": "./src/password.ts",
     "./session": "./src/session.ts",

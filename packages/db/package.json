@@ -2,7 +2,8 @@
   "name": "@featul/db",
   "version": "0.0.0",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./schema": "./schema/index.ts"
   },
   "scripts": {
     "check-types": "tsc --noEmit",

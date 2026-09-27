@@ -23,6 +23,7 @@ type PlanOptionCardProps = {
   workspaceId?: string;
   workspaceSlug: string;
   canManageBilling: boolean;
+  trialEligible: boolean;
   currentSubscriptionId?: string;
 };
 
@@ -33,6 +34,7 @@ export default function PlanOptionCard({
   workspaceId,
   workspaceSlug,
   canManageBilling,
+  trialEligible,
   currentSubscriptionId,
 }: PlanOptionCardProps) {
   const plan = getPlan(planKey);
@@ -93,6 +95,14 @@ export default function PlanOptionCard({
           </div>
         </div>
         <dl className="relative z-10 -mx-5 space-y-2.5 border-t border-border/60 bg-background px-5 pt-4 text-xs">
+          {plan.trialDays ? (
+            <div className="flex items-baseline justify-between gap-3">
+              <dt className="text-muted-foreground">Free trial</dt>
+              <dd className={cn("shrink-0 tabular-nums", valueClass)}>
+                {trialEligible ? `${plan.trialDays} days` : "Not available"}
+              </dd>
+            </div>
+          ) : null}
           {getPlanHighlights(planKey).map((item) => (
             <div
               key={item.label}
@@ -134,6 +144,7 @@ export default function PlanOptionCard({
             workspaceId={workspaceId}
             workspaceSlug={workspaceSlug}
             canManageBilling={canManageBilling}
+            trialEligible={trialEligible}
             currentSubscriptionId={currentSubscriptionId}
             className={cn(
               "h-9 w-full text-sm",
@@ -148,9 +159,11 @@ export default function PlanOptionCard({
           <p className="mt-2 text-center text-[11px] text-muted-foreground">
             {isCurrent
               ? "Manage your subscription above."
-              : plan.trialDays
+              : plan.trialDays && trialEligible
                 ? `${plan.trialDays}-day free trial. Cancel anytime.`
-                : "No credit card required."}
+                : planKey === "free"
+                  ? "No credit card required."
+                  : "Paid plan. Cancel anytime."}
           </p>
         </div>
       </div>

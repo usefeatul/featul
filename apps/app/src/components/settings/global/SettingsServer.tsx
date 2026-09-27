@@ -22,6 +22,7 @@ type Props = {
   slug: string;
   initialWorkspaceId?: string;
   initialWorkspaceOwnerId?: string;
+  initialTrialEligible?: boolean;
   initialBillingSubscription?: {
     id: string;
     plan: string;
@@ -52,6 +53,7 @@ export default function SettingsServer({
   slug,
   initialWorkspaceId,
   initialWorkspaceOwnerId,
+  initialTrialEligible,
   initialBillingSubscription,
   selectedSection,
   initialTimezone,
@@ -78,6 +80,7 @@ export default function SettingsServer({
         slug={slug}
         initialWorkspaceId={initialWorkspaceId}
         initialWorkspaceOwnerId={initialWorkspaceOwnerId}
+        initialTrialEligible={initialTrialEligible}
         initialBillingSubscription={initialBillingSubscription}
         section={selected}
         initialTimezone={initialTimezone}
@@ -102,6 +105,7 @@ function SectionRenderer({
   slug,
   initialWorkspaceId,
   initialWorkspaceOwnerId,
+  initialTrialEligible,
   initialBillingSubscription,
   section,
   initialTimezone,
@@ -121,6 +125,7 @@ function SectionRenderer({
   slug: string;
   initialWorkspaceId?: string;
   initialWorkspaceOwnerId?: string;
+  initialTrialEligible?: boolean;
   initialBillingSubscription?: {
     id: string;
     plan: string;
@@ -207,6 +212,7 @@ function SectionRenderer({
           workspaceId={initialWorkspaceId}
           workspaceOwnerId={initialWorkspaceOwnerId}
           initialSubscription={initialBillingSubscription}
+          trialEligible={initialTrialEligible}
         />
       );
     case "domain":

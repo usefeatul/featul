@@ -1,165 +1,54 @@
-import { db, subscription, workspace } from "@featul/db"
-import { desc, eq } from "drizzle-orm"
-import {
-  getComplimentarySubscriptionPlan,
-  getComplimentaryWorkspacePlan,
-} from "./billing/complimentary"
-import { getStripeClient, getStripePlanNameFromSubscription } from "./stripe"
+import { billingState, db, workspace } from "@featul/db"
+import { eq } from "drizzle-orm"
+import { setTimeout as delay } from "node:timers/promises"
+import type Stripe from "stripe"
+import { getComplimentaryWorkspacePlan } from "./billing/complimentary"
+import { syncWorkspaceBilling } from "./billing/sync"
+import type { BillingPlan } from "./billing/policy"
+import { BillingBusyError } from "./billing/lock"
 
-export type BillingSubscriptionStatus =
-  | "active"
-  | "canceled"
-  | "incomplete"
-  | "past_due"
-  | "trialing"
-  | "unpaid"
+export type { BillingPlan } from "./billing/policy"
+export type BillingSubscriptionStatus = Stripe.Subscription.Status
 
-export type BillingPlan = "free" | "starter" | "professional"
+const FRESH_FOR_MS = 5 * 60 * 1000
+const OUTAGE_GRACE_MS = 24 * 60 * 60 * 1000
 
-type BillingSubscriptionLike = {
-  referenceId?: unknown
-  plan?: unknown
-  status?: unknown
-}
+export async function getEffectiveWorkspacePlan(workspaceId: string): Promise<BillingPlan> {
+  const id = workspaceId.trim()
+  if (!id) return "free"
+  const complimentary = getComplimentaryWorkspacePlan(id)
+  if (complimentary) return complimentary
 
-type BillingSubscriptionRow = {
-  plan: unknown
-  status: unknown
-  stripeCustomerId: string | null
-  stripeSubscriptionId: string | null
-  updatedAt: Date
-  createdAt: Date
-}
-
-function normalizePlan(plan: unknown): BillingPlan | null {
-  const value = String(plan || "").trim().toLowerCase()
-  if (value === "free" || value === "starter" || value === "professional") {
-    return value
-  }
-  return null
-}
-
-function isPaidStatus(status: unknown): status is Extract<BillingSubscriptionStatus, "active" | "past_due" | "trialing"> {
-  return status === "active" || status === "past_due" || status === "trialing"
-}
-
-function isStripePaidStatus(status: unknown) {
-  return status === "active" || status === "past_due" || status === "trialing"
-}
-
-function isMissingStripeSubscription(error: unknown) {
-  if (!error || typeof error !== "object") return false
-
-  const code = "code" in error ? String(error.code || "") : ""
-  const statusCode = "statusCode" in error ? Number(error.statusCode) : NaN
-
-  return code === "resource_missing" || statusCode === 404
-}
-
-function isDevPlanOverrideEnabled() {
-  return process.env.NODE_ENV !== "production" && process.env.DEV_PLAN_OVERRIDE === "true"
-}
-
-function getLocalDevPaidPlan(row: BillingSubscriptionRow): BillingPlan | null {
-  if (!isDevPlanOverrideEnabled()) return null
-
-  const stripeSubscriptionId = String(row.stripeSubscriptionId || "").trim()
-  if (!stripeSubscriptionId.startsWith("dev_sub_")) return null
-  if (!isPaidStatus(row.status)) return null
-
-  const plan = normalizePlan(row.plan)
-  if (!plan || plan === "free") return null
-  return plan
-}
-
-async function getWorkspaceSubscriptionRows(workspaceId: string) {
-  return db
-    .select({
-      plan: subscription.plan,
-      status: subscription.status,
-      stripeCustomerId: subscription.stripeCustomerId,
-      stripeSubscriptionId: subscription.stripeSubscriptionId,
-      updatedAt: subscription.updatedAt,
-      createdAt: subscription.createdAt,
-    })
-    .from(subscription)
-    .where(eq(subscription.referenceId, workspaceId))
-    .orderBy(desc(subscription.updatedAt), desc(subscription.createdAt))
-}
-
-async function getVerifiedPaidPlan(row: BillingSubscriptionRow, workspaceId: string): Promise<BillingPlan | null> {
-  const localPlan = getLocalDevPaidPlan(row)
-  if (localPlan) return localPlan
-
-  const complimentaryPlan = getComplimentarySubscriptionPlan(row)
-  if (complimentaryPlan) return complimentaryPlan
-
-  const stripeSubscriptionId = String(row.stripeSubscriptionId || "").trim()
-  if (!stripeSubscriptionId) return null
-
-  const stripeClient = getStripeClient()
-  if (!stripeClient) return null
-
+  const [cached] = await db.select().from(billingState).where(eq(billingState.workspaceId, id)).limit(1)
+  const age = cached?.syncedAt ? Date.now() - cached.syncedAt.getTime() : Infinity
+  if (cached && age < FRESH_FOR_MS) return cached.plan
+  // Do not make every feature request retry Stripe during a short outage or
+  // while another request is already refreshing the same workspace.
+  if (cached?.attemptedAt && age < OUTAGE_GRACE_MS && Date.now() - cached.attemptedAt.getTime() < 30_000) return cached.plan
   try {
-    const liveSubscription = await stripeClient.subscriptions.retrieve(stripeSubscriptionId)
-    if (!isStripePaidStatus(liveSubscription.status)) return null
-
-    const metadataReferenceId = String(liveSubscription.metadata?.referenceId || "").trim()
-    if (metadataReferenceId && metadataReferenceId !== workspaceId) return null
-
-    const stripeCustomerId =
-      typeof liveSubscription.customer === "string"
-        ? liveSubscription.customer
-        : liveSubscription.customer?.id
-    const expectedCustomerId = String(row.stripeCustomerId || "").trim()
-    if (expectedCustomerId && stripeCustomerId && expectedCustomerId !== stripeCustomerId) return null
-
-    return getStripePlanNameFromSubscription(liveSubscription)
+    return (await syncWorkspaceBilling(id)).plan
   } catch (error) {
-    if (isMissingStripeSubscription(error)) {
-      return null
+    // Keep previously verified access during a short Stripe outage. Never turn
+    // a failed read into a free-plan write or grant access from unverified rows.
+    if (cached && age < OUTAGE_GRACE_MS) {
+      console.warn("[billing] Using last verified plan", { workspaceId: id, error })
+      return cached.plan
+    }
+    // Parallel server renders can race on the first refresh after deployment.
+    // Briefly wait for the lease holder to publish instead of failing a cold read.
+    if (error instanceof BillingBusyError) {
+      for (let attempt = 0; attempt < 10; attempt++) {
+        await delay(200)
+        const [fresh] = await db.select().from(billingState).where(eq(billingState.workspaceId, id)).limit(1)
+        if (fresh?.syncedAt && Date.now() - fresh.syncedAt.getTime() < FRESH_FOR_MS) return fresh.plan
+      }
     }
     throw error
   }
 }
 
-async function setWorkspacePlan(workspaceId: string, nextPlan: BillingPlan, currentPlan?: unknown) {
-  const normalizedCurrentPlan = normalizePlan(currentPlan)
-
-  if (normalizedCurrentPlan !== nextPlan) {
-    await db
-      .update(workspace)
-      .set({ plan: nextPlan })
-      .where(eq(workspace.id, workspaceId))
-  }
-
-  return nextPlan
-}
-
-export async function getEffectiveWorkspacePlan(workspaceId: string): Promise<BillingPlan> {
-  const id = String(workspaceId || "").trim()
-  if (!id) return "free"
-
-  const complimentaryPlan = getComplimentaryWorkspacePlan(id)
-  if (complimentaryPlan) return complimentaryPlan
-
-  const rows = await getWorkspaceSubscriptionRows(id)
-  for (const row of rows) {
-    const verifiedPlan = await getVerifiedPaidPlan(row, id)
-    if (verifiedPlan) {
-      return verifiedPlan
-    }
-  }
-
-  return "free"
-}
-
-export async function syncWorkspacePlan(workspaceId: string, currentPlan?: unknown): Promise<BillingPlan> {
-  const id = String(workspaceId || "").trim()
-  if (!id) return "free"
-
-  const nextPlan = await getEffectiveWorkspacePlan(id)
-  return setWorkspacePlan(id, nextPlan, currentPlan)
+export async function syncWorkspacePlan(workspaceId: string): Promise<BillingPlan> {
+  return (await syncWorkspaceBilling(workspaceId)).plan
 }
 
 export async function getWorkspaceBillingOwner(workspaceId: string) {
@@ -178,12 +67,4 @@ export async function getWorkspaceBillingOwner(workspaceId: string) {
 export async function isWorkspaceBillingOwner(workspaceId: string, userId: string) {
   const row = await getWorkspaceBillingOwner(workspaceId)
   return Boolean(row && row.ownerId === userId)
-}
-
-export async function syncWorkspacePlanFromSubscription(
-  subscription: BillingSubscriptionLike | null | undefined
-) {
-  const referenceId = String(subscription?.referenceId || "").trim()
-  if (!referenceId) return
-  await syncWorkspacePlan(referenceId)
 }

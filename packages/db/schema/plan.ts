@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, index, uniqueIndex } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, boolean, integer, index, uniqueIndex, jsonb } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2'
 import { workspace } from './workspace'
 
@@ -24,7 +24,7 @@ export const subscription = pgTable('subscription', {
     stripeCustomerId: text('stripe_customer_id'),
     stripeSubscriptionId: text('stripe_subscription_id').unique(),
     status: text('status', {
-        enum: ['active', 'canceled', 'incomplete', 'past_due', 'trialing', 'unpaid']
+        enum: ['active', 'canceled', 'incomplete', 'incomplete_expired', 'past_due', 'paused', 'trialing', 'unpaid']
     }).default('incomplete'),
     periodStart: timestamp('period_start'),
     periodEnd: timestamp('period_end'),
@@ -57,12 +57,40 @@ export const billingNotification = pgTable('billing_notification', {
     stripeEventId: text('stripe_event_id')
         .notNull(),
     stripeInvoiceId: text('stripe_invoice_id'),
-    sentAt: timestamp('sent_at')
-        .notNull()
-        .defaultNow(),
+    payload: jsonb('payload').$type<{ to: string; from?: string; subject: string; html?: string; text?: string }>(),
+    sentAt: timestamp('sent_at'),
+    lockedUntil: timestamp('locked_until'),
+    lockToken: text('lock_token'),
 }, (table) => ({
     billingNotificationStripeEventIdx: uniqueIndex('billing_notification_stripe_event_idx').on(table.stripeEventId),
     billingNotificationWorkspaceIdx: index('billing_notification_workspace_idx').on(table.workspaceId, table.kind),
 }))
 
 export type BillingNotification = typeof billingNotification.$inferSelect
+
+// This projection is written only after a complete refresh from Stripe.
+// The lease serializes checkout, synchronization and workspace deletion.
+export const billingState = pgTable('billing_state', {
+    workspaceId: text('workspace_id').primaryKey().references(() => workspace.id, { onDelete: 'cascade' }),
+    plan: text('plan', { enum: planTier }).notNull().default('free'),
+    syncedAt: timestamp('synced_at'),
+    attemptedAt: timestamp('attempted_at'),
+    lockedUntil: timestamp('locked_until'),
+    lockToken: text('lock_token'),
+}, (table) => ({
+    billingStateSyncIdx: index('billing_state_sync_idx').on(table.syncedAt),
+}))
+
+// Persist verified events before processing so crashes and delivery gaps are recoverable.
+export const billingEvent = pgTable('billing_event', {
+    id: text('id').primaryKey(),
+    payload: jsonb('payload').notNull().$type<Record<string, unknown>>(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    completedAt: timestamp('completed_at'),
+    attempts: integer('attempts').notNull().default(0),
+    nextAttemptAt: timestamp('next_attempt_at').notNull().defaultNow(),
+    lockedUntil: timestamp('locked_until'),
+    lockToken: text('lock_token'),
+}, (table) => ({
+    billingEventRetryIdx: index('billing_event_retry_idx').on(table.completedAt, table.nextAttemptAt),
+}))
