@@ -111,6 +111,6 @@ export async function syncBillingUnderLease(lease: BillingLease) {
   return { plan, subscriptions: projections, ...context }
 }
 
-export async function syncWorkspaceBilling(workspaceId: string) {
-  return withBillingLock(workspaceId, syncBillingUnderLease)
+export async function syncWorkspaceBilling(workspaceId: string, waitMs = 0) {
+  return withBillingLock(workspaceId, syncBillingUnderLease, waitMs)
 }

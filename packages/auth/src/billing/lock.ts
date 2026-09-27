@@ -19,16 +19,23 @@ export function ownsBillingLease(lease: BillingLease) {
   )`
 }
 
-export async function withBillingLock<T>(workspaceId: string, work: (lease: BillingLease) => Promise<T>) {
+export async function withBillingLock<T>(workspaceId: string, work: (lease: BillingLease) => Promise<T>, waitMs = 0) {
   const token = randomUUID()
-  const [claimed] = await db.insert(billingState).values({
-    workspaceId, lockToken: token, lockedUntil: sql`now() + interval '2 minutes'`, attemptedAt: sql`now()`,
-  }).onConflictDoUpdate({
-    target: billingState.workspaceId,
-    set: { lockToken: token, lockedUntil: sql`now() + interval '2 minutes'`, attemptedAt: sql`now()` },
-    setWhere: sql`${billingState.lockedUntil} is null or ${billingState.lockedUntil} < now()`,
-  }).returning({ id: billingState.workspaceId })
-  if (!claimed) throw new BillingBusyError()
+  const deadline = Date.now() + waitMs
+  while (true) {
+    const [claimed] = await db.insert(billingState).values({
+      workspaceId, lockToken: token, lockedUntil: sql`now() + interval '2 minutes'`, attemptedAt: sql`now()`,
+    }).onConflictDoUpdate({
+      target: billingState.workspaceId,
+      set: { lockToken: token, lockedUntil: sql`now() + interval '2 minutes'`, attemptedAt: sql`now()` },
+      setWhere: sql`${billingState.lockedUntil} is null or ${billingState.lockedUntil} < now()`,
+    }).returning({ id: billingState.workspaceId })
+    if (claimed) break
+    const remaining = deadline - Date.now()
+    if (remaining <= 0) throw new BillingBusyError()
+    // Retry acquisition only. Never replay work that may have side effects.
+    await new Promise((resolve) => setTimeout(resolve, Math.min(remaining, 200 + Math.random() * 200)))
+  }
 
   try {
     return await work({ workspaceId, token })

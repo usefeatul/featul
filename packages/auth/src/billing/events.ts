@@ -43,7 +43,10 @@ async function applyBillingEvent(event: Stripe.Event) {
   if (!owner) return // Late event for a workspace that has already been deleted.
   const context = await getBillingContext(referenceId)
   if (!context.customerIds.has(stripeId(live.customer))) throw new Error("Stripe customer does not belong to this workspace")
-  const billing = await syncWorkspaceBilling(referenceId)
+  // Checkout return and several webhook events can update the same workspace
+  // together. Give the current writer time to finish, then read Stripe afresh.
+  // If contention persists, leave the durable event pending and return an error.
+  const billing = await syncWorkspaceBilling(referenceId, 10_000)
   const current = billing.subscriptions.find((row) => row.stripeSubscriptionId === subscriptionId)
   if (!current) throw new Error("Stripe subscription was not synchronized")
 

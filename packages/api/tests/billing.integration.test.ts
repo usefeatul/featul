@@ -225,6 +225,36 @@ describe.skipIf(!testUrl)("billing integration", () => {
     expect(delivered).toHaveLength(1)
   })
 
+  test("concurrent webhooks wait for checkout's lease and complete without duplicate activation emails", async () => {
+    subscriptions = [live()]
+    let responses: Promise<Response[]> | undefined
+    await locks.withBillingLock("ws_one", async () => {
+      responses = Promise.all(["evt_parallel_one", "evt_parallel_two"].map(async (id) => {
+        const payload = JSON.stringify(event(id))
+        return webhook.handleStripeWebhook(new Request("https://app.test/api/auth/stripe/webhook", {
+          method: "POST", body: payload,
+          headers: { "stripe-signature": await fakeStripe.webhooks.generateTestHeaderStringAsync({ payload, secret: "whsec_billing_test" }) },
+        }))
+      }))
+      await Bun.sleep(400)
+      expect(await connection`select id from billing_event where completed_at is not null`).toHaveLength(0)
+    })
+    expect((await responses!).map((response) => response.status)).toEqual([200, 200])
+    expect(await connection`select id from billing_event where completed_at is not null`).toHaveLength(2)
+    expect((await connection`select plan from workspace where id = 'ws_one'`)[0].plan).toBe("starter")
+    expect(delivered).toHaveLength(1)
+  })
+
+  test("waiting for a busy lease is bounded and never runs the blocked work", async () => {
+    let calls = 0
+    await locks.withBillingLock("ws_one", async () => {
+      await expect(locks.withBillingLock("ws_one", async () => { calls++ }, 50)).rejects.toThrow("being updated")
+    })
+    expect(calls).toBe(0)
+    await locks.withBillingLock("ws_one", async () => { calls++ }, 50)
+    expect(calls).toBe(1)
+  })
+
   test("leases reject parallel work and fence a stale writer", async () => {
     subscriptions = [live()]
     await locks.withBillingLock("ws_one", async (lease) => {
