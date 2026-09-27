@@ -40,6 +40,18 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
 
     const handleDelete = React.useCallback(() => {
         if (!slug) return;
+        const showDeleteError = (status?: number, message?: string) => {
+            if (status === 409) {
+                const subscriptionActive = message?.includes("subscription");
+                toast.error(subscriptionActive
+                    ? "Subscription must end before deletion."
+                    : "Billing is updating. Please try again shortly.");
+                return;
+            }
+            toast.error(status && status >= 400 && status < 500 && message
+                ? message
+                : "Could not delete workspace. Please try again.");
+        };
         startTransition(async () => {
             try {
                 const res = await client.workspace.delete.$post({
@@ -50,8 +62,7 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
                     .json()
                     .catch(() => null)) as DeleteWorkspaceResponse | null;
                 if (!res.ok || !data?.ok) {
-                    const message = data?.message || "Failed to delete workspace";
-                    toast.error(message);
+                    showDeleteError(res.status, data?.message);
                     return;
                 }
 
@@ -83,8 +94,14 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
                 }
                 router.refresh();
             } catch (error) {
-                console.error("Failed to delete workspace", error);
-                toast.error("Failed to delete workspace");
+                // The API client throws HTTP errors before returning a response.
+                const status = error instanceof Error && "status" in error && typeof error.status === "number"
+                    ? error.status
+                    : undefined;
+                if (!status || status >= 500) {
+                    console.error("Failed to delete workspace", error);
+                }
+                showDeleteError(status, error instanceof Error ? error.message : undefined);
             } finally {
                 setOpen(false);
                 setConfirmName("");
