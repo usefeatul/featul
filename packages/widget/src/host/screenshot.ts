@@ -59,30 +59,6 @@ function waitMs(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
-function isSameOriginUrl(value: string): boolean {
-  if (!value || value.startsWith("data:") || value.startsWith("blob:")) {
-    return true;
-  }
-  try {
-    return new URL(value, window.location.href).origin === window.location.origin;
-  } catch {
-    return false;
-  }
-}
-
-function wouldTaintCanvas(element: Element): boolean {
-  if (element instanceof HTMLImageElement) {
-    const src = element.currentSrc || element.src;
-    return Boolean(src) && !isSameOriginUrl(src);
-  }
-  if (element instanceof HTMLVideoElement) return true;
-  if (element instanceof SVGImageElement) {
-    const href = element.href.baseVal || element.getAttribute("href") || "";
-    return Boolean(href) && !isSameOriginUrl(href);
-  }
-  return false;
-}
-
 function assertDataUrl(dataUrl: string): string {
   if (!isWidgetScreenshotDataUrl(dataUrl)) {
     throw new ScreenshotCaptureError("capture-failed", "Screenshot was empty");
@@ -133,7 +109,7 @@ async function captureWithHtml(ignore: Element[]): Promise<string> {
     logging: false,
     backgroundColor,
     ignoreElements: (element) =>
-      wouldTaintCanvas(element) ||
+      element instanceof HTMLVideoElement ||
       ignore.some((node) => node === element || node.contains(element)),
     onclone: (doc) => {
       doc.querySelectorAll("[data-featul-widget]").forEach((node) => {

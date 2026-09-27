@@ -51,7 +51,7 @@ export default function WidgetTestEmbed() {
       const script = document.createElement("script");
       script.async = true;
       script.src = `${window.location.origin}/widget/sdk/v1.js${
-        process.env.NODE_ENV === "development" ? `?local=${Date.now()}` : ""
+        process.env.NODE_ENV === "development" ? `?local=${Date.now()}` : "?rev=2"
       }`;
       script.dataset.featulWidget = "true";
       document.head.appendChild(script);

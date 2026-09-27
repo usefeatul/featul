@@ -23,7 +23,7 @@ export default function EmbedCard({ workspaceId }: Props) {
     get: (_, method) => (...args) => window.$featulq.push([method, ...args])
   });
 </script>
-<script async src="${appUrl}/widget/sdk/v1.js"></script>
+<script async src="${appUrl}/widget/sdk/v1.js?rev=2"></script>
 <script>
   featul.init("${workspaceId || "YOUR_WORKSPACE_ID"}", {
     widget: true,
