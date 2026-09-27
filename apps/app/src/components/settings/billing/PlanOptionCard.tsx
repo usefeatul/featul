@@ -95,14 +95,14 @@ export default function PlanOptionCard({
           </div>
         </div>
         <dl className="relative z-10 -mx-5 space-y-2.5 border-t border-border/60 bg-background px-5 pt-4 text-xs">
-          {plan.trialDays ? (
-            <div className="flex items-baseline justify-between gap-3">
-              <dt className="text-muted-foreground">Free trial</dt>
-              <dd className={cn("shrink-0 tabular-nums", valueClass)}>
-                {trialEligible ? `${plan.trialDays} days` : "Not available"}
-              </dd>
-            </div>
-          ) : null}
+          <div className="flex items-baseline justify-between gap-3">
+            <dt className="text-muted-foreground">Free trial</dt>
+            <dd className={cn("shrink-0 tabular-nums", valueClass)}>
+              {plan.trialDays
+                ? trialEligible ? `${plan.trialDays} days` : "Not available"
+                : "—"}
+            </dd>
+          </div>
           {getPlanHighlights(planKey).map((item) => (
             <div
               key={item.label}
