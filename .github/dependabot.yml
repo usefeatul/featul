@@ -1,0 +1,32 @@
+version: 2
+
+updates:
+  # One Bun workspace and lockfile cover app, web, and shared packages.
+  - package-ecosystem: bun
+    directory: /
+    target-branch: staging
+    schedule:
+      interval: weekly
+      day: sunday
+      time: "18:00"
+      timezone: Europe/London
+    open-pull-requests-limit: 5
+    groups:
+      packages-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  # Keep the pinned actions in our checks workflow current too.
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: staging
+    schedule:
+      interval: weekly
+      day: sunday
+      time: "18:00"
+      timezone: Europe/London
+    open-pull-requests-limit: 3
+    groups:
+      actions-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]

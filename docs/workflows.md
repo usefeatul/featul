@@ -26,3 +26,13 @@ bunx --no-install turbo run build --filter=app
 ```
 
 Local builds use local environment files when present; GitHub uses only the build placeholders above.
+
+## Weekly dependency updates
+
+`.github/dependabot.yml` schedules GitHub Dependabot for Sundays at 18:00 in `Europe/London` (including daylight-saving changes). It checks the root Bun workspace, covering app, web and shared packages, and the pinned GitHub Actions versions.
+
+Update pull requests target `staging`. Minor and patch package updates are grouped together; minor and patch action updates form another group. Major updates stay in separate pull requests. The limits are five open package update PRs and three open action update PRs. Updates are not automatically merged or deployed. Review the changes, wait for app/web checks, and manually verify affected features before merging.
+
+The configuration must be merged into the default branch, `main`, to activate Dependabot, even though update PRs target `staging`. It needs no extra workflow or repository secret. GitHub may also perform an initial check when the configuration changes; scheduled runs are weekly. This schedule controls version updates, not separately enabled security alerts or security updates.
+
+References: [Bun support](https://docs.github.com/en/code-security/reference/supply-chain-security/supported-ecosystems-and-repositories#bun), [Dependabot configuration](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
