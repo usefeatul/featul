@@ -71,18 +71,8 @@ Configure the existing `/api/auth/stripe/webhook` destination for:
 
 Set the upcoming renewal reminder to three days in Stripe if that is the desired email timing. Subscription lifecycle changes perform reconciliation directly; there are no trial callbacks incorrectly attached to the root plugin configuration.
 
-## Verification
+## Manual verification
 
-```sh
-bun test packages/api/tests/billing.test.ts
-```
-
-The integration suite needs a fresh, disposable local PostgreSQL database whose name starts with `billing_test`. It creates and drops its own tables, runs the actual billing migrations and SQL, and mocks Stripe, authentication and email delivery. Run it in its own process because it replaces module dependencies:
-
-```sh
-BILLING_TEST_DATABASE_URL=postgres://localhost/billing_test bun test packages/api/tests/billing.integration.test.ts
-```
-
-Also run `check-types` in `packages/auth`, `packages/db`, `packages/api`, and `apps/app`. For end-to-end testing, use `stripe listen --forward-to localhost:3000/api/auth/stripe/webhook` with test-mode credentials. Automated tests do not verify dashboard configuration, live payments, or scheduler delivery.
+Use `stripe listen --forward-to localhost:3000/api/auth/stripe/webhook` with test-mode credentials. Manually verify checkout, account-wide trial eligibility, webhook retries, plan updates, cancellation, and deletion restrictions. Check dashboard configuration and scheduler delivery separately before launch.
 
 References: [Stripe recommendations](https://github.com/t3dotgg/stripe-recommendations), [Stripe webhooks](https://docs.stripe.com/webhooks), [Resend idempotency](https://resend.com/docs/dashboard/emails/idempotency-keys), [Vercel cron limits](https://vercel.com/docs/cron-jobs/usage-and-pricing).

@@ -12,7 +12,7 @@
 - Production email fails explicitly when its provider key is missing. Production startup validates required configuration without exposing secret values.
 - Board settings fetch post counts with one grouped query instead of one query per board.
 - Generated coverage is excluded from lint. Existing lint warnings were resolved. Both Next apps now run TypeScript validation during their own builds.
-- GitHub Actions runs type checks, lint, unit tests, and isolated PostgreSQL billing/access/deletion/concurrency suites. Workflow execution and branch protection still require publishing/configuring the repository.
+- Automated tests and GitHub Actions workflows were subsequently removed at the owner's request. Release verification is now manual.
 - Billing reconciliation reports failed/overdue events to Sentry. Billing and storage cleanup use monitored cron jobs. Alert recipients and delivery still require verification.
 - Added `apps/app/vercel.json`: Vercel's actual app project root is `apps/app`. The root configuration remains available for root-based tooling. See [Vercel project configuration](https://vercel.com/docs/project-configuration/vercel-json).
 
@@ -24,7 +24,9 @@ Recorded all 26 existing migration hashes/timestamps atomically; a subsequent re
 
 The baseline applies only to that configured database. Production may use a different database and must be checked separately. The script defaults to read-only verification; `--apply` refuses a nonempty journal.
 
-## Verified
+## Historical verification before test removal
+
+These results describe the earlier review. The automated suites are no longer included in this workspace.
 
 | Check | Result |
 | --- | --- |
@@ -56,7 +58,7 @@ Before launch:
 
 1. Configure live Stripe keys/prices and a deployed webhook at `/api/auth/stripe/webhook`; verify webhook signatures, retries, plan updates, and account-wide trial eligibility.
 2. Set a securely generated `CRON_SECRET`, ensure the hosting plan supports five-minute jobs (or configure an external authenticated scheduler), deploy, and verify both cron jobs execute successfully.
-3. Verify production migrations and backups. Restore a provider snapshot into a disposable database; verify schema, representative row counts, login and billing reads there. Never run integration tests against a real database: those suites truncate/drop their disposable test schemas.
+3. Verify production migrations and backups. Restore a provider snapshot into a disposable database; manually verify schema, representative row counts, login and billing reads there.
 4. Configure Sentry recipients for failures, overdue billing events and missed cron check-ins; verify delivery. Enable provider backup-failure alerts separately.
 5. Run controlled deployed acceptance checks: signup/verification, password reset, invite/revoke, private-board isolation, uploads/deletion, checkout return, webhook retry, trial expiry, cancellation, and safe account deletion. Real payment/email actions were not performed in this review.
 

@@ -79,9 +79,6 @@
     "check-types": {
       "dependsOn": ["transit"]
     },
-    "test": {
-      "dependsOn": ["transit"]
-    },
     "dev": {
       "cache": false,
       "persistent": true
