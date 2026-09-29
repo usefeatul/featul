@@ -1,4 +1,4 @@
-import { Html, Head, Preview, Body, Container, Section, Text, Heading, Button, Img, Hr, Link, Row, Column } from "@react-email/components"
+import { Html, Head, Preview, Body, Container, Section, Text, Heading, Button, Link } from "@react-email/components"
 
 export type Brand = {
   name?: string
@@ -45,81 +45,66 @@ export function emailAppUrl(path: string) {
   return `${getEmailAppOrigin()}${normalized}`
 }
 
-function resolveBrand(brand?: Brand): Required<Brand> {
-  return {
-    name: brand?.name || "featul",
-    logoUrl: brand?.logoUrl || emailAppUrl("/email-logo.png"),
-    primaryColor: brand?.primaryColor || "#111111",
-    backgroundColor: brand?.backgroundColor || "#ffffff",
-    textColor: brand?.textColor || "#111111",
+// Inline light styles remain the fallback for clients that strip head CSS.
+// Brand options stay compatible with callers; use plain text and the app's
+// primary button colors from packages/ui/src/styles/globals.css.
+const themeCss = `
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  @media (prefers-color-scheme: dark) {
+    .email-body, .email-body > table > tbody > tr > td { background-color: #171717 !important; }
+    .email-text { color: #ededed !important; }
+    .email-muted { color: #a3a3a3 !important; }
+    .email-button { background-color: #5aa2f0 !important; color: #101820 !important; }
   }
-}
-
-function contrastOn(hex: string) {
-  const raw = hex.replace("#", "")
-  if (raw.length !== 6) return "#ffffff"
-  const r = parseInt(raw.slice(0, 2), 16)
-  const g = parseInt(raw.slice(2, 4), 16)
-  const b = parseInt(raw.slice(4, 6), 16)
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-  return luminance > 0.65 ? "#111111" : "#ffffff"
-}
+  [data-ogsc] .email-text { color: #ededed !important; }
+  [data-ogsc] .email-muted { color: #a3a3a3 !important; }
+  [data-ogsc] .email-button { background-color: #5aa2f0 !important; color: #101820 !important; }
+  [data-ogsc] .email-body, [data-ogsc] .email-body > table > tbody > tr > td,
+  [data-ogsb] .email-body, [data-ogsb] .email-body > table > tbody > tr > td { background-color: #171717 !important; }
+  @media only screen and (max-width: 480px) {
+    .email-container { padding: 20px 16px !important; }
+  }
+`
 
 export function BrandedEmail(props: Props) {
-  const customLogo = Boolean(props.brand?.logoUrl)
-  const b = resolveBrand(props.brand)
-  const headerName = customLogo ? b.name : "featul"
-  const muted = "#737373"
-  const preview = props.title || b.name
+  const name = props.brand?.name || "featul"
+  const muted = "#666666"
+  const preview = props.title || name
 
   return (
-    <Html>
-      <Head />
+    <Html lang="en">
+      <Head>
+        <meta name="color-scheme" content="light dark" />
+        <meta name="supported-color-schemes" content="light dark" />
+        <style>{themeCss}</style>
+      </Head>
       <Preview>{preview}</Preview>
       <Body
+        className="email-body"
         style={{
           margin: 0,
           padding: 0,
-          backgroundColor: b.backgroundColor,
+          backgroundColor: "#ffffff",
           fontFamily: FONT,
         }}
       >
-        <Container style={{ maxWidth: 520, margin: "0 auto", padding: "40px 24px 48px" }}>
-          <Section style={{ marginBottom: 32 }}>
-            <Row>
-              <Column style={{ width: 28, verticalAlign: "middle" }}>
-                <Img
-                  src={b.logoUrl}
-                  alt={headerName}
-                  width={24}
-                  height={24}
-                  style={{ display: "block", border: "none" }}
-                />
-              </Column>
-              <Column style={{ verticalAlign: "middle", paddingLeft: 10 }}>
-                <Text style={{ margin: 0, color: b.textColor, fontSize: 13, fontWeight: 500 }}>
-                  {headerName}
-                </Text>
-              </Column>
-            </Row>
-          </Section>
-
+        <Container align="left" className="email-container" style={{ maxWidth: 640, margin: 0, padding: "24px", wordBreak: "break-word" }}>
           {props.eyebrow ? (
-            <Text style={{ color: muted, fontSize: 12, margin: "0 0 8px 0" }}>
+            <Text className="email-muted" style={{ color: muted, fontSize: 12, margin: "0 0 8px 0" }}>
               {props.eyebrow}
             </Text>
           ) : null}
 
           {props.title ? (
             <Heading
+              className="email-text"
               as="h1"
               style={{
-                fontSize: 20,
-                fontWeight: 500,
-                lineHeight: "28px",
-                letterSpacing: "-0.02em",
+                fontSize: 16,
+                fontWeight: 600,
+                lineHeight: "24px",
                 margin: "0 0 20px 0",
-                color: b.textColor,
+                color: "#171717",
               }}
             >
               {props.title}
@@ -127,19 +112,20 @@ export function BrandedEmail(props: Props) {
           ) : null}
 
           {props.intro ? (
-            <Text style={{ color: b.textColor, fontSize: 15, lineHeight: "24px", margin: "0 0 12px 0" }}>
+            <Text className="email-text" style={{ color: "#171717", fontSize: 15, lineHeight: "24px", margin: "0 0 12px 0" }}>
               {props.intro}
             </Text>
           ) : null}
 
           {props.body ? (
-            <Text style={{ color: "#404040", fontSize: 15, lineHeight: "24px", margin: "0 0 12px 0" }}>
+            <Text className="email-text" style={{ color: "#404040", fontSize: 15, lineHeight: "24px", margin: "0 0 12px 0" }}>
               {props.body}
             </Text>
           ) : null}
 
           {props.paragraphs?.map((paragraph, index) => (
             <Text
+              className="email-text"
               key={index}
               style={{ color: "#404040", fontSize: 15, lineHeight: "24px", margin: "0 0 12px 0" }}
             >
@@ -150,19 +136,20 @@ export function BrandedEmail(props: Props) {
           {props.highlight ? (
             <Section style={{ margin: "20px 0 8px" }}>
               <Text
+                className="email-text"
                 style={{
                   margin: 0,
-                  color: b.textColor,
-                  fontSize: 28,
-                  fontWeight: 500,
-                  letterSpacing: "0.22em",
+                  color: "#171717",
+                  fontSize: 20,
+                  fontWeight: 600,
+                  letterSpacing: "0.08em",
                   fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
                 }}
               >
                 {props.highlight}
               </Text>
               {props.highlightHint ? (
-                <Text style={{ margin: "8px 0 0 0", color: muted, fontSize: 13, lineHeight: "20px" }}>
+                <Text className="email-muted" style={{ margin: "8px 0 0 0", color: muted, fontSize: 13, lineHeight: "20px" }}>
                   {props.highlightHint}
                 </Text>
               ) : null}
@@ -173,30 +160,22 @@ export function BrandedEmail(props: Props) {
             <Section style={{ margin: "16px 0 4px" }}>
               {props.details.map((detail, index) => (
                 <Text
+                  className="email-text"
                   key={`${detail.label}-${index}`}
                   style={{ color: "#404040", fontSize: 15, lineHeight: "24px", margin: "0 0 4px 0" }}
                 >
-                  {detail.label}: {detail.value}
+                  <span className="email-muted" style={{ color: muted }}>{detail.label}:</span>{" "}{detail.value}
                 </Text>
               ))}
             </Section>
           ) : null}
 
           {props.ctaText && props.ctaUrl ? (
-            <Section style={{ marginTop: 24 }}>
+            <Section style={{ margin: "20px 0" }}>
               <Button
+                className="email-button"
                 href={props.ctaUrl}
-                style={{
-                  display: "inline-block",
-                  backgroundColor: b.primaryColor,
-                  color: contrastOn(b.primaryColor),
-                  textDecoration: "none",
-                  fontWeight: 500,
-                  fontSize: 14,
-                  padding: "10px 16px",
-                  borderRadius: 4,
-                  lineHeight: "20px",
-                }}
+                style={{ backgroundColor: "#4d96e8", color: "#ffffff", fontSize: 14, fontWeight: 600, lineHeight: "20px", padding: "12px 18px", borderRadius: 4, textDecoration: "none" }}
               >
                 {props.ctaText}
               </Button>
@@ -204,34 +183,33 @@ export function BrandedEmail(props: Props) {
           ) : null}
 
           {props.outro ? (
-            <Text style={{ color: muted, fontSize: 13, lineHeight: "20px", margin: "20px 0 0 0" }}>
+            <Text className="email-muted" style={{ color: muted, fontSize: 13, lineHeight: "20px", margin: "20px 0 0 0" }}>
               {props.outro}
             </Text>
           ) : null}
 
           {props.psText ? (
-            <Text style={{ color: muted, fontSize: 13, lineHeight: "20px", margin: "20px 0 0 0" }}>
+            <Text className="email-muted" style={{ color: muted, fontSize: 13, lineHeight: "20px", margin: "20px 0 0 0" }}>
               {props.psText}
             </Text>
           ) : null}
 
           {props.signatureName ? (
-            <Text style={{ color: muted, fontSize: 13, lineHeight: "20px", margin: "24px 0 0 0" }}>
+            <Text className="email-muted" style={{ color: muted, fontSize: 13, lineHeight: "20px", margin: "24px 0 0 0" }}>
               {props.signatureName}
             </Text>
           ) : null}
 
-          <Hr style={{ borderColor: "#e5e5e5", borderWidth: "1px 0 0 0", margin: "32px 0 16px 0" }} />
 
-          <Text style={{ color: muted, fontSize: 12, lineHeight: "18px", margin: 0 }}>
-            {b.name}
+          <Text className="email-muted" style={{ color: muted, fontSize: 13, lineHeight: "20px", margin: "24px 0 0" }}>
+            {name}
             {" · "}
-            <Link href={getEmailAppOrigin()} style={{ color: muted, textDecoration: "none" }}>
+            <Link className="email-muted" href={getEmailAppOrigin()} style={{ color: muted, textDecoration: "underline", textUnderlineOffset: "3px" }}>
               app.featul.com
             </Link>
           </Text>
           {props.addressLines?.map((line, index) => (
-            <Text key={index} style={{ color: muted, fontSize: 12, lineHeight: "18px", margin: "4px 0 0 0" }}>
+            <Text key={index} className="email-muted" style={{ color: muted, fontSize: 12, lineHeight: "18px", margin: "4px 0 0 0" }}>
               {line}
             </Text>
           ))}
