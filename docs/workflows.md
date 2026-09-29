@@ -36,3 +36,13 @@ Update pull requests target `staging`. Minor and patch package updates are group
 The configuration must be merged into the default branch, `main`, to activate Dependabot, even though update PRs target `staging`. It needs no extra workflow or repository secret. GitHub may also perform an initial check when the configuration changes; scheduled runs are weekly. This schedule controls version updates, not separately enabled security alerts or security updates.
 
 References: [Bun support](https://docs.github.com/en/code-security/reference/supply-chain-security/supported-ecosystems-and-repositories#bun), [Dependabot configuration](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
+
+## Dependency vulnerability scan
+
+`.github/workflows/security.yml` runs `bun audit` against the root `bun.lock`, covering app, web and shared packages, including development and transitive dependencies. It checks for known registry advisories at all severity levels. Any reported vulnerability or registry error fails the `Dependency vulnerability scan` check; details appear in the job log. No dependencies are installed, scripts executed, packages upgraded, or production secrets used by the audit.
+
+It runs on pull requests, pushes to `main` and `staging`, manual dispatch, and Sundays at 18:17 UTC (18:17 London winter / 19:17 summer). The scheduled run checks the default branch, `main`, and activates once this workflow is merged there. GitHub schedules can be delayed. Dependabot separately proposes updates; this scan does not automatically fix or merge anything.
+
+After its first run, add `Dependency vulnerability scan` to the required checks for `main` and `staging` if merges should be blocked by findings. Known-advisory scanning does not establish whether every affected dependency is exploitable in this app, nor does a passing scan guarantee there are no vulnerabilities.
+
+Run locally with `bun audit`. See [Bun audit documentation](https://bun.sh/docs/pm/cli/audit).
