@@ -47,7 +47,14 @@ export async function isAccountTrialEligible(userId: string) {
 }
 
 // Serialize checkout creation across all workspaces belonging to this account.
-export async function withAccountCheckoutLock<T>(userId: string, work: () => Promise<T>) {
+export type AccountBillingLease = { userId: string; token: string }
+
+export function ownsAccountBillingLease(lease: AccountBillingLease) {
+  return sql`exists (select 1 from ${billingAccount} where ${billingAccount.userId} = ${lease.userId}
+    and ${billingAccount.lockToken} = ${lease.token} and ${billingAccount.lockedUntil} > now())`
+}
+
+export async function withAccountCheckoutLock<T>(userId: string, work: (lease: AccountBillingLease) => Promise<T>) {
   const token = randomUUID()
   const [claimed] = await db.insert(billingAccount).values({
     userId, lockToken: token, lockedUntil: sql`now() + interval '2 minutes'`,
@@ -58,7 +65,7 @@ export async function withAccountCheckoutLock<T>(userId: string, work: () => Pro
   }).returning({ id: billingAccount.userId })
   if (!claimed) throw new BillingBusyError()
   try {
-    return await work()
+    return await work({ userId, token })
   } finally {
     await db.update(billingAccount).set({ lockToken: null, lockedUntil: null })
       .where(and(eq(billingAccount.userId, userId), eq(billingAccount.lockToken, token)))

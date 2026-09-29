@@ -65,7 +65,7 @@ export function useActivePageFilters() {
     [sp],
   );
 
-  const status = isRoadmapPage ? [] : requestFilters.status;
+  const status = React.useMemo(() => isRoadmapPage ? [] : requestFilters.status, [isRoadmapPage, requestFilters.status]);
   const boards = isRoadmapPage ? roadmapFilters.board : requestFilters.board;
   const tags = isRoadmapPage ? roadmapFilters.tag : requestFilters.tag;
   const order = isRoadmapPage ? roadmapFilters.order : requestFilters.order;

@@ -1,10 +1,10 @@
 import { beforeEach, expect, mock, test } from "bun:test";
 
-const session = mock(async (): Promise<any> => ({ user: { id: "user" } }));
+const session = mock(async (): Promise<{ user: { id: string } } | null> => ({ user: { id: "user" } }));
 const workspaces = mock(async () => [{ slug: "demo" }]);
-const posts = mock(async (): Promise<any[]> => []);
+const posts = mock(async (): Promise<unknown[]> => []);
 const count = mock(async () => 25);
-const filtered = mock(async (): Promise<any> => ({ rows: [{ id: "filtered" }], totalCount: 21 }));
+const filtered = mock(async (): Promise<{ rows: { id: string }[]; totalCount: number }> => ({ rows: [{ id: "filtered" }], totalCount: 21 }));
 mock.module("@featul/auth/session", () => ({ getServerSession: session }));
 mock.module("@/lib/workspace", () => ({
   listUserWorkspaces: workspaces,

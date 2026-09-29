@@ -1,3 +1,4 @@
+import { publicBoardConditions } from "../../post/access";
 import { createHash } from "crypto";
 import { and, asc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
@@ -267,7 +268,7 @@ export async function loadWidgetPublicConfig(
       and(
         eq(board.workspaceId, resolved.workspaceId),
         eq(board.isSystem, false),
-        eq(board.isPublic, true),
+        publicBoardConditions()!,
       ),
     )
     .orderBy(asc(board.sortOrder), asc(board.createdAt));
@@ -416,7 +417,7 @@ export function publicPostWhere(
   const filters = [
     eq(board.workspaceId, workspaceId),
     eq(board.isSystem, false),
-    eq(board.isPublic, true),
+    publicBoardConditions()!,
     eq(post.status, "published"),
   ];
   if (boardId) filters.push(eq(board.id, boardId));

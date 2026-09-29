@@ -1,3 +1,5 @@
+import { togglePostVote } from "../post/voting"
+import { requirePostAccess, findSimilarVisiblePosts } from "../post/access"
 import { eq, and, sql, isNull, ilike, or, inArray, type SQL } from "drizzle-orm"
 import { j, privateProcedure, publicProcedure } from "../jstack"
 import { vote, post, workspace, board, postTag, workspaceMember, postReport, postMerge, comment, activityLog, tag, user } from "@featul/db"
@@ -710,108 +712,11 @@ export function createPostRouter() {
           throw new HTTPException(400, { message: "Missing identification" })
         }
 
-        // Check if post exists
-        const [targetPost] = await ctx.db
-          .select({
-            id: post.id,
-            boardId: post.boardId,
-            title: post.title,
-            roadmapStatus: post.roadmapStatus,
-          })
-          .from(post)
-          .where(eq(post.id, postId))
-          .limit(1)
-
-        if (!targetPost) {
-          throw new HTTPException(404, { message: "Post not found" })
-        }
-
-        const [boardRow] = await ctx.db
-          .select({ workspaceId: board.workspaceId })
-          .from(board)
-          .where(eq(board.id, targetPost.boardId))
-          .limit(1)
-
-        let existingVote
-
-        if (userId) {
-          [existingVote] = await ctx.db
-            .select()
-            .from(vote)
-            .where(and(eq(vote.postId, postId), eq(vote.userId, userId)))
-            .limit(1)
-        } else if (effectiveFingerprint) {
-          [existingVote] = await ctx.db
-            .select()
-            .from(vote)
-            .where(and(eq(vote.postId, postId), isNull(vote.userId), eq(vote.fingerprint, effectiveFingerprint)))
-            .limit(1)
-        }
-
-        if (existingVote) {
-          // Remove vote
-          await ctx.db.delete(vote).where(eq(vote.id, existingVote.id))
-
-          const [updatedPost] = await ctx.db
-            .update(post)
-            .set({
-              upvotes: sql`greatest(0, ${post.upvotes} - 1)`
-            })
-            .where(eq(post.id, postId))
-            .returning({ upvotes: post.upvotes })
-
-          if (boardRow) {
-            await ctx.db.insert(activityLog).values({
-              workspaceId: boardRow.workspaceId,
-              userId,
-              action: ACTIVITY_ACTIONS.POST_VOTE_REMOVED,
-              actionType: "delete",
-              entity: "post",
-              entityId: String(postId),
-              title: targetPost.title,
-              metadata: {
-                roadmapStatus: targetPost.roadmapStatus,
-                fingerprint: userId ? null : effectiveFingerprint || null,
-              },
-            })
-          }
-
-          return c.superjson({ upvotes: updatedPost?.upvotes || 0, hasVoted: false })
-        } else {
-          // Add vote
-          await ctx.db.insert(vote).values({
-            postId,
-            userId: userId || null,
-            fingerprint: userId ? null : effectiveFingerprint || null,
-            type: 'upvote'
-          })
-
-          const [updatedPost] = await ctx.db
-            .update(post)
-            .set({
-              upvotes: sql`${post.upvotes} + 1`
-            })
-            .where(eq(post.id, postId))
-            .returning({ upvotes: post.upvotes })
-
-          if (boardRow) {
-            await ctx.db.insert(activityLog).values({
-              workspaceId: boardRow.workspaceId,
-              userId,
-              action: ACTIVITY_ACTIONS.POST_VOTED,
-              actionType: "create",
-              entity: "post",
-              entityId: String(postId),
-              title: targetPost.title,
-              metadata: {
-                roadmapStatus: targetPost.roadmapStatus,
-                fingerprint: userId ? null : effectiveFingerprint || null,
-              },
-            })
-          }
-
-          return c.superjson({ upvotes: updatedPost?.upvotes || 0, hasVoted: true })
-        }
+        const targetPost = await requirePostAccess(ctx.db, postId, userId)
+        return c.superjson(await togglePostVote(ctx.db, postId, { userId, fingerprint: effectiveFingerprint }, {
+          workspaceId: targetPost.workspaceId, title: targetPost.title,
+          metadata: { roadmapStatus: targetPost.roadmapStatus },
+        }))
       }),
 
     getSimilar: publicProcedure
@@ -819,76 +724,9 @@ export function createPostRouter() {
       .get(async ({ ctx, input, c }) => {
         const { title, boardSlug, workspaceSlug } = input
 
-        // Resolve Workspace first
-        const [ws] = await ctx.db
-          .select({ id: workspace.id, ownerId: workspace.ownerId })
-          .from(workspace)
-          .where(eq(workspace.slug, workspaceSlug))
-          .limit(1)
-
-        if (!ws) {
-          return c.superjson({ posts: [] })
-        }
-
-        // Resolve Board within Workspace
-        const [b] = await ctx.db
-          .select({ id: board.id, isPublic: board.isPublic })
-          .from(board)
-          .where(and(
-            eq(board.workspaceId, ws.id),
-            eq(board.slug, boardSlug)
-          ))
-          .limit(1)
-
-        if (!b) {
-          return c.superjson({ posts: [] })
-        }
-
-        if (!b.isPublic) {
-          const userId = await getOptionalSessionUserId(c)
-
-          if (!userId) {
-            return c.superjson({ posts: [] })
-          }
-
-          let allowed = ws.ownerId === userId
-          if (!allowed) {
-            const [member] = await ctx.db
-              .select({ id: workspaceMember.id })
-              .from(workspaceMember)
-              .where(
-                and(
-                  eq(workspaceMember.workspaceId, ws.id),
-                  eq(workspaceMember.userId, userId),
-                  eq(workspaceMember.isActive, true)
-                )
-              )
-              .limit(1)
-            allowed = Boolean(member?.id)
-          }
-          if (!allowed) {
-            return c.superjson({ posts: [] })
-          }
-        }
-
-        const searchCondition = buildTitleSearchCondition(title)
-
-        const similarPosts = await ctx.db
-          .select({
-            id: post.id,
-            title: post.title,
-            slug: post.slug,
-            upvotes: post.upvotes,
-            commentCount: post.commentCount,
-          })
-          .from(post)
-          .where(and(
-            eq(post.boardId, b.id),
-            searchCondition
-          ))
-          .limit(3)
-
-        return c.superjson({ posts: similarPosts })
+        const userId = await getOptionalSessionUserId(c)
+        const posts = await findSimilarVisiblePosts(ctx.db, workspaceSlug, boardSlug, userId, buildTitleSearchCondition(title))
+        return c.superjson({ posts })
       }),
 
     getVoteStatus: publicProcedure
@@ -898,6 +736,8 @@ export function createPostRouter() {
         const request = getRequestFromContext(c)
 
         const userId = await getOptionalSessionUserId(c)
+
+        await requirePostAccess(ctx.db, postId, userId)
 
         let hasVoted = false
 

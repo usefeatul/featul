@@ -25,7 +25,9 @@
     "./email": "./src/email.ts",
     "./origins/trusted": "./src/origins/trusted.ts",
     "./trust": "./src/trust.ts",
-    "./*": "./src/*"
+    "./*": "./src/*",
+    "./configuration": "./src/configuration.ts",
+    "./email/transport": "./src/email/transport.ts"
   },
   "dependencies": {
     "@better-auth/passkey": "1.5.5",

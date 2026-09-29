@@ -62,16 +62,12 @@ export function createBoardRouter() {
           .where(eq(board.workspaceId, ws.id))
           .orderBy(asc(board.sortOrder), asc(board.createdAt));
 
-        const withCounts = await Promise.all(
-          rows.map(async (b: typeof board.$inferSelect) => {
-            const [row] = await ctx.db
-              .select({ count: sql<number>`count(*)` })
-              .from(post)
-              .where(eq(post.boardId, b.id))
-              .limit(1);
-            return { ...b, postCount: Number(row?.count || 0) };
-          }),
-        );
+        const counts = rows.length ? await ctx.db
+          .select({ boardId: post.boardId, count: sql<number>`count(*)` })
+          .from(post).where(inArray(post.boardId, rows.map((b: { id: string }) => b.id)))
+          .groupBy(post.boardId) : [];
+        const countByBoard = new Map<string, number>(counts.map((row: { boardId: string; count: number }) => [row.boardId, Number(row.count)]));
+        const withCounts = rows.map((b: typeof board.$inferSelect) => ({ ...b, postCount: countByBoard.get(b.id) || 0 }));
 
         return c.superjson({ boards: withCounts });
       }),

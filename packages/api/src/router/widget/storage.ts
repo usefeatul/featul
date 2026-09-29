@@ -1,3 +1,4 @@
+import { publicBoardConditions } from "../../post/access";
 import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { board } from "@featul/db";
@@ -44,7 +45,7 @@ export const widgetUploadImage = publicProcedure
           eq(board.id, input.boardId),
           eq(board.workspaceId, resolved.workspaceId),
           eq(board.isSystem, false),
-          eq(board.isPublic, true),
+          publicBoardConditions()!,
         ),
       )
       .limit(1);

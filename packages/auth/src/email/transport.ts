@@ -12,8 +12,8 @@ export async function sendEmail({ to, from: explicitFrom, subject, html, text, i
   const from = explicitFrom || process.env.RESEND_FROM || "featul <no-reply@featul.com>"
 
   if (!apiKey) {
-    if (idempotencyKey && process.env.NODE_ENV === "production") {
-      throw new Error("RESEND_API_KEY is required for billing notifications")
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("RESEND_API_KEY is required for production email")
     }
     console.log(`[email:dev] to=${to} subject=${subject}`)
     return

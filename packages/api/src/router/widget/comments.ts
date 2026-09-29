@@ -1,3 +1,4 @@
+import { publicBoardConditions } from "../../post/access";
 import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import {
@@ -85,7 +86,7 @@ export const widgetComments = publicProcedure
           eq(post.id, input.postId),
           eq(post.status, "published"),
           eq(board.workspaceId, resolved.workspaceId),
-          eq(board.isPublic, true),
+          publicBoardConditions()!,
         ),
       )
       .limit(1);
@@ -191,7 +192,7 @@ export const widgetCreateComment = publicProcedure
           eq(post.id, input.postId),
           eq(post.status, "published"),
           eq(board.workspaceId, resolved.workspaceId),
-          eq(board.isPublic, true),
+          publicBoardConditions()!,
         ),
       )
       .limit(1);

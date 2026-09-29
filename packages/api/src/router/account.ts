@@ -1,6 +1,9 @@
 import { j, privateProcedure } from "../jstack";
 import { and, desc, eq } from "drizzle-orm";
-import { user, session, board, workspace } from "@featul/db";
+import { session } from "@featul/db";
+import { deleteAccountAfterBillingCheck } from "@featul/auth/billing/deletion";
+import { BillingConflictError } from "@featul/auth/billing/mutations";
+import { BillingBusyError } from "@featul/auth/billing/lock";
 import {
   deleteAccountInputSchema,
   removeDeviceAccountInputSchema,
@@ -361,17 +364,14 @@ export function createAccountRouter() {
       .post(async ({ ctx, c }) => {
         const userId = ctx.session.user.id;
 
-        // Delete all sessions for this user first
-        await ctx.db.delete(session).where(eq(session.userId, userId));
-
-        // Delete boards created by this user (board.createdBy doesn't have cascade delete)
-        await ctx.db.delete(board).where(eq(board.createdBy, userId));
-
-        // Delete workspaces owned by this user (will cascade to boards, posts, etc.)
-        await ctx.db.delete(workspace).where(eq(workspace.ownerId, userId));
-
-        // Delete the user (cascades to remaining related data via foreign keys)
-        await ctx.db.delete(user).where(eq(user.id, userId));
+        try {
+          await deleteAccountAfterBillingCheck(userId);
+        } catch (error) {
+          if (error instanceof BillingConflictError || error instanceof BillingBusyError) {
+            throw new HTTPException(409, { message: error.message });
+          }
+          throw error;
+        }
 
         return c.json({ success: true });
       }),

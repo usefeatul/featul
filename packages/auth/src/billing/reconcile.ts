@@ -36,5 +36,7 @@ export async function reconcileBilling() {
       console.error("[billing] Reconciliation failed", { workspaceId: workspace.id, error })
     }
   }
-  return result
+  const [backlog] = await db.select({ count: sql<number>`count(*)::int` }).from(billingEvent)
+    .where(and(isNull(billingEvent.completedAt), sql`${billingEvent.createdAt} < now() - interval '15 minutes'`))
+  return { ...result, overdueEvents: Number(backlog?.count || 0) }
 }

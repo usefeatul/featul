@@ -19,7 +19,7 @@ import { resolvePostAuthPath } from "@/lib/post/redirect";
 export default function Verify() {
   const router = useRouter();
   const params = useSearchParams();
-  const { safeRedirectParam, redirect } = useAuthRedirect();
+  const { safeRedirectParam } = useAuthRedirect();
   const initialEmail = useMemo(() => params.get("email") || "", [params]);
   const [email, setEmail] = useState(initialEmail);
   const [code, setCode] = useState("");
