@@ -12,7 +12,7 @@
 - Production email fails explicitly when its provider key is missing. Production startup validates required configuration without exposing secret values.
 - Board settings fetch post counts with one grouped query instead of one query per board.
 - Generated coverage is excluded from lint. Existing lint warnings were resolved. Both Next apps now run TypeScript validation during their own builds.
-- Automated tests and GitHub Actions workflows were subsequently removed at the owner's request. Release verification is now manual.
+- Automated tests were subsequently removed at the owner's request. GitHub Actions now checks lint, types, and builds separately for app and web; product verification remains manual. See [workflow setup](workflows.md).
 - Billing reconciliation reports failed/overdue events to Sentry. Billing and storage cleanup use monitored cron jobs. Alert recipients and delivery still require verification.
 - Added `apps/app/vercel.json`: Vercel's actual app project root is `apps/app`. The root configuration remains available for root-based tooling. See [Vercel project configuration](https://vercel.com/docs/project-configuration/vercel-json).
 
