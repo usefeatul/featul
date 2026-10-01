@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, X, PanelIcon, LoaderIcon } from "@/components/global/icons";
+import { Search, X, SidebarPanelIcon, LoaderIcon } from "@/components/global/icons";
 
 import { Button } from "@featul/ui/components/button";
 import {
@@ -13,7 +13,7 @@ import {
 import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
 import { PanelShortcutKeys } from "@/components/global/keys";
 import { cn } from "@featul/ui/lib/utils";
-import { sidebarSearchBackgroundClassName } from "@/components/sidebar/styles";
+import { sidebarHeaderActionClassName, sidebarSearchBackgroundClassName } from "@/components/sidebar/styles";
 import {
   keepPreviousData,
   useInfiniteQuery,
@@ -241,9 +241,10 @@ export default function Navigator({
                     aria-keyshortcuts={PANEL_ARIA_SHORTCUTS}
                     aria-expanded={true}
                     aria-controls="request-navigator"
-                    className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 dark:bg-transparent dark:hover:bg-white/[0.03]"
+                    size="icon-sm"
+                    className={sidebarHeaderActionClassName}
                   >
-                    <PanelIcon filled className="size-[18px]" />
+                    <SidebarPanelIcon className="size-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent

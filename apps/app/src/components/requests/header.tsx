@@ -4,7 +4,7 @@ import Link from "next/link";
 import {
   ChevronsUp,
   ChevronsDown,
-  PanelIcon,
+  SidebarPanelIcon,
 } from "@/components/global/icons";
 
 import { Button } from "@featul/ui/components/button";
@@ -17,6 +17,7 @@ import { MergePopover } from "./MergePopover";
 import Menu from "./menu";
 import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
 import { PanelShortcutKeys, ShortcutKey } from "@/components/global/keys";
+import { sidebarHeaderActionClassName } from "@/components/sidebar/styles";
 
 const actionClass =
   "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
@@ -49,14 +50,15 @@ export default function Header({
           <TooltipTrigger asChild>
             <Button
               variant="plain"
-              className={actionClass}
+              size="icon-sm"
+              className={sidebarHeaderActionClassName}
               onClick={onOpenList}
               aria-label="Show request list"
               aria-keyshortcuts={PANEL_ARIA_SHORTCUTS}
               aria-expanded={false}
               aria-controls="request-navigator"
             >
-              <PanelIcon filled className="size-[18px]" />
+              <SidebarPanelIcon className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent
