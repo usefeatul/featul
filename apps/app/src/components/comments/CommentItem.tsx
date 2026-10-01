@@ -187,7 +187,7 @@ export default function CommentItem({
       </div>
 
       {showReplyForm ? (
-        <div className={cn(settingsCardInnerClass, commentComposerBackgroundClass, "mt-3")}>
+        <div className={cn(settingsCardInnerClass, commentComposerBackgroundClass[surface], "mt-3")}>
           <CommentForm
             postId={comment.postId}
             parentId={comment.id}

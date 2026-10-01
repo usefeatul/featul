@@ -102,7 +102,7 @@ export default function CommentList({
             </span>
           </div>
         </header>
-        <div className={cn(plain ? "mt-3 rounded-md border border-border/40 p-3" : settingsCardInnerClass, commentComposerBackgroundClass)}>
+        <div className={cn(plain ? "mt-3 rounded-md border border-border/40 p-3" : settingsCardInnerClass, commentComposerBackgroundClass[surface])}>
           <CommentForm
             postId={postId}
             onSuccess={handleCommentSuccess}
