@@ -5,10 +5,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@featul/ui/components/button";
-import { DitherGradient } from "@featul/ui/components/gradient";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
-import { overlayDialogClass, overlayDialogInnerClass } from "@featul/ui/lib/overlay";
-import { cn } from "@featul/ui/lib/utils";
 import { Sparkles, X } from "@/components/global/icons";
 import { fetchWorkspaceBySlug, workspaceQueryKeys } from "@/lib/workspace/client";
 
@@ -69,45 +66,38 @@ export default function Upgrade({ slug, collapsed, initialPlan, userKey }: {
 
   const href = `/workspaces/${slug}/settings/billing`;
   const content = collapsed ? (
-      <div className="flex shrink-0 justify-center px-1.5 py-3">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button asChild size="icon-sm" variant="default" aria-label="Upgrade plan">
-              <Link href={href}><Sparkles className="size-4" /></Link>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={10}>Upgrade plan</TooltipContent>
-        </Tooltip>
-      </div>
-    ) : (
+    <div className="flex shrink-0 justify-center px-1.5 py-3">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button asChild size="icon-sm" variant="ghost" aria-label="View upgrade plans" className="text-muted-foreground dark:bg-transparent dark:text-muted-foreground">
+            <Link href={href}><Sparkles className="size-4" /></Link>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={10}>View plans</TooltipContent>
+      </Tooltip>
+    </div>
+  ) : (
     <div className="shrink-0 px-3 pt-3">
-      <section aria-label="Upgrade your plan" className={overlayDialogClass}>
-        <div className={cn(overlayDialogInnerClass, "relative overflow-hidden px-3 py-3")}>
-          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-20 [mask-image:linear-gradient(to_left,black,transparent)]">
-            <DitherGradient from="blue" direction="down" cell={3} opacity={0.22} />
-          </div>
-          <div className="relative">
-            <button
-              type="button"
-              onClick={dismiss}
-              aria-label="Hide upgrade card for three days"
-              title="Hide for three days"
-              className="absolute -right-1 -top-1 flex size-6 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <X className="size-3.5" aria-hidden />
-            </button>
-            <div className="flex items-center gap-2 pr-5">
-              <Sparkles className="size-4 text-primary" aria-hidden />
-              <p className="text-sm font-medium text-foreground">Get more from Featul</p>
-            </div>
-            <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
-              Unlock higher limits and more room for your team.
-            </p>
-            <Button asChild variant="default" className="mt-3 w-full">
-              <Link href={href}>Upgrade plan</Link>
-            </Button>
-          </div>
-        </div>
+      <section aria-label="Upgrade your plan" className="relative rounded-lg border border-border/50 bg-muted/20 px-3 py-2.5">
+        <button
+          type="button"
+          onClick={dismiss}
+          aria-label="Hide upgrade card for three days"
+          title="Hide for three days"
+          className="absolute right-1.5 top-1.5 flex size-6 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <X className="size-3.5" aria-hidden />
+        </button>
+        <p className="pr-5 text-xs font-medium text-foreground">Need more room?</p>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+          Higher limits as your team grows.
+        </p>
+        <Link
+          href={href}
+          className="mt-1 inline-flex min-h-6 items-center rounded-sm text-xs font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          View plans
+        </Link>
       </section>
     </div>
   );
@@ -125,31 +115,24 @@ export default function Upgrade({ slug, collapsed, initialPlan, userKey }: {
             hidden: { height: 0 },
             visible: {
               height: "auto",
-              transition: { duration: reduceMotion ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] },
+              transition: { duration: reduceMotion ? 0 : 0.18, ease: "easeOut" },
             },
             exit: {
               height: 0,
-              transition: { duration: reduceMotion ? 0 : 0.24, delay: reduceMotion ? 0 : 0.1, ease: [0.4, 0, 0.2, 1] },
+              transition: { duration: reduceMotion ? 0 : 0.18, ease: "easeOut" },
             },
           }}
         >
           <motion.div
-            style={{ transformOrigin: "50% 100%" }}
             variants={{
-              hidden: { opacity: 0, y: reduceMotion ? 0 : 14, scale: reduceMotion ? 1 : 0.96 },
+              hidden: { opacity: 0 },
               visible: {
                 opacity: 1,
-                y: 0,
-                scale: 1,
-                transition: reduceMotion
-                  ? { duration: 0 }
-                  : { type: "spring", stiffness: 320, damping: 28, mass: 0.8, delay: 0.06, opacity: { duration: 0.2 } },
+                transition: { duration: reduceMotion ? 0 : 0.18 },
               },
               exit: {
                 opacity: 0,
-                y: reduceMotion ? 0 : -8,
-                scale: reduceMotion ? 1 : 0.98,
-                transition: { duration: reduceMotion ? 0 : 0.16, ease: "easeOut" },
+                transition: { duration: reduceMotion ? 0 : 0.12 },
               },
             }}
           >
