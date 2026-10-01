@@ -3,6 +3,7 @@ import React from "react";
 interface LoaderIconProps {
   className?: string;
   size?: number;
+  paused?: boolean;
   "aria-label"?: string;
 }
 
@@ -21,6 +22,7 @@ const dots = [
 export const LoaderIcon: React.FC<LoaderIconProps> = ({
   className = "",
   size,
+  paused = false,
   "aria-label": label,
 }) => {
   return (
@@ -40,7 +42,10 @@ export const LoaderIcon: React.FC<LoaderIconProps> = ({
           cx={cx}
           cy={cy}
           r="1.5"
-          style={{ "--dots-step": index } as React.CSSProperties}
+          style={{
+            "--dots-step": index,
+            animationPlayState: paused ? "paused" : undefined,
+          } as React.CSSProperties}
         />
       ))}
     </svg>

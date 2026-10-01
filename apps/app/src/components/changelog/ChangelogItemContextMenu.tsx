@@ -7,7 +7,8 @@ import {
   EditIcon,
   TrashIcon,
   LoaderIcon,
-  EditIcon as PenIcon,
+  ChangelogDraftIcon,
+  ChangelogPublishedIcon,
 } from "@/components/global/icons";
 
 import { useChangelogEntryActions } from "@/hooks/useChangelogEntryActions";
@@ -75,11 +76,12 @@ export function ChangelogItemContextMenu({
                   isPending ? (
                     <LoaderIcon className="size-4" />
                   ) : (
-                    <LoaderIcon className="size-4" />
+                    <ChangelogPublishedIcon className="size-4" />
                   )
                 }
                 label="Publish"
                 onClick={publish}
+                disabled={isPending}
               />
             ) : null}
 
@@ -89,11 +91,12 @@ export function ChangelogItemContextMenu({
                   isPending ? (
                     <LoaderIcon className="size-4" />
                   ) : (
-                    <PenIcon className="size-4" />
+                    <ChangelogDraftIcon className="size-4" />
                   )
                 }
                 label="Unpublish"
                 onClick={unpublish}
+                disabled={isPending}
               />
             ) : null}
 

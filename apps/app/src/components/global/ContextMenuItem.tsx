@@ -19,6 +19,7 @@ type ContextMenuItemProps = {
   label: string;
   onClick: () => void;
   className?: string;
+  disabled?: boolean;
 };
 
 export function ContextMenuItem({
@@ -26,9 +27,10 @@ export function ContextMenuItem({
   label,
   onClick,
   className,
+  disabled,
 }: ContextMenuItemProps) {
   return (
-    <PopoverListItem onClick={onClick} className={className}>
+    <PopoverListItem onClick={onClick} className={className} disabled={disabled}>
       <ContextMenuIcon>{icon}</ContextMenuIcon>
       <span className="text-sm">{label}</span>
     </PopoverListItem>
