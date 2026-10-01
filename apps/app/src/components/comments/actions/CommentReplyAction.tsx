@@ -2,30 +2,27 @@
 
 import React from "react"
 import { Button } from "@featul/ui/components/button"
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface CommentReplyButtonProps {
   onClick: () => void
   isActive?: boolean
+  disabled?: boolean
   className?: string
 }
 
-export default function CommentReplyButton({ onClick, isActive, className }: CommentReplyButtonProps) {
+export default function CommentReplyButton({ onClick, isActive, disabled, className }: CommentReplyButtonProps) {
   return (
-    <Toolbar variant="soft" size="sm" className="w-fit">
       <Button
         onClick={onClick}
         type="button"
-        variant="plain"
+        variant={isActive ? "destructive" : "outline"}
         size="xs"
+        disabled={disabled}
         className={cn(
-          toolbarItemClass,
-          "min-w-[72px] px-3",
-          isActive
-            ? "text-destructive dark:text-destructive hover:text-destructive dark:hover:text-destructive"
-            : "text-accent hover:text-foreground",
+          "h-8 min-w-[72px] px-3",
+          !isActive && "bg-black/5 text-accent hover:text-foreground dark:bg-white/5",
           className
         )}
         aria-label={isActive ? "Cancel reply" : "Reply to comment"}
@@ -57,6 +54,5 @@ export default function CommentReplyButton({ onClick, isActive, className }: Com
         )}
       </AnimatePresence>
     </Button>
-    </Toolbar>
   )
 }

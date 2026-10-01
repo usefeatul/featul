@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useRef } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import MentionList from "./MentionList"
 import { MentionTextarea } from "./MentionTextarea"
 import { Button } from "@featul/ui/components/button"
@@ -25,7 +25,7 @@ interface CommentFormProps {
   postId: string
   parentId?: string
   onSuccess?: () => void
-  onCancel?: () => void
+  onBusyChange?: (busy: boolean) => void
   placeholder?: string
   autoFocus?: boolean
   buttonText?: string
@@ -39,7 +39,7 @@ export default function CommentForm({
   postId,
   parentId,
   onSuccess,
-  onCancel,
+  onBusyChange,
   placeholder = "Write a comment...",
   autoFocus = false,
   buttonText = "Comment",
@@ -91,6 +91,12 @@ export default function CommentForm({
     onSuccess,
     resetForm,
   })
+
+  const isBusy = isPending || uploadingImage
+  useEffect(() => {
+    onBusyChange?.(isBusy)
+    return () => onBusyChange?.(false)
+  }, [isBusy, onBusyChange])
 
   return (
     <form
@@ -225,20 +231,6 @@ export default function CommentForm({
         </Toolbar>
 
         <div className="flex items-center gap-2">
-          {onCancel ? (
-            <Toolbar variant="soft" size="sm" className="w-fit">
-              <Button
-                type="button"
-                size="xs"
-                variant="plain"
-                className={cn(toolbarItemClass, "px-3")}
-                onClick={onCancel}
-                disabled={isPending || uploadingImage}
-              >
-                Cancel
-              </Button>
-            </Toolbar>
-          ) : null}
           <Button
             type="submit"
             size="xs"

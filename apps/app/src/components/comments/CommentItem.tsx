@@ -52,6 +52,7 @@ export default function CommentItem({
   hidePublicMemberIdentity,
 }: CommentItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false)
+  const [isReplyBusy, setIsReplyBusy] = useState(false)
 
   const { isOwner, role } = useWorkspaceRole(workspaceSlug || "")
   const isAuthor = currentUserId ? comment.authorId === currentUserId : false
@@ -176,10 +177,11 @@ export default function CommentItem({
               onEdit={() => setIsEditing(true)}
               onDeleteSuccess={onUpdate}
             />
-            {canReply && !showReplyForm ? (
+            {canReply ? (
               <CommentReplyButton
-                onClick={() => setShowReplyForm(true)}
-                isActive={false}
+                onClick={() => setShowReplyForm((open) => !open)}
+                isActive={showReplyForm}
+                disabled={isReplyBusy}
               />
             ) : null}
           </div>
@@ -198,7 +200,7 @@ export default function CommentItem({
               setShowReplyForm(false)
               onReplySuccess?.()
             }}
-            onCancel={() => setShowReplyForm(false)}
+            onBusyChange={setIsReplyBusy}
             compact
             placeholder="Write a reply..."
             autoFocus
