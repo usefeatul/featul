@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { TagIcon } from "@featul/ui/icons/tag";
+import { TagIcon } from "@/components/global/icons";
 import { client } from "@featul/api/client";
 import { usePathname } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

@@ -33,6 +33,7 @@ import {
 	type JSONContent,
 	type MentionSuggestionItem,
 } from "@featul/editor";
+import { applyEditorEdits } from "./patch";
 import { Button } from "@featul/ui/components/button";
 import { Sparkles } from "@/components/global/icons";
 import {
@@ -124,6 +125,8 @@ export type EditorTextSelection = {
 export interface FeedEditorRef {
 	focus: () => void;
 	getContent: () => JSONContent | undefined;
+	setContent: (content: JSONContent) => void;
+	applyMarkdownEdits: (edits: Array<{ before: string; after: string }>) => boolean;
 	getMarkdown: () => string | undefined;
 	setContentFromMarkdown: (markdown: string) => void;
 	setStreamingMarkdown: (markdown: string) => void;
@@ -202,6 +205,11 @@ export const FeedEditor = forwardRef(
 					editor?.chain().focus().run();
 				},
 				getContent: () => editor?.getJSON(),
+				setContent: (content) => {
+					editor?.commands.setContent(content);
+				},
+				applyMarkdownEdits: (edits) =>
+					editor ? applyEditorEdits(editor, edits) : false,
 				getMarkdown: () => editor?.getMarkdown(),
 				setContentFromMarkdown: (markdown: string) => {
 					if (!editor) return;
@@ -282,12 +290,19 @@ export const FeedEditor = forwardRef(
 				},
 				replaceTextRangeWithMarkdown: (selection, markdown) => {
 					if (!editor) return false;
+					if (selection.from < 0 || selection.to > editor.state.doc.content.size) {
+						return false;
+					}
 					const currentText = editor.state.doc.textBetween(
 						selection.from,
 						selection.to,
 						"\n",
 					);
 					if (currentText !== selection.text) return false;
+
+					if (!markdown) {
+						return editor.commands.deleteRange({ from: selection.from, to: selection.to });
+					}
 
 					return editor
 						.chain()

@@ -5,9 +5,12 @@ import { SettingsDialogShell } from "../global/SettingsDialogShell";
 import { Button } from "@featul/ui/components/button";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
-import { FileExportIcon } from "@/components/global/icons";
-import { LoaderIcon } from "@featul/ui/icons/loader";
-import { DownloadIcon } from "@featul/ui/icons/download";
+import {
+  FileExportIcon,
+  LoaderIcon,
+  DownloadIcon,
+} from "@/components/global/icons";
+
 import { motion, AnimatePresence } from "framer-motion";
 
 type Props = {

@@ -11,8 +11,8 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { DropdownIcon } from "@featul/ui/icons/dropdown";
-import { MemberIcon } from "@/components/global/icons";
+import { DropdownIcon, MemberIcon } from "@/components/global/icons";
+
 import { LoadingButton } from "@/components/global/LoadingButton";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";

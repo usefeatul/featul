@@ -1,7 +1,12 @@
 "use client";
 
-import { History, MessageSquareText, Trash2 } from "@/components/global/icons";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import {
+  History,
+  MessageSquareText,
+  Trash2,
+  LoaderIcon,
+} from "@/components/global/icons";
+
 import { cn } from "@featul/ui/lib/utils";
 import { relativeTime } from "@/lib/time";
 import type { ChangelogAiConversationSummary } from "@/features/changelog/history";

@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Copy, EllipsisVertical, ExternalLink } from "@/components/global/icons";
+
 import { Button } from "@featul/ui/components/button";
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem, PopoverSeparator } from "@featul/ui/components/popover";
 import { RequestShareAction } from "@/components/subdomain/request/actions/RequestShareAction";

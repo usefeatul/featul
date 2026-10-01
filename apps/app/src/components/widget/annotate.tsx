@@ -3,8 +3,8 @@
 import { WidgetButton } from "./button";
 
 import * as React from "react";
-import { FillPenIcon } from "@featul/ui/icons/fill-pen";
 import {
+  EditIcon as FillPenIcon,
   ArrowIcon,
   DocumentTextIcon,
   LockIcon,
@@ -13,10 +13,9 @@ import {
   XMarkIcon,
   Redo2,
   Undo2,
+  SelectBoxIcon,
+  LoaderIcon,
 } from "@/components/global/icons";
-import { SelectBoxIcon } from "@featul/ui/icons/select-box";
-
-import { LoaderIcon } from "@featul/ui/icons/loader";
 
 import {
   widgetChipInnerClass,

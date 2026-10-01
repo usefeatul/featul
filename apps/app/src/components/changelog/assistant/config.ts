@@ -57,12 +57,6 @@ export function nextId() {
   return crypto.randomUUID();
 }
 
-export function withoutEmDash(value: string) {
-  return value
-    .replace(/\bDone\s*[—–]\s*/g, "Done. ")
-    .replace(/\s*[—–]\s*/g, "; ");
-}
-
 export function getAtQuery(value: string, caret: number): AtQuery | null {
   const before = value.slice(0, caret);
   const match = before.match(/(^|[\s])@([^\n@]*)$/);
@@ -78,7 +72,7 @@ export function getAtQuery(value: string, caret: number): AtQuery | null {
 }
 
 export function assistantCopy(input: {
-  intent: "ask" | "rewrite" | "patch" | "tags";
+  intent: "conversation" | "ask" | "rewrite" | "patch" | "tags";
   hadContent: boolean;
   title?: string;
   sourceCount: number;
@@ -87,8 +81,8 @@ export function assistantCopy(input: {
   suggestedTags?: string[];
   selectedTagNames?: string[];
 }) {
-  if (input.intent === "ask") {
-    return withoutEmDash(input.reply || "Here is what I noticed.");
+  if (input.intent === "ask" || input.intent === "conversation") {
+    return input.reply || "Here is what I noticed.";
   }
   if (input.summaryUpdated) {
     return input.reply

@@ -13,9 +13,6 @@ export { AI_TEMPERATURE_BY_ACTION, getMaxTokensByAction } from "./constants";
 
 export {
   buildBodyStreamPrompt,
-  buildChatAskOpenRouterMessages,
-  buildChatPatchOpenRouterMessages,
-  buildChatRefineOpenRouterMessages,
   buildChatTagsOpenRouterMessages,
   buildJsonAiUserPrompt,
   buildStreamRefineUserPrompt,

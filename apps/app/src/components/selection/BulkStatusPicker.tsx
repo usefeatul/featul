@@ -9,8 +9,11 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { LayersIcon } from "@featul/ui/icons/layers";
-import { DropdownIcon } from "@featul/ui/icons/dropdown";
+import {
+  BoardIcon as LayersIcon,
+  DropdownIcon,
+} from "@/components/global/icons";
+
 import { cn } from "@featul/ui/lib/utils";
 import { statusOptions } from "@/components/requests/RequestItemSubmenus";
 import StatusIcon from "@/components/requests/StatusIcon";

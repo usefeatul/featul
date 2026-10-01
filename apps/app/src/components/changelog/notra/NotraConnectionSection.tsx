@@ -1,7 +1,7 @@
 "use client";
 
 import { Switch } from "@featul/ui/components/switch";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { LoaderIcon } from "@/components/global/icons";
 
 type NotraConnectionSectionProps = {
   hasStoredConnection: boolean;

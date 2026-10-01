@@ -3,14 +3,18 @@
 import * as React from "react";
 import type { JSONContent } from "@tiptap/core";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
-import { CheckIcon } from "@/components/global/icons";
+import {
+  ChangelogIcon as FillChangelogIcon,
+  CheckIcon,
+  ChevronRight,
+} from "@/components/global/icons";
+
 import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import { UpdateByline } from "./byline";
 import { useReleaseBadge } from "@/hooks/useReleaseBadge";
 import type { RelatedPost } from "@featul/api/changelog/related";
 import StatusIcon from "@/components/requests/StatusIcon";
-import { ChevronRight } from "@/components/global/icons";
+
 import { WidgetEmpty, WidgetEmptyPlaceholders } from "./empty";
 import { WidgetImage } from "./image";
 

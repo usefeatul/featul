@@ -28,7 +28,6 @@ import { relativeTime } from "@/lib/time";
 import RoleBadge from "../global/RoleBadge";
 import { MergeSubmissionSection } from "./MergeSubmission";
 import { Linkify } from "@/components/post/linkify";
-import { cn } from "@featul/ui/lib/utils";
 import { usePanelShortcut } from "@/hooks/shortcut";
 
 type RequestDetailProps = {
@@ -90,10 +89,7 @@ export default function RequestDetail({
   return (
     <section
       data-request-detail
-      className={cn(
-        "relative -mx-4 flex h-[calc(100dvh-var(--workspace-mobile-nav-height))] min-w-0 overflow-hidden sm:-mx-8 lg:-mx-12 lg:h-dvh xl:-mx-16",
-        listOpen && "lg:gap-[2px] lg:bg-muted/45 dark:lg:bg-black/25",
-      )}
+      className="relative -mx-4 flex h-[calc(100dvh-var(--workspace-mobile-nav-height))] min-w-0 overflow-hidden sm:-mx-8 lg:-mx-12 lg:h-dvh xl:-mx-16"
     >
       <Navigator
         workspaceSlug={workspaceSlug}
@@ -105,10 +101,7 @@ export default function RequestDetail({
       />
       <div
         id="request-detail-scroll"
-        className={cn(
-          "scrollbar-hide min-w-0 flex-1 overflow-y-auto overscroll-contain bg-background",
-          listOpen && "lg:border-l lg:border-border/60 dark:lg:border-white/10",
-        )}
+        className="scrollbar-hide min-w-0 flex-1 overflow-y-auto overscroll-contain bg-background"
       >
         <Header
           title={post.title}

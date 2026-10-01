@@ -6,7 +6,7 @@ export type ChangelogAiHistoryMessage = {
   content: string;
   attachedTitles?: string[];
   status?: "error";
-  activity?: "ask" | "rewrite" | "patch" | "tags";
+  activity?: "conversation" | "ask" | "rewrite" | "patch" | "tags";
   durationMs?: number;
   suggestedTags?: string[];
   effect?: string;

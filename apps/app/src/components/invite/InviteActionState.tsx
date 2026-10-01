@@ -1,7 +1,7 @@
 import { cn } from "@featul/ui/lib/utils";
 import { motion } from "framer-motion";
-import { Check, X } from "@/components/global/icons";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { Check, X, LoaderIcon } from "@/components/global/icons";
+
 import {
   getInviteMotionProps,
   getInviteTransition,

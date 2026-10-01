@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { LayersIcon } from "@featul/ui/icons/layers";
+import { BoardIcon as LayersIcon } from "@/components/global/icons";
 import { client } from "@featul/api/client";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";

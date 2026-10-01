@@ -3,11 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
-import {
-  ImageIcon,
-  X,
-} from "@/components/global/icons";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { ImageIcon, X, LoaderIcon } from "@/components/global/icons";
 
 import { toast } from "sonner";
 import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload/policy";

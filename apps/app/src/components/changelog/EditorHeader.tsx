@@ -3,8 +3,15 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
 // import { Switch } from "@featul/ui/components/switch"; 
-import { LoaderIcon } from "@featul/ui/icons/loader";
-import { ArrowLeft, Save, MoreHorizontal, FileText, CheckCircle } from "@/components/global/icons";
+import {
+  LoaderIcon,
+  ArrowLeft,
+  Save,
+  MoreHorizontal,
+  FileText,
+  CheckCircle,
+} from "@/components/global/icons";
+
 import {
     Popover,
     PopoverContent,

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
 import { DitherGradient } from "@featul/ui/components/gradient";
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { FeatulLogoIcon } from "@/components/global/icons";
 
 type NotFoundSceneProps = {
   defaultHref: string;

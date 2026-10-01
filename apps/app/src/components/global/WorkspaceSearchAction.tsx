@@ -7,12 +7,15 @@ import {
   ArrowBigUp,
   SearchIcon,
   CommentsIcon,
+  LoaderIcon,
 } from "@/components/global/icons";
 
-import { LoaderIcon } from "@featul/ui/icons/loader";
-
 import { Button } from "@featul/ui/components/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@featul/ui/components/tooltip";
 import {
   CommandDialog,
   CommandInput,
@@ -76,22 +79,39 @@ function SearchResultItem({
         status={status}
         className="size-4 shrink-0 text-foreground/80"
       />
-      <p className="min-w-0 flex-1 truncate text-sm font-medium leading-5 text-foreground" title={result.title}>
+      <p
+        className="min-w-0 flex-1 truncate text-sm font-medium leading-5 text-foreground"
+        title={result.title}
+      >
         <HighlightMatch text={result.title} query={query} />
       </p>
       <div className="flex shrink-0 items-center gap-1.5 tabular-nums">
-        <span className={cn(requestBadgeClass, "gap-1 text-muted-foreground/70")} title={`${result.upvotes ?? 0} upvotes`}>
+        <span
+          className={cn(requestBadgeClass, "gap-1 text-muted-foreground/70")}
+          title={`${result.upvotes ?? 0} upvotes`}
+        >
           <ArrowBigUp className="size-3" aria-hidden />
           <span>{result.upvotes ?? 0}</span>
         </span>
-        <span className={cn(requestBadgeClass, "gap-1 text-muted-foreground/70")} title={`${result.commentCount ?? 0} comments`}>
+        <span
+          className={cn(requestBadgeClass, "gap-1 text-muted-foreground/70")}
+          title={`${result.commentCount ?? 0} comments`}
+        >
           <CommentsIcon className="size-3" aria-hidden />
           <span>{result.commentCount ?? 0}</span>
         </span>
         {result.boardName ? (
-          <span className={cn(requestBadgeClass, "hidden max-w-20 sm:inline-flex")} title={result.boardName}>
-            <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
-            <span className="truncate uppercase tracking-wide">{result.boardName}</span>
+          <span
+            className={cn(requestBadgeClass, "hidden max-w-20 sm:inline-flex")}
+            title={result.boardName}
+          >
+            <span
+              className="size-1.5 shrink-0 rounded-full bg-primary"
+              aria-hidden
+            />
+            <span className="truncate uppercase tracking-wide">
+              {result.boardName}
+            </span>
           </span>
         ) : null}
       </div>
@@ -237,7 +257,9 @@ export function WorkspaceSearchAction({
     });
   }, [open]);
 
-  const hasQuery = value.trim().length >= MIN_QUERY_LENGTH && debouncedQuery.length >= MIN_QUERY_LENGTH;
+  const hasQuery =
+    value.trim().length >= MIN_QUERY_LENGTH &&
+    debouncedQuery.length >= MIN_QUERY_LENGTH;
   const isDebouncing = value.trim() !== debouncedQuery;
 
   const { data: results = [], isFetching } = useQuery({
@@ -255,7 +277,8 @@ export function WorkspaceSearchAction({
     staleTime: 10_000,
   });
 
-  const isSearching = value.trim().length >= MIN_QUERY_LENGTH && (isDebouncing || isFetching);
+  const isSearching =
+    value.trim().length >= MIN_QUERY_LENGTH && (isDebouncing || isFetching);
   const trimmedValue = value.trim();
   const canSubmit = trimmedValue.length >= MIN_QUERY_LENGTH;
   const canClear = trimmedValue.length > 0 || currentSearch.length > 0;
@@ -306,9 +329,9 @@ export function WorkspaceSearchAction({
             aria-pressed={isSearchActive}
             className={cn(
               filterToolbarButtonClass(isSearchActive && !compact),
-              className,
               compact &&
                 "group border-0 bg-transparent text-neutral-400 shadow-none ring-0 before:hidden hover:bg-muted/60 hover:text-primary dark:bg-transparent dark:text-neutral-300 dark:hover:bg-white/[0.05] dark:hover:text-primary",
+              className,
             )}
             onClick={() => setOpen(true)}
           >
@@ -330,17 +353,38 @@ export function WorkspaceSearchAction({
               </span>
             ) : null}
             {showShortcut ? (
-              <span aria-hidden="true" className={cn("ml-auto inline-flex shrink-0 items-center gap-1", isMac === null && "invisible")}>
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "ml-auto inline-flex shrink-0 items-center gap-1",
+                  isMac === null && "invisible",
+                )}
+              >
                 {[platformKey, "K"].map((key) => (
-                  <ShortcutKey key={key} className="bg-muted text-muted-foreground dark:bg-black/30 dark:text-muted-foreground">{key}</ShortcutKey>
+                  <ShortcutKey
+                    key={key}
+                    className="bg-muted text-muted-foreground dark:bg-black/30 dark:text-muted-foreground"
+                  >
+                    {key}
+                  </ShortcutKey>
                 ))}
               </span>
             ) : null}
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="right" sideOffset={10} className="flex items-center gap-2 text-xs">
+        <TooltipContent
+          side="right"
+          sideOffset={10}
+          className="flex items-center gap-2 text-xs"
+        >
           <span>Search</span>
-          <span className={cn("flex items-center gap-1", isMac === null && "invisible")} aria-hidden="true">
+          <span
+            className={cn(
+              "flex items-center gap-1",
+              isMac === null && "invisible",
+            )}
+            aria-hidden="true"
+          >
             <ShortcutKey>{platformKey}</ShortcutKey>
             <ShortcutKey>K</ShortcutKey>
           </span>
@@ -402,10 +446,7 @@ export function WorkspaceSearchAction({
           ) : null}
           {isSearching ? (
             <SearchStatusMessage>
-              <LoaderIcon
-                className="size-4 opacity-70"
-                size={16}
-              />
+              <LoaderIcon className="size-4 opacity-70" size={16} />
               Searching…
             </SearchStatusMessage>
           ) : null}
@@ -433,7 +474,9 @@ export function WorkspaceSearchAction({
           ) : null}
           {canSubmit && !isSearching ? (
             <>
-              {hasQuery && results.length > 0 ? <CommandSeparator className="mx-0 bg-foreground/10" /> : null}
+              {hasQuery && results.length > 0 ? (
+                <CommandSeparator className="mx-0 bg-foreground/10" />
+              ) : null}
               <CommandGroup className="px-2">
                 <CommandItem onSelect={handleSubmit} className="text-primary">
                   <SearchIcon className="size-3.5 opacity-70" size={14} />

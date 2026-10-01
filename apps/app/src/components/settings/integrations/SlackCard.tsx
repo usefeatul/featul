@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { SlackIcon } from "@featul/ui/icons/slack";
+import { SlackIcon } from "@/components/global/icons";
 import type { Integration } from "@/hooks/useIntegrations";
 import WebhookIntegrationCard from "./WebhookIntegrationCard";
 

@@ -3,8 +3,8 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { Dialog, DialogContent, DialogHeader, DialogInner, DialogTitle, DialogDescription } from "@featul/ui/components/dialog"
-import MaximizeIcon from "@featul/ui/icons/maximize"
-import MinimizeIcon from "@featul/ui/icons/minimize"
+import { MaximizeIcon, MinimizeIcon } from "@/components/global/icons";
+
 import { cn } from "@featul/ui/lib/utils"
 
 const DialogExpandedContext = React.createContext(false)

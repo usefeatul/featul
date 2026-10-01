@@ -3,8 +3,8 @@ import { PopoverList, PopoverListItem, PopoverSeparator } from "@featul/ui/compo
 import {
   CheckIcon,
   ArrowLeftIcon,
+  LoaderIcon,
 } from "@/components/global/icons";
-import { LoaderIcon } from "@featul/ui/icons/loader";
 
 import StatusIcon from "./StatusIcon";
 import type { TagSummary } from "@/types/post";

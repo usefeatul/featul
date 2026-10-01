@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@featul/ui/components/button"
-import { LoaderIcon } from "@featul/ui/icons/loader"
+import { LoaderIcon } from "@/components/global/icons";
 import * as React from "react"
 
 type LoadingButtonProps = React.ComponentProps<typeof Button> & {

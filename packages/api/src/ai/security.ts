@@ -1,4 +1,7 @@
+import { INVALID_EDIT_MESSAGE } from "./edits";
+
 const PUBLIC_ERROR_MESSAGES = new Set([
+  INVALID_EDIT_MESSAGE,
   "Unauthorized",
   "Forbidden",
   "Invalid request",

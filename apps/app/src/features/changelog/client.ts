@@ -12,6 +12,7 @@ export type ChangelogAiStreamInput = {
   action: AiAction;
   prompt?: string;
   title?: string;
+  summary?: string;
   contentMarkdown?: string;
   sourcePostIds?: string[];
   tone?: AiTone;
@@ -38,7 +39,9 @@ function parseSseEvents(raw: string): ChangelogAiStreamEvent[] {
     const trimmed = part.trim();
     if (!trimmed) continue;
 
-    const line = trimmed.split("\n").find((entry) => entry.startsWith("data: "));
+    const line = trimmed
+      .split("\n")
+      .find((entry) => entry.startsWith("data: "));
     if (!line) continue;
 
     events.push(JSON.parse(line.slice(6)) as ChangelogAiStreamEvent);
@@ -50,7 +53,7 @@ function parseSseEvents(raw: string): ChangelogAiStreamEvent[] {
 function handleStreamEvent(
   event: ChangelogAiStreamEvent,
   handlers: StreamHandlers,
-  state: { body: string; summary: string },
+  state: { body: string; summary: string; completed: boolean },
 ) {
   if (event.type === "status") {
     handlers.onStatus?.(event.phase);
@@ -75,7 +78,9 @@ function handleStreamEvent(
   }
 
   if (event.type === "done") {
+    if (state.completed) return;
     handlers.onDone?.(event);
+    state.completed = true;
     return;
   }
 
@@ -109,33 +114,44 @@ export async function streamChangelogAiAssist(
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
-  const state = { body: "", summary: "" };
+  const state = { body: "", summary: "", completed: false };
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
 
-    buffer += decoder.decode(value, { stream: true });
+      buffer += decoder.decode(value, { stream: true });
+      buffer = buffer.replace(/\r\n/g, "\n");
 
-    let boundary = buffer.indexOf("\n\n");
-    while (boundary !== -1) {
-      const chunk = buffer.slice(0, boundary);
-      buffer = buffer.slice(boundary + 2);
-      boundary = buffer.indexOf("\n\n");
+      let boundary = buffer.indexOf("\n\n");
+      while (boundary !== -1) {
+        const chunk = buffer.slice(0, boundary);
+        buffer = buffer.slice(boundary + 2);
+        boundary = buffer.indexOf("\n\n");
 
-      for (const event of parseSseEvents(chunk)) {
+        for (const event of parseSseEvents(chunk)) {
+          handleStreamEvent(event, handlers, state);
+        }
+      }
+    }
+
+    buffer += decoder.decode();
+    if (buffer.trim()) {
+      for (const event of parseSseEvents(buffer)) {
         handleStreamEvent(event, handlers, state);
       }
     }
-  }
 
-  if (buffer.trim()) {
-    for (const event of parseSseEvents(buffer)) {
-      handleStreamEvent(event, handlers, state);
-    }
+    if (!state.completed)
+      throw new Error(
+        "The response was interrupted. Your draft has not changed. Please try again.",
+      );
+    return state.body || state.summary;
+  } finally {
+    await reader.cancel().catch(() => {});
+    reader.releaseLock();
   }
-
-  return state.body || state.summary;
 }
 
 export type { ChangelogAiStreamEvent, StreamHandlers };

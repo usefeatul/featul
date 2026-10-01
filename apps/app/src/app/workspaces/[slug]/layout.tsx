@@ -68,7 +68,7 @@ export default async function WorkspaceLayout({
   const serverNow = Date.now();
   return (
     <Container
-      className="workspace-shell fixed inset-0 flex h-dvh overflow-hidden overscroll-none bg-background lg:gap-[2px] lg:bg-muted/45 dark:lg:bg-black/25"
+      className="workspace-shell fixed inset-0 flex h-dvh overflow-hidden overscroll-none bg-background lg:bg-sidebar"
       maxWidth="full"
       noPadding
     >

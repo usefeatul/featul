@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@featul/ui/components/popover";
-import { TagIcon } from "@featul/ui/icons/tag";
-import { XMarkIcon } from "@/components/global/icons";
+import { TagIcon, XMarkIcon } from "@/components/global/icons";
+
 import { cn } from "@featul/ui/lib/utils";
 
 const controlClass =

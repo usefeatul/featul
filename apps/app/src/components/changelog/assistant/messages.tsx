@@ -4,7 +4,6 @@ import type { RefObject } from "react";
 import { Check } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 import { Content } from "./content";
-import { withoutEmDash } from "./config";
 import {
   Progress,
   type AssistantActivity,
@@ -32,7 +31,7 @@ export function Messages({
 }: {
   messages: AssistantMessage[];
   bottomRef: RefObject<HTMLDivElement | null>;
-  onRetry: (content: string) => void;
+  onRetry: (messageId: string) => void;
 }) {
   return (
     <div className="space-y-5 px-4 py-5">
@@ -80,7 +79,7 @@ export function Messages({
                     />
                   </div>
                 ) : null}
-                <Content>{withoutEmDash(message.content)}</Content>
+                <Content>{message.content}</Content>
               </>
             ) : (
               <span className="whitespace-pre-wrap">{message.content}</span>
@@ -123,7 +122,7 @@ export function Messages({
               <button
                 type="button"
                 className="mt-2 block text-xs font-medium underline underline-offset-2"
-                onClick={() => onRetry(message.content)}
+                onClick={() => onRetry(message.id)}
               >
                 Try again
               </button>

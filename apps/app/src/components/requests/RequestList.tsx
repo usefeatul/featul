@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { LoaderIcon } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 import { useInfiniteRequests } from "@/hooks/useInfiniteRequests";
 import RequestItem from "./RequestItem";

@@ -2,10 +2,13 @@
 
 import { WidgetButton } from "./button";
 
-import { ChevronRight } from "@/components/global/icons";
-import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
-import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
-import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
+import {
+  ChevronRight,
+  ChangelogIcon as FillChangelogIcon,
+  CollectIcon as FillFeedbackIcon,
+  RoadmapIcon as FillRoadmapIcon,
+} from "@/components/global/icons";
+
 import StatusIcon from "@/components/requests/StatusIcon";
 import { UpdateByline } from "./byline";
 import { WidgetEmpty } from "./empty";

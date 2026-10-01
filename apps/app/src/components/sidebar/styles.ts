@@ -1,6 +1,9 @@
 export const sidebarRowClassName =
   "group relative flex min-w-0 w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs md:text-sm";
 
+export const sidebarHeaderActionClassName =
+  "flex size-8 shrink-0 items-center justify-center rounded-md bg-transparent text-muted-foreground transition-colors hover:bg-transparent hover:text-primary dark:bg-transparent dark:text-muted-foreground dark:hover:bg-transparent dark:hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
 export const sidebarLeadSlotClassName =
   "relative z-[1] flex size-5 shrink-0 items-center justify-center";
 

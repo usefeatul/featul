@@ -4,11 +4,7 @@ import { WidgetButton } from "./button";
 
 import * as React from "react";
 import { client } from "@featul/api/client";
-import {
-  ImageIcon,
-  X,
-} from "@/components/global/icons";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { ImageIcon, X, LoaderIcon } from "@/components/global/icons";
 
 import { VoteIcon } from "@/components/upvote/VoteIcon";
 import { getBrowserFingerprint } from "@/utils/fingerprint";

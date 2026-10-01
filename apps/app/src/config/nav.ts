@@ -1,27 +1,28 @@
 import {
-  WorkspaceAccountIcon,
-  WorkspaceAppearanceIcon,
-  WorkspaceArchiveIcon,
-  WorkspaceBillingIcon,
-  WorkspaceBoardIcon,
-  WorkspaceChangelogIcon,
-  WorkspaceDocsIcon,
-  WorkspaceDomainIcon,
-  WorkspaceExportIcon,
-  WorkspaceFeedbackIcon,
-  WorkspaceImageIcon,
-  WorkspaceIntegrationIcon,
-  WorkspaceMembersIcon,
-  WorkspaceRoadmapIcon,
-  WorkspaceSecurityIcon,
-  WorkspaceSettingsIcon,
-} from "@featul/ui/icons/workspace";
-import PlannedIcon from "@featul/ui/icons/planned";
-import ProgressIcon from "@featul/ui/icons/progress";
-import ReviewIcon from "@featul/ui/icons/review";
-import CompletedIcon from "@featul/ui/icons/completed";
-import PendingIcon from "@featul/ui/icons/pending";
-import ClosedIcon from "@featul/ui/icons/closed";
+  AccountIcon as WorkspaceAccountIcon,
+  AppearanceIcon as WorkspaceAppearanceIcon,
+  ArchiveIcon as WorkspaceArchiveIcon,
+  BillingIcon as WorkspaceBillingIcon,
+  BoardIcon as WorkspaceBoardIcon,
+  ChangelogIcon as WorkspaceChangelogIcon,
+  DocsIcon as WorkspaceDocsIcon,
+  DomainIcon as WorkspaceDomainIcon,
+  ExportIcon as WorkspaceExportIcon,
+  CollectIcon as WorkspaceFeedbackIcon,
+  ImageIcon as WorkspaceImageIcon,
+  IntegrationIcon as WorkspaceIntegrationIcon,
+  MemberIcon as WorkspaceMembersIcon,
+  RoadmapIcon as WorkspaceRoadmapIcon,
+  ShieldIcon as WorkspaceSecurityIcon,
+  SettingIcon as WorkspaceSettingsIcon,
+  PlannedIcon,
+  ProgressIcon,
+  ReviewIcon,
+  CompletedIcon,
+  PendingIcon,
+  ClosedIcon,
+} from "@/components/global/icons";
+
 import type { NavItem } from "../types/nav";
 import { SECTIONS } from "./sections";
 import { ACCOUNT_SECTIONS } from "./account/sections";

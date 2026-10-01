@@ -1,30 +1,18 @@
 import type { AiChatIntent } from "@featul/api/ai/types";
 
-const REWRITE_RE =
-  /\b(rewrite|draft|write|improve|expand|format|make it|add more|shorter|longer|technical|from feedback|this week|change the title|retitle)\b/i;
-const ASK_RE =
-  /(\? *$)|^(what|why|how|is |are |should |does |do you|explain|review|check|what's missing|is this)/i;
-const TAGS_RE = /\btags?\b/i;
-const SUMMARY_RE =
-  /\b(?:summari[sz]e|add|write|create|generate|update|improve|rewrite|shorten)\b[\s\S]{0,40}\bsummary\b|\bsummary\b[\s\S]{0,40}\b(?:add|write|create|generate|update|improve|rewrite|shorten)\b/i;
-
-export function isSummaryRequest(text: string) {
-  return SUMMARY_RE.test(text.trim());
-}
-
-export function detectChatIntent(input: {
-  text: string;
-  hasSelection: boolean;
-}): AiChatIntent {
+// Only route explicit workspace-tag operations locally. The model interprets
+// writing requests and follow-ups with the draft and conversation in context.
+export function detectChatIntent(input: { text: string }): AiChatIntent {
   const text = input.text.trim();
-  const isAsk = ASK_RE.test(text);
-  const isRewrite = REWRITE_RE.test(text);
-
-  if (TAGS_RE.test(text)) return "tags";
-  if (input.hasSelection && !isAsk) return "patch";
-  if (input.hasSelection && isRewrite) return "patch";
-  if (isAsk && !isRewrite) return "ask";
-  return "rewrite";
+  const tags =
+    /\b(?:suggest|recommend|choose|pick|apply|add|remove|clear|find|which|what)\b.{0,45}\b(?:workspace\s+)?tags?\b/i.test(
+      text,
+    );
+  const body =
+    /\b(?:sentence|paragraph|section|heading|word|mention|explain|describe|changelog about)\b/i.test(
+      text,
+    );
+  return tags && !body ? "tags" : "conversation";
 }
 
 export function extractGithubUrls(text: string) {

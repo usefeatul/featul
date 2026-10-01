@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
+import { FeatulLogoIcon } from "@/components/global/icons";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import { useDomainBranding } from "./DomainBrandingProvider"

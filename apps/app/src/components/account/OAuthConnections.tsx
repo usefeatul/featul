@@ -5,8 +5,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { authClient } from "@featul/auth/client"
 import { toast } from "sonner"
 import SettingsCard from "@/components/global/SettingsCard"
-import { GoogleIcon } from "@featul/ui/icons/google"
-import { GitHubIcon } from "@featul/ui/icons/github"
+import { GoogleIcon, GitHubIcon } from "@/components/global/icons";
+
 
 type Account = {
     id: string

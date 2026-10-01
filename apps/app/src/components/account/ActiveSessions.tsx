@@ -6,9 +6,9 @@ import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
 import { client } from "@featul/api/client"
 import SettingsCard from "@/components/global/SettingsCard"
-import { CloudIcon } from "@/components/global/icons"
+import { CloudIcon, LoaderIcon } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button"
-import { LoaderIcon } from "@featul/ui/icons/loader"
+
 import type { SessionItem } from "@/types/session"
 import { parseUserAgent } from "@/utils/agent"
 

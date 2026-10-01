@@ -16,9 +16,9 @@ import {
   ListFilterIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  BoardIcon as LayersIcon,
+  TagIcon,
 } from "@/components/global/icons";
-import { LayersIcon } from "@featul/ui/icons/layers";
-import { TagIcon } from "@featul/ui/icons/tag";
 
 import { client } from "@featul/api/client";
 import { getSlugFromPath } from "@/config/nav";

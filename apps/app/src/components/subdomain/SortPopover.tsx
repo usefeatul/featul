@@ -4,8 +4,8 @@ import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
-import { ChevronDownIcon } from "@/components/global/icons"
-import ArrowUpDownIcon from "@featul/ui/icons/arrow-up-down"
+import { ChevronDownIcon, ArrowUpDownIcon } from "@/components/global/icons";
+
 import { cn } from "@featul/ui/lib/utils"
 import { toolbarItemClass } from "@featul/ui/components/toolbar"
 

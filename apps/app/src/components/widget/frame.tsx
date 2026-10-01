@@ -4,7 +4,7 @@ import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { client } from "@featul/api/client";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { FeatulLogoIcon } from "@/components/global/icons";
 import { normalizeRoadmapStatus } from "@/lib/roadmap";
 import { WidgetFeedbackCompose } from "./compose";
 import { WidgetFeedbackDetail } from "./detail";

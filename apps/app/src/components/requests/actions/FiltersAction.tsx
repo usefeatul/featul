@@ -22,11 +22,11 @@ import {
   ChevronRightIcon,
   Clock,
   MessageCircleOff,
+  ArrowUpDownIcon,
+  BoardIcon as LayersIcon,
+  TagIcon,
 } from "@/components/global/icons";
 
-import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
-import { LayersIcon } from "@featul/ui/icons/layers";
-import { TagIcon } from "@featul/ui/icons/tag";
 import { SORT_OPTIONS, type SortOrder } from "@/types/sort";
 
 import { client } from "@featul/api/client";

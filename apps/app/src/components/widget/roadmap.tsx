@@ -1,8 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { ChevronDown } from "@/components/global/icons";
-import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
+import {
+  ChevronDown,
+  RoadmapIcon as FillRoadmapIcon,
+} from "@/components/global/icons";
+
 import StatusIcon from "@/components/requests/StatusIcon";
 import { normalizeRoadmapStatus } from "@/lib/roadmap";
 import { toPlain } from "./utils";

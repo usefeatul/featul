@@ -10,8 +10,8 @@ import {
   ArrowBigUp,
   Camera,
   Check,
+  LoaderIcon,
 } from "@/components/global/icons";
-import { LoaderIcon } from "@featul/ui/icons/loader";
 
 import { ScreenshotAnnotator } from "./annotate";
 import {

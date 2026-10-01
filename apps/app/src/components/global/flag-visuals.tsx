@@ -1,16 +1,14 @@
 import type { FC, SVGProps } from "react"
 import {
-  LockIcon,
   StarIcon,
-} from "@/components/global/icons";
-import { PinIcon } from "@featul/ui/icons/pin"
-
-import { StarPinIcon } from "@featul/ui/icons/star-pin"
-import {
+  LockIcon,
+  PinIcon,
+  StarPinIcon,
   PinLockIcon,
   StarLockIcon,
   StarPinLockIcon,
-} from "@featul/ui/icons/flag-merge"
+} from "@/components/global/icons";
+
 import { cn } from "@featul/ui/lib/utils"
 import type { RequestFlagKey, RequestFlags } from "@/types/request"
 

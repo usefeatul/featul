@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@featul/ui/components/button";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { LoaderIcon } from "@/components/global/icons";
 import {
   settingsCardInnerClass,
   settingsCardShellClass,

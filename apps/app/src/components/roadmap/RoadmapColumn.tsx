@@ -3,8 +3,11 @@
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { useReducedMotion } from "framer-motion";
-import { MoveVerticalIcon } from "@/components/global/icons";
-import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
+import {
+  MoveVerticalIcon,
+  PlusIcon as FillPlusIcon,
+} from "@/components/global/icons";
+
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 import StatusIcon from "@/components/requests/StatusIcon";

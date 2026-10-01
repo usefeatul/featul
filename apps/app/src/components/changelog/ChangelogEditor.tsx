@@ -8,11 +8,13 @@ import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 import type { EditorAction } from "./EditorHeaderContext";
 import { CoverImageUploader } from "./CoverImageUploader";
-import { InfoIcon } from "@featul/ui/icons/info";
-import { TickIcon } from "@featul/ui/icons/tick";
-import { LoaderIcon } from "@featul/ui/icons/loader";
-import { ChevronLeftIcon } from "@/components/global/icons";
-import { IconAi } from "@tabler/icons-react";
+import {
+  InfoIcon,
+  TickIcon,
+  LoaderIcon,
+  ChevronLeftIcon,
+  IconAi,
+} from "@/components/global/icons";
 
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
@@ -21,7 +23,6 @@ import ChangelogAiPanel from "./ChangelogAiPanel";
 import { getChangelogAiSlashSuggestions } from "./ai/slash";
 import { getPublishCheckIssues } from "./ai/publishCheck";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
-import { cn } from "@featul/ui/lib/utils";
 import { useAssistantPanel } from "@/hooks/useAssistantPanel";
 import { PANEL_SHORTCUT_LABEL, usePanelShortcut } from "@/hooks/shortcut";
 
@@ -78,6 +79,7 @@ export function ChangelogEditor({
     editorRef,
     title,
     setTitle,
+    summary,
     setSummary,
     coverImage,
     setCoverImage,
@@ -208,15 +210,15 @@ export function ChangelogEditor({
     },
     {
       key: "save",
-      label: "Save",
+      label: isSaving ? "Saving changes" : isDirty ? "Save unsaved changes" : "Saved",
       type: "button",
       variant: "plain",
       icon: isSaving ? (
-        <LoaderIcon className="size-4" />
+        <LoaderIcon className="size-4 text-yellow-600 dark:text-yellow-400" />
       ) : isDirty ? (
-        <InfoIcon className="size-4" />
+        <InfoIcon className="size-4 text-yellow-600 dark:text-yellow-400" />
       ) : (
-        <TickIcon className="size-4" />
+        <TickIcon className="size-4 text-green-600 dark:text-green-400" />
       ),
       onClick: saveWithCheck,
       disabled: isSaving,
@@ -234,16 +236,10 @@ export function ChangelogEditor({
   return (
     <div
       data-changelog-editor
-      className={cn(
-        "relative min-h-[calc(100dvh-var(--workspace-mobile-nav-height))] bg-background lg:flex lg:h-dvh lg:min-h-dvh lg:overflow-hidden lg:bg-muted/45 dark:lg:bg-black/25 lg:transition-[gap,padding-right] lg:duration-300 lg:ease-[cubic-bezier(0.22,1,0.36,1)] lg:motion-reduce:transition-none",
-        isAiOpen ? "lg:gap-[2px] lg:pr-1" : "lg:gap-0 lg:pr-0",
-      )}
+      className="relative min-h-[calc(100dvh-var(--workspace-mobile-nav-height))] bg-background lg:flex lg:h-dvh lg:min-h-dvh lg:overflow-hidden"
     >
       <div
-        className={cn(
-          "flex min-w-0 flex-1 flex-col bg-background lg:min-h-0 lg:border-border/60 dark:lg:border-white/10 lg:transition-[border-right-width] lg:duration-300 lg:ease-[cubic-bezier(0.22,1,0.36,1)] lg:motion-reduce:transition-none",
-          isAiOpen ? "lg:border-r" : "lg:border-r-0",
-        )}
+        className="flex min-w-0 flex-1 flex-col bg-background lg:min-h-0"
       >
         <WorkspaceHeader
           workspaceName={workspaceSlug}
@@ -330,6 +326,7 @@ export function ChangelogEditor({
           editorRef={editorRef}
           title={title}
           setTitle={setTitle}
+          summary={summary}
           setSummary={setSummary}
           selectedTags={selectedTags}
           setSelectedTags={setSelectedTags}

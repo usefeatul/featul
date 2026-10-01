@@ -2,7 +2,7 @@
 
 import React from "react"
 import { cn } from "@featul/ui/lib/utils"
-import LoaderIcon from "@featul/ui/icons/loader"
+import { LoaderIcon } from "@/components/global/icons";
 
 interface LoadingSpinnerProps {
   label?: string

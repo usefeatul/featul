@@ -12,11 +12,14 @@ import {
 import { useWorkspaceSwitcher } from "../../hooks/useWorkspaceSwitcher";
 import Image from "next/image";
 import { getSlugFromPath } from "../../config/nav";
-import { PlusIcon } from "@/components/global/icons";
-import { WorkspaceSwitcherIcon } from "@featul/ui/icons/workspace";
+import {
+  PlusIcon as MenuAddIcon,
+  WorkspaceSwitcherIcon,
+  FeatulLogoIcon,
+} from "@/components/global/icons";
 import type { Ws } from "../../hooks/useWorkspaceSwitcher";
 import { SidebarBadge } from "./badge";
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 import { getPlanColorClassName } from "@/lib/plan";
 
@@ -39,8 +42,6 @@ export default function WorkspaceSwitcher({
   const slug = getSlugFromPath(pathname || "");
   const {
     all,
-    current,
-    wsInfo,
     currentLogo,
     currentName,
     handleSelectWorkspace,
@@ -62,7 +63,6 @@ export default function WorkspaceSwitcher({
     setOpen(false);
     handleCreateNew();
   }, [handleCreateNew]);
-  const currentPlan = wsInfo?.plan || current?.plan || "free";
 
   return (
     <div className={cn(className)}>
@@ -108,14 +108,6 @@ export default function WorkspaceSwitcher({
               <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
                 <span className="truncate text-sm font-medium leading-none text-foreground">
                   {currentName}
-                </span>
-                <span
-                  className={cn(
-                    "ml-auto shrink-0 text-[10px] font-medium uppercase tracking-wide",
-                    getPlanColorClassName(currentPlan),
-                  )}
-                >
-                  {currentPlan}
                 </span>
               </div>
             ) : null}
@@ -168,7 +160,9 @@ export default function WorkspaceSwitcher({
                             />
                           </div>
                         ) : (
-                          <div className="w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border" />
+                          <div className="flex w-8 h-8 shrink-0 items-center justify-center rounded-md bg-muted border ring-1 ring-border">
+                            <FeatulLogoIcon className="size-5 text-primary" />
+                          </div>
                         )}
                         <div className="flex flex-col overflow-hidden">
                           <span className="truncate text-sm font-medium">
@@ -197,7 +191,7 @@ export default function WorkspaceSwitcher({
                   )}
                 >
                   <div className="relative w-8 h-8 shrink-0 flex items-center justify-center">
-                    <PlusIcon className="size-5 text-muted-foreground" />
+                    <MenuAddIcon className="size-5 text-muted-foreground" />
                   </div>
                   <span className="truncate text-sm font-medium">
                     Add workspace

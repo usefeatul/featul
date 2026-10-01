@@ -2,9 +2,13 @@
 
 import { WidgetButton } from "./button";
 
-import { ChevronLeft, X } from "@/components/global/icons";
-import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
-import { FillPenIcon } from "@featul/ui/icons/fill-pen";
+import {
+  ChevronLeft,
+  X,
+  CollectIcon as FillFeedbackIcon,
+  EditIcon as FillPenIcon,
+} from "@/components/global/icons";
+
 import { WidgetImage } from "./image";
 import { WidgetHeaderSkeleton } from "./skeleton";
 import type { FeedbackView, WidgetLayoutStyle } from "./types";

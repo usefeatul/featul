@@ -5,7 +5,12 @@ import { Dots } from "./dots";
 import { Shimmer } from "./shimmer";
 
 export type AssistantPhase = "reading" | "planning" | "writing" | "applying";
-export type AssistantActivity = "ask" | "rewrite" | "patch" | "tags";
+export type AssistantActivity =
+  | "conversation"
+  | "ask"
+  | "rewrite"
+  | "patch"
+  | "tags";
 
 const PHASES: AssistantPhase[] = ["reading", "planning", "writing", "applying"];
 

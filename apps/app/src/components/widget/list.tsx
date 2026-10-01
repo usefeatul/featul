@@ -14,10 +14,14 @@ import {
   PopoverListItem,
   PopoverTrigger,
 } from "@featul/ui/components/popover";
-import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
-import { LayersIcon } from "@featul/ui/icons/layers";
-import { ListFilterIcon, SearchIcon, X } from "@/components/global/icons";
-import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
+import {
+  ArrowUpDownIcon,
+  BoardIcon as LayersIcon,
+  ListFilterIcon,
+  SearchIcon,
+  X,
+  CollectIcon as FillFeedbackIcon,
+} from "@/components/global/icons";
 
 import StatusIcon from "@/components/requests/StatusIcon";
 import { statusLabel } from "@/lib/roadmap";

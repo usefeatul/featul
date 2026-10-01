@@ -4,7 +4,11 @@ import React from "react";
 import { ScrollArea } from "@featul/ui/components/scroll-area";
 import { DrawerContent, DrawerTitle } from "@featul/ui/components/drawer";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import {
+  FeatulLogoIcon,
+  EditIcon as WorkspaceCreateIcon,
+  ArrowBackIcon,
+} from "@/components/global/icons";
 import type { NavItem } from "../../types/nav";
 import SidebarItem from "./SidebarItem";
 import SidebarSection from "./SidebarSection";
@@ -15,7 +19,7 @@ import { sidebarSearchClassName } from "./styles";
 import Timezone from "./Timezone";
 import UserDropdown from "@/components/account/UserDropdown";
 import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
-import { WorkspaceCreateIcon } from "@featul/ui/icons/workspace";
+
 import {
   getSlugFromPath,
   isWorkspaceAccountPath,
@@ -24,7 +28,7 @@ import {
 } from "../../config/nav";
 import SettingsNav from "@/components/settings/global/SettingsNav";
 import AccountNav from "@/components/account/AccountNav";
-import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
+
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 import { CreatePostModal } from "../post/CreatePostModal";
 import { LayoutGroup } from "framer-motion";

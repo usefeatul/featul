@@ -1,9 +1,12 @@
 "use client";
 
-import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
-import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
-import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
-import { HomeIcon } from "@featul/ui/icons/home";
+import {
+  ChangelogIcon as FillChangelogIcon,
+  CollectIcon as FillFeedbackIcon,
+  RoadmapIcon as FillRoadmapIcon,
+  HomeIcon,
+} from "@/components/global/icons";
+
 import type { Section, WidgetLayoutStyle } from "./types";
 
 type Props = {

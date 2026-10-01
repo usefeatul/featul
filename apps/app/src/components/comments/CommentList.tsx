@@ -19,6 +19,7 @@ import {
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard"
 import { cn } from "@featul/ui/lib/utils"
+import { commentComposerBackgroundClass } from "./styles"
 
 interface CommentListProps {
   postId: string
@@ -101,7 +102,7 @@ export default function CommentList({
             </span>
           </div>
         </header>
-        <div className={plain ? "mt-3 rounded-md border border-border/40 bg-black/[0.02] p-3 dark:bg-white/[0.025]" : settingsCardInnerClass}>
+        <div className={cn(plain ? "mt-3 rounded-md border border-border/40 p-3" : settingsCardInnerClass, commentComposerBackgroundClass)}>
           <CommentForm
             postId={postId}
             onSuccess={handleCommentSuccess}

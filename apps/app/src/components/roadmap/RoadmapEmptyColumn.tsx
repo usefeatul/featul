@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@featul/ui/components/button";
-import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
+import { PlusIcon as FillPlusIcon } from "@/components/global/icons";
 
 export default function RoadmapEmptyColumn({
   label,

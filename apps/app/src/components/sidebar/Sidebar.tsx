@@ -1,48 +1,49 @@
 "use client";
 
 import React, { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
-import type { NavItem } from "../../types/nav";
 import {
-  buildBottomNav,
   getSlugFromPath,
   isWorkspaceAccountPath,
   isWorkspaceSettingsPath,
+  requestsBase,
   workspaceBase,
-} from "../../config/nav";
-import { ArrowBackIcon } from "@featul/ui/icons/arrow-back";
+} from "@/config/nav";
+import {
+  ArrowBackIcon,
+  EditIcon as WorkspaceCreateIcon,
+  CollectIcon as WorkspaceFeedbackIcon,
+} from "@/components/global/icons";
+
+import {
+  AnimatePresence,
+  LayoutGroup,
+  motion,
+  useReducedMotion,
+} from "framer-motion";
 import SettingsNav from "@/components/settings/global/SettingsNav";
 import AccountNav from "@/components/account/AccountNav";
-import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import SearchAction from "@/components/requests/actions/SearchAction";
 import RoadmapSearchAction from "@/components/roadmap/actions/RoadmapSearchAction";
-import { sidebarSearchClassName } from "./styles";
-import UserDropdown from "@/components/account/UserDropdown";
-import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificationsAction";
-import Timezone from "./Timezone";
-import SidebarItem from "./SidebarItem";
-import Upgrade from "./upgrade";
-import SidebarSection from "./SidebarSection";
-import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
-import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
-import { WorkspaceCreateIcon } from "@featul/ui/icons/workspace";
-import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
-import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
+import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
+import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
+import { useSidebarShortcut } from "@/hooks/shortcut";
+import WorkspaceSwitcher from "./WorkspaceSwitcher";
+import SidebarItem from "./SidebarItem";
+import SidebarSection from "./SidebarSection";
+import Timezone from "./Timezone";
+import Upgrade from "./upgrade";
+import Rail from "./rail";
+import SidebarToggle from "./toggle";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@featul/ui/components/tooltip";
-import {
-  SIDEBAR_ARIA_SHORTCUTS,
-  useSidebarShortcut,
-} from "@/hooks/shortcut";
-import { PanelShortcutKeys } from "@/components/global/keys";
+  sidebarHeaderActionClassName,
+  sidebarLeadSlotClassName,
+  sidebarRowClassName,
+} from "./styles";
 
-const secondaryNav: NavItem[] = buildBottomNav();
 const SIDEBAR_COLLAPSED_COOKIE = "featul_sidebar_collapsed";
 export default function Sidebar({
   className = "",
@@ -86,20 +87,11 @@ export default function Sidebar({
   initialDeviceAccounts?: DeviceAccount[] | undefined;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const slug = getSlugFromPath(pathname);
   const isSettings = isWorkspaceSettingsPath(pathname);
   const isAccount = isWorkspaceAccountPath(pathname);
   const reduceMotion = useReducedMotion();
   const navView = isSettings ? "settings" : isAccount ? "account" : "workspace";
-  const navDirection = navView === "workspace" ? -1 : 1;
-
-  React.useEffect(() => {
-    if (!slug) return;
-    const base = workspaceBase(slug);
-    router.prefetch(navView === "workspace" ? `${base}/settings/branding` : base);
-  }, [router, slug, navView]);
-
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
     slug,
     initialWorkspace || null,
@@ -108,328 +100,196 @@ export default function Sidebar({
   );
   const [createPostOpen, setCreatePostOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(initialCollapsed);
-  const navRef = React.useRef<HTMLDivElement>(null);
-  const [navScrollable, setNavScrollable] = useState(false);
   const openCreatePost = React.useCallback(() => setCreatePostOpen(true), []);
   useCreatePostHotkey({ onOpen: openCreatePost });
   const boardItem = middleNav.find((item) => item.label === "My Board");
   const workspaceNav = middleNav.filter((item) => item.label !== "My Board");
 
-  const toggleCollapsed = React.useCallback(() => {
-    setCollapsed((current) => {
-      const next = !current;
-      document.cookie = `${SIDEBAR_COLLAPSED_COOKIE}=${String(next)}; Path=/; Max-Age=31536000; SameSite=Lax`;
-      return next;
-    });
+  const setSidebarCollapsed = React.useCallback((next: boolean) => {
+    setCollapsed(next);
+    document.cookie = `${SIDEBAR_COLLAPSED_COOKIE}=${String(next)}; Path=/; Max-Age=31536000; SameSite=Lax`;
   }, []);
+  const toggleCollapsed = React.useCallback(
+    () => setSidebarCollapsed(!collapsed),
+    [collapsed, setSidebarCollapsed],
+  );
+  const revealNavigation = React.useCallback(
+    () => setSidebarCollapsed(false),
+    [setSidebarCollapsed],
+  );
   useSidebarShortcut(toggleCollapsed);
-
-  const statusKey = (label: string) => {
-    return label.trim().toLowerCase();
-  };
-
-  React.useEffect(() => {
-    const nav = navRef.current;
-    if (!nav) return;
-
-    const updateScrollable = () => {
-      setNavScrollable(nav.scrollHeight > nav.clientHeight + 1);
-    };
-
-    updateScrollable();
-    const observer = new ResizeObserver(updateScrollable);
-    observer.observe(nav);
-    Array.from(nav.children).forEach((child) => observer.observe(child));
-
-    return () => observer.disconnect();
-  }, [
-    collapsed,
-    isAccount,
-    isSettings,
-    pathname,
-    primaryNav.length,
-    workspaceNav.length,
-  ]);
 
   return (
     <aside
+      aria-label="Workspace sidebar"
+      data-collapsed={collapsed ? "true" : "false"}
       className={cn(
-        "relative hidden w-full flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ease-out lg:flex lg:shrink-0",
-        collapsed ? "lg:w-[50px]" : "lg:w-[270px]",
-        "lg:sticky lg:top-0 lg:h-dvh lg:overflow-hidden",
+        "hidden h-dvh shrink-0 bg-sidebar text-sidebar-foreground lg:flex",
         className,
       )}
-      data-collapsed={collapsed ? "true" : "false"}
     >
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            type="button"
-            onClick={toggleCollapsed}
-            className="group absolute inset-y-0 right-0 z-40 hidden w-2 cursor-pointer focus-visible:outline-none lg:block"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            aria-keyshortcuts={SIDEBAR_ARIA_SHORTCUTS}
-            aria-expanded={!collapsed}
-          >
-            <span className="pointer-events-none absolute inset-y-0 right-0 w-px bg-transparent transition-colors group-hover:bg-primary/70 group-focus-visible:bg-primary" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent
-          side="right"
-          sideOffset={4}
-          className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium"
-        >
-          <span>{collapsed ? "Expand sidebar" : "Collapse sidebar"}</span>
-          <PanelShortcutKeys shift />
-        </TooltipContent>
-      </Tooltip>
-      <div className={cn("px-2 py-2", collapsed && "px-1.5")}>
-        <div
-          className={cn(
-            "flex items-center",
-            collapsed ? "justify-center" : "h-9 gap-1",
-          )}
-        >
-          {collapsed ? (
-            <WorkspaceSwitcher
-              className="w-9"
-              initialWorkspace={initialWorkspace}
-              initialWorkspaces={initialWorkspaces}
-              collapsed
-            />
-          ) : (
+      <Rail
+        slug={slug}
+        pathname={pathname}
+        items={workspaceNav}
+        collapsed={collapsed}
+        onToggle={toggleCollapsed}
+        onNavigate={revealNavigation}
+        initialWorkspace={initialWorkspace}
+        initialWorkspaces={initialWorkspaces}
+        initialUser={initialUser}
+        initialDeviceAccounts={initialDeviceAccounts}
+      />
+      <div
+        id="workspace-navigation"
+        inert={collapsed}
+        className={cn(
+          "flex h-full min-h-0 flex-col overflow-hidden transition-[width] duration-200 ease-out motion-reduce:transition-none",
+          collapsed ? "w-0" : "w-[248px]",
+        )}
+      >
+        <div className="flex min-h-0 w-[248px] flex-1 flex-col border-l border-sidebar-border bg-background">
+          <div className="flex h-[52px] shrink-0 items-center gap-1 px-3">
             <WorkspaceSwitcher
               className="min-w-0 flex-1"
               initialWorkspace={initialWorkspace}
               initialWorkspaces={initialWorkspaces}
             />
-          )}
-        </div>
-        {pathname.split("/")[3] === "roadmap" ? (
-          <RoadmapSearchAction
-            compact={collapsed}
-            className={cn(
-              sidebarSearchClassName,
-              collapsed && "mx-auto flex size-9 justify-center px-0",
+            {pathname.split("/")[3] === "roadmap" ? (
+              <RoadmapSearchAction
+                compact
+                className={sidebarHeaderActionClassName}
+              />
+            ) : (
+              <SearchAction compact className={sidebarHeaderActionClassName} />
             )}
-          />
-        ) : (
-          <SearchAction
-            compact={collapsed}
-            className={cn(
-              sidebarSearchClassName,
-              collapsed && "mx-auto flex size-9 justify-center px-0",
-            )}
-          />
-        )}
-        <div className={cn("mt-4 px-1", collapsed && "px-0")}>
-          <Tooltip open={collapsed ? undefined : false}>
-            <TooltipTrigger asChild>
-              <button
-                type="button"
-                className={cn(
-                  sidebarRowClassName,
-                  "cursor-pointer text-foreground hover:bg-muted dark:hover:bg-white/5",
-                  collapsed &&
-                    "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
-                )}
-                onClick={openCreatePost}
-                aria-label={collapsed ? "Create post" : undefined}
-              >
-                <span className={sidebarLeadSlotClassName}>
-                  <WorkspaceCreateIcon className="size-5 text-neutral-600 transition-colors group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
-                </span>
-                {!collapsed ? (
-                  <span className="relative z-[1] min-w-0 flex-1 truncate text-left transition-colors">
-                    Create Posts
-                  </span>
-                ) : null}
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="right" sideOffset={10} className="text-xs">
-              Create post
-            </TooltipContent>
-          </Tooltip>
-          {boardItem ? (
-            <SidebarItem
-              item={boardItem}
-              pathname={pathname}
-              mutedIcon
-              className="mt-1.5"
-              collapsed={collapsed}
-            />
-          ) : null}
-        </div>
-      </div>
-
-      <div ref={navRef} className="relative flex-1 overflow-x-hidden overflow-y-auto scrollbar-hide">
-        <LayoutGroup id="desktop-sidebar-nav">
-          <AnimatePresence initial={false} mode="popLayout" custom={navDirection}>
-            <motion.div
-              key={navView}
-              custom={navDirection}
-              initial="enter"
-              animate="visible"
-              exit="exit"
-              variants={{
-                enter: (direction: number) => ({ opacity: 0, x: reduceMotion ? 0 : direction * 12 }),
-                visible: {
-                  opacity: 1,
-                  x: 0,
-                  transition: { duration: reduceMotion ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] },
-                },
-                exit: (direction: number) => ({
-                  opacity: 0,
-                  x: reduceMotion ? 0 : direction * -8,
-                  transition: { duration: reduceMotion ? 0 : 0.1, ease: "easeOut" },
-                }),
-              }}
-            >
-              {isSettings || isAccount ? (
-                <>
-                  <SidebarSection
-                    className={collapsed ? "border-t border-sidebar-border" : ""}
-                    collapsed={collapsed}
-                  >
-                    <SidebarItem
-                      item={{
-                        label: "Back",
-                        href: workspaceBase(slug),
-                        icon: ArrowBackIcon,
-                        exact: true,
-                      }}
-                      pathname={pathname}
-                      mutedIcon
-                      indicator={false}
-                      collapsed={collapsed}
-                    />
-                  </SidebarSection>
-                  <SidebarSection
-                    title={isSettings ? "SETTINGS" : "ACCOUNT"}
-                    className={
-                      collapsed ? "border-t border-sidebar-border" : "mt-4"
-                    }
-                    collapsed={collapsed}
-                  >
-                    {isSettings ? (
-                      <SettingsNav collapsed={collapsed} />
-                    ) : (
-                      <AccountNav collapsed={collapsed} />
-                    )}
-                  </SidebarSection>
-                </>
-              ) : (
-                <>
-                  <SidebarSection
-                    title="Requests"
-                    className={collapsed ? "border-t border-sidebar-border" : ""}
-                    collapsed={collapsed}
-                  >
-                    {primaryNav.map((item) => (
-                      <SidebarItem
-                        key={item.label}
-                        item={item}
-                        pathname={pathname}
-                        count={
-                          statusCounts
-                            ? statusCounts[statusKey(item.label)]
-                            : undefined
-                        }
-                        mutedIcon={false}
-                        collapsed={collapsed}
-                      />
-                    ))}
-                  </SidebarSection>
-                  <SidebarSection
-                    title="Workspace"
-                    className={
-                      collapsed ? "border-t border-sidebar-border" : "mt-3"
-                    }
-                    collapsed={collapsed}
-                  >
-                    {workspaceNav.map((item) => (
-                      <SidebarItem
-                        key={item.label}
-                        item={item}
-                        pathname={pathname}
-                        mutedIcon
-                        collapsed={collapsed}
-                      />
-                    ))}
-                  </SidebarSection>
-                </>
+            <SidebarToggle collapsed={collapsed} onToggle={toggleCollapsed} />
+          </div>
+          <div className="shrink-0 px-3 pb-3">
+            <button
+              type="button"
+              onClick={openCreatePost}
+              className={cn(
+                sidebarRowClassName,
+                "mt-3 cursor-pointer text-foreground hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               )}
-            </motion.div>
-          </AnimatePresence>
-        </LayoutGroup>
-      </div>
-
-      <Upgrade
-        slug={slug}
-        collapsed={collapsed}
-        initialPlan={initialWorkspace?.plan}
-        userKey={initialDeviceAccounts?.find((account) => account.isCurrent)?.userId ?? initialUser?.email ?? "default"}
-      />
-
-      <SidebarSection
-        className={cn(
-          collapsed ? "px-1.5 pb-2 pt-2" : "px-3 pb-3 pt-3",
-          collapsed
-            ? "border-t border-sidebar-border"
-            : navScrollable && "border-t border-border/30",
-        )}
-        collapsed={collapsed}
-      >
-        <Timezone
-          className={collapsed ? "mb-2" : "mb-3"}
-          initialTimezone={initialTimezone}
-          initialServerNow={initialServerNow}
-          collapsed={collapsed}
-        />
-        <CreatePostModal
-          open={createPostOpen}
-          onOpenChange={setCreatePostOpen}
-          workspaceSlug={slug}
-          user={initialUser}
-        />
-        {secondaryNav.map((item) => (
-          <SidebarItem
-            key={item.label}
-            item={item}
-            pathname={pathname}
-            mutedIcon
-            indicator={false}
-            collapsed={collapsed}
-          />
-        ))}
-        <div
-          className={cn(
-            "flex items-center gap-1",
-            collapsed && "flex-col gap-2",
-          )}
-        >
-          {collapsed ? (
-            <>
-              <WorkspaceNotificationsAction className="size-9 shrink-0 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.05]" />
-              <UserDropdown
-                className="w-full min-w-0 flex-1"
-                initialUser={initialUser}
-                initialDeviceAccounts={initialDeviceAccounts}
-                collapsed
+            >
+              <span className={sidebarLeadSlotClassName}>
+                <WorkspaceCreateIcon className="size-5 text-muted-foreground" />
+              </span>
+              <span>Create post</span>
+            </button>
+          </div>
+          <nav
+            aria-label={
+              isSettings
+                ? "Workspace settings"
+                : isAccount
+                  ? "Account settings"
+                  : "Workspace navigation"
+            }
+            className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto scrollbar-hide"
+          >
+            <LayoutGroup id="desktop-sidebar-nav">
+              <AnimatePresence initial={false} mode="wait">
+                <motion.div
+                  key={navView}
+                  initial={{ opacity: 0, x: reduceMotion ? 0 : 6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.12 }}
+                >
+                  {isSettings || isAccount ? (
+                    <>
+                      <SidebarSection>
+                        <SidebarItem
+                          item={{
+                            label: "Back to workspace",
+                            href: workspaceBase(slug),
+                            icon: ArrowBackIcon,
+                            exact: true,
+                          }}
+                          pathname={pathname}
+                          mutedIcon
+                          indicator={false}
+                        />
+                      </SidebarSection>
+                      <SidebarSection
+                        title={isSettings ? "Settings" : "Account"}
+                      >
+                        {isSettings ? <SettingsNav /> : <AccountNav />}
+                      </SidebarSection>
+                    </>
+                  ) : (
+                    <>
+                      <SidebarSection title="Requests">
+                        <SidebarItem
+                          item={{
+                            label: "All requests",
+                            href: requestsBase(slug),
+                            icon: WorkspaceFeedbackIcon,
+                            exact: true,
+                          }}
+                          pathname={pathname}
+                          mutedIcon
+                          indicator={false}
+                        />
+                        {primaryNav.map((item) => (
+                          <SidebarItem
+                            key={item.label}
+                            item={item}
+                            pathname={pathname}
+                            count={
+                              statusCounts?.[item.label.trim().toLowerCase()]
+                            }
+                          />
+                        ))}
+                      </SidebarSection>
+                      {boardItem ? (
+                        <SidebarSection title="Workspace" className="mt-2">
+                          <SidebarItem
+                            item={boardItem}
+                            pathname={pathname}
+                            mutedIcon
+                          />
+                        </SidebarSection>
+                      ) : null}
+                    </>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </LayoutGroup>
+            <div className="pb-3">
+              <Upgrade
+                slug={slug}
+                collapsed={false}
+                initialPlan={initialWorkspace?.plan}
+                userKey={
+                  initialDeviceAccounts?.find((account) => account.isCurrent)
+                    ?.userId ??
+                  initialUser?.email ??
+                  "default"
+                }
               />
-            </>
-          ) : (
-            <>
-              <UserDropdown
-                className="min-w-0 flex-1"
-                initialUser={initialUser}
-                initialDeviceAccounts={initialDeviceAccounts}
+            </div>
+          </nav>
+          <div className="shrink-0">
+            <div className="flex h-[52px] items-center px-3">
+              <Timezone
+                className="w-full"
+                initialTimezone={initialTimezone}
+                initialServerNow={initialServerNow}
               />
-              <WorkspaceNotificationsAction className="size-8 shrink-0 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.05]" />
-            </>
-          )}
+            </div>
+          </div>
         </div>
-      </SidebarSection>
+      </div>
+      <CreatePostModal
+        open={createPostOpen}
+        onOpenChange={setCreatePostOpen}
+        workspaceSlug={slug}
+        user={initialUser}
+      />
     </aside>
   );
 }

@@ -4,8 +4,8 @@ import React, { useState, useRef } from "react"
 import MentionList from "./MentionList"
 import { MentionTextarea } from "./MentionTextarea"
 import { Button } from "@featul/ui/components/button"
-import { LoaderIcon } from "@featul/ui/icons/loader"
 import {
+  LoaderIcon,
   ImageIcon,
   LockIcon,
   XMarkIcon,

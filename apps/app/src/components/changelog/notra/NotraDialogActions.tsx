@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@featul/ui/components/button";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { LoaderIcon } from "@/components/global/icons";
 
 type NotraDialogActionsProps = {
   hasStoredConnection: boolean;

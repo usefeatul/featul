@@ -3,8 +3,11 @@
 import { useEffect, useMemo, useState } from "react"
 import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@featul/ui/components/popover"
-import { DropdownIcon } from "@featul/ui/icons/dropdown"
-import { TimezoneIcon as Timezone } from "@/components/global/icons"
+import {
+  DropdownIcon,
+  TimezoneIcon as Timezone,
+} from "@/components/global/icons";
+
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import { SidebarBadge } from "@/components/sidebar/badge"

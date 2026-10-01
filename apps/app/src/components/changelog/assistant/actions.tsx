@@ -1,6 +1,6 @@
 "use client";
 
-import type { AppIcon } from "@/components/global/icons";
+import { type AppIcon } from "@/components/global/icons";
 
 export type AssistantAction = {
   label: string;

@@ -17,12 +17,8 @@ import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import TimezonePicker from "./TimezonePicker"
 import WizardPreview from "./WizardPreview"
-import {
-  CheckIcon,
-  XMarkIcon,
-} from "@/components/global/icons";
+import { CheckIcon, XMarkIcon, LoaderIcon } from "@/components/global/icons";
 
-import { LoaderIcon } from "@featul/ui/icons/loader"
 import { WebsiteFavicon } from "./WebsiteFavicon"
 import {
   isNameValid,

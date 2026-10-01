@@ -6,10 +6,10 @@ import { PopoverList, PopoverSeparator } from "@featul/ui/components/popover";
 import {
   EditIcon,
   TrashIcon,
+  LoaderIcon,
+  EditIcon as PenIcon,
 } from "@/components/global/icons";
-import { LoaderIcon } from "@featul/ui/icons/loader";
 
-import { PenIcon } from "@featul/ui/icons/pen";
 import { useChangelogEntryActions } from "@/hooks/useChangelogEntryActions";
 import { useContextMenuPosition } from "@/hooks/useContextMenuPosition";
 import { ChangelogDeleteDialog } from "./ChangelogDeleteDialog";

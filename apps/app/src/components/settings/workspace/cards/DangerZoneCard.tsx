@@ -14,8 +14,11 @@ import { Input } from "@featul/ui/components/input";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { DangerDeleteIcon as DangerDelete } from "@featul/ui/icons/danger-delete";
-import { ClipboardIcon as Clipboard } from "@/components/global/icons";
+import {
+  DangerDeleteIcon as DangerDelete,
+  ClipboardIcon as Clipboard,
+} from "@/components/global/icons";
+
 
 type Props = {
     slug: string;

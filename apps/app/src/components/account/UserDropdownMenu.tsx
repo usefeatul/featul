@@ -15,10 +15,10 @@ import {
   AccountIcon,
   LogoutIcon,
   PlusIcon,
+  TickIcon,
+  LoaderIcon,
 } from "@/components/global/icons";
 
-import { LoaderIcon } from "@featul/ui/icons/loader";
-import { TickIcon } from "@/components/global/icons";
 import { getInitials } from "@/utils/user";
 import { cn } from "@featul/ui/lib/utils";
 import type { UserDropdownAccount } from "./types";

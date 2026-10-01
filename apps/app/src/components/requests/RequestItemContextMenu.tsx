@@ -8,9 +8,9 @@ import {
   FlagIcon,
   EditIcon,
   Clock,
+  BoardIcon as LayersIcon,
+  TagIcon,
 } from "@/components/global/icons";
-import { LayersIcon } from "@featul/ui/icons/layers";
-import { TagIcon } from "@featul/ui/icons/tag";
 
 import { useRequestItemActions } from "@/hooks/useRequestItemActions";
 import { useRequestTags } from "@/hooks/useRequestTags";

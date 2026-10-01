@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import { DrawerTrigger } from "@featul/ui/components/drawer";
 import type { NavItem } from "../../types/nav";
-import MoreIcon from "@featul/ui/icons/more";
+import { MoreIcon } from "@/components/global/icons";
 
 /** Active nav item via exact href or prefix match. External items never match. */
 function isItemActive(pathname: string, item: NavItem) {

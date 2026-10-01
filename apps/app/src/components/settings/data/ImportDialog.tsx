@@ -6,12 +6,8 @@ import { Button } from "@featul/ui/components/button";
 import { client } from "@featul/api/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import {
-  CsvIcon,
-  Upload,
-  X,
-} from "@/components/global/icons";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { CsvIcon, Upload, X, LoaderIcon } from "@/components/global/icons";
+
 import { motion, AnimatePresence } from "framer-motion";
 
 import {

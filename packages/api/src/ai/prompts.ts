@@ -1,7 +1,4 @@
 import {
-  AI_STREAM_ASK_SYSTEM_PROMPT,
-  AI_STREAM_PATCH_SYSTEM_PROMPT,
-  AI_STREAM_REFINE_SYSTEM_PROMPT,
   AI_STREAM_TAGS_SYSTEM_PROMPT,
   CHANGELOG_BODY_STRUCTURE,
   DETAIL_GUIDANCE,
@@ -10,7 +7,6 @@ import {
 import { formatSourcePostsBlock } from "./sources";
 import type {
   AiAction,
-  AiChatMessage,
   AiDetailLevel,
   AiSourcePost,
   AiTone,
@@ -202,135 +198,6 @@ export function buildBodyStreamPrompt(input: {
   ]
     .filter(Boolean)
     .join("\n\n");
-}
-
-export function buildChatRefineOpenRouterMessages(input: {
-  prompt: string;
-  title?: string;
-  contentMarkdown?: string;
-  workspaceName?: string;
-  sourcePosts?: AiSourcePost[];
-  history?: AiChatMessage[];
-  brandVoice?: string;
-  githubUrls?: string[];
-  availableTagNames?: string[];
-}) {
-  const extra = extraContext(input);
-  const context = [
-    "Apply the user's latest request to this changelog entry.",
-    "Return ONLY the full updated GitHub-flavored Markdown body.",
-    "Make the smallest change needed to satisfy the request.",
-    "Preserve every unaffected heading, paragraph, list item, link, and their order verbatim.",
-    "Do not regenerate, condense, expand, or rephrase unrelated parts of the entry.",
-    "If the request targets one named section, change only that section.",
-    "If they only asked to change the title, keep the body the same.",
-    "You may start with TITLE: a new title.",
-    "Do not suggest or change tags. Tag requests are handled separately and require confirmation.",
-    "Do not include a chat reply or commentary.",
-    extra.brandVoice,
-    extra.feedbackLinks,
-    extra.githubUrls,
-    input.workspaceName ? `Product: ${input.workspaceName}` : "",
-    input.title?.trim() ? `Current title: ${input.title.trim()}` : "",
-    input.contentMarkdown?.trim()
-      ? `Current entry:\n${input.contentMarkdown.trim()}`
-      : "The entry is currently empty.",
-    input.sourcePosts?.length
-      ? `Attached feedback:\n${formatSourcePostsBlock(input.sourcePosts)}`
-      : "",
-  ]
-    .filter(Boolean)
-    .join("\n\n");
-
-  const history = (input.history ?? []).slice(-12).map((message) => ({
-    role: message.role,
-    content: message.content.slice(0, 1500),
-  }));
-
-  return [
-    { role: "system" as const, content: AI_STREAM_REFINE_SYSTEM_PROMPT },
-    { role: "user" as const, content: context },
-    ...history,
-    { role: "user" as const, content: input.prompt.trim() },
-  ];
-}
-
-export function buildChatAskOpenRouterMessages(input: {
-  prompt: string;
-  title?: string;
-  contentMarkdown?: string;
-  workspaceName?: string;
-  sourcePosts?: AiSourcePost[];
-  history?: AiChatMessage[];
-  githubUrls?: string[];
-}) {
-  const extra = extraContext(input);
-  const context = [
-    "The author is asking a question about this draft. Answer in chat. Do not rewrite the entry.",
-    extra.githubUrls,
-    input.workspaceName ? `Product: ${input.workspaceName}` : "",
-    input.title?.trim() ? `Current title: ${input.title.trim()}` : "",
-    input.contentMarkdown?.trim()
-      ? `Current entry:\n${input.contentMarkdown.trim()}`
-      : "The entry is currently empty.",
-    input.sourcePosts?.length
-      ? `Attached feedback:\n${formatSourcePostsBlock(input.sourcePosts)}`
-      : "",
-  ]
-    .filter(Boolean)
-    .join("\n\n");
-
-  const history = (input.history ?? []).slice(-12).map((message) => ({
-    role: message.role,
-    content: message.content.slice(0, 1500),
-  }));
-
-  return [
-    { role: "system" as const, content: AI_STREAM_ASK_SYSTEM_PROMPT },
-    { role: "user" as const, content: context },
-    ...history,
-    { role: "user" as const, content: input.prompt.trim() },
-  ];
-}
-
-export function buildChatPatchOpenRouterMessages(input: {
-  prompt: string;
-  title?: string;
-  contentMarkdown?: string;
-  selectionMarkdown: string;
-  workspaceName?: string;
-  sourcePosts?: AiSourcePost[];
-  history?: AiChatMessage[];
-  brandVoice?: string;
-}) {
-  const extra = extraContext(input);
-  const context = [
-    "Rewrite only the selected excerpt. Return replacement markdown for that excerpt.",
-    extra.brandVoice,
-    input.workspaceName ? `Product: ${input.workspaceName}` : "",
-    input.title?.trim() ? `Current title: ${input.title.trim()}` : "",
-    input.contentMarkdown?.trim()
-      ? `Full entry (for context only):\n${input.contentMarkdown.trim()}`
-      : "",
-    `Selected excerpt to replace:\n${input.selectionMarkdown.trim()}`,
-    input.sourcePosts?.length
-      ? `Attached feedback:\n${formatSourcePostsBlock(input.sourcePosts)}`
-      : "",
-  ]
-    .filter(Boolean)
-    .join("\n\n");
-
-  const history = (input.history ?? []).slice(-8).map((message) => ({
-    role: message.role,
-    content: message.content.slice(0, 800),
-  }));
-
-  return [
-    { role: "system" as const, content: AI_STREAM_PATCH_SYSTEM_PROMPT },
-    { role: "user" as const, content: context },
-    ...history,
-    { role: "user" as const, content: input.prompt.trim() },
-  ];
 }
 
 export function buildChatTagsOpenRouterMessages(input: {

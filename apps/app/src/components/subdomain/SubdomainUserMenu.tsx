@@ -5,9 +5,10 @@ import {
   SettingIcon,
   HomeIcon,
   LogoutIcon,
+  PlusIcon as FillPlusIcon,
 } from "@/components/global/icons";
 
-import { FillPlusIcon } from "@featul/ui/icons/fill-plus"
+
 
 type SubdomainUserMenuProps = {
   themeLabel: string

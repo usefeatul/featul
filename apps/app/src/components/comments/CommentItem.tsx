@@ -22,6 +22,7 @@ import type { CommentData } from "../../types/comment"
 import type { CommentSurface } from "@/lib/comment/shared"
 import { settingsCardInnerClass } from "@/components/settings/global/SectionCard"
 import { cn } from "@featul/ui/lib/utils"
+import { commentComposerBackgroundClass } from "./styles"
 
 interface CommentItemProps {
   comment: CommentData
@@ -186,7 +187,7 @@ export default function CommentItem({
       </div>
 
       {showReplyForm ? (
-        <div className={cn(settingsCardInnerClass, "mt-3")}>
+        <div className={cn(settingsCardInnerClass, commentComposerBackgroundClass, "mt-3")}>
           <CommentForm
             postId={comment.postId}
             parentId={comment.id}

@@ -2,11 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import {
-  Search,
-  X,
-  PanelIcon,
-} from "@/components/global/icons";
+import { Search, X, PanelIcon, LoaderIcon } from "@/components/global/icons";
 
 import { Button } from "@featul/ui/components/button";
 import {
@@ -25,7 +21,7 @@ import {
 } from "@tanstack/react-query";
 import { loadMoreRequests } from "@/lib/requests.actions";
 import FiltersAction from "./actions/FiltersAction";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+
 import { parseRequestFiltersFromSearchParams } from "@/utils/request/filters";
 import { QueueItem } from "./queueitem";
 import { motion } from "framer-motion";

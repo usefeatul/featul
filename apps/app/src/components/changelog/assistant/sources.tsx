@@ -4,11 +4,11 @@ import type { MouseEvent } from "react";
 import {
   CalendarCheck2,
   XMarkIcon,
+  LoaderIcon,
+  GitHubIcon,
 } from "@/components/global/icons";
 import { PopoverList, PopoverListItem } from "@featul/ui/components/popover";
-import { LoaderIcon } from "@featul/ui/icons/loader";
 
-import { GitHubIcon } from "@featul/ui/icons/github";
 import { cn } from "@featul/ui/lib/utils";
 import StatusIcon from "@/components/requests/StatusIcon";
 import type { AiSourcePost } from "../AiSourcePostItem";
