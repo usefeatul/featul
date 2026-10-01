@@ -6,6 +6,14 @@ fall back to replacing the whole draft. Tag suggestions and application also use
 pending tag names supplied as context. Existing unambiguous tag shortcuts still
 apply immediately.
 
+Chat replies use plain, conversational language and match the author's language
+and formality. Small edits get a short, specific response; writing feedback gets
+concrete suggestions. Avoid stock praise, repeated introductions, and routine
+follow-up questions. Chat tone is separate from the draft's voice. The UI preserves
+the model's reply when present and uses brief fallbacks for local tag actions.
+Replies avoid em dashes, using ordinary sentence punctuation instead. Literal
+quotes, code, tag names, and exact edit anchors retain their original text.
+
 ## Model configuration
 
 The default is `anthropic/claude-sonnet-4.6` through the existing

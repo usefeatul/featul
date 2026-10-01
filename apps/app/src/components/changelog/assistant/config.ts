@@ -81,13 +81,12 @@ export function assistantCopy(input: {
   suggestedTags?: string[];
   selectedTagNames?: string[];
 }) {
+  if (input.reply) return input.reply;
   if (input.intent === "ask" || input.intent === "conversation") {
-    return input.reply || "Here is what I noticed.";
+    return "I couldn't finish that response. Please try again.";
   }
   if (input.summaryUpdated) {
-    return input.reply
-      ? `I added this summary:\n\n${input.reply}`
-      : "I added a summary without changing the changelog body.";
+    return "Added the summary.";
   }
   if (input.intent === "tags") {
     if (!input.suggestedTags?.length) {
@@ -95,32 +94,27 @@ export function assistantCopy(input: {
         const selected = input.selectedTagNames
           .map((tag) => `“${tag}”`)
           .join(", ");
-        return `This changelog already has ${selected}. I checked the remaining workspace tags, but I could not find another one that fits closely enough.`;
+        return `This entry already has ${selected}. None of the other tags look like a close fit.`;
       }
-      return "I checked the tags already available in this workspace, but I could not find one that fits this changelog closely enough. Would you like to leave it untagged for now?";
+      return "None of the available tags look like a close fit for this entry.";
     }
     const tags = input.suggestedTags.map((tag) => `“${tag}”`).join(", ");
-    const subject = input.suggestedTags.length === 1 ? "tag" : "tags";
     const pronoun = input.suggestedTags.length === 1 ? "it" : "them";
-    return `I found the existing workspace ${subject} ${tags}, which looks like a good fit for this changelog. Would you like me to add ${pronoun}?`;
+    return `${tags} could fit this entry. Want me to add ${pronoun}?`;
   }
   if (input.intent === "patch") {
-    return (
-      input.reply ||
-      "I have updated only the selected text. Would you like me to make it warmer, shorter, or more technical?"
-    );
+    return "Updated the selected text.";
   }
   if (!input.hadContent && input.sourceCount > 0) {
     const countLabel = `${input.sourceCount} shipped item${input.sourceCount === 1 ? "" : "s"}`;
     return input.title
-      ? `I have drafted “${input.title}” from ${countLabel}. Would you like to refine the tone or level of detail?`
-      : `I have drafted the changelog from ${countLabel}. Would you like to refine the tone or level of detail?`;
+      ? `Drafted “${input.title}” from ${countLabel}.`
+      : `Drafted the entry from ${countLabel}.`;
   }
   if (!input.hadContent) {
     return input.title
-      ? `I have written a draft titled “${input.title}”. Would you like me to refine anything else?`
-      : "I have written a draft in the editor. Would you like me to refine anything else?";
+      ? `Drafted “${input.title}”.`
+      : "The draft is ready in the editor.";
   }
-  if (input.reply) return input.reply;
-  return "I have updated the changelog while keeping the original meaning. Would you like me to refine anything else?";
+  return "Updated the draft.";
 }

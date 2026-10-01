@@ -604,9 +604,9 @@ export function ChangelogAiPanel({
           content:
             removedTags.length > 0
               ? removal.kind === "removeAll"
-                ? "I have removed all tags from this changelog. It is now untagged."
-                : `I have removed ${tagList} from this changelog.`
-              : "This changelog is already untagged, so I have not changed anything.",
+                ? "Removed all tags."
+                : `Removed ${tagList}.`
+              : "This entry is already untagged.",
           effect:
             removedTags.length > 0
               ? `${removedTags.length} tag${removedTags.length === 1 ? "" : "s"} removed`
@@ -633,8 +633,7 @@ export function ChangelogAiPanel({
             {
               id: nextId(),
               role: "assistant",
-              content:
-                "No problem. I will leave the tags unchanged. We can revisit them whenever you are ready.",
+              content: "Okay, I'll leave the tags as they are.",
             },
           ]);
           setPendingTagNames([]);
@@ -652,8 +651,8 @@ export function ChangelogAiPanel({
             role: "assistant",
             content:
               applied.length > 0
-                ? `I have added ${tagList} to this changelog. Would you like help with anything else?`
-                : "Those tags are no longer available in this workspace, so I have not changed anything.",
+                ? `Added ${tagList}.`
+                : "Those tags are no longer available in this workspace.",
             effect:
               applied.length > 0
                 ? `${applied.length} tag${applied.length === 1 ? "" : "s"} added`
