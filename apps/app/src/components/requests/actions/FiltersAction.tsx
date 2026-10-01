@@ -1,5 +1,6 @@
 "use client";
 
+import { TagDot } from "@/components/global/tag";
 import React from "react";
 import StatusIcon from "../StatusIcon";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -486,7 +487,7 @@ export default function FiltersAction({
                   id: item.id,
                   label: item.name,
                   value: item.slug,
-                  icon: <span className="size-1.5 rounded-full bg-primary" style={{ backgroundColor: item.color || undefined }} />,
+                  icon: <TagDot />,
                 }))}
                 selected={tagFilter.selected}
                 isAllSelected={tagFilter.isAllSelected}

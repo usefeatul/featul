@@ -1,5 +1,6 @@
 "use client";
 
+import { TagDot } from "@/components/global/tag";
 import { useState } from "react";
 import BoardPicker from "./meta/BoardPicker";
 import StatusPicker from "./meta/StatusPicker";
@@ -23,7 +24,7 @@ export default function Properties({ post, workspaceSlug, readonly }: Properties
       {canEdit ? <BoardPicker postId={post.id} workspaceSlug={workspaceSlug} value={board} onChange={setBoard} /> : <span className="inline-flex h-8 items-center gap-1.5 rounded-md bg-black/5 px-2.5 text-xs font-medium dark:bg-white/5"><span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />{board.name}</span>}
       {canEdit ? <FlagsPicker postId={post.id} value={meta} onChange={(value) => setMeta((current) => ({ ...current, ...value }))} /> : <RequestFlagReadout flags={meta} className="flex items-center gap-2" />}
       {canEdit ? <TagsPicker showTags workspaceSlug={workspaceSlug} postId={post.id} value={tags} onChange={setTags} /> : null}
-      {!canEdit ? tags.map((tag) => <span key={tag.id} className="inline-flex h-8 items-center gap-1.5 rounded-md bg-black/5 px-2.5 text-xs font-medium dark:bg-white/5"><span className="size-1.5 rounded-full bg-primary" />{tag.name}</span>) : null}
+      {!canEdit ? tags.map((tag) => <span key={tag.id} className="inline-flex h-8 items-center gap-1.5 rounded-md bg-black/5 px-2.5 text-xs font-medium dark:bg-white/5"><TagDot />{tag.name}</span>) : null}
     </div>
   );
 }

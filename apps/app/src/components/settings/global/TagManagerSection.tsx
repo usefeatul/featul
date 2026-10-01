@@ -1,5 +1,6 @@
 "use client";
 
+import { TagDot } from "@/components/global/tag";
 import React from "react";
 import { useQuery, type QueryKey } from "@tanstack/react-query";
 import { MoreVertical } from "@/components/global/icons";
@@ -185,10 +186,7 @@ export function TagManagerSection<T extends ManagedTag>({
                 <TableRow key={tag.id}>
                   <TableCell className="px-4">
                     <span className="inline-flex min-w-0 items-center gap-2.5">
-                      <span
-                        aria-hidden
-                        className="inline-block size-2.5 shrink-0 rounded-full bg-primary"
-                      />
+                      <TagDot className="size-2.5" />
                       <span className="truncate font-medium">{tag.name}</span>
                     </span>
                   </TableCell>

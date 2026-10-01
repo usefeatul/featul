@@ -1,5 +1,6 @@
 "use client"
 
+import { TagDot } from "@/components/global/tag";
 import React from "react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
@@ -117,13 +118,7 @@ function ChangelogItem({
                     )}
                     title={tag.name}
                   >
-                    <span
-                      className="size-1.5 shrink-0 rounded-full bg-primary"
-                      style={
-                        tag.color ? { backgroundColor: tag.color } : undefined
-                      }
-                      aria-hidden
-                    />
+                    <TagDot />
                     <span className="truncate">{tag.name}</span>
                   </span>
                 ))}

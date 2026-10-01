@@ -1,5 +1,6 @@
 "use client";
 
+import { TagDot } from "@/components/global/tag";
 import React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -102,11 +103,7 @@ export function RequestTagPills({
     >
       {visible.map((tag) => (
         <RequestMetaChip key={tag.id} title={tag.name}>
-          <span
-            className="size-1.5 shrink-0 rounded-full bg-primary"
-            style={tag.color ? { backgroundColor: tag.color } : undefined}
-            aria-hidden
-          />
+          <TagDot />
           <span className="min-w-0 truncate">{tag.name}</span>
         </RequestMetaChip>
       ))}

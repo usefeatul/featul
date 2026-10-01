@@ -1,5 +1,6 @@
 "use client";
 
+import { TagDot } from "@/components/global/tag";
 import { useState } from "react";
 import { Button } from "@featul/ui/components/button";
 import { Popover, PopoverContent, PopoverTrigger, PopoverList, PopoverListItem } from "@featul/ui/components/popover";
@@ -56,11 +57,7 @@ export function TagSelector({
                         className={cn(controlClass, "gap-1.5")}
                         onClick={() => toggleTag(tag.id)}
                     >
-                        <span
-                            className="size-1.5 rounded-full bg-primary"
-                            style={tag.color ? { backgroundColor: tag.color } : undefined}
-                            aria-hidden
-                        />
+                        <TagDot />
                         {tag.name}
                         <XMarkIcon className="size-3 text-muted-foreground" />
                     </Button>

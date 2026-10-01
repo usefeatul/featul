@@ -1,3 +1,4 @@
+import { TagDot } from "@/components/global/tag";
 import React from "react"
 import { ACTIVITY_ACTIONS, type ActivityAction } from "@featul/api/activity/actions"
 import StatusIcon from "@/components/requests/StatusIcon"
@@ -81,7 +82,7 @@ function renderInlineTagSummary(tags: TagSummary[]) {
           key={String(tag.id || tag.slug || tag.name)}
           className="inline-flex items-center gap-1.5 rounded-full border border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5 max-w-[120px]"
         >
-          <span className="inline-block size-2 rounded-full bg-primary" />
+          <TagDot className="size-2" />
           <span className="truncate">{tag.name || tag.slug || "tag"}</span>
         </span>
       ))}
@@ -161,14 +162,13 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
 
   if (item.entity === "tag") {
     const label = item.title || item.metadata?.slug || "tag"
-    const color = item.metadata?.color || null
 
     if (item.type === ACTIVITY_ACTIONS.TAG_CREATED) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>created tag</span>
           <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-muted/80 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black px-2 py-0.5 text-sm">
-            {color ? <span className="inline-block size-2 rounded-full" style={{ backgroundColor: color }} /> : null}
+            <TagDot className="size-2" />
             <span className="truncate max-w-[160px]">{label}</span>
           </span>
         </span>
@@ -189,14 +189,13 @@ export function MemberActivityDescription({ item }: { item: ActivityItem }) {
 
   if (item.entity === "changelog_tag") {
     const label = item.title || item.metadata?.slug || "tag"
-    const color = item.metadata?.color || null
 
     if (item.type === ACTIVITY_ACTIONS.CHANGELOG_TAG_CREATED) {
       return (
         <span className="flex items-center gap-2 min-w-0">
           <span>created changelog tag</span>
           <span className="inline-flex items-center gap-2 rounded-full border border-border/70 ring-1 ring-border/60 ring-offset-1 ring-offset-white dark:ring-offset-black bg-muted/80 px-2 py-0.5 text-sm">
-            {color ? <span className="inline-block size-2 rounded-full" style={{ backgroundColor: color }} /> : null}
+            <TagDot className="size-2" />
             <span className="truncate max-w-[160px]">{label}</span>
           </span>
         </span>
