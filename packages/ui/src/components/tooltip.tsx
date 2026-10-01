@@ -91,14 +91,15 @@ function TooltipContent({
 				<BaseTooltip.Popup
 					data-slot="tooltip-content"
 					className={cn(
-						"overflow-hidden rounded-md border border-border/60 bg-white text-zinc-100 shadow-sm dark:border-white/10 dark:bg-black dark:text-zinc-900",
+						"overflow-hidden rounded-lg border border-[#444444] border-t-[#666666] border-b-[#181818] bg-[#3a3a3a] text-zinc-100 dark:border-[#d4d4d4] dark:border-t-white dark:border-b-[#bcbcbc] dark:bg-[#f5f5f5] dark:text-zinc-900",
 						"w-fit max-w-[min(20rem,calc(100vw-1rem))] p-px outline-hidden origin-[var(--transform-origin)] transition-[opacity,transform] duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 motion-reduce:transition-none",
 					)}
 					{...props}
 				>
 					<div
 						className={cn(
-							"rounded-md bg-[#252525] px-2 py-1 text-xs font-medium leading-5 text-inherit ring-1 ring-white/10 whitespace-normal wrap-break-word dark:bg-[#f4f4f2] dark:ring-black/[0.08]",
+							"rounded-[6px] bg-[#292929] px-2.5 py-1 text-xs font-normal leading-5 text-inherit whitespace-normal wrap-break-word dark:bg-[#eeeeee]",
+							"bg-[linear-gradient(180deg,#363636_0%,#252525_100%)] dark:bg-[linear-gradient(180deg,#dedede_0%,#f4f4f4_100%)]",
                             "[&_kbd]:border-white/15 [&_kbd]:bg-white/10 [&_kbd]:text-zinc-200 dark:[&_kbd]:border-black/10 dark:[&_kbd]:bg-black/[0.06] dark:[&_kbd]:text-zinc-600",
 							className,
 						)}

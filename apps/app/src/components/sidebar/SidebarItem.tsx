@@ -57,14 +57,14 @@ function SidebarItem({
   );
   const content = (
     <>
-      {hovered ? (
+      {hovered && !(collapsed && active) ? (
         <motion.span
           layoutId="sidebar-hover-pill"
           className="absolute inset-0 z-0 rounded-md bg-sidebar-accent/70"
           transition={pillTransition(reduceMotion)}
         />
       ) : null}
-      {indicator && active ? (
+      {indicator && active && !collapsed ? (
         <motion.span
           layoutId="sidebar-active-pill"
           className="absolute inset-0 z-0 rounded-md bg-sidebar-accent dark:bg-white/[0.07]"
