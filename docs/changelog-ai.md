@@ -2,8 +2,9 @@
 
 Chat uses the current editor snapshot and the last 20 conversation messages to
 choose between a reply, a clarification, and an edit. Ordinary messages no longer
-fall back to replacing the whole draft. Explicit workspace-tag operations keep
-the existing tag suggestion flow.
+fall back to replacing the whole draft. Tag suggestions and application also use the conversation tool, with current and
+pending tag names supplied as context. Existing unambiguous tag shortcuts still
+apply immediately.
 
 ## Model configuration
 
@@ -29,6 +30,12 @@ per-token cost than the previous Flash default.
   Each body edit becomes a local editor transaction, preserving unrelated rich
   text attributes. If markdown positions cannot be mapped safely, it rejects the
   edit. Selected excerpts are replaced only in their captured range.
+- Both the picker and AI context read the workspace `tag` table through
+  `fetchWorkspaceChangelogTags`; they do not use the legacy `board.changelogTags`
+  field as the editor catalog.
+- Tag actions resolve exact existing workspace names on the server and tag IDs in
+  the editor. Suggestions do not mutate the selection. Applied tag changes retain
+  undo and mark the entry dirty for the normal save flow.
 - Title and summary changes are explicit. An opening summary belongs in the body;
   the separate summary field changes only when requested.
 - Tool calls apply after validation, never while partial arguments are streaming. Undo
@@ -42,7 +49,7 @@ requests when changing models or prompts.
 ## Verification
 
 ```sh
-bun test packages/api/src/ai/edits.test.ts packages/api/src/services/openrouter.test.ts apps/app/tests/changelog.test.ts
+bun test packages/api/src/ai/edits.test.ts packages/api/src/ai/sources.test.ts packages/api/src/services/openrouter.test.ts apps/app/tests/changelog.test.ts
 bunx --no-install tsc --noEmit -p packages/api
 bunx --no-install tsc --noEmit -p apps/app
 ```

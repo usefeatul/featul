@@ -17,6 +17,12 @@ export const conversationResponseSchema = z
     selection: z.string().max(8000).nullable(),
     title: z.string().min(1).max(256).nullable(),
     summary: z.string().max(512).nullable(),
+    tags: z.array(z.string().min(1).max(64)).max(30).nullable().optional(),
+    suggestedTags: z
+      .array(z.string().min(1).max(64))
+      .max(4)
+      .nullable()
+      .optional(),
   })
   .strict();
 
@@ -62,6 +68,8 @@ export function resolveConversationResponse(
     title?: string;
     summary?: string;
     readOnly?: boolean;
+    availableTagNames?: string[];
+    selectedTagNames?: string[];
   },
 ) {
   const parsed = conversationResponseSchema.safeParse(
@@ -78,6 +86,7 @@ export function resolveConversationResponse(
   const original = input.contentMarkdown ?? "";
   const hasBodyEdit = response.edits.length > 0 || response.draft !== null;
   const hasSelectionEdit = response.selection !== null;
+  const hasTagEdit = response.tags != null;
   if (
     (response.draft !== null && (original.trim() || response.edits.length)) ||
     (hasSelectionEdit && (!input.selectionMarkdown || hasBodyEdit)) ||
@@ -86,14 +95,43 @@ export function resolveConversationResponse(
       (hasBodyEdit ||
         hasSelectionEdit ||
         response.title !== null ||
-        response.summary !== null))
+        response.summary !== null ||
+        hasTagEdit)) ||
+    (hasTagEdit && response.suggestedTags?.length)
   )
     throw new Error(INVALID_EDIT_MESSAGE);
 
   const contentMarkdown =
     response.draft ?? applyMarkdownEdits(original, response.edits);
+  const availableTags = new Map(
+    (input.availableTagNames ?? []).map((name) => [
+      name.trim().toLowerCase(),
+      name,
+    ]),
+  );
+  const resolveTags = (names: string[]) => [
+    ...new Set(
+      names.map((name) => {
+        const existing = availableTags.get(name.trim().toLowerCase());
+        if (!existing) throw new Error(INVALID_EDIT_MESSAGE);
+        return existing;
+      }),
+    ),
+  ];
+  const tagNames = hasTagEdit ? resolveTags(response.tags!) : undefined;
+  const currentTags = new Set(
+    (input.selectedTagNames ?? []).map((name) => name.trim().toLowerCase()),
+  );
+  const tagsChanged =
+    tagNames !== undefined &&
+    (tagNames.length !== currentTags.size ||
+      tagNames.some((name) => !currentTags.has(name.toLowerCase())));
   return {
     reply: response.reply,
+    tagNames: tagsChanged ? tagNames : undefined,
+    suggestedTags: response.suggestedTags?.length
+      ? resolveTags(response.suggestedTags)
+      : undefined,
     edits:
       response.edits.length && contentMarkdown !== original
         ? response.edits

@@ -114,6 +114,8 @@ export const aiAssistSchema = z
     selectionMarkdown: z.string().min(1).max(8000).optional(),
     githubUrls: z.array(z.string().url().max(500)).max(10).optional(),
     availableTagNames: z.array(z.string().min(1).max(40)).max(30).optional(),
+    selectedTagNames: z.array(z.string().min(1).max(64)).max(30).optional(),
+    pendingTagNames: z.array(z.string().min(1).max(64)).max(4).optional(),
   })
   .superRefine((val, ctx) => {
     if ((val.action === "prompt" || val.action === "chat") && !val.prompt) {

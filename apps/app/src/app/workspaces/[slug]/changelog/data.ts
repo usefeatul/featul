@@ -1,4 +1,5 @@
-import { db, workspace, board, changelogEntry, tag, user } from "@featul/db";
+import { db, workspace, board, changelogEntry, user } from "@featul/db";
+import { fetchWorkspaceChangelogTags } from "@featul/api/changelog/tags";
 import { and, eq, desc, sql } from "drizzle-orm";
 import type { JSONContent } from "@featul/editor";
 
@@ -39,23 +40,7 @@ export interface ChangelogListData {
 
 /** All workspace tags, name-sorted, for changelog pickers. */
 async function getWorkspaceTags(workspaceId: string): Promise<WorkspaceTag[]> {
-    const tags = await db
-        .select({
-            id: tag.id,
-            name: tag.name,
-            slug: tag.slug,
-            color: tag.color,
-        })
-        .from(tag)
-        .where(eq(tag.workspaceId, workspaceId))
-        .orderBy(tag.name);
-
-    return tags.map((t) => ({
-        id: t.id,
-        name: t.name,
-        slug: t.slug,
-        color: t.color || null,
-    }));
+    return fetchWorkspaceChangelogTags({ db, workspaceId });
 }
 
 /** Paginated changelog entries with resolved tags; null if no changelog board. */

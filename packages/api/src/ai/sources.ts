@@ -5,8 +5,11 @@ import {
   post,
   postUpdate,
   workspace,
-} from "@featul/db";
-import { getChangelogTags } from "../changelog/types";
+} from "@featul/db/schema";
+import {
+  fetchWorkspaceChangelogTags,
+  type WorkspaceTagDatabase,
+} from "../changelog/tags";
 import { SHIPPABLE_ROADMAP_STATUSES } from "./constants";
 import type { AiSourcePost } from "./types";
 
@@ -215,25 +218,26 @@ export async function getWorkspaceNameForAi(params: {
 }
 
 export async function fetchAiBrandContext(params: {
-  db: any;
+  db: WorkspaceTagDatabase;
   workspaceId: string;
 }) {
-  const [changelogBoard] = (await params.db
-    .select({
-      id: board.id,
-      changelogTags: board.changelogTags,
-    })
-    .from(board)
-    .where(
-      and(
-        eq(board.workspaceId, params.workspaceId),
-        eq(board.systemType, "changelog"),
-      ),
-    )
-    .limit(1)) as Array<{ id: string; changelogTags: unknown }>;
+  const [[changelogBoard], tags] = await Promise.all([
+    params.db
+      .select({ id: board.id })
+      .from(board)
+      .where(
+        and(
+          eq(board.workspaceId, params.workspaceId),
+          eq(board.systemType, "changelog"),
+        ),
+      )
+      .limit(1),
+    fetchWorkspaceChangelogTags(params),
+  ]);
+  const tagNames = tags.map((item) => item.name);
 
   if (!changelogBoard) {
-    return { brandVoice: "", tagNames: [] as string[] };
+    return { brandVoice: "", tagNames };
   }
 
   const entries = (await params.db
@@ -258,8 +262,7 @@ export async function fetchAiBrandContext(params: {
 
   const brandVoice = entries
     .map((entry) => {
-      const sample =
-        entry.summary?.trim() || tiptapToPlain(entry.content, 500);
+      const sample = entry.summary?.trim() || tiptapToPlain(entry.content, 500);
       return [`Title: ${entry.title}`, sample].filter(Boolean).join("\n");
     })
     .filter(Boolean)
@@ -267,9 +270,7 @@ export async function fetchAiBrandContext(params: {
 
   return {
     brandVoice,
-    tagNames: getChangelogTags(changelogBoard.changelogTags).map(
-      (tag) => tag.name,
-    ),
+    tagNames,
   };
 }
 

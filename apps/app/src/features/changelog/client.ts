@@ -22,6 +22,8 @@ export type ChangelogAiStreamInput = {
   selectionMarkdown?: string;
   githubUrls?: string[];
   availableTagNames?: string[];
+  selectedTagNames?: string[];
+  pendingTagNames?: string[];
 };
 
 type StreamHandlers = {

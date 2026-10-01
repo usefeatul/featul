@@ -1,4 +1,11 @@
 import { withSentryConfig } from '@sentry/nextjs';
+import { assertProductionConfiguration } from '@featul/auth/configuration';
+
+// Reject incomplete production deployments before Vercel replaces the live app.
+if (process.env.VERCEL_ENV === 'production' || process.env.VALIDATE_PRODUCTION_ENV === 'true') {
+  assertProductionConfiguration();
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     async redirects() {

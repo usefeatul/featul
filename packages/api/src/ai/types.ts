@@ -52,6 +52,7 @@ export type ChangelogAiStreamEvent =
       selectionMarkdown?: string;
       edits?: Array<{ before: string; after: string }>;
       suggestedTags?: string[];
+      tagNames?: string[];
     }
   | { type: "error"; message: string };
 

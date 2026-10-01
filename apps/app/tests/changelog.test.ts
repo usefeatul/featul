@@ -6,6 +6,7 @@ import { Markdown } from "@tiptap/markdown";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
 import { applyEditorEdits } from "../src/components/editor/patch";
+import { resolveTagSelection } from "../src/components/changelog/assistant/tags";
 import { getRetryPrompt } from "../src/components/changelog/assistant/retry";
 import { detectChatIntent } from "../src/components/changelog/ai/intent";
 import {
@@ -302,4 +303,22 @@ test("retry uses the request associated with the selected error", () => {
   );
   expect(getRetryPrompt(messages, "second-error")).toBe("Add UI and Design");
   expect(getRetryPrompt(messages, "missing")).toBeNull();
+});
+
+test("resolves conversational tag actions to the IDs used by the editor", () => {
+  const available = [
+    { id: "guide-id", name: "Guide" },
+    { id: "bugs-id", name: "Bugs" },
+    { id: "ui-id", name: "UI" },
+  ];
+  expect(resolveTagSelection(["Guide", "Bugs", "UI"], available)).toEqual([
+    "guide-id",
+    "bugs-id",
+    "ui-id",
+  ]);
+  expect(resolveTagSelection(["ui", "UI"], available)).toEqual(["ui-id"]);
+  expect(resolveTagSelection([], available)).toEqual([]);
+  expect(() =>
+    resolveTagSelection(["Guide", "Deleted tag"], available),
+  ).toThrow("available tags changed");
 });

@@ -131,3 +131,79 @@ describe("conversational editing", () => {
     ).toThrow();
   });
 });
+
+describe("conversation tag actions", () => {
+  const context = {
+    contentMarkdown: draft,
+    availableTagNames: ["Guide", "Bugs", "UI", "Design"],
+    selectedTagNames: ["Design"],
+  };
+
+  test("applies existing tags without replacing content or metadata", () => {
+    const result = resolveConversationResponse(
+      response({
+        reply: "Added all three tags.",
+        tags: ["Design", "Guide", "Bugs", "UI"],
+      }),
+      context,
+    );
+    expect(result.tagNames).toEqual(["Design", "Guide", "Bugs", "UI"]);
+    expect(result.contentMarkdown).toBeUndefined();
+    expect(result.title).toBeUndefined();
+    expect(result.summary).toBeUndefined();
+    expect(result.edits).toBeUndefined();
+  });
+
+  test("suggestions do not apply tags", () => {
+    const result = resolveConversationResponse(
+      response({ suggestedTags: ["Guide", "Bugs", "UI"] }),
+      context,
+    );
+    expect(result.suggestedTags).toEqual(["Guide", "Bugs", "UI"]);
+    expect(result.tagNames).toBeUndefined();
+    expect(result.contentMarkdown).toBeUndefined();
+  });
+
+  test("resolves exact workspace names and deduplicates without substring matching", () => {
+    expect(
+      resolveConversationResponse(
+        response({ tags: [" guide ", "GUIDE", "ui"] }),
+        context,
+      ).tagNames,
+    ).toEqual(["Guide", "UI"]);
+    expect(() =>
+      resolveConversationResponse(response({ tags: ["Guidance"] }), context),
+    ).toThrow();
+    expect(() =>
+      resolveConversationResponse(
+        response({ suggestedTags: ["Unknown"] }),
+        context,
+      ),
+    ).toThrow();
+  });
+
+  test("supports removing all tags and suppresses unchanged selections", () => {
+    expect(
+      resolveConversationResponse(response({ tags: [] }), context).tagNames,
+    ).toEqual([]);
+    expect(
+      resolveConversationResponse(response({ tags: ["design"] }), context)
+        .tagNames,
+    ).toBeUndefined();
+  });
+
+  test("rejects tag changes in read-only mode and mixed application/suggestions", () => {
+    expect(() =>
+      resolveConversationResponse(response({ tags: ["UI"] }), {
+        ...context,
+        readOnly: true,
+      }),
+    ).toThrow();
+    expect(() =>
+      resolveConversationResponse(
+        response({ tags: ["UI"], suggestedTags: ["Bugs"] }),
+        context,
+      ),
+    ).toThrow();
+  });
+});
