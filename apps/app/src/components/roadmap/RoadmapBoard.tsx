@@ -75,7 +75,7 @@ export default function RoadmapBoard({
   return (
     <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col bg-background">
       {hasActiveFilters ? (
-        <p className="shrink-0 border-b border-border/30 px-4 py-2 text-xs text-accent dark:border-white/5">
+        <p className="shrink-0 border-b border-border/30 px-4 py-2 text-xs text-accent sm:px-6 dark:border-white/5">
           Showing {totalVisible} of {totalItems} items
         </p>
       ) : null}
@@ -91,7 +91,7 @@ export default function RoadmapBoard({
         />
         <div
           ref={boardScrollRef}
-          className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 touch-pan-x snap-x snap-mandatory scroll-px-3 overflow-x-auto bg-transparent px-3 py-2 md:snap-none"
+          className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 touch-pan-x snap-x snap-mandatory scroll-px-4 overflow-x-auto overflow-y-hidden overscroll-contain bg-transparent px-4 py-2 sm:scroll-px-6 sm:px-6 md:snap-none"
         >
           <div className="flex h-full min-h-0 min-w-max items-start gap-2 md:min-w-full md:flex-row">
             {(ROADMAP_STATUSES as readonly string[]).map((s) => {
@@ -104,6 +104,7 @@ export default function RoadmapBoard({
                     "flex max-h-full min-h-0 w-[calc(100vw-2rem)] max-w-[360px] shrink-0 snap-start self-start overflow-hidden md:w-auto md:max-w-none md:snap-center",
                     ROADMAP_COLUMN_WIDTH_TRANSITION_CLASS,
                     roadmapColumnWidthClass(!!collapsedByStatus[s]),
+                    collapsedByStatus[s] && "h-full",
                   )}
                 >
                   <RoadmapColumn

@@ -66,6 +66,7 @@ export default function RoadmapColumn({
       ref={setNodeRef}
       className={cn(
         "flex max-h-full min-h-0 w-full flex-col overflow-hidden rounded-lg bg-muted/55 text-foreground transition-colors duration-200 dark:bg-black/25",
+        collapsed && "h-full",
         isOver && "bg-green-500/[0.025]",
       )}
     >
