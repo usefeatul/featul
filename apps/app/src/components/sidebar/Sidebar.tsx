@@ -171,7 +171,7 @@ export default function Sidebar({
               onClick={openCreatePost}
               className={cn(
                 sidebarRowClassName,
-                "mt-3 cursor-pointer text-foreground hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "h-9 cursor-pointer py-0 text-foreground hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               )}
             >
               <span className={sidebarLeadSlotClassName}>
@@ -230,6 +230,7 @@ export default function Sidebar({
                             icon: WorkspaceFeedbackIcon,
                             exact: true,
                           }}
+                          className="h-9 py-0"
                           pathname={pathname}
                           mutedIcon
                           indicator={false}
