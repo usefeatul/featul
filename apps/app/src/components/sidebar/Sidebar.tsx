@@ -175,7 +175,7 @@ export default function Sidebar({
               )}
             >
               <span className={sidebarLeadSlotClassName}>
-                <WorkspaceCreateIcon className="size-5 text-muted-foreground" />
+                <WorkspaceCreateIcon className="size-5 text-neutral-600 transition-colors duration-200 group-hover:text-primary dark:text-neutral-300 dark:group-hover:text-primary" />
               </span>
               <span>Create post</span>
             </button>

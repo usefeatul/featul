@@ -80,7 +80,7 @@ export function SelectionToolbar({
               variant="card"
               size="sm"
               className={cn(
-                "h-8 gap-1.5 rounded-sm px-3 bg-destructive text-white border-destructive/70 hover:bg-destructive/90 hover:text-white dark:bg-destructive/80 dark:hover:bg-destructive/70",
+                "h-8 gap-1.5 rounded-sm px-3 py-0 bg-destructive text-white border-destructive/70 hover:bg-destructive/90 hover:text-white dark:bg-destructive/80 dark:hover:bg-destructive/70",
                 !hasSelection && "pointer-events-none opacity-40",
               )}
               disabled={!hasSelection || isPending}

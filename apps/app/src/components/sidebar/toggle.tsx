@@ -32,7 +32,7 @@ export default function SidebarToggle({
           aria-expanded={!collapsed}
           aria-controls="workspace-navigation"
           aria-keyshortcuts={SIDEBAR_ARIA_SHORTCUTS}
-          className={cn(sidebarHeaderActionClassName, className)}
+          className={cn(sidebarHeaderActionClassName, "cursor-pointer", className)}
         >
           <SidebarPanelIcon className="size-5" />
         </button>
