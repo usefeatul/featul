@@ -35,7 +35,7 @@ export function Wordmark() {
           clipPath="url(#footer-wordmark-letters)"
         >
           <div className="relative h-full w-full overflow-hidden">
-            <DitherBackdrop className="z-0" />
+            <DitherBackdrop multicolor className="z-0" />
           </div>
         </foreignObject>
       </svg>

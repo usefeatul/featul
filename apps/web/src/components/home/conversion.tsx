@@ -50,7 +50,7 @@ export function ConversionHero() {
             {steps.map(({ number, icon: Icon, label, title, body }) => (
               <article key={number} className="p-6 sm:p-7">
                 <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-primary">
+                  <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
                     <Icon aria-hidden className="size-4" />
                     {label}
                   </span>

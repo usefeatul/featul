@@ -84,7 +84,7 @@ export default function Access() {
                     key={item.name}
                     className="flex h-full flex-col border-b border-r border-border p-6 sm:p-7"
                   >
-                    <h3 className="inline-flex items-center gap-2 text-sm font-medium text-primary">
+                    <h3 className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
                       <Icon aria-hidden className="size-4 shrink-0" />
                       {item.name}
                     </h3>

@@ -18,12 +18,45 @@ const accents: { x: number; y: number; color: Color }[] = [
   { x: 1, y: 1, color: [240, 172, 201] },
 ];
 
-function paint(canvas: HTMLCanvasElement, width: number, height: number) {
+// Large folded facets give the hero and wordmark a shared geometric texture.
+const facetColors: Color[] = [
+  [77, 150, 232],
+  [92, 180, 203],
+  [139, 150, 215],
+  [54, 113, 192],
+];
+const facetOrder = [0, 1, 0, 2, 1, 0, 0, 3, 2, 0, 1, 0];
+
+function geometricColor(u: number, v: number, threshold: number): Color {
+  const column = Math.floor(u * 3);
+  const row = Math.floor(v * 2);
+  const x = u * 3 - column;
+  const y = v * 2 - row;
+  const flipped = (column + row) % 2 === 1;
+  const diagonal = flipped ? 1 - x : x;
+  const upper = y < diagonal;
+  const face = (row * 3 + column) * 2 + (upper ? 0 : 1);
+  const color = facetColors[facetOrder[face]!]!;
+  const distance = Math.abs(y - diagonal);
+  const density = Math.min(0.95, 0.15 + distance * 0.8);
+  const light = density > threshold;
+  return color.map((channel) =>
+    light ? channel + (255 - channel) * 0.3 : channel * 0.92,
+  ) as Color;
+}
+
+function paint(
+  canvas: HTMLCanvasElement,
+  width: number,
+  height: number,
+  multicolor: boolean,
+) {
   const ctx = canvas.getContext("2d");
   if (!ctx || ctx.isContextLost?.() || width < 1 || height < 1) return false;
 
-  const cols = Math.min(960, Math.max(4, Math.round(width / 3)));
-  const rows = Math.min(600, Math.max(4, Math.round(height / 3)));
+  const cell = multicolor ? 2 : 3;
+  const cols = Math.min(960, Math.max(4, Math.round(width / cell)));
+  const rows = Math.min(600, Math.max(4, Math.round(height / cell)));
   canvas.width = cols;
   canvas.height = rows;
   const pixels = ctx.createImageData(cols, rows);
@@ -32,18 +65,22 @@ function paint(canvas: HTMLCanvasElement, width: number, height: number) {
     const v = (y + 0.5) / rows;
     for (let x = 0; x < cols; x++) {
       const u = (x + 0.5) / cols;
+      const threshold = BAYER4[y & 3]?.[x & 3] ?? 0.5;
       const level = cloudLevel(u, v);
       const lower = Math.floor(level);
-      const threshold = BAYER4[y & 3]?.[x & 3] ?? 0.5;
-      const color = blues[level - lower > threshold ? lower + 1 : lower]!;
+      const color = multicolor
+        ? geometricColor(u, v, threshold)
+        : blues[level - lower > threshold ? lower + 1 : lower]!;
       let [red, green, blue] = color;
 
-      for (const accent of accents) {
-        const amount =
-          cloudFalloff(u, v, accent.x, accent.y, 0.28, 0.32) * 0.32;
-        red += (accent.color[0] - red) * amount;
-        green += (accent.color[1] - green) * amount;
-        blue += (accent.color[2] - blue) * amount;
+      if (!multicolor) {
+        for (const accent of accents) {
+          const amount =
+            cloudFalloff(u, v, accent.x, accent.y, 0.28, 0.32) * 0.32;
+          red += (accent.color[0] - red) * amount;
+          green += (accent.color[1] - green) * amount;
+          blue += (accent.color[2] - blue) * amount;
+        }
       }
 
       const index = (y * cols + x) * 4;
@@ -57,7 +94,7 @@ function paint(canvas: HTMLCanvasElement, width: number, height: number) {
   return true;
 }
 
-export function DitherClouds() {
+export function DitherClouds({ multicolor = false }: { multicolor?: boolean }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -69,7 +106,7 @@ export function DitherClouds() {
     const render = () => {
       frame = 0;
       const bounds = wrap.getBoundingClientRect();
-      paint(canvas, bounds.width, bounds.height);
+      paint(canvas, bounds.width, bounds.height, multicolor);
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(render);
@@ -93,7 +130,7 @@ export function DitherClouds() {
       canvas.removeEventListener("contextlost", onContextLost);
       canvas.removeEventListener("contextrestored", schedule);
     };
-  }, []);
+  }, [multicolor]);
 
   return (
     <div

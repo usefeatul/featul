@@ -9,7 +9,16 @@ const cloudFields = [
   "radial-gradient(ellipse at 28% 90%, #9acefc 0%, transparent 38%)",
 ].join(", ");
 
-export function DitherBackdrop({ className }: { className?: string }) {
+const colorfulFields =
+  "conic-gradient(from 45deg at 50% 50%, #4d96e8 0deg 90deg, #5cb4cb 90deg 180deg, #3671c0 180deg 270deg, #8b96d7 270deg 360deg)";
+
+export function DitherBackdrop({
+  className,
+  multicolor = false,
+}: {
+  className?: string;
+  multicolor?: boolean;
+}) {
   return (
     <div
       aria-hidden
@@ -17,9 +26,9 @@ export function DitherBackdrop({ className }: { className?: string }) {
         "pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-primary",
         className,
       )}
-      style={{ backgroundImage: cloudFields }}
+      style={{ backgroundImage: multicolor ? colorfulFields : cloudFields }}
     >
-      <DitherClouds />
+      <DitherClouds multicolor={multicolor} />
     </div>
   );
 }

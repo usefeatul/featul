@@ -10,6 +10,7 @@ import {
 } from "@/components/shared/cta";
 import { HotkeyLink } from "../global/hotkey";
 import { LiveDemo } from "../global/demo";
+import { DitherBackdrop } from "./backdrop";
 
 export default function CTA() {
   return (
@@ -20,9 +21,9 @@ export default function CTA() {
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
           <div
-            className="flex min-h-96 flex-col overflow-hidden rounded-xl border border-border bg-card bg-cover bg-center bg-no-repeat px-6 pb-6 pt-12 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:px-7 sm:pb-7 sm:pt-16"
-            style={{ backgroundImage: "url(/image/sky.PNG)" }}
+            className="relative isolate flex min-h-96 flex-col overflow-hidden rounded-xl border border-border bg-card px-6 pb-6 pt-12 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:px-7 sm:pb-7 sm:pt-16"
           >
+            <DitherBackdrop className="opacity-60 [mask-image:linear-gradient(to_right,rgba(0,0,0,0.3),black)]" />
             <h2 className="font-heading max-w-lg text-balance text-xl font-medium text-foreground sm:max-w-2xl sm:text-2xl lg:text-3xl">
               <span>Your next great feature</span>{" "}
               <span className="text-foreground/80">starts with listening.</span>

@@ -28,7 +28,7 @@ export default function Home() {
   );
 
   return (
-    <main className="min-h-screen overflow-x-clip">
+    <main data-page="home" className="min-h-screen overflow-x-clip">
       <HomeScrollMemory />
       <script
         id="home-faq-jsonld"

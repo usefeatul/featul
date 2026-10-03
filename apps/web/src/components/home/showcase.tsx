@@ -58,14 +58,14 @@ export function Showcase() {
       className="relative isolate mt-3 sm:mt-4"
       data-component="Showcase"
     >
-      <DitherBackdrop className="top-16 sm:top-0" />
+      <DitherBackdrop multicolor className="top-16 sm:top-0" />
       <svg
         aria-hidden
-        viewBox="0 0 1200 56"
+        viewBox="0 0 720 56"
         preserveAspectRatio="none"
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 hidden h-14 w-full fill-background sm:block"
+        className="pointer-events-none absolute left-1/2 top-0 -z-10 hidden h-14 w-full max-w-[720px] -translate-x-1/2 fill-background sm:block"
       >
-        <path d="M180 0C210 0 210 56 250 56H950C990 56 990 0 1020 0Z" />
+        <path d="M0 0C40 0 40 56 96 56H624C680 56 680 0 720 0Z" />
       </svg>
       <Tabs.List
         aria-label="Explore Featul"
