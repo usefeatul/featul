@@ -13,49 +13,13 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Style the native home scrollbar so scrolling and dragging stay browser-native. */
-@media (forced-colors: none) {
-  html:has(main[data-page="home"]) {
-    scrollbar-width: thin;
-    scrollbar-color: color-mix(in oklab, var(--primary) 55%, var(--muted)) transparent;
-  }
+/* The enhanced home scrollbar overlays the page without reserving a gutter. */
+html[data-home-scrollbar] {
+  scrollbar-width: none;
+}
 
-  @supports selector(::-webkit-scrollbar) {
-    html:has(main[data-page="home"]) {
-      scrollbar-width: auto;
-      scrollbar-color: auto;
-    }
-
-    html:has(main[data-page="home"])::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    html:has(main[data-page="home"])::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    html:has(main[data-page="home"])::-webkit-scrollbar-thumb {
-      min-height: 40px;
-      border: 2px solid transparent;
-      border-radius: 999px;
-      background: color-mix(in oklab, var(--primary) 55%, var(--muted));
-      background-clip: padding-box;
-    }
-
-    html:has(main[data-page="home"])::-webkit-scrollbar-thumb:hover,
-    html:has(main[data-page="home"])::-webkit-scrollbar-thumb:active {
-      background-color: var(--primary);
-    }
-
-    html:has(main[data-page="home"])::-webkit-scrollbar-button {
-      display: none;
-    }
-
-    html:has(main[data-page="home"])::-webkit-scrollbar-corner {
-      background: transparent;
-    }
-  }
+html[data-home-scrollbar]::-webkit-scrollbar {
+  display: none;
 }
 
 /* Keep marketing pages anchored when scrolling reaches the footer. */
