@@ -36,3 +36,49 @@ export function cloudLevel(u: number, v: number) {
     0.12 * Math.sin(u * 18 + v * 9) * Math.sin(v * 12 - u * 7);
   return Math.max(0, Math.min(1.999, 0.6 + field * 1.7));
 }
+
+type Color = [number, number, number];
+
+const blues: Color[] = [
+  [45, 114, 207],
+  [77, 150, 232],
+  [177, 223, 255],
+];
+const accents: { x: number; y: number; color: Color }[] = [
+  { x: 0, y: 0, color: [188, 169, 239] },
+  { x: 1, y: 0, color: [249, 195, 146] },
+  { x: 0, y: 1, color: [166, 223, 192] },
+  { x: 1, y: 1, color: [240, 172, 201] },
+];
+
+// Warped concentric contours: clear looping shapes with ordered-dither edges.
+export function contourColor(u: number, v: number, threshold: number): Color {
+  const x = (u - 0.48) * 1.5;
+  const y = v - 0.5;
+  const radius = Math.hypot(x, y);
+  const angle = Math.atan2(y, x);
+  const density = contourDensity(u, v);
+  const base: Color = [65, 137, 226];
+  if (density <= threshold) return base;
+
+  const cyan: Color = [127, 214, 242];
+  const violet: Color = [169, 165, 242];
+  const blend = (Math.sin(angle + radius * 2) + 1) / 2;
+  return cyan.map(
+    (channel, index) => channel + (violet[index]! - channel) * blend,
+  ) as Color;
+}
+
+export function cloudColor(u: number, v: number, threshold: number): Color {
+  const level = cloudLevel(u, v);
+  const lower = Math.floor(level);
+  const color = [
+    ...blues[level - lower > threshold ? lower + 1 : lower]!,
+  ] as Color;
+  for (const accent of accents) {
+    const amount = cloudFalloff(u, v, accent.x, accent.y, 0.28, 0.32) * 0.32;
+    for (let i = 0; i < 3; i++)
+      color[i] = color[i]! + (accent.color[i]! - color[i]!) * amount;
+  }
+  return color;
+}

@@ -4,6 +4,7 @@ import { useEffect, useRef, type CSSProperties } from "react";
 
 import { cn } from "@featul/ui/lib/utils";
 import { rgb } from "../lib/palette";
+import { contourMasks } from "../lib/artwork";
 import { contourDensity } from "../lib/dither";
 import {
   BAYER4,
@@ -201,22 +202,6 @@ export function DitherGradient({
   }, [from, to, direction, cell, opacity, bloom]);
 
   const bloomStyle = pixelBloomStyle(bloom);
-  // An inline tile is rendered on the server, so refreshes never start with an
-  // empty canvas. The full-resolution canvas replaces it after its first paint.
-  const fill = fillOf(from);
-  const pixels = BAYER4.flatMap((row, y) =>
-    row.map(
-      (threshold, x) =>
-        `<rect x="${x}" y="${y}" width="1" height="1" fill="${rgb(fill, 1, 0.2 + 0.8 * threshold)}"/>`,
-    ),
-  ).join("");
-  const tile = `<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4">${pixels}</svg>`;
-  const fadeDirection = {
-    up: "top",
-    down: "bottom",
-    left: "left",
-    right: "right",
-  }[direction];
 
   return (
     <div
@@ -232,15 +217,19 @@ export function DitherGradient({
         className="absolute inset-0"
         style={{
           backgroundColor: to === "transparent" ? undefined : rgb(fillOf(to)),
-          backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(tile)}")`,
-          backgroundSize: `${cell * 4}px ${cell * 4}px`,
-          maskImage:
-            to === "transparent"
-              ? `linear-gradient(to ${fadeDirection}, black, transparent)`
-              : undefined,
           opacity,
         }}
-      />
+      >
+        <div
+          className="absolute inset-0 [image-rendering:pixelated]"
+          style={{
+            backgroundColor: rgb(fillOf(from)),
+            maskImage: `url("${contourMasks[direction]}")`,
+            maskSize: "100% 100%",
+            maskRepeat: "no-repeat",
+          }}
+        />
+      </div>
       <canvas ref={canvasRef} style={canvasLayout} />
       {bloomStyle ? (
         <canvas ref={bloomRef} style={{ ...canvasLayout, ...bloomStyle }} />
