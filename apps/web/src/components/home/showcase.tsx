@@ -18,6 +18,7 @@ const previews = [
     id: "feedback",
     label: "Feedback",
     icon: BoardIcon,
+    iconColor: "#4189e2",
     image: "/image/dashboard.png",
     width: 1762,
     height: 1124,
@@ -27,6 +28,7 @@ const previews = [
     id: "roadmap",
     label: "Roadmap",
     icon: RoadmapIcon,
+    iconColor: "#3b95af",
     image: "/image/roadmap.png",
     width: 1762,
     height: 1124,
@@ -36,6 +38,7 @@ const previews = [
     id: "changelog",
     label: "Changelog",
     icon: ChangelogIcon,
+    iconColor: "#837ec8",
     image: "/image/changelog.png",
     width: 1762,
     height: 1124,
@@ -78,7 +81,7 @@ export function Showcase() {
           }
         }}
       >
-        {previews.map(({ id, label, icon: Icon }) => (
+        {previews.map(({ id, label, icon: Icon, iconColor }) => (
           <Tabs.Trigger
             key={id}
             value={id}
@@ -103,7 +106,7 @@ export function Showcase() {
                 }
               />
             ) : null}
-            <Icon aria-hidden className="size-4" />
+            <Icon aria-hidden className="size-4" style={{ color: iconColor }} />
             {label}
           </Tabs.Trigger>
         ))}
