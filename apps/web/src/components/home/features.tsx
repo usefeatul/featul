@@ -54,7 +54,7 @@ export default function FeaturesSection() {
             <FeatureCard
               tone="blue"
               title="A feedback space that feels like you."
-              body="Give ideas, votes, and updates a home on your own domain or Featul address. No code needed—just share the link."
+              body="Give ideas, votes, and updates a home on your own domain or Featul address. No code needed just share the link."
               href="/docs/getting-started"
             >
               <PortalPreview className="h-full w-full rounded-none bg-transparent" />

@@ -4,6 +4,7 @@ import { useEffect, useRef, type CSSProperties } from "react";
 
 import { cn } from "@featul/ui/lib/utils";
 import { rgb } from "../lib/palette";
+import { cloudLevel } from "../lib/dither";
 import {
   BAYER4,
   fillOf,
@@ -57,22 +58,36 @@ function paintGradient(
 
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
+      const u = (x + 0.5) / cols;
+      const v = (y + 0.5) / rows;
       const t =
         spec.direction === "up"
-          ? 1 - (y + 0.5) / rows
+          ? 1 - v
           : spec.direction === "down"
-            ? (y + 0.5) / rows
+            ? v
             : spec.direction === "left"
-              ? 1 - (x + 0.5) / cols
-              : (x + 0.5) / cols;
-      const density = 1 - t;
+              ? 1 - u
+              : u;
+      const fade = 1 - t;
+      // Rotate the same cloud field with the requested fade direction. Every
+      // kit consumer gets a pattern while keeping its existing colour/opacity.
+      const field =
+        spec.direction === "up"
+          ? cloudLevel(1 - u, 1 - v)
+          : spec.direction === "left"
+            ? cloudLevel(v, 1 - u)
+            : spec.direction === "right"
+              ? cloudLevel(1 - v, u)
+              : cloudLevel(u, v);
+      const density = 0.2 * fade + (0.8 * field) / 2;
       const threshold = BAYER4[y & 3]?.[x & 3] ?? 0.5;
       const lit = density > threshold;
       if (toFill) {
         ctx.fillStyle = rgb(lit ? fromFill : toFill, 1, o);
         ctx.fillRect(x, y, 1, 1);
       } else {
-        const alpha = (lit ? 0.35 + 0.65 * density : 0.12 * density) * o;
+        const alpha =
+          (lit ? 0.35 + 0.65 * density : 0.12 * density) * o * Math.sqrt(fade);
         if (alpha <= 0.004) continue;
         ctx.fillStyle = rgb(fromFill, 1, alpha);
         ctx.fillRect(x, y, 1, 1);
@@ -125,13 +140,19 @@ export function DitherGradient({
     const paint = () => {
       const box = wrap.getBoundingClientRect();
       if (box.width < 1 || box.height < 1) return;
-      const painted = paintGradient(canvas, bloomRef.current, box.width, box.height, {
-        from,
-        to,
-        direction,
-        cell,
-        opacity,
-      });
+      const painted = paintGradient(
+        canvas,
+        bloomRef.current,
+        box.width,
+        box.height,
+        {
+          from,
+          to,
+          direction,
+          cell,
+          opacity,
+        },
+      );
       if (fallbackRef.current) fallbackRef.current.hidden = painted;
     };
 
@@ -146,9 +167,10 @@ export function DitherGradient({
     // Draw on mount rather than waiting for a visibility notification. Resize
     // observation also handles containers that initially have no dimensions.
     paint();
-    const ro = typeof ResizeObserver === "undefined"
-      ? null
-      : new ResizeObserver(schedule);
+    const ro =
+      typeof ResizeObserver === "undefined"
+        ? null
+        : new ResizeObserver(schedule);
     ro?.observe(wrap);
 
     const restore = () => {
@@ -184,13 +206,17 @@ export function DitherGradient({
   // empty canvas. The full-resolution canvas replaces it after its first paint.
   const fill = fillOf(from);
   const pixels = BAYER4.flatMap((row, y) =>
-    row.map((threshold, x) =>
-      `<rect x="${x}" y="${y}" width="1" height="1" fill="${rgb(fill, 1, 0.2 + 0.8 * threshold)}"/>`,
+    row.map(
+      (threshold, x) =>
+        `<rect x="${x}" y="${y}" width="1" height="1" fill="${rgb(fill, 1, 0.2 + 0.8 * threshold)}"/>`,
     ),
   ).join("");
   const tile = `<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4" viewBox="0 0 4 4">${pixels}</svg>`;
   const fadeDirection = {
-    up: "top", down: "bottom", left: "left", right: "right",
+    up: "top",
+    down: "bottom",
+    left: "left",
+    right: "right",
   }[direction];
 
   return (
@@ -209,7 +235,10 @@ export function DitherGradient({
           backgroundColor: to === "transparent" ? undefined : rgb(fillOf(to)),
           backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(tile)}")`,
           backgroundSize: `${cell * 4}px ${cell * 4}px`,
-          maskImage: to === "transparent" ? `linear-gradient(to ${fadeDirection}, black, transparent)` : undefined,
+          maskImage:
+            to === "transparent"
+              ? `linear-gradient(to ${fadeDirection}, black, transparent)`
+              : undefined,
           opacity,
         }}
       />
