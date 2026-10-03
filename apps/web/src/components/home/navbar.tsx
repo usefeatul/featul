@@ -50,7 +50,7 @@ export default function Navbar() {
   return (
     <>
       <header
-        className="fixed top-0 left-0 right-0 z-50 bg-transparent"
+        className="fixed top-10 left-0 right-0 z-50 bg-transparent"
         data-component="Navbar"
       >
         {scrolled && (

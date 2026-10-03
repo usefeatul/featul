@@ -13,15 +13,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* The enhanced home scrollbar overlays the page without reserving a gutter. */
-html[data-home-scrollbar] {
-  scrollbar-width: none;
-}
-
-html[data-home-scrollbar]::-webkit-scrollbar {
-  display: none;
-}
-
 /* Keep marketing pages anchored when scrolling reaches the footer. */
 html:has([data-component="Wordmark"]),
 html:has([data-component="Wordmark"]) body {

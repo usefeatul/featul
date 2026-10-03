@@ -43,7 +43,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
   return createPortal(
     <div
       className={cn(
-        "fixed bottom-0 top-16 z-[40] overflow-y-auto overscroll-contain bg-background md:hidden",
+        "fixed bottom-0 top-[6.5rem] z-[40] overflow-y-auto overscroll-contain bg-background md:hidden",
         edgeChromeInsetClass,
       )}
       data-component="MobileMenu"

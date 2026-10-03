@@ -13,7 +13,6 @@ import Integrations from "@/components/home/integrations";
 import FeaturesSection from "@/components/home/features";
 import { ConversionHero } from "@/components/home/conversion";
 import { SectionStack } from "@/components/layout/stack";
-import { Scrollbar } from "@/components/home/scrollbar";
 import { HomeScrollMemory } from "@/components/home/scroll-restoration";
 
 export const metadata: Metadata = createPageMetadata({
@@ -35,7 +34,6 @@ export default function Home() {
       className="min-h-screen overflow-x-clip"
     >
       <HomeScrollMemory />
-      <Scrollbar />
       <script
         id="home-faq-jsonld"
         type="application/ld+json"

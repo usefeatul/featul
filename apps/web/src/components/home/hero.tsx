@@ -8,7 +8,7 @@ import { Showcase } from "./showcase";
 export function Hero() {
   return (
     <section
-      className="relative pb-8 pt-20 sm:pb-12 sm:pt-20"
+      className="relative pb-8 pt-24 sm:pb-12 sm:pt-24"
       data-component="Hero"
     >
       <MarketingContainer>

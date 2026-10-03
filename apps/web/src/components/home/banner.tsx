@@ -1,48 +1,44 @@
-"use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { ArrowIcon } from "@featul/ui/icons/arrow";
-import { cn } from "@featul/ui/lib/utils";
-import { Container } from "../global/container";
-import { isSkyPath } from "@/lib/sky";
+import { contourArtwork } from "@featul/ui/lib/artwork";
+import { APP_URL } from "@/config/auth";
 
 export default function AnnouncementBanner() {
-  // On sky-backed pages the banner matches the sky-blue navbar/hero stack
-  const overSky = isSkyPath(usePathname());
   return (
-    <div
-      className={cn(
-        "fixed top-0 left-0 right-0 z-60 w-full border-b text-primary-foreground",
-        overSky
-          ? "border-white/25 bg-[#0063d2]"
-          : "border-primary/25 bg-primary"
-      )}
+    <aside
+      aria-label="Get started with Featul"
+      data-component="AnnouncementBanner"
+      className="fixed inset-x-0 top-0 z-[60] isolate h-10 overflow-hidden border-b border-primary/30 bg-primary text-black"
     >
-      <Container
-        maxWidth="6xl"
-        className="relative px-3 sm:px-10 lg:px-12 xl:px-14"
-      >
-        <div className="pointer-events-none absolute inset-0 mx-auto max-w-6xl bg-[linear-gradient(to_bottom,rgba(255,255,255,0.28)_0%,rgba(255,255,255,0.28)_100%),linear-gradient(to_bottom,rgba(255,255,255,0.28)_0%,rgba(255,255,255,0.28)_100%)] bg-[length:1px_100%] bg-[position:left_top,right_top] bg-no-repeat px-1 sm:px-6" />
-        <div className="mx-auto flex h-10 w-full max-w-6xl items-center justify-center gap-1.5 px-1 text-xs sm:gap-2 sm:px-6 sm:text-[13px]">
-          <span className="inline-flex h-6 shrink-0 items-center rounded-sm bg-primary-foreground/15 px-2 font-heading whitespace-nowrap">
-            New
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 [image-rendering:pixelated]"
+        style={{
+          backgroundImage: `url("${contourArtwork}")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center 25%",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+      <div className="relative flex h-full items-center justify-center gap-3 px-4 text-xs sm:gap-4 sm:text-[13px]">
+        <p className="font-normal">
+          <span className="sm:hidden">Turn ideas into features.</span>
+          <span className="hidden sm:inline">
+            Your next great feature starts with feedback.
           </span>
-          <Link
-            href="/tools/categories"
-            className="inline-flex min-w-0 max-w-full items-center gap-1 leading-none transition-opacity hover:opacity-85"
-          >
-            <span className="truncate xs:max-w-none max-w-[11.5rem] sm:hidden">
-              Free product & SaaS calculators
-            </span>
-            <span className="hidden whitespace-nowrap sm:inline">
-              Plan faster with our free product and SaaS calculators
-            </span>
-            <span className="hidden text-primary-foreground/70 sm:inline">|</span>
-            <span className="hidden font-heading sm:inline">Try it</span>
-            <ArrowIcon className="size-3.5 shrink-0 sm:size-4" aria-hidden />
-          </Link>
-        </div>
-      </Container>
-    </div>
+        </p>
+        <Link
+          href={APP_URL}
+          data-sln-event="cta: announcement start for free clicked"
+          className="group inline-flex h-full shrink-0 items-center gap-1.5 font-heading font-medium focus-visible:rounded-sm focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-current"
+        >
+          Start for free
+          <ArrowIcon
+            aria-hidden
+            className="size-3.5 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
+          />
+        </Link>
+      </div>
+    </aside>
   );
 }
