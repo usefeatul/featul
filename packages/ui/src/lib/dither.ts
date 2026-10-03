@@ -1,3 +1,18 @@
+/** Shared contour density in [0, 1], with soft edges for ordered dithering. */
+export function contourDensity(u: number, v: number) {
+  const x = (u - 0.48) * 1.5;
+  const y = v - 0.5;
+  const radius = Math.hypot(x, y);
+  const angle = Math.atan2(y, x);
+  const field =
+    radius * 9 +
+    0.38 * (radius / (radius + 0.2)) * Math.sin(angle * 3 + radius * 4) +
+    0.18 * Math.sin(u * 7 + v * 4);
+  const phase = field - Math.floor(field);
+  const line = Math.max(0, 1 - Math.abs(phase - 0.5) / 0.3);
+  return Math.min(1, line * 1.6);
+}
+
 /** A soft field shared by monochrome washes and the full-colour dither artwork. */
 export function cloudFalloff(
   x: number,

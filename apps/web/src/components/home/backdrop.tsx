@@ -10,7 +10,7 @@ const cloudFields = [
 ].join(", ");
 
 const colorfulFields =
-  "conic-gradient(from 45deg at 50% 50%, #4d96e8 0deg 90deg, #5cb4cb 90deg 180deg, #3671c0 180deg 270deg, #8b96d7 270deg 360deg)";
+  "repeating-radial-gradient(ellipse at 48% 50%, #4189e2 0 35px, #94bfef 45px 58px, #4189e2 72px 95px)";
 
 export function DitherBackdrop({
   className,

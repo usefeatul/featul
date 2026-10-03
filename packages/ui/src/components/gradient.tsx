@@ -4,7 +4,7 @@ import { useEffect, useRef, type CSSProperties } from "react";
 
 import { cn } from "@featul/ui/lib/utils";
 import { rgb } from "../lib/palette";
-import { cloudLevel } from "../lib/dither";
+import { contourDensity } from "../lib/dither";
 import {
   BAYER4,
   fillOf,
@@ -69,17 +69,16 @@ function paintGradient(
               ? 1 - u
               : u;
       const fade = 1 - t;
-      // Rotate the same cloud field with the requested fade direction. Every
+      // Rotate the shared contours with the requested fade direction. Every
       // kit consumer gets a pattern while keeping its existing colour/opacity.
-      const field =
+      const density =
         spec.direction === "up"
-          ? cloudLevel(1 - u, 1 - v)
+          ? contourDensity(1 - u, 1 - v)
           : spec.direction === "left"
-            ? cloudLevel(v, 1 - u)
+            ? contourDensity(v, 1 - u)
             : spec.direction === "right"
-              ? cloudLevel(1 - v, u)
-              : cloudLevel(u, v);
-      const density = 0.2 * fade + (0.8 * field) / 2;
+              ? contourDensity(1 - v, u)
+              : contourDensity(u, v);
       const threshold = BAYER4[y & 3]?.[x & 3] ?? 0.5;
       const lit = density > threshold;
       if (toFill) {
@@ -87,7 +86,7 @@ function paintGradient(
         ctx.fillRect(x, y, 1, 1);
       } else {
         const alpha =
-          (lit ? 0.35 + 0.65 * density : 0.12 * density) * o * Math.sqrt(fade);
+          (lit ? 0.75 + 0.25 * density : 0.035) * o * Math.sqrt(fade);
         if (alpha <= 0.004) continue;
         ctx.fillStyle = rgb(fromFill, 1, alpha);
         ctx.fillRect(x, y, 1, 1);

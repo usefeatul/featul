@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { BAYER4 } from "../lib/pixel";
-import { cloudFalloff, cloudLevel } from "../lib/dither";
+import { cloudFalloff, cloudLevel, contourDensity } from "../lib/dither";
 
 type Color = [number, number, number];
 
@@ -18,30 +18,21 @@ const accents: { x: number; y: number; color: Color }[] = [
   { x: 1, y: 1, color: [240, 172, 201] },
 ];
 
-// Large folded facets give the hero and wordmark a shared geometric texture.
-const facetColors: Color[] = [
-  [77, 150, 232],
-  [92, 180, 203],
-  [139, 150, 215],
-  [54, 113, 192],
-];
-const facetOrder = [0, 1, 0, 2, 1, 0, 0, 3, 2, 0, 1, 0];
+// Warped concentric contours: clear looping shapes with ordered-dither edges.
+function contourColor(u: number, v: number, threshold: number): Color {
+  const x = (u - 0.48) * 1.5;
+  const y = v - 0.5;
+  const radius = Math.hypot(x, y);
+  const angle = Math.atan2(y, x);
+  const density = contourDensity(u, v);
+  const base: Color = [65, 137, 226];
+  if (density <= threshold) return base;
 
-function geometricColor(u: number, v: number, threshold: number): Color {
-  const column = Math.floor(u * 3);
-  const row = Math.floor(v * 2);
-  const x = u * 3 - column;
-  const y = v * 2 - row;
-  const flipped = (column + row) % 2 === 1;
-  const diagonal = flipped ? 1 - x : x;
-  const upper = y < diagonal;
-  const face = (row * 3 + column) * 2 + (upper ? 0 : 1);
-  const color = facetColors[facetOrder[face]!]!;
-  const distance = Math.abs(y - diagonal);
-  const density = Math.min(0.95, 0.15 + distance * 0.8);
-  const light = density > threshold;
-  return color.map((channel) =>
-    light ? channel + (255 - channel) * 0.3 : channel * 0.92,
+  const cyan: Color = [127, 214, 242];
+  const violet: Color = [169, 165, 242];
+  const blend = (Math.sin(angle + radius * 2) + 1) / 2;
+  return cyan.map(
+    (channel, index) => channel + (violet[index]! - channel) * blend,
   ) as Color;
 }
 
@@ -69,7 +60,7 @@ function paint(
       const level = cloudLevel(u, v);
       const lower = Math.floor(level);
       const color = multicolor
-        ? geometricColor(u, v, threshold)
+        ? contourColor(u, v, threshold)
         : blues[level - lower > threshold ? lower + 1 : lower]!;
       let [red, green, blue] = color;
 
