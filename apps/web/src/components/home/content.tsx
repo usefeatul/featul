@@ -14,12 +14,12 @@ export function HeroContent() {
       <h1
         className={cn(
           marketingDisplayHeadingClass,
-          "text-4xl leading-[1.08] min-[375px]:text-[2.625rem] sm:text-5xl sm:leading-[1.08] md:text-6xl lg:text-[4rem] xl:text-7xl",
+          "text-3xl leading-[1.08] min-[375px]:text-4xl sm:text-4xl sm:leading-[1.08] md:text-5xl lg:text-[3.5rem] xl:text-6xl",
         )}
       >
         Build what your customers
         <br className="hidden sm:block" />{" "}
-        <span className="text-primary">actually want.</span>
+        <span className="text-accent">actually want.</span>
       </h1>
       <p className={cn(marketingLeadClass, "mx-auto")}>
         Turn customer feedback into your next great feature. Gather ideas,
