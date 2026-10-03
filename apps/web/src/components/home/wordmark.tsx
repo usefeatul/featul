@@ -15,11 +15,12 @@ export function Wordmark() {
       >
         <defs>
           <clipPath id="footer-wordmark-letters">
+            {/* Include a little left bleed to remove the f's font side bearing. */}
             <text
-              x="720"
+              x="718"
               y="505"
               textAnchor="middle"
-              textLength="1440"
+              textLength="1444"
               lengthAdjust="spacingAndGlyphs"
               fontSize="633.6"
               letterSpacing="-31.68"
