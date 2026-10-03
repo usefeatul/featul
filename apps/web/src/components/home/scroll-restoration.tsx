@@ -13,7 +13,7 @@ export function writeNavOverCreate(over: boolean) {
   }
 }
 
-/** Visual primary band: heading block plus the half-image extension. */
+/** Bounds of the product-portal backdrop for the navigation overlay. */
 export function getCreateBandBounds() {
   const create = document.querySelector("[data-component='Create']");
   if (!create) return null;

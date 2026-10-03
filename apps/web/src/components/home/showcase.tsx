@@ -11,10 +11,7 @@ import { useId, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Tabs } from "radix-ui";
 import { DASHBOARD_BLUR_DATA_URL } from "@/components/layout/sky-banner";
-import { DitherGradient } from "@/components/dither-kit/gradient";
-
-const backdropLight: [number, number, number] = [154, 211, 255];
-const backdropShade: [number, number, number] = [23, 72, 181];
+import { DitherBackdrop } from "./backdrop";
 
 const previews = [
   {
@@ -61,27 +58,7 @@ export function Showcase() {
       className="relative isolate mt-3 sm:mt-4"
       data-component="Showcase"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-16 -z-10 overflow-hidden bg-primary sm:top-0"
-      >
-        <DitherGradient
-          from={backdropLight}
-          direction="down"
-          cell={3}
-          opacity={0.58}
-          bloom="off"
-          className="-inset-y-1/4"
-        />
-        <DitherGradient
-          from={backdropShade}
-          direction="up"
-          cell={3}
-          opacity={0.65}
-          bloom="off"
-          className="-inset-y-1/4"
-        />
-      </div>
+      <DitherBackdrop className="top-16 sm:top-0" />
       <svg
         aria-hidden
         viewBox="0 0 1200 56"

@@ -6,7 +6,7 @@
 
 :root {
   --marketing-edge-strip: clamp(1rem, 5vw, 4.5rem);
-  --marketing-create-band: var(--color-primary, var(--primary));
+  --marketing-create-band: #202020;
 }
 
 html {
@@ -34,12 +34,12 @@ html[data-scrolled] [data-component="Navbar"] [data-nav-menu] {
 }
 
 [data-nav-create-mask] {
-  --background: var(--primary);
+  --background: var(--marketing-create-band);
   --foreground: oklch(99.700% 0.00105 11.528);
-  --accent: color-mix(in oklab, white 82%, var(--primary));
-  --card: color-mix(in oklab, white 14%, var(--primary));
-  --border: color-mix(in oklab, white 22%, var(--primary));
-  --muted: color-mix(in oklab, white 16%, var(--primary));
+  --accent: color-mix(in oklab, white 82%, var(--marketing-create-band));
+  --card: color-mix(in oklab, white 14%, var(--marketing-create-band));
+  --border: color-mix(in oklab, white 22%, var(--marketing-create-band));
+  --muted: color-mix(in oklab, white 16%, var(--marketing-create-band));
   clip-path: inset(100% 0 0 0);
 }
 html[data-over-create] [data-nav-create-mask] {

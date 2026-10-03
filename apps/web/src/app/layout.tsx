@@ -119,7 +119,7 @@ export default function RootLayout({
         <style
           id="nav-create-boot-css"
           dangerouslySetInnerHTML={{
-            __html: `[data-nav-create-mask]{--background:var(--primary);--foreground:oklch(99.7% 0.001 11.5);--accent:color-mix(in oklab,white 82%,var(--primary));--card:color-mix(in oklab,white 14%,var(--primary));--border:color-mix(in oklab,white 22%,var(--primary));--muted:color-mix(in oklab,white 16%,var(--primary));clip-path:inset(100% 0 0 0)}html[data-over-create] [data-nav-create-mask]{clip-path:inset(0)}`,
+            __html: `[data-nav-create-mask]{--background:var(--marketing-create-band);--foreground:oklch(99.7% 0.001 11.5);--accent:color-mix(in oklab,white 82%,var(--marketing-create-band));--card:color-mix(in oklab,white 14%,var(--marketing-create-band));--border:color-mix(in oklab,white 22%,var(--marketing-create-band));--muted:color-mix(in oklab,white 16%,var(--marketing-create-band));clip-path:inset(100% 0 0 0)}html[data-over-create] [data-nav-create-mask]{clip-path:inset(0)}`,
           }}
         />
         {selineToken ? (

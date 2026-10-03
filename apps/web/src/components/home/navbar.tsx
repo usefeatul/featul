@@ -15,30 +15,32 @@ import {
 } from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
-import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
 import {
   getCreateBandBounds,
   writeNavOverCreate,
 } from "@/components/home/scroll-restoration";
 import { MobileMenu } from "./menu";
+import { DitherBackdrop } from "./backdrop";
 
 const FALLBACK_NAV_HEIGHT = 64;
 const HIDDEN_CLIP = "inset(100% 0 0 0)";
 
 const createBandNavVars = {
-  "--background": "var(--primary)",
+  "--background": "var(--marketing-create-band)",
   "--foreground": "oklch(99.700% 0.00105 11.528)",
-  "--accent": "color-mix(in oklab, white 82%, var(--primary))",
-  "--card": "color-mix(in oklab, white 14%, var(--primary))",
-  "--border": "color-mix(in oklab, white 22%, var(--primary))",
-  "--muted": "color-mix(in oklab, white 16%, var(--primary))",
+  "--accent": "color-mix(in oklab, white 82%, var(--marketing-create-band))",
+  "--card": "color-mix(in oklab, white 14%, var(--marketing-create-band))",
+  "--border": "color-mix(in oklab, white 22%, var(--marketing-create-band))",
+  "--muted": "color-mix(in oklab, white 16%, var(--marketing-create-band))",
 } as CSSProperties;
 
 const linkTone =
   "font-light text-accent hover:text-foreground hover:bg-card hover:ring-1 hover:ring-border";
 
-function clipCreateOverlap(navHeight: number) {
-  const band = getCreateBandBounds();
+function clipCreateOverlap(
+  navHeight: number,
+  band: ReturnType<typeof getCreateBandBounds>,
+) {
   if (!band) return HIDDEN_CLIP;
   if (band.bottom <= 0 || band.top >= navHeight) return HIDDEN_CLIP;
   const top = Math.max(0, Math.round(band.top));
@@ -62,14 +64,10 @@ function NavbarFrame({
 
   return (
     <>
-      {scrolled ? (
+      {scrolled && !decorative ? (
         <div
           aria-hidden
-          className={cn(
-            "pointer-events-none absolute inset-0",
-            decorative ? "bg-primary" : "bg-background",
-            edgeChromeInsetClass,
-          )}
+          className="pointer-events-none absolute inset-0 bg-background"
         />
       ) : null}
       <MarketingContainer className="relative">
@@ -184,9 +182,15 @@ function NavbarFrame({
             </div>
 
             {decorative ? (
-              <div className="inline-flex items-center justify-center rounded-md bg-muted md:hidden">
-                <MenuIcon className="size-5 text-accent" />
-              </div>
+              <Button
+                asChild
+                variant="nav"
+                className="inline-flex items-center justify-center rounded-md bg-muted md:hidden"
+              >
+                <span>
+                  <MenuIcon className="size-5 text-accent!" />
+                </span>
+              </Button>
             ) : (
               <Button
                 type="button"
@@ -209,6 +213,7 @@ function NavbarFrame({
 export default function Navbar() {
   const headerRef = useRef<HTMLElement>(null);
   const createMaskRef = useRef<HTMLDivElement>(null);
+  const createBackdropRef = useRef<HTMLDivElement>(null);
 
   const [scrolled, setScrolled] = useState(false);
   const [overCreate, setOverCreate] = useState(false);
@@ -217,18 +222,25 @@ export default function Navbar() {
   useLayoutEffect(() => {
     const html = document.documentElement;
     let ticking = false;
-    let lastScrolled = window.scrollY > 0;
+    let lastScrolled = false;
     let lastOverCreate = false;
 
     const sync = () => {
       ticking = false;
       const navHeight = headerRef.current?.offsetHeight ?? FALLBACK_NAV_HEIGHT;
-      const createReady = !!document.querySelector("[data-component='Create']");
-      const clip = clipCreateOverlap(navHeight);
+      const band = getCreateBandBounds();
+      const clip = clipCreateOverlap(navHeight, band);
       const mask = createMaskRef.current;
       const nextOverCreate = clip !== HIDDEN_CLIP;
 
-      if (mask && (createReady || nextOverCreate)) {
+      if (band && createBackdropRef.current) {
+        // Match the section's canvas size and offset so the texture joins
+        // seamlessly across the fixed header while the page scrolls.
+        createBackdropRef.current.style.height = `${band.bottom - band.top}px`;
+        createBackdropRef.current.style.transform = `translateY(${band.top}px)`;
+      }
+
+      if (mask) {
         mask.style.clipPath = clip;
         html.removeAttribute("data-over-create");
         writeNavOverCreate(nextOverCreate);
@@ -297,7 +309,7 @@ export default function Navbar() {
             data-nav-rule
             className={cn(
               "pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[0.5px] bg-border",
-              edgeChromeInsetClass,
+              overCreate && "opacity-0",
             )}
           />
         ) : null}
@@ -307,6 +319,12 @@ export default function Navbar() {
           data-nav-create-mask
           className="pointer-events-none absolute inset-0 z-20 overflow-hidden [clip-path:inset(100%_0_0_0)] [transform:translateZ(0)]"
         >
+          <div
+            ref={createBackdropRef}
+            className="pointer-events-none absolute inset-x-0 top-0 isolate h-16"
+          >
+            <DitherBackdrop tone="dark" />
+          </div>
           <NavbarFrame scrolled decorative />
         </div>
       </header>
