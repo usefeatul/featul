@@ -252,7 +252,7 @@ function MockPanel({
       viewport={viewport}
       transition={{ ...springIn, delay }}
     >
-      <div className="w-full overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+      <div className="w-full overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         {children}
       </div>
     </motion.div>

@@ -114,7 +114,7 @@ export function Showcase() {
           value={preview.id}
           className="px-3 pb-12 pt-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:px-10 sm:py-16 lg:px-16 lg:pb-24 lg:pt-20"
         >
-          <div className="mx-auto max-w-[1080px] overflow-hidden rounded-xl bg-background p-1 shadow-[0_24px_64px_-20px_rgba(0,0,0,0.35)] ring-1 ring-white/40 sm:rounded-2xl sm:p-2">
+          <div className="mx-auto max-w-[1080px] overflow-hidden rounded-xl bg-card p-1 shadow-[0_24px_64px_-20px_rgba(0,0,0,0.35)] ring-1 ring-white/40 sm:rounded-2xl sm:p-2">
             <div className="overflow-hidden rounded-lg">
               <Image
                 src={preview.image}

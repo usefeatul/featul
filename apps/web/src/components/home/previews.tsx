@@ -16,8 +16,8 @@ export function PortalPreview({ className }: { className?: string }) {
         className,
       )}
     >
-      <div className="mx-auto max-w-sm overflow-hidden rounded-t-xl border border-border bg-background shadow-lg shadow-primary/10">
-        <div className="flex items-center justify-center gap-2 border-b border-border bg-card/60 px-3 py-3 text-[11px] text-accent">
+      <div className="mx-auto max-w-sm overflow-hidden rounded-t-xl border border-border bg-card shadow-lg shadow-primary/10">
+        <div className="flex items-center justify-center gap-2 border-b border-border bg-card px-3 py-3 text-[11px] text-accent">
           <LockIcon className="size-3" />
           feedback.yourbrand.com
         </div>
@@ -38,7 +38,7 @@ export function PortalPreview({ className }: { className?: string }) {
                 key={idea}
                 className="flex items-center gap-3 py-3 first:pt-0"
               >
-                <span className="flex w-8 shrink-0 flex-col items-center gap-1 rounded-md border border-border bg-card/60 py-1 text-[10px] text-accent">
+                <span className="flex w-8 shrink-0 flex-col items-center gap-1 rounded-md border border-border bg-card py-1 text-[10px] text-accent">
                   <VoteIcon className="size-3" />
                   {index === 0 ? "24" : "18"}
                 </span>
@@ -61,7 +61,7 @@ export function WidgetPreview({ className }: { className?: string }) {
         className,
       )}
     >
-      <div className="absolute inset-x-4 top-6 bottom-0 overflow-hidden rounded-t-xl border border-border/70 bg-background/65 sm:inset-x-5">
+      <div className="absolute inset-x-4 top-6 bottom-0 overflow-hidden rounded-t-xl border border-border/70 bg-card sm:inset-x-5">
         <div className="flex h-10 items-center gap-1.5 border-b border-border/60 px-3">
           {[0, 1, 2].map((dot) => (
             <span key={dot} className="size-1.5 rounded-full bg-accent/25" />
@@ -80,12 +80,12 @@ export function WidgetPreview({ className }: { className?: string }) {
           </div>
         </div>
       </div>
-      <div className="absolute right-4 bottom-4 w-[76%] max-w-64 rounded-xl border border-border bg-background p-4 shadow-lg shadow-black/8 sm:right-5">
+      <div className="absolute right-4 bottom-4 w-[76%] max-w-64 rounded-xl border border-border bg-card p-4 shadow-lg shadow-black/8 sm:right-5">
         <div className="flex items-center gap-2 text-xs font-medium text-foreground">
           <FeedbackIcon className="size-4" />
           Got an idea?
         </div>
-        <div className="mt-3 rounded-md border border-border bg-card/40 px-3 py-3 text-[11px] leading-5 text-accent">
+        <div className="mt-3 rounded-md border border-border bg-card px-3 py-3 text-[11px] leading-5 text-accent">
           What would make your day easier?
         </div>
         <Button asChild variant="default" size="sm" className="mt-3 w-full">

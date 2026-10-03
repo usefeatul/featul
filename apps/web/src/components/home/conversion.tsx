@@ -46,7 +46,7 @@ export function ConversionHero() {
               workflow, from their first idea to your latest release.
             </p>
           </div>
-          <div className="mt-9 grid divide-y divide-border rounded-xl border border-border bg-card/40 sm:mt-12 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div className="mt-9 grid divide-y divide-border rounded-xl border border-border bg-card sm:mt-12 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             {steps.map(({ number, icon: Icon, label, title, body }) => (
               <article key={number} className="p-6 sm:p-7">
                 <div className="flex items-center justify-between">
