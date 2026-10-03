@@ -35,6 +35,7 @@ import { StatusButton } from "@/components/home/status";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { GitHubIcon } from "@featul/ui/icons/github";
 import { PreferredSourceButton } from "@/components/preferred-source/button";
+import { Wordmark } from "@/components/home/wordmark";
 
 type FeatulIcon = ComponentType<{
   className?: string;
@@ -178,6 +179,7 @@ export default function FooterSection() {
           </p>
         </div>
       </MarketingContainer>
+      <Wordmark />
     </footer>
   );
 }

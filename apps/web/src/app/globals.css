@@ -12,6 +12,13 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* Keep marketing pages anchored when scrolling reaches the footer. */
+html:has([data-component="Wordmark"]),
+html:has([data-component="Wordmark"]) body {
+  overscroll-behavior-y: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
