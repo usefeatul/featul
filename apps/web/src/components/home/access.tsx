@@ -11,7 +11,6 @@ import {
   MarketingContainer,
   marketingRailClass,
 } from "@/components/layout/container";
-import { AccentBar } from "@featul/ui/components/cardElements";
 
 type PortalItem = {
   name: string;
@@ -69,14 +68,11 @@ export default function Access() {
           <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
             Make it easy for customers to take part.
           </h2>
-          <div className="mt-3 flex items-start gap-2">
-            <AccentBar width={8} />
-            <p className="max-w-2xl text-sm leading-6 text-accent sm:text-base">
-              Meet customers on your own domain, welcome their ideas, and give
-              them a clear view of what’s coming. You choose how open the
-              conversation should be.
-            </p>
-          </div>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-accent sm:text-base">
+            Meet customers on your own domain, welcome their ideas, and give
+            them a clear view of what’s coming. You choose how open the
+            conversation should be.
+          </p>
 
           <div className="mt-9 overflow-hidden rounded-xl border border-border bg-card/40 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:mt-12">
             <div className="-mb-px -mr-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">

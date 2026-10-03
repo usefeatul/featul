@@ -25,7 +25,9 @@ html:has([data-component="Wordmark"]) body {
   }
 }
 
-html[data-scrolled] [data-component="Navbar"] a:not([data-slot="button"]):not([data-nav-brand]) {
+html[data-scrolled]
+  [data-component="Navbar"]
+  a:not([data-slot="button"]):not([data-nav-brand]) {
   color: var(--accent);
 }
 html[data-scrolled] [data-component="Navbar"] [data-slot="separator"] {
@@ -34,17 +36,4 @@ html[data-scrolled] [data-component="Navbar"] [data-slot="separator"] {
 html[data-scrolled] [data-component="Navbar"] [data-nav-menu] {
   background-color: var(--muted);
   color: var(--accent);
-}
-
-[data-nav-create-mask] {
-  --background: var(--marketing-create-band);
-  --foreground: oklch(99.700% 0.00105 11.528);
-  --accent: color-mix(in oklab, white 82%, var(--marketing-create-band));
-  --card: color-mix(in oklab, white 14%, var(--marketing-create-band));
-  --border: color-mix(in oklab, white 22%, var(--marketing-create-band));
-  --muted: color-mix(in oklab, white 16%, var(--marketing-create-band));
-  clip-path: inset(100% 0 0 0);
-}
-html[data-over-create] [data-nav-create-mask] {
-  clip-path: inset(0);
 }

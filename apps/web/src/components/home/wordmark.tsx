@@ -1,7 +1,4 @@
-import { DitherGradient } from "@/components/dither-kit/gradient";
-
-const blue: [number, number, number] = [77, 150, 232];
-const light: [number, number, number] = [154, 211, 255];
+import { DitherBackdrop } from "./backdrop";
 
 export function Wordmark() {
   return (
@@ -37,23 +34,8 @@ export function Wordmark() {
           height="403.2"
           clipPath="url(#footer-wordmark-letters)"
         >
-          <div className="relative h-full w-full overflow-hidden bg-primary/15">
-            <DitherGradient
-              from={blue}
-              direction="up"
-              cell={3}
-              opacity={0.9}
-              bloom="off"
-              className="-inset-y-1/4"
-            />
-            <DitherGradient
-              from={light}
-              direction="down"
-              cell={3}
-              opacity={0.35}
-              bloom="off"
-              className="-inset-y-1/4"
-            />
+          <div className="relative h-full w-full overflow-hidden">
+            <DitherBackdrop className="z-0" />
           </div>
         </foreignObject>
       </svg>

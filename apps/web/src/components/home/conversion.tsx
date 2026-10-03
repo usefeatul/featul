@@ -37,15 +37,11 @@ export function ConversionHero() {
     <section className="py-10 sm:py-16" data-component="ConversionHero">
       <MarketingContainer>
         <MarketingRail>
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="mb-3 text-sm font-medium text-primary">
-              From “could you add…” to “just shipped.”
-            </p>
+          <div className="max-w-2xl text-left">
             <h2 className="font-heading text-balance text-2xl font-semibold text-foreground sm:text-3xl">
-              A better product starts with
-              <br className="hidden sm:block" /> a closer conversation.
+              A better product starts with a closer conversation.
             </h2>
-            <p className="mx-auto mt-4 max-w-lg text-sm leading-6 text-accent sm:text-base">
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-accent sm:text-base">
               Make your customers part of what comes next. One connected
               workflow, from their first idea to your latest release.
             </p>

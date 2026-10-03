@@ -13,19 +13,16 @@ import {
 } from "@/components/global/icons";
 import { motion, useReducedMotion } from "framer-motion";
 
-import { AccentBar } from "@featul/ui/components/cardElements";
 import { Switch } from "@featul/ui/components/switch";
 import {
   overlayChipInnerClass,
   overlayChipShellClass,
-  overlayDialogClass,
-  overlayInnerClass,
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import { NestedOverlayCard, VisualCardWell } from "./visual-well";
+import { BentoCard as FeatureCard } from "./bento";
+import { PortalPreview, WidgetPreview } from "./previews";
 
 const rowClass = "flex items-center gap-3 px-5 py-4 sm:px-6";
-const captionClass = "flex flex-col px-4 py-3";
 const viewport = { once: true, amount: 0.4 } as const;
 const springPop = { type: "spring" as const, stiffness: 420, damping: 18 };
 const springIn = { type: "spring" as const, stiffness: 280, damping: 24 };
@@ -38,24 +35,40 @@ export default function FeaturesSection() {
     <MarketingContainer>
       <section className="my-16 sm:my-20" data-component="Features">
         <div className={marketingRailClass}>
-          <div className="max-w-3xl text-left">
-            <h2 className="font-heading text-foreground text-2xl font-semibold sm:text-3xl lg:text-3xl">
-              Decide what feedback becomes product work.
-            </h2>
-            <div className="mt-3 flex items-start gap-2">
-              <AccentBar width={8} />
-              <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
-                Review customer ideas before they move forward, merge repeats,
-                and keep the team conversation off the public board.
-              </p>
+          <div className="max-w-2xl">
+            <div>
+              <h2 className="font-heading text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                Everything you need for
+                <span className="block text-accent">
+                  a closer conversation.
+                </span>
+              </h2>
             </div>
+            <p className="mt-4 text-sm leading-6 text-accent sm:text-base">
+              Collect ideas where customers are, find what matters, and give
+              your team a clear next step. All in one workspace.
+            </p>
           </div>
 
-          <div className="mt-8 grid items-stretch gap-4 sm:mt-10 sm:gap-5 lg:grid-cols-2">
+          <div className="mt-9 grid items-stretch gap-3 rounded-2xl border border-border/70 bg-muted/35 p-2 shadow-[0_2px_8px_rgba(0,0,0,0.03)] sm:mt-12 sm:p-3 md:grid-cols-2">
             <FeatureCard
-              color="blue"
-              step="01"
-              label="Review before it ships"
+              tone="blue"
+              title="A feedback space that feels like you."
+              body="Give ideas, votes, and updates a home on your own domain or Featul address. No code needed—just share the link."
+              href="/docs/getting-started"
+            >
+              <PortalPreview className="h-full w-full rounded-none bg-transparent" />
+            </FeatureCard>
+            <FeatureCard
+              tone="violet"
+              title="Catch ideas right inside your app."
+              body="Add the widget with a small snippet. Customers can share feedback and follow updates without leaving your product."
+              href="/docs/getting-started/widget"
+            >
+              <WidgetPreview className="h-full w-full rounded-none bg-transparent" />
+            </FeatureCard>
+            <FeatureCard
+              tone="peach"
               title="You control what gets prioritized."
               body="Customers can submit, vote, and explain what matters. Nothing changes on your roadmap until you review it."
             >
@@ -102,9 +115,7 @@ export default function FeaturesSection() {
             </FeatureCard>
 
             <FeatureCard
-              color="orange"
-              step="02"
-              label="Surface what matters"
+              tone="mint"
               title="Let Featul surface what matters."
               body="Automatically group similar feedback, spot patterns, and keep your team focused on the requests with real momentum."
             >
@@ -143,9 +154,7 @@ export default function FeaturesSection() {
             </FeatureCard>
 
             <FeatureCard
-              color="purple"
-              step="03"
-              label="Merge overlapping requests"
+              tone="rose"
               title="Keep one thread per idea."
               body="When people ask for the same thing in different words, merge the posts so votes and comments live in one place."
             >
@@ -183,9 +192,7 @@ export default function FeaturesSection() {
             </FeatureCard>
 
             <FeatureCard
-              color="green"
-              step="04"
-              label="Talk it through internally"
+              tone="teal"
               title="Keep the team thread private."
               body="Leave internal comments and mention teammates without showing that discussion on the public board."
             >
@@ -228,38 +235,6 @@ export default function FeaturesSection() {
   );
 }
 
-function FeatureCard({
-  color,
-  step,
-  label,
-  title,
-  body,
-  children,
-}: {
-  color: "blue" | "orange" | "purple" | "green";
-  step: string;
-  label: string;
-  title: string;
-  body: string;
-  children: ReactNode;
-}) {
-  return (
-    <article className={cn(overlayDialogClass, "flex h-full flex-col")}>
-      <div className={cn(overlayInnerClass, "mb-2 flex flex-1 flex-col p-0")}>
-        <VisualCardWell color={color} step={step} label={label}>
-          {children}
-        </VisualCardWell>
-      </div>
-      <div className={cn(overlayInnerClass, captionClass)}>
-        <h3 className="text-foreground text-left text-base font-medium">
-          {title}
-        </h3>
-        <p className="text-accent mt-1 text-left text-sm leading-6">{body}</p>
-      </div>
-    </article>
-  );
-}
-
 function MockPanel({
   children,
   delay = 0,
@@ -277,7 +252,9 @@ function MockPanel({
       viewport={viewport}
       transition={{ ...springIn, delay }}
     >
-      <NestedOverlayCard className="w-full">{children}</NestedOverlayCard>
+      <div className="w-full overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+        {children}
+      </div>
     </motion.div>
   );
 }
