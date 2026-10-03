@@ -11,7 +11,6 @@ import {
   MarketingContainer,
   marketingRailClass,
 } from "@/components/layout/container";
-import { SkyDashboardFrame } from "@/components/layout/sky-banner";
 import { AccentBar } from "@featul/ui/components/cardElements";
 
 type PortalItem = {
@@ -79,28 +78,28 @@ export default function Access() {
             </p>
           </div>
 
-          <SkyDashboardFrame className="mt-8">
-            <div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-9 overflow-hidden rounded-xl border border-border bg-card/40 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:mt-12">
+            <div className="-mb-px -mr-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {portalItems.map((item) => {
                 const Icon = item.icon;
 
                 return (
                   <div
                     key={item.name}
-                    className="group flex h-full flex-col bg-background px-5 py-5 transition-colors hover:bg-muted/40 sm:px-6 sm:py-6"
+                    className="flex h-full flex-col border-b border-r border-border p-6 sm:p-7"
                   >
-                    <Icon aria-hidden className="size-6" />
-                    <h3 className="mt-4 text-sm font-medium text-foreground sm:text-base">
+                    <h3 className="inline-flex items-center gap-2 text-sm font-medium text-primary">
+                      <Icon aria-hidden className="size-4 shrink-0" />
                       {item.name}
                     </h3>
-                    <p className="mt-1.5 text-pretty text-sm leading-6 text-accent">
+                    <p className="mt-6 text-pretty text-sm leading-6 text-accent">
                       {item.description}
                     </p>
                   </div>
                 );
               })}
             </div>
-          </SkyDashboardFrame>
+          </div>
         </div>
       </MarketingContainer>
     </section>
