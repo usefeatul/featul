@@ -10,7 +10,8 @@ import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { BookmarkIcon } from "@featul/ui/icons/bookmark";
 
 import { AUTH_SIGN_IN_URL } from "@/config/auth";
-import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
+const comparisonCardClass =
+  "flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card p-6 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:p-7";
 
 export default function TLDR({ alt }: { alt: Alternative }) {
   const description = getAltDescription(alt.slug, "first");
@@ -22,7 +23,11 @@ export default function TLDR({ alt }: { alt: Alternative }) {
       <section className="py-16" data-component="TLDR">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <BookmarkIcon aria-hidden className="mb-2 size-5 text-primary sm:mb-3" opacity={1} />
+            <BookmarkIcon
+              aria-hidden
+              className="mb-2 size-5 text-primary sm:mb-3"
+              opacity={1}
+            />
             <p className="text-xs text-accent sm:text-sm">
               Updated {ALTERNATIVES_UPDATED_LABEL}
             </p>
@@ -31,9 +36,8 @@ export default function TLDR({ alt }: { alt: Alternative }) {
             {alt.name} vs Featul: what is the short answer?
           </h2>
 
-          <div className="mt-8 grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:gap-6">
-            <OverlayCard>
-              <OverlayCardPanel className="flex h-full flex-1 flex-col px-4 py-3 sm:px-5 sm:py-4">
+          <div className="mt-8 grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2">
+            <article className={comparisonCardClass}>
               <div className="flex items-center gap-2.5">
                 <span className="flex size-8 items-center justify-center overflow-hidden rounded-md bg-muted/40">
                   <AlternativeIcon
@@ -43,7 +47,9 @@ export default function TLDR({ alt }: { alt: Alternative }) {
                     className="size-full object-cover"
                   />
                 </span>
-                <p className="text-sm font-semibold text-foreground">{alt.name}</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {alt.name}
+                </p>
               </div>
               <p className="mt-3 text-balance text-sm leading-7 text-accent sm:max-w-[60ch] sm:text-base">
                 {alt.summary ?? description}
@@ -58,17 +64,17 @@ export default function TLDR({ alt }: { alt: Alternative }) {
                   ))}
                 </ul>
               ) : null}
-              </OverlayCardPanel>
-            </OverlayCard>
+            </article>
 
-            <OverlayCard>
-              <OverlayCardPanel className="flex h-full flex-1 flex-col px-4 py-3 sm:px-5 sm:py-4">
+            <article className={comparisonCardClass}>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <span className="flex size-8 items-center justify-center rounded-md bg-white">
                     <FeatulLogoIcon className="size-5 text-primary" size={20} />
                   </span>
-                  <p className="text-sm font-semibold text-foreground">Featul</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    Featul
+                  </p>
                 </div>
                 <Link
                   href={AUTH_SIGN_IN_URL}
@@ -99,8 +105,7 @@ export default function TLDR({ alt }: { alt: Alternative }) {
                   ))}
                 </ul>
               ) : null}
-              </OverlayCardPanel>
-            </OverlayCard>
+            </article>
           </div>
         </div>
       </section>
