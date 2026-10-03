@@ -21,11 +21,11 @@ export default function CTA() {
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
           <div className="relative isolate flex min-h-96 flex-col overflow-hidden rounded-xl border border-border bg-card px-6 pb-6 pt-12 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:px-7 sm:pb-7 sm:pt-16">
-            <DitherBackdrop multicolor fit="cover" />
+            <DitherBackdrop multicolor fit="cover" className="scale-175" />
             <h2 className="font-heading max-w-lg text-balance text-xl font-medium text-black sm:max-w-2xl sm:text-2xl lg:text-3xl">
               Your next great feature starts with listening.
             </h2>
-            <p className="mt-4 max-w-2xl text-base text-black sm:text-lg">
+            <p className="mt-4 max-w-2xl text-base text-neutral-700 sm:text-lg">
               Give your customers a voice and your team a clear next step.
               Create your free workspace and start the conversation today.
             </p>
