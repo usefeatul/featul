@@ -1,69 +1,75 @@
-"use client";
+import {
+  BoardIcon,
+  RoadmapIcon,
+  ChangelogIcon,
+} from "@/components/global/icons";
+import {
+  MarketingContainer,
+  MarketingRail,
+} from "@/components/layout/container";
 
-import { MarketingContainer } from "@/components/layout/container";
-import Link from "next/link";
-import { Button } from "@featul/ui/components/button";
-import { HotkeyLink } from "../global/hotkey";
-import { BoardIcon } from "@featul/ui/icons/board";
-import { RoadmapIcon } from "@featul/ui/icons/roadmap";
-import { ChangelogIcon } from "@featul/ui/icons/changelog";
-
-const CONTACT_EMAIL = "contact@featul.com";
-const BOOK_A_CALL_HREF = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Book a call")}`;
+const steps = [
+  {
+    number: "01",
+    icon: BoardIcon,
+    label: "Listen",
+    title: "Bring the good ideas together.",
+    body: "Give customers one place to share requests and vote. Spend less time chasing feedback across chats and spreadsheets.",
+  },
+  {
+    number: "02",
+    icon: RoadmapIcon,
+    label: "Decide",
+    title: "Know what deserves your time.",
+    body: "See which requests have momentum, choose what comes next, and share a roadmap that keeps everyone in the loop.",
+  },
+  {
+    number: "03",
+    icon: ChangelogIcon,
+    label: "Deliver",
+    title: "Turn a request into a reason to stay.",
+    body: "Publish an update when you ship. Help customers discover what’s new and see how their feedback shaped your product.",
+  },
+];
 
 export function ConversionHero() {
   return (
-    <section className="relative mb-12 mt-0 sm:mb-16" data-component="ConversionHero">
+    <section className="py-10 sm:py-16" data-component="ConversionHero">
       <MarketingContainer>
-        <div className="mx-auto w-full px-1 sm:px-6">
-          <div className="pb-4 pt-2 sm:pb-8 sm:pt-4">
-            <h2 className="font-heading text-foreground max-w-5xl text-balance text-xl font-semibold leading-snug sm:max-w-6xl sm:text-2xl sm:leading-snug md:text-3xl">
-              Build better products with customer feedback.
-              <span className="text-accent/80 mt-2 block text-[0.95em] leading-relaxed sm:mt-1">
-                Collect, prioritize, and ship what matters with{" "}
-                <span className="mx-0.5 inline-flex items-center gap-0.5 rounded-md border border-primary/30 bg-primary/12 px-1.5 py-0.5 align-baseline text-[0.9em] text-primary shadow-sm ring-1 ring-primary/20 ring-offset-1 ring-offset-white sm:mx-1 sm:gap-1 sm:px-2 sm:py-0 dark:ring-offset-black">
-                  <BoardIcon className="size-4 shrink-0 text-primary sm:size-8" />
-                  boards
-                </span>
-                ,{" "}
-                <span className="mx-0.5 inline-flex items-center gap-0.5 rounded-md border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 align-baseline text-[0.9em] text-emerald-700 shadow-sm ring-1 ring-sky-100 ring-offset-1 ring-offset-white sm:mx-1 sm:gap-1 sm:px-2 sm:py-0 dark:ring-offset-black">
-                  <RoadmapIcon className="size-4 shrink-0 text-emerald-600 sm:size-8" />
-                  roadmaps
-                </span>
-                , and{" "}
-                <span className="mx-0.5 inline-flex items-center gap-0.5 rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 align-baseline text-[0.9em] text-amber-700 shadow-sm ring-1 ring-amber-100 ring-offset-1 ring-offset-white sm:mx-1 sm:gap-1 sm:px-2 sm:py-0 dark:ring-offset-black">
-                  <ChangelogIcon className="size-4 shrink-0 text-amber-600 sm:size-8" />
-                  changelogs
-                </span>
-                .
-              </span>
-            </h2>
-            <p className="text-accent/90 mt-3 max-w-lg text-sm leading-relaxed sm:max-w-xl sm:text-sm md:text-sm">
-              Set up customer feedback in minutes. Collect requests, prioritize
-              the right work, and keep users informed as you ship.
+        <MarketingRail>
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="mb-3 text-sm font-medium text-primary">
+              From “could you add…” to “just shipped.”
             </p>
-            <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
-              <HotkeyLink
-                variant="default"
-                className="h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto"
-              />
-              <Button
-                asChild
-                variant="nav"
-                size="lg"
-                className="h-10 min-h-[40px] w-full min-w-[40px] text-accent sm:w-auto"
-              >
-                <Link
-                  href={BOOK_A_CALL_HREF}
-                  aria-label="Book a call"
-                  data-sln-event="cta: book a call clicked"
-                >
-                  Book a call
-                </Link>
-              </Button>
-            </div>
+            <h2 className="font-heading text-balance text-2xl font-semibold text-foreground sm:text-3xl">
+              A better product starts with
+              <br className="hidden sm:block" /> a closer conversation.
+            </h2>
+            <p className="mx-auto mt-4 max-w-lg text-sm leading-6 text-accent sm:text-base">
+              Make your customers part of what comes next. One connected
+              workflow, from their first idea to your latest release.
+            </p>
           </div>
-        </div>
+          <div className="mt-9 grid divide-y divide-border rounded-xl border border-border bg-card/40 sm:mt-12 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            {steps.map(({ number, icon: Icon, label, title, body }) => (
+              <article key={number} className="p-6 sm:p-7">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-2 text-sm font-medium text-primary">
+                    <Icon aria-hidden className="size-4" />
+                    {label}
+                  </span>
+                  <span className="font-mono text-xs text-accent/60">
+                    {number}
+                  </span>
+                </div>
+                <h3 className="mt-6 font-heading text-base font-medium text-foreground">
+                  {title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-accent">{body}</p>
+              </article>
+            ))}
+          </div>
+        </MarketingRail>
       </MarketingContainer>
     </section>
   );

@@ -1,6 +1,9 @@
 "use client";
 
-import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
+import {
+  MarketingContainer,
+  marketingRailClass,
+} from "@/components/layout/container";
 import type { ComponentType } from "react";
 import Link from "next/link";
 import { SlackIcon } from "@featul/ui/icons/slack";
@@ -90,7 +93,10 @@ export default function Integrations() {
                     href={`/integrations/${item.slug}`}
                     className="group flex h-full flex-col bg-background px-5 py-5 transition-colors hover:bg-muted/40 sm:px-6 sm:py-6"
                   >
-                    <Icon aria-hidden className="size-6" />
+                    <Icon
+                      aria-hidden
+                      className="size-6 text-neutral-600 grayscale dark:text-neutral-300"
+                    />
                     <h3 className="mt-4 text-sm font-medium text-foreground sm:text-base">
                       {item.name}
                     </h3>

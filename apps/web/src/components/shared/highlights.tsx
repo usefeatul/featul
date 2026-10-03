@@ -1,6 +1,4 @@
-import { FreeIcon } from "@featul/ui/icons/free";
-import { SetupIcon } from "@featul/ui/icons/setup";
-import { UsersIcon } from "@featul/ui/icons/users";
+import { FreeIcon, SetupIcon, UsersIcon } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 
 type HeroHighlightsProps = {

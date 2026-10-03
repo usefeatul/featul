@@ -27,7 +27,7 @@ export function PoweredBy() {
           )}
         >
           <span>Powered by featul</span>
-          <FeatulLogoIcon className="size-3.5 shrink-0 text-accent" size={14} />
+          <FeatulLogoIcon className="size-3.5 shrink-0" size={14} />
         </a>
       </Toolbar>
     </div>

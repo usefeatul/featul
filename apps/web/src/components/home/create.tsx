@@ -1,5 +1,8 @@
 import Image from "next/image";
-import { MarketingContainer, MarketingRail } from "@/components/layout/container";
+import {
+  MarketingContainer,
+  MarketingRail,
+} from "@/components/layout/container";
 import {
   DASHBOARD_BLUR_DATA_URL,
   SkyDashboardFrame,
@@ -25,11 +28,12 @@ export default function Create() {
           <MarketingRail>
             <div className="max-w-2xl text-left">
               <h2 className={cn(marketingDisplayHeadingClass, "text-white")}>
-                Customers land on your subdomain.
+                Your brand. Your customers. Their next big idea.
               </h2>
               <p className={cn(marketingLeadClass, "text-white/80")}>
-                Share yourproduct.featul.com. People browse boards, vote, and
-                submit ideas there — without ever opening the admin workspace.
+                Give customers a place that feels like your product. Let them
+                share ideas, vote on what matters, and follow your progress on
+                your own feedback portal.
               </p>
               <div className="mt-6 flex flex-col items-stretch sm:mt-8 sm:flex-row sm:items-center">
                 <HotkeyLink
@@ -76,7 +80,7 @@ export default function Create() {
                 width={1861}
                 height={1137}
                 sizes="(max-width: 1280px) 100vw, 1152px"
-                loading="eager"
+                loading="lazy"
                 placeholder="blur"
                 blurDataURL={DASHBOARD_BLUR_DATA_URL}
                 className="block h-auto w-full"

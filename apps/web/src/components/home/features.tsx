@@ -1,14 +1,20 @@
 "use client";
 
-import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
+import {
+  MarketingContainer,
+  marketingRailClass,
+} from "@/components/layout/container";
 import type { ReactNode } from "react";
-import { Check, Sparkles } from "lucide-react";
+import {
+  CheckIcon,
+  SparklesIcon,
+  CommentsIcon,
+  MergeIcon,
+} from "@/components/global/icons";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { AccentBar } from "@featul/ui/components/cardElements";
 import { Switch } from "@featul/ui/components/switch";
-import { CommentsIcon } from "@featul/ui/icons/comments";
-import { MergeIcon } from "@featul/ui/icons/merge";
 import {
   overlayChipInnerClass,
   overlayChipShellClass,
@@ -57,9 +63,9 @@ export default function FeaturesSection() {
                 <div className={rowClass}>
                   <MockIcon
                     reduceMotion={reduceMotion}
-                    className="rounded-full bg-emerald-50 text-emerald-600"
+                    className="rounded-full bg-foreground/5"
                   >
-                    <Check className="size-4" strokeWidth={2.4} />
+                    <CheckIcon className="size-4" />
                   </MockIcon>
                   <div className="min-w-0 flex-1">
                     <p className="text-foreground text-sm font-medium">
@@ -109,7 +115,7 @@ export default function FeaturesSection() {
                       Feature requests
                     </p>
                     <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
-                      <Sparkles className="size-3.5 text-blue-600" />
+                      <SparklesIcon className="size-3.5" />
                       <span className="text-accent">Featul</span>
                       <span className="font-medium text-emerald-600">+24</span>
                       <span className="font-medium text-red-600">-8</span>
@@ -147,7 +153,7 @@ export default function FeaturesSection() {
                 <div className={rowClass}>
                   <MockIcon
                     reduceMotion={reduceMotion}
-                    className="rounded-md bg-foreground/5 text-violet-500 ring-1 ring-foreground/10"
+                    className="rounded-md bg-foreground/5 ring-1 ring-foreground/10"
                   >
                     <MergeIcon className="size-4" />
                   </MockIcon>
@@ -187,7 +193,7 @@ export default function FeaturesSection() {
                 <div className={rowClass}>
                   <MockIcon
                     reduceMotion={reduceMotion}
-                    className="rounded-md bg-foreground/5 text-emerald-500 ring-1 ring-foreground/10"
+                    className="rounded-md bg-foreground/5 ring-1 ring-foreground/10"
                   >
                     <CommentsIcon className="size-4" />
                   </MockIcon>

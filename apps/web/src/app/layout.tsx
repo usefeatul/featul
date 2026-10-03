@@ -11,7 +11,6 @@ import {
   DEFAULT_KEYWORDS,
 } from "@/config/seo";
 import OrganizationJsonLd from "@/components/seo/organization";
-import { MarketingEdgePattern } from "@/components/layout/edge-pattern";
 import {
   buildSiteNavigationSchema,
   buildSoftwareApplicationSchema,
@@ -82,9 +81,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [{ url: "/favicon.svg?v=3", type: "image/svg+xml" }],
-    shortcut: "/favicon-96x96.png",
-    apple: "/apple-touch-icon.png",
+    icon: [{ url: "/favicon.svg?v=4", type: "image/svg+xml" }],
+    shortcut: "/favicon-96x96.png?v=4",
+    apple: "/apple-touch-icon.png?v=4",
   },
   manifest: "/site.webmanifest",
   verification: {
@@ -171,7 +170,6 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
-        <MarketingEdgePattern />
         {children}
         <DebugTools />
       </body>

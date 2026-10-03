@@ -42,10 +42,10 @@ export default function Home() {
         <SectionStack>
           <ConversionHero />
           <FeaturesSection />
-          <Integrations />
-          <Setup />
           <Create />
           <Access />
+          <Integrations />
+          <Setup />
           <Faq />
           <StatsSection />
         </SectionStack>

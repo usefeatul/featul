@@ -1,9 +1,12 @@
 "use client";
-import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
-import { SetupIcon } from "@featul/ui/icons/setup";
+
+import { SetupIcon } from "@/components/global/icons";
+import {
+  MarketingContainer,
+  marketingRailClass,
+} from "@/components/layout/container";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import { visualIconTileClass } from "./visual-well";
 
 const cards = [
   {
@@ -40,14 +43,17 @@ export default function Setup() {
     <section className="relative my-12 sm:my-16" data-component="Setup">
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
-          <SetupIcon aria-hidden className="size-5 text-primary mb-2 sm:mb-3" opacity={1} />
+          <SetupIcon aria-hidden className="size-5 mb-2 sm:mb-3" opacity={1} />
           <h2 className="font-heading mt-6 text-foreground text-balance text-2xl sm:text-3xl font-semibold">
             Set up in minutes
           </h2>
 
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {cards.map((card) => (
-              <div key={card.title} className={cn(overlayDialogClass, "h-full")}>
+              <div
+                key={card.title}
+                className={cn(overlayDialogClass, "h-full")}
+              >
                 <div
                   className={cn(
                     overlayInnerClass,
@@ -55,7 +61,7 @@ export default function Setup() {
                   )}
                 >
                   <div className="flex items-start gap-3">
-                    <span className={visualIconTileClass}>
+                    <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-foreground/5 p-1 ring-1 ring-foreground/10 sm:size-8 sm:p-1.5">
                       <SetupIcon aria-hidden className="size-4" opacity={1} />
                     </span>
                     <div>

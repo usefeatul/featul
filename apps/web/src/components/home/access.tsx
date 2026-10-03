@@ -1,13 +1,18 @@
+import {
+  BoardIcon,
+  DomainIcon,
+  LinkIcon,
+  LockIcon,
+  MemberIcon,
+  VoteIcon,
+} from "@/components/global/icons";
 import type { ComponentType } from "react";
-import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
+import {
+  MarketingContainer,
+  marketingRailClass,
+} from "@/components/layout/container";
 import { SkyDashboardFrame } from "@/components/layout/sky-banner";
 import { AccentBar } from "@featul/ui/components/cardElements";
-import { BoardIcon } from "@featul/ui/icons/board";
-import { DomainIcon } from "@featul/ui/icons/domain";
-import { LinkStrokeIcon } from "@featul/ui/icons/link-stroke";
-import { LockStrokeIcon } from "@featul/ui/icons/lock-stroke";
-import { MemberIcon } from "@featul/ui/icons/member";
-import { VoteIcon } from "@featul/ui/icons/vote";
 
 type PortalItem = {
   name: string;
@@ -26,7 +31,7 @@ const portalItems: PortalItem[] = [
     name: "Your own domain",
     description:
       "Point feedback.yourbrand.com at the same portal. Customers stay on your brand; both URLs serve the public site.",
-    icon: LinkStrokeIcon,
+    icon: LinkIcon,
   },
   {
     name: "Browse, vote, and submit",
@@ -44,7 +49,7 @@ const portalItems: PortalItem[] = [
     name: "Private boards stay off it",
     description:
       "Give a key account their own board. Private boards never appear in public navigation. Your team still sees the full picture.",
-    icon: LockStrokeIcon,
+    icon: LockIcon,
   },
   {
     name: "Guest and anonymous",
@@ -56,18 +61,21 @@ const portalItems: PortalItem[] = [
 
 export default function Access() {
   return (
-    <section className="relative mt-20 mb-12 sm:mt-28 sm:mb-16" data-component="Access">
+    <section
+      className="relative mt-20 mb-12 sm:mt-28 sm:mb-16"
+      data-component="Access"
+    >
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
           <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
-            What customers see on that page
+            Make it easy for customers to take part.
           </h2>
           <div className="mt-3 flex items-start gap-2">
             <AccentBar width={8} />
             <p className="max-w-2xl text-sm leading-6 text-accent sm:text-base">
-              The subdomain is a public feedback portal. Boards, votes, the
-              roadmap, and the changelog live there. The dashboard your team
-              uses stays separate.
+              Meet customers on your own domain, welcome their ideas, and give
+              them a clear view of what’s coming. You choose how open the
+              conversation should be.
             </p>
           </div>
 
@@ -81,7 +89,7 @@ export default function Access() {
                     key={item.name}
                     className="group flex h-full flex-col bg-background px-5 py-5 transition-colors hover:bg-muted/40 sm:px-6 sm:py-6"
                   >
-                    <Icon aria-hidden className="size-6 text-foreground" />
+                    <Icon aria-hidden className="size-6" />
                     <h3 className="mt-4 text-sm font-medium text-foreground sm:text-base">
                       {item.name}
                     </h3>

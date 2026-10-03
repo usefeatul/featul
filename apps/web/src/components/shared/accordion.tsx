@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@featul/ui/components/accordion";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "@/components/global/icons";
 
 export type FaqItem = {
   id: string;
@@ -44,13 +44,10 @@ export function FaqAccordion({
         <Accordion type="single" collapsible className="w-full">
           {visibleItems.map((item) => (
             <div className="group" key={item.id}>
-              <AccordionItem
-                value={item.id}
-                className="border-none px-0 py-3"
-              >
+              <AccordionItem value={item.id} className="border-none px-0 py-3">
                 <AccordionTrigger className="font-heading group cursor-pointer text-left text-md font-medium !no-underline hover:!no-underline justify-start [&>svg]:hidden">
                   <span className="inline-flex items-center gap-2">
-                    <ChevronDownIcon className="size-4 text-primary transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                    <ChevronDownIcon className="size-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                     <span>{item.question}</span>
                   </span>
                 </AccordionTrigger>

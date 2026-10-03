@@ -1,11 +1,18 @@
 "use client";
+
+import { MenuIcon } from "@/components/global/icons";
 import Link from "next/link";
 import { APP_URL } from "@/config/auth";
 import { navigationConfig } from "@/config/homeNav";
 import { MarketingContainer } from "@/components/layout/container";
-import { MenuIcon } from "@featul/ui/icons/menu";
 import { cn } from "@featul/ui/lib/utils";
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { Button } from "@featul/ui/components/button";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
@@ -46,7 +53,11 @@ type NavbarFrameProps = {
   onMenuClick?: () => void;
 };
 
-function NavbarFrame({ scrolled, decorative = false, onMenuClick }: NavbarFrameProps) {
+function NavbarFrame({
+  scrolled,
+  decorative = false,
+  onMenuClick,
+}: NavbarFrameProps) {
   const main = navigationConfig.main;
 
   return (
@@ -71,7 +82,7 @@ function NavbarFrame({ scrolled, decorative = false, onMenuClick }: NavbarFrameP
         >
           {decorative ? (
             <div className="relative z-10 inline-flex shrink-0 items-center gap-2 text-foreground">
-              <FeatulLogoIcon size={26} />
+              <FeatulLogoIcon className="text-foreground" size={26} />
               <span className="text-lg font-semibold tracking-tight text-foreground">
                 Featul
               </span>

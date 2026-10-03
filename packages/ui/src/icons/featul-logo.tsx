@@ -1,4 +1,5 @@
 import React from 'react'
+import { cn } from '../lib/utils'
 
 interface FeatulLogoIconProps {
   className?: string
@@ -12,7 +13,7 @@ export const FeatulLogoIcon: React.FC<FeatulLogoIconProps> = ({ className = '', 
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      className={className}
+      className={cn('text-primary', className)}
     >
       <g transform="rotate(-90 12 12)">
         <path

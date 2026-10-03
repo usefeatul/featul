@@ -1,4 +1,27 @@
-import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
+import {
+  FeedbackIcon,
+  BoardIcon,
+  VoteIcon,
+  RoadmapIcon,
+  ChangelogIcon,
+  WidgetIcon,
+  DashboardIcon,
+  DocIcon,
+  BookIcon,
+  WrenchIcon,
+  MemberIcon,
+  CodeIcon,
+  BoxIcon,
+  CreditCardIcon,
+  IntegrationIcon,
+  ArticleIcon,
+  EnvelopeIcon,
+  ShieldIcon,
+} from "@/components/global/icons";
+import {
+  MarketingContainer,
+  marketingRailClass,
+} from "@/components/layout/container";
 import Link from "next/link";
 import type { ComponentType } from "react";
 
@@ -11,24 +34,6 @@ import {
 import { StatusButton } from "@/components/home/status";
 import FeatulLogoIcon from "@featul/ui/icons/featul-logo";
 import { GitHubIcon } from "@featul/ui/icons/github";
-import { FeedbackIcon } from "@featul/ui/icons/feedback";
-import { BoardIcon } from "@featul/ui/icons/board";
-import { VoteIcon } from "@featul/ui/icons/vote";
-import { RoadmapIcon } from "@featul/ui/icons/roadmap";
-import { ChangelogIcon } from "@featul/ui/icons/changelog";
-import { WidgetIcon } from "@featul/ui/icons/widget";
-import { DashboardIcon } from "@featul/ui/icons/dashboard";
-import { DocIcon } from "@featul/ui/icons/doc";
-import { BookIcon } from "@featul/ui/icons/book";
-import { WrenchIcon } from "@featul/ui/icons/wrench";
-import { MemberIcon } from "@featul/ui/icons/member";
-import { CodeIcon } from "@featul/ui/icons/code";
-import { BoxIcon } from "@featul/ui/icons/box";
-import { CreditCardIcon } from "@featul/ui/icons/credit-card";
-import { IntegrationIcon } from "@featul/ui/icons/integration";
-import { ArticleIcon } from "@featul/ui/icons/article";
-import { EnvelopeIcon } from "@featul/ui/icons/envelope";
-import { ShieldStrokeIcon } from "@featul/ui/icons/shield-stroke";
 import { PreferredSourceButton } from "@/components/preferred-source/button";
 
 type FeatulIcon = ComponentType<{
@@ -56,13 +61,12 @@ const footerIcons: Record<FooterIconName, FeatulIcon> = {
   blog: ArticleIcon,
   demo: BoardIcon,
   contact: EnvelopeIcon,
-  privacy: ShieldStrokeIcon,
+  privacy: ShieldIcon,
   terms: ArticleIcon,
-  gdpr: ShieldStrokeIcon,
+  gdpr: ShieldIcon,
 };
 
-const iconClassName =
-  "size-4 shrink-0 text-neutral-500 transition-colors group-hover:text-primary";
+const iconClassName = "size-4 shrink-0 text-neutral-600 dark:text-neutral-300";
 
 function isExternalHref(item: FooterNavItem) {
   return (
@@ -84,9 +88,7 @@ function FooterLink({ item }: { item: FooterNavItem }) {
         : undefined)}
       className="group text-accent flex items-center gap-2.5 text-sm leading-5 transition-colors hover:text-primary"
     >
-      {Icon ? (
-        <Icon aria-hidden className={iconClassName} size={16} />
-      ) : null}
+      {Icon ? <Icon aria-hidden className={iconClassName} size={16} /> : null}
       <span>{item.name}</span>
     </Link>
   );
@@ -126,7 +128,10 @@ export default function FooterSection() {
                     className="group text-neutral-500 transition-colors hover:text-primary"
                   >
                     {social.icon === "github" ? (
-                      <GitHubIcon size={18} />
+                      <GitHubIcon
+                        size={18}
+                        className="text-neutral-600 dark:text-neutral-300"
+                      />
                     ) : (
                       <EnvelopeIcon size={18} />
                     )}
