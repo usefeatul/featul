@@ -80,7 +80,7 @@ function NavbarFrame({
         >
           {decorative ? (
             <div className="relative z-10 inline-flex shrink-0 items-center gap-2 text-foreground">
-              <FeatulLogoIcon className="text-foreground" size={26} />
+              <FeatulLogoIcon size={26} />
               <span className="text-lg font-semibold tracking-tight text-foreground">
                 Featul
               </span>
@@ -160,13 +160,8 @@ function NavbarFrame({
               <Button
                 asChild
                 size="sm"
-                variant={decorative ? "nav" : "default"}
-                className={cn(
-                  "font-heading",
-                  decorative
-                    ? "border-white/80 bg-white text-primary hover:bg-white hover:text-primary"
-                    : "",
-                )}
+                variant="default"
+                className="font-heading"
               >
                 {decorative ? (
                   <span>Start for free</span>

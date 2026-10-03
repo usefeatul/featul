@@ -18,10 +18,6 @@ html {
   }
 }
 
-html[data-scrolled] [data-component="Navbar"] [data-nav-brand],
-html[data-scrolled] [data-component="Navbar"] [data-nav-brand] * {
-  color: var(--foreground);
-}
 html[data-scrolled] [data-component="Navbar"] a:not([data-slot="button"]):not([data-nav-brand]) {
   color: var(--accent);
 }

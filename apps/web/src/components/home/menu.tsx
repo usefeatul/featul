@@ -83,13 +83,8 @@ export function MobileMenu({
             ))}
             <Button
               asChild
-              variant={overCreate ? "nav" : "default"}
-              className={cn(
-                "w-full font-semibold",
-                overCreate
-                  ? "border-white/80 bg-white text-primary hover:bg-white/90 hover:text-primary"
-                  : "",
-              )}
+              variant="default"
+              className="w-full font-semibold"
             >
               <Link
                 href={APP_URL}
