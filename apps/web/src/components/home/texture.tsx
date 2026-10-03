@@ -56,12 +56,12 @@ const textures = {
     },
   },
   teal: {
-    color: [132, 211, 218],
-    direction: "up",
-    cell: 2,
+    color: [90, 192, 202],
+    direction: "down",
+    cell: 3,
     mask: {
       maskImage:
-        "radial-gradient(ellipse at 50% 0%, transparent 12%, black 42%, transparent 78%)",
+        "repeating-radial-gradient(ellipse at 50% 110%, black 0px 24px, rgba(0,0,0,0.18) 38px 54px, black 70px)",
     },
   },
 } satisfies Record<string, TextureSpec>;
