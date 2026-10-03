@@ -4,9 +4,11 @@ import { cn } from "@featul/ui/lib/utils";
 export function DitherBackdrop({
   className,
   multicolor = false,
+  fit = "fill",
 }: {
   className?: string;
   multicolor?: boolean;
+  fit?: "fill" | "cover";
 }) {
   return (
     <div
@@ -16,7 +18,7 @@ export function DitherBackdrop({
         className,
       )}
     >
-      <DitherClouds multicolor={multicolor} />
+      <DitherClouds multicolor={multicolor} fit={fit} />
     </div>
   );
 }

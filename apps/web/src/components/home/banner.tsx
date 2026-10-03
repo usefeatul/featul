@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ArrowIcon } from "@featul/ui/icons/arrow";
-import { contourArtwork } from "@featul/ui/lib/artwork";
 import { APP_URL } from "@/config/auth";
 
 export default function AnnouncementBanner() {
@@ -8,18 +7,8 @@ export default function AnnouncementBanner() {
     <aside
       aria-label="Get started with Featul"
       data-component="AnnouncementBanner"
-      className="fixed inset-x-0 top-0 z-[60] isolate h-10 overflow-hidden border-b border-primary/30 bg-primary text-black"
+      className="fixed inset-x-0 top-0 z-[60] isolate h-10 overflow-hidden border-b border-primary/30 bg-[#4189e2] text-white"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 [image-rendering:pixelated]"
-        style={{
-          backgroundImage: `url("${contourArtwork}")`,
-          backgroundSize: "cover",
-          backgroundPosition: "center 25%",
-          backgroundRepeat: "no-repeat",
-        }}
-      />
       <div className="relative flex h-full items-center justify-center gap-3 px-4 text-xs sm:gap-4 sm:text-[13px]">
         <p className="font-normal">
           <span className="sm:hidden">Turn ideas into features.</span>
