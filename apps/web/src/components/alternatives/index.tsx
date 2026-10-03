@@ -1,15 +1,12 @@
 "use client";
 
-import { SkyMarketingHero } from "@/components/layout/hero";
+import { Hero } from "@/components/home/hero";
 import { AlternativesIndexHeroContent } from "./intro";
 
 export function AlternativesIndexHero() {
   return (
-    <SkyMarketingHero
-      dataComponent="AlternativesIndexHero"
-      imageAlt="Featul dashboard preview"
-    >
+    <Hero dataComponent="AlternativesIndexHero">
       <AlternativesIndexHeroContent />
-    </SkyMarketingHero>
+    </Hero>
   );
 }
