@@ -20,7 +20,7 @@ export default function CTA() {
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
           <div
-            className="overflow-hidden rounded-xl border border-border bg-card/40 bg-cover bg-center bg-no-repeat px-6 py-12 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:px-7 sm:py-16"
+            className="flex min-h-96 flex-col overflow-hidden rounded-xl border border-border bg-card/40 bg-cover bg-center bg-no-repeat px-6 pb-6 pt-12 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:px-7 sm:pb-7 sm:pt-16"
             style={{ backgroundImage: "url(/image/sky.PNG)" }}
           >
             <h2 className="font-heading max-w-lg text-balance text-xl font-medium text-foreground sm:max-w-2xl sm:text-2xl lg:text-3xl">
@@ -31,7 +31,7 @@ export default function CTA() {
               Give your customers a voice and your team a clear next step.
               Create your free workspace and start the conversation today.
             </p>
-            <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <div className="mt-auto flex flex-col items-stretch gap-3 pt-8 sm:flex-row sm:items-center sm:gap-4">
               <HotkeyLink
                 variant="nav"
                 className={cn(
