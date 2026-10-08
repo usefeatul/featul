@@ -10,7 +10,13 @@ import Image from "next/image";
 import { useId, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Tabs } from "radix-ui";
-import { DASHBOARD_BLUR_DATA_URL } from "@/components/layout/sky-banner";
+import {
+  MarketingContainer,
+  MarketingRail,
+} from "@/components/layout/container";
+import dashboard from "../../../public/image/dashboard.png";
+import roadmap from "../../../public/image/roadmap.png";
+import changelog from "../../../public/image/changelog.png";
 import { DitherBackdrop } from "./backdrop";
 
 const previews = [
@@ -19,9 +25,7 @@ const previews = [
     label: "Feedback",
     icon: BoardIcon,
     iconColor: "#4189e2",
-    image: "/image/dashboard.png",
-    width: 1762,
-    height: 1124,
+    image: dashboard,
     alt: "Featul feedback workspace with customer requests, votes, comments, and statuses",
   },
   {
@@ -29,9 +33,7 @@ const previews = [
     label: "Roadmap",
     icon: RoadmapIcon,
     iconColor: "#3b95af",
-    image: "/image/roadmap.png",
-    width: 1762,
-    height: 1124,
+    image: roadmap,
     alt: "Featul roadmap showing customer requests organized into planned, progress, and review columns",
   },
   {
@@ -39,9 +41,7 @@ const previews = [
     label: "Changelog",
     icon: ChangelogIcon,
     iconColor: "#837ec8",
-    image: "/image/changelog.png",
-    width: 1762,
-    height: 1124,
+    image: changelog,
     alt: "Featul changelog workspace for writing and publishing product updates",
   },
 ];
@@ -115,24 +115,30 @@ export function Showcase() {
         <Tabs.Content
           key={preview.id}
           value={preview.id}
-          className="px-3 pb-12 pt-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:px-10 sm:py-16 lg:px-16 lg:pb-24 lg:pt-20"
+          className="pb-12 pt-8 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary sm:pb-16 sm:pt-12 lg:pb-20"
         >
-          <div className="mx-auto max-w-[1080px] overflow-hidden rounded-xl bg-card p-1 shadow-[0_24px_64px_-20px_rgba(0,0,0,0.35)] ring-1 ring-white/40 sm:rounded-2xl sm:p-2">
-            <div className="overflow-hidden rounded-lg">
-              <Image
-                src={preview.image}
-                alt={preview.alt}
-                width={preview.width}
-                height={preview.height}
-                quality={100}
-                priority={index === 0}
-                sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 1023px) calc(100vw - 96px), (max-width: 1207px) calc(100vw - 144px), 1064px"
-                placeholder="blur"
-                blurDataURL={DASHBOARD_BLUR_DATA_URL}
-                className="block h-auto w-full"
-              />
-            </div>
-          </div>
+          <MarketingContainer>
+            <MarketingRail>
+              <div className="overflow-hidden rounded-xl bg-card p-1 shadow-[0_24px_64px_-20px_rgba(0,0,0,0.35)] ring-1 ring-white/40 sm:rounded-2xl sm:p-2">
+                <motion.div
+                  initial={reduceMotion ? false : { opacity: 0.85 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.2, ease: "easeOut" }}
+                  className="aspect-[16/10] overflow-hidden rounded-lg"
+                >
+                  <Image
+                    src={preview.image}
+                    alt={preview.alt}
+                    quality={100}
+                    priority={index === 0}
+                    sizes="(max-width: 639px) calc(90vw - 32px), (max-width: 1023px) calc(100vw - 144px), (max-width: 1151px) calc(100vw - 160px), (max-width: 1279px) 992px, 976px"
+                    placeholder="blur"
+                    className="block h-full w-full object-contain"
+                  />
+                </motion.div>
+              </div>
+            </MarketingRail>
+          </MarketingContainer>
         </Tabs.Content>
       ))}
     </Tabs.Root>
