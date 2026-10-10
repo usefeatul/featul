@@ -4,8 +4,8 @@
   "main": "./src/index.ts",
   "devDependencies": {
     "@featul/tsconfig": "workspace:*",
-    "bun-types": "^1.3.0",
-    "typescript": "^5.9.2"
+    "bun-types": "^1.4.3",
+    "typescript": "^5.9.3"
   },
   "exports": {
     ".": {
@@ -29,6 +29,6 @@
   "type": "module",
   "types": "./src/index.ts",
   "dependencies": {
-    "html2canvas-pro": "^2.3.9"
+    "html2canvas-pro": "^2.5.2"
   }
 }

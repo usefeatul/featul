@@ -153,6 +153,17 @@ export default function BillingSection({
           </div>
         </div>
 
+        {subscription?.status === "past_due" || subscription?.status === "unpaid" ? (
+          <p role="alert" className="text-sm text-destructive">
+            Your payment failed. Open Manage billing to update your payment method and pay the outstanding invoice.
+          </p>
+        ) : null}
+        {subscription?.cancelAtPeriodEnd && subscription.periodEnd ? (
+          <p className="text-sm text-muted-foreground">
+            Your subscription ends on {new Date(subscription.periodEnd).toLocaleDateString()}. You can restore it in Manage billing before then.
+          </p>
+        ) : null}
+
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
           {PLAN_ORDER.map((planKey) => (
             <PlanOptionCard
@@ -160,6 +171,7 @@ export default function BillingSection({
               planKey={planKey}
               currentPlan={normalizedPlan}
               billingCycle={billingCycle}
+              currentBillingCycle={currentBillingCycle}
               workspaceId={workspaceId}
               workspaceSlug={slug}
               canManageBilling={isOwner}

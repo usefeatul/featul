@@ -1,6 +1,6 @@
 import fs from "node:fs/promises"
 import path from "node:path"
-import matter from "gray-matter"
+import matter from "./frontmatter"
 
 export type DocsFrontmatter = {
   title: string

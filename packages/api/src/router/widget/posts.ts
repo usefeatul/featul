@@ -1,3 +1,4 @@
+import { requireImageReferenceAccess } from "../../storage/delivery";
 import { publicBoardConditions } from "../../post/access";
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
@@ -225,6 +226,7 @@ export const widgetCreate = publicProcedure
       mergePostMetadata(undefined, imageFields.attachments),
     )) {
       assertWidgetPostImageUrl(url, resolved.workspaceSlug);
+      await requireImageReferenceAccess(ctx.db, [url], null);
     }
 
     const request = getWidgetRequest(c);

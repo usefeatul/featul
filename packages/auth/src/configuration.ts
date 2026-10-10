@@ -1,3 +1,5 @@
+import { trustedIpHeaders } from "./ip"
+
 type Environment = Record<string, string | undefined>
 
 /** Return variable names only; credentials must never be included in errors. */
@@ -6,8 +8,10 @@ export function productionConfigurationErrors(env: Environment): string[] {
     "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET",
     "STRIPE_PRICE_ID_STARTER_MONTHLY", "STRIPE_PRICE_ID_STARTER_YEARLY",
     "STRIPE_PRICE_ID_PROFESSIONAL_MONTHLY", "STRIPE_PRICE_ID_PROFESSIONAL_YEARLY",
-    "R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET", "R2_PUBLIC_BASE_URL"]
+    "R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET", "R2_PRIVATE_BUCKET", "R2_PUBLIC_BASE_URL"]
   const errors = required.filter(key => !env[key]?.trim()).map(key => `${key} is required`)
+  if (!trustedIpHeaders({ ...env, NODE_ENV: "production" }).length) errors.push("TRUSTED_PROXY_IP_HEADER is required outside Vercel")
+  if (env.R2_PRIVATE_BUCKET && env.R2_PRIVATE_BUCKET === env.R2_BUCKET) errors.push("R2_PRIVATE_BUCKET must differ from the public bucket")
   for (const key of ["NEXT_PUBLIC_APP_URL", "R2_PUBLIC_BASE_URL", "UPSTASH_REDIS_REST_URL"]) {
     if (!env[key]) continue
     try {

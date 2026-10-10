@@ -1,3 +1,4 @@
+import { publicBoardConditions } from "../post/access";
 // biome-ignore assist/source/organizeImports: <>
 import { eq, and, sql, inArray, asc, type SQLWrapper } from "drizzle-orm";
 import { z } from "zod";
@@ -273,7 +274,7 @@ export function createBoardRouter() {
             ownerId: workspace.ownerId,
           })
           .from(workspace)
-          .where(eq(workspace.slug, input.slug))
+          .where(and(eq(workspace.slug, input.slug), eq(workspace.isActive, true)))
           .limit(1);
         if (!ws)
           throw new HTTPException(404, { message: "Workspace not found" });
@@ -360,7 +361,7 @@ export function createBoardRouter() {
         const [ws] = await ctx.db
           .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
-          .where(eq(workspace.slug, input.slug))
+          .where(and(eq(workspace.slug, input.slug), eq(workspace.isActive, true)))
           .limit(1);
         if (!ws)
           throw new HTTPException(404, { message: "Workspace not found" });
@@ -415,7 +416,7 @@ export function createBoardRouter() {
         const [ws] = await ctx.db
           .select({ id: workspace.id })
           .from(workspace)
-          .where(eq(workspace.slug, input.slug))
+          .where(and(eq(workspace.slug, input.slug), eq(workspace.isActive, true)))
           .limit(1);
         if (!ws) return c.superjson({ boards: [] });
 
@@ -430,19 +431,18 @@ export function createBoardRouter() {
             roadmapStatuses: board.roadmapStatuses,
           })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.isPublic, true)))
+          .where(and(eq(board.workspaceId, ws.id), publicBoardConditions()))
           .orderBy(asc(board.sortOrder), asc(board.createdAt));
 
-        const withCounts = await Promise.all(
-          boardsList.map(async (b: typeof board.$inferSelect) => {
-            const [row] = await ctx.db
-              .select({ count: sql<number>`count(*)` })
+        const counts = boardsList.length
+          ? await ctx.db
+              .select({ boardId: post.boardId, count: sql<number>`count(*)` })
               .from(post)
-              .where(eq(post.boardId, b.id))
-              .limit(1);
-            return { ...b, postCount: Number(row?.count || 0) };
-          }),
-        );
+              .where(and(inArray(post.boardId, boardsList.map((b: { id: string }) => b.id)), eq(post.status, "published")))
+              .groupBy(post.boardId)
+          : [];
+        const countsByBoard = new Map(counts.map((row: { boardId: string; count: number }) => [row.boardId, Number(row.count)] as const));
+        const withCounts = boardsList.map((b: Pick<typeof board.$inferSelect, "id" | "name" | "slug" | "isPublic" | "allowAnonymous" | "allowComments" | "roadmapStatuses">) => ({ ...b, postCount: countsByBoard.get(b.id) || 0 }));
 
         c.header(
           "Cache-Control",
@@ -463,7 +463,7 @@ export function createBoardRouter() {
         const [ws] = await ctx.db
           .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
-          .where(eq(workspace.slug, input.slug))
+          .where(and(eq(workspace.slug, input.slug), eq(workspace.isActive, true)))
           .limit(1);
         if (!ws) return c.superjson({ posts: [] });
 
@@ -482,7 +482,7 @@ export function createBoardRouter() {
           ftsFilter,
         ];
         if (input.publicOnly || !includePrivateBoards) {
-          filters.push(eq(board.isPublic, true), eq(post.status, "published"));
+          filters.push(publicBoardConditions()!, eq(post.status, "published"));
         }
 
         const rows = await ctx.db
@@ -509,7 +509,7 @@ export function createBoardRouter() {
 
         c.header(
           "Cache-Control",
-          "public, max-age=5, stale-while-revalidate=60",
+          "private, no-store",
         );
         return c.superjson({ posts: rows });
       }),
@@ -520,7 +520,7 @@ export function createBoardRouter() {
         const [ws] = await ctx.db
           .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
-          .where(eq(workspace.slug, input.slug))
+          .where(and(eq(workspace.slug, input.slug), eq(workspace.isActive, true)))
           .limit(1);
         if (!ws) return c.superjson({ posts: [] });
 
@@ -540,7 +540,7 @@ export function createBoardRouter() {
           workspaceOwnerId: ws.ownerId,
           userId,
         });
-        if (!b.isPublic && !canAccessWorkspace) {
+        if (!canAccessWorkspace) {
           throw new HTTPException(403, { message: "Forbidden" });
         }
 
@@ -663,7 +663,7 @@ export function createBoardRouter() {
           .from(post)
           .innerJoin(board, eq(post.boardId, board.id))
           .innerJoin(workspace, eq(board.workspaceId, workspace.id))
-          .where(eq(post.id, input.postId))
+          .where(and(eq(post.id, input.postId), eq(workspace.isActive, true)))
           .limit(1);
 
         if (!targetPostAccess) return c.superjson({ post: null });
@@ -674,7 +674,7 @@ export function createBoardRouter() {
           workspaceOwnerId: targetPostAccess.workspaceOwnerId,
           userId,
         });
-        if (!targetPostAccess.boardIsPublic && !canAccessWorkspace) {
+        if (!canAccessWorkspace) {
           throw new HTTPException(403, { message: "Forbidden" });
         }
 
@@ -918,7 +918,7 @@ export function createBoardRouter() {
         const [ws] = await ctx.db
           .select({ id: workspace.id })
           .from(workspace)
-          .where(eq(workspace.slug, input.slug))
+          .where(and(eq(workspace.slug, input.slug), eq(workspace.isActive, true)))
           .limit(1);
         if (!ws) return c.superjson({ tags: [] });
 
@@ -938,7 +938,8 @@ export function createBoardRouter() {
             and(
               eq(post.boardId, board.id),
               eq(board.workspaceId, ws.id),
-              eq(board.isSystem, false),
+              publicBoardConditions(),
+              eq(post.status, "published"),
             ),
           )
           .where(eq(tag.workspaceId, ws.id))
@@ -961,7 +962,7 @@ export function createBoardRouter() {
         const [ws] = await ctx.db
           .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
-          .where(eq(workspace.slug, input.slug))
+          .where(and(eq(workspace.slug, input.slug), eq(workspace.isActive, true)))
           .limit(1);
         if (!ws) return c.superjson({ count: 0 });
 
@@ -991,7 +992,7 @@ export function createBoardRouter() {
           eq(board.isSystem, false),
         ];
         if (!includePrivateBoards) {
-          filters.push(eq(board.isPublic, true));
+          filters.push(publicBoardConditions()!, eq(post.status, "published"));
         }
         if (normalizedStatuses.length > 0)
           filters.push(inArray(post.roadmapStatus, normalizedStatuses));
@@ -1020,7 +1021,7 @@ export function createBoardRouter() {
 
         c.header(
           "Cache-Control",
-          "public, max-age=10, stale-while-revalidate=60",
+          "private, no-store",
         );
         return c.superjson({ count: Number(row?.count || 0) });
       }),

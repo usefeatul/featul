@@ -1,3 +1,4 @@
+import { requireImageReferenceAccess } from "../storage/delivery"
 import { togglePostVote } from "../post/voting"
 import { requirePostAccess, findSimilarVisiblePosts } from "../post/access"
 import { eq, and, sql, isNull, ilike, or, inArray, type SQL } from "drizzle-orm"
@@ -117,15 +118,15 @@ export function createPostRouter() {
         const [ws] = await ctx.db
           .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
-          .where(eq(workspace.slug, workspaceSlug))
+          .where(and(eq(workspace.slug, workspaceSlug), eq(workspace.isActive, true)))
           .limit(1)
         if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
 
         // Resolve Board
         const [b] = await ctx.db
-          .select({ id: board.id, allowAnonymous: board.allowAnonymous, isPublic: board.isPublic })
+          .select({ id: board.id, allowAnonymous: board.allowAnonymous, isPublic: board.isPublic, isVisible: board.isVisible })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.slug, boardSlug)))
+          .where(and(eq(board.workspaceId, ws.id), eq(board.slug, boardSlug), eq(board.isActive, true), eq(board.isSystem, false)))
           .limit(1)
         if (!b) throw new HTTPException(404, { message: "Board not found" })
 
@@ -152,7 +153,7 @@ export function createPostRouter() {
           }
         }
 
-        if (!b.isPublic) {
+        if (!b.isPublic || !b.isVisible) {
           if (!userId) {
             throw new HTTPException(401, { message: "Please sign in to submit a post in this workspace" })
           }
@@ -178,6 +179,7 @@ export function createPostRouter() {
           attachments: [],
         }
         assertPostImageFields(imageFields, workspaceSlug)
+        await requireImageReferenceAccess(ctx.db, [imageFields.image, ...imageFields.attachments.map(a => a.url)].filter((url): url is string => Boolean(url)), userId)
 
         // Public submitters cannot set roadmap status. NEXT-AUTH-001.
         const isModerator = await canModerateWorkspace(ctx, ws.id, ws.ownerId, userId)
@@ -289,6 +291,7 @@ export function createPostRouter() {
       .post(async ({ ctx, input, c }) => {
         const { postId, title, content, image, images, boardSlug, roadmapStatus, tags } = input
         const userId = ctx.session.user.id
+        await requirePostAccess(ctx.db, postId, userId, { allowUnpublishedForMembers: true })
 
         // Get existing post
         const [existingPost] = await ctx.db
@@ -362,6 +365,7 @@ export function createPostRouter() {
 
         const imageFields = resolvePostImageFields({ image, images })
         assertPostImageFields(imageFields, boardWorkspace.slug)
+        if (imageFields) await requireImageReferenceAccess(ctx.db, [imageFields.image, ...imageFields.attachments.map(a => a.url)].filter((url): url is string => Boolean(url)), userId)
         const nextImage =
           imageFields ? imageFields.image : existingPost.image
         const nextMetadata = imageFields
@@ -507,6 +511,7 @@ export function createPostRouter() {
       .post(async ({ ctx, input, c }) => {
         const { postId } = input
         const userId = ctx.session.user.id
+        await requirePostAccess(ctx.db, postId, userId, { allowUnpublishedForMembers: true })
 
         // Get existing post
         const [existingPost] = await ctx.db

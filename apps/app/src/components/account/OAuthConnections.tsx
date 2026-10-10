@@ -117,8 +117,7 @@ export default function OAuthConnections({ initialAccounts }: { initialAccounts?
             setDisconnecting(providerId)
             try {
                 const { error } = await authClient.unlinkAccount({
-                    providerId,
-                    accountId: account.accountId
+                    accountId: account.id
                 })
 
                 if (error) {

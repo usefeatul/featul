@@ -61,5 +61,9 @@ jobs:
       - name: Check workspace and shared types
         run: bunx --no-install turbo run check-types --filter='${{ matrix.workspace }}...'
 
+      - name: Security and behavior regression tests
+        if: matrix.workspace == 'app'
+        run: bun run test
+
       - name: Build workspace and shared dependencies
         run: bunx --no-install turbo run build --filter=${{ matrix.workspace }}

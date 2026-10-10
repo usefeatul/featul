@@ -142,7 +142,7 @@ export default function CommentForm({
       {uploadedImage && (
         <div className="relative inline-block">
           <ContentImage
-            url={uploadedImage.url}
+            url={uploadedImage.previewUrl || uploadedImage.url}
             alt={uploadedImage.name}
             className="h-16 w-24"
           />

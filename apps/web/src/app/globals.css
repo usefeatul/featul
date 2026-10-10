@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "@featul/ui/globals.css";
 @import "tw-animate-css";
+@import "@c15t/nextjs/styles.css";
 @custom-variant dark (&:is(.dark *));
 @plugin "@tailwindcss/typography";
 

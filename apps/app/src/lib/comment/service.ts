@@ -6,7 +6,7 @@ export async function getCommentImageUploadUrl(
   fileName: string,
   contentType: string,
   fileSize: number
-): Promise<{ uploadUrl: string; key: string; publicUrl: string }> {
+): Promise<{ uploadUrl: string; key: string; publicUrl: string; previewUrl?: string }> {
   const res = await client.storage.getCommentImageUploadUrl.$post({
     postId,
     fileName,
@@ -21,6 +21,7 @@ export async function getCommentImageUploadUrl(
     uploadUrl: data.uploadUrl,
     key: data.key,
     publicUrl: data.publicUrl,
+    previewUrl: data.previewUrl,
   }
 }
 

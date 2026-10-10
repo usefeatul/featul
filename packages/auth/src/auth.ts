@@ -1,7 +1,7 @@
+import { trustedIpHeaders } from "./ip"
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
-  organization,
   lastLoginMethod,
   emailOTP,
   twoFactor,
@@ -112,9 +112,6 @@ const stripePlans = [
         name: "starter",
         priceId: stripeStarterMonthlyPriceId,
         annualDiscountPriceId: stripeStarterYearlyPriceId || undefined,
-        freeTrial: {
-          days: 7,
-        },
       }
     : null,
   stripeProfessionalMonthlyPriceId
@@ -122,18 +119,12 @@ const stripePlans = [
         name: "professional",
         priceId: stripeProfessionalMonthlyPriceId,
         annualDiscountPriceId: stripeProfessionalYearlyPriceId || undefined,
-        freeTrial: {
-          days: 3,
-        },
       }
     : null,
 ].filter(Boolean) as Array<{
   name: "starter" | "professional";
   priceId: string;
   annualDiscountPriceId?: string;
-  freeTrial?: {
-    days: number;
-  };
 }>;
 
 const stripePlugin = (() => {
@@ -149,16 +140,13 @@ const stripePlugin = (() => {
       enabled: true,
       plans: stripePlans,
       getCheckoutSessionParams: async ({ user, plan, subscription }) => {
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-        if (!appUrl) throw new Error("NEXT_PUBLIC_APP_URL is required for billing");
-        const successUrl = new URL("/api/billing/success", appUrl);
-        successUrl.searchParams.set("workspaceId", subscription.referenceId);
         return {
-          params: {
-            // Bypass the plugin's customer-wide first-active-subscription lookup.
-            success_url: `${successUrl.toString()}&session_id={CHECKOUT_SESSION_ID}`,
-            ...await getAccountTrialCheckoutParams(user.id, subscription.referenceId, subscription.id, plan.freeTrial?.days),
-          },
+          // Configure trials here only: the plugin's per-workspace freeTrial
+          // default would grant another trial on a second workspace.
+          params: await getAccountTrialCheckoutParams(
+            user.id, subscription.referenceId, subscription.id,
+            plan.name === "starter" ? 7 : 3,
+          ),
         };
       },
       authorizeReference: async ({ user, referenceId }) => {
@@ -221,7 +209,7 @@ export const auth = betterAuth({
       secure: true,
     },
     ipAddress: {
-      ipAddressHeaders: ["cf-connecting-ip", "x-forwarded-for", "x-real-ip"],
+      ipAddressHeaders: trustedIpHeaders(),
       ipv6Subnet: 64,
     },
   },
@@ -249,7 +237,6 @@ export const auth = betterAuth({
   },
 
   plugins: [
-    organization(),
     lastLoginMethod(),
     emailOTP({
       overrideDefaultEmailVerification: true,
@@ -294,7 +281,6 @@ export const auth = betterAuth({
           }
           if (userId) {
             await captureServerAnalyticsEvent("sign_up_completed", userId, {
-              email: to,
               has_name: Boolean(name),
             });
           }

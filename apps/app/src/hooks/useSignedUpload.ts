@@ -10,6 +10,7 @@ export const MAX_IMAGE_SIZE = POST_IMAGE_UPLOAD_MAX_BYTES;
 
 export interface UploadedImage {
   url: string;
+  previewUrl?: string;
   name: string;
   type: string;
 }
@@ -17,6 +18,7 @@ export interface UploadedImage {
 type UploadTarget = {
   uploadUrl: string;
   publicUrl: string;
+  previewUrl?: string;
 };
 
 type UseSignedUploadOptions = {
@@ -103,13 +105,14 @@ export function useSignedUpload({
     const toastId = toast.loading(loadingMessage);
 
     try {
-      const { uploadUrl, publicUrl } = await getUploadTarget(file);
+      const { uploadUrl, publicUrl, previewUrl } = await getUploadTarget(file);
       await uploadFileToSignedUrl(uploadUrl, file);
 
       const replaced =
         maxFiles === 1 ? imagesRef.current[0] : undefined;
       const nextImage: UploadedImage = {
         url: publicUrl,
+        previewUrl,
         name: file.name,
         type: file.type,
       };

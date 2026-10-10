@@ -23,6 +23,7 @@ function emitBodyStreamEvents(
 
 async function generateChangelogTitle(input: {
   model: string;
+  signal?: AbortSignal;
   action: StructuredGenerationAction;
   temperature: number;
   prompt?: string;
@@ -59,6 +60,7 @@ async function generateChangelogTitle(input: {
       (text) => {
         raw += text;
       },
+      input.signal,
     );
     return raw;
   };
@@ -76,6 +78,7 @@ async function generateChangelogTitle(input: {
 
 export async function streamStructuredChangelog(input: {
   model: string;
+  signal?: AbortSignal;
   action: StructuredGenerationAction;
   temperature: number;
   maxBodyTokens: number;
@@ -123,6 +126,7 @@ export async function streamStructuredChangelog(input: {
       body += text;
       emitBodyStreamEvents(body, structuredState, input.send);
     },
+    input.signal,
   );
 
   return {

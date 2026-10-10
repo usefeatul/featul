@@ -19,7 +19,6 @@
     "./billing": "./src/billing.ts",
     "./billing/*": "./src/billing/*.ts",
     "./stripe": "./src/stripe.ts",
-    "./workspace": "./src/workspace.ts",
     "./password": "./src/password.ts",
     "./session": "./src/session.ts",
     "./email": "./src/email.ts",
@@ -27,22 +26,23 @@
     "./trust": "./src/trust.ts",
     "./*": "./src/*",
     "./configuration": "./src/configuration.ts",
-    "./email/transport": "./src/email/transport.ts"
+    "./email/transport": "./src/email/transport.ts",
+    "./ip": "./src/ip.ts"
   },
   "dependencies": {
-    "@better-auth/passkey": "1.5.5",
-    "@better-auth/stripe": "1.5.5",
+    "@better-auth/passkey": "1.7.7",
+    "@better-auth/stripe": "1.7.7",
     "@featul/db": "workspace:*",
-    "@react-email/components": "^1.0.1",
-    "@react-email/render": "^2.0.0",
-    "@upstash/redis": "^1.35.7",
-    "better-auth": "1.5.5",
-    "drizzle-orm": "^0.39.0",
-    "posthog-node": "^5.28.5",
+    "@react-email/components": "^1.0.12",
+    "@react-email/render": "^2.1.0",
+    "@upstash/redis": "^1.39.0",
+    "better-auth": "1.7.7",
+    "drizzle-orm": "^0.45.2",
+    "posthog-node": "^5.55.1",
     "stripe": "^20.4.1"
   },
   "devDependencies": {
     "@featul/tsconfig": "workspace:*",
-    "typescript": "^5.7.3"
+    "typescript": "^5.9.3"
   }
 }

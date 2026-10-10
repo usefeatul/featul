@@ -22,30 +22,30 @@ export async function findSimilarVisiblePosts(database: typeof db, workspaceSlug
 }
 
 /** Shared authorization for mutations addressed by a public content ID. */
-export async function requirePostAccess(database: typeof db, postId: string, userId: string | null) {
+export async function requirePostAccess(database: typeof db, postId: string, userId: string | null, options: { allowUnpublishedForMembers?: boolean } = {}) {
   const [target] = await database.select({
     id: post.id, title: post.title, roadmapStatus: post.roadmapStatus,
     status: post.status, workspaceId: workspace.id, ownerId: workspace.ownerId,
     isActive: board.isActive, isPublic: board.isPublic, isVisible: board.isVisible,
-    isSystem: board.isSystem,
+    isSystem: board.isSystem, isLocked: post.isLocked,
   }).from(post).innerJoin(board, eq(post.boardId, board.id))
     .innerJoin(workspace, eq(board.workspaceId, workspace.id))
     .where(and(eq(post.id, postId), eq(workspace.isActive, true))).limit(1)
-  if (!target || target.status !== "published" || !target.isActive || target.isSystem) {
+  if (!target || !target.isActive || target.isSystem) {
     throw new HTTPException(404, { message: "Post not found" })
   }
   const member = await hasActiveWorkspaceAccess({ db: database }, target.workspaceId, target.ownerId, userId)
-  if ((!target.isPublic || !target.isVisible) && !member) {
+  if ((target.status !== "published" && !(options.allowUnpublishedForMembers && member)) || ((!target.isPublic || !target.isVisible) && !member)) {
     throw new HTTPException(404, { message: "Post not found" })
   }
   return { ...target, member }
 }
 
-export async function requireCommentAccess(database: typeof db, commentId: string, userId: string | null) {
+export async function requireCommentAccess(database: typeof db, commentId: string, userId: string | null, options: { allowUnpublishedForMembers?: boolean } = {}) {
   const [target] = await database.select({ id: comment.id, postId: comment.postId, status: comment.status, isInternal: comment.isInternal })
     .from(comment).where(eq(comment.id, commentId)).limit(1)
-  if (!target || target.status !== "published") throw new HTTPException(404, { message: "Comment not found" })
-  const parent = await requirePostAccess(database, target.postId, userId)
-  if (target.isInternal && !parent.member) throw new HTTPException(404, { message: "Comment not found" })
+  if (!target) throw new HTTPException(404, { message: "Comment not found" })
+  const parent = await requirePostAccess(database, target.postId, userId, options)
+  if ((target.status !== "published" && !(options.allowUnpublishedForMembers && parent.member)) || (target.isInternal && !parent.member)) throw new HTTPException(404, { message: "Comment not found" })
   return { ...parent, commentId: target.id, postId: target.postId }
 }

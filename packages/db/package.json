@@ -19,17 +19,17 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
-    "@paralleldrive/cuid2": "^3.0.6",
-    "drizzle-orm": "^0.39.0",
-    "ws": "^8.18.0"
+    "@paralleldrive/cuid2": "^3.3.0",
+    "drizzle-orm": "^0.45.2",
+    "ws": "^8.22.0"
   },
   "devDependencies": {
     "@featul/tsconfig": "workspace:*",
     "@types/node": "22.9.0",
-    "@types/ws": "^8.5.13",
-    "drizzle-kit": "^0.30.1",
-    "dotenv": "^16.4.5",
-    "tsx": "^4.7.0",
-    "typescript": "^5.6.3"
+    "@types/ws": "^8.18.2",
+    "drizzle-kit": "^0.31.10",
+    "dotenv": "^16.6.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
   }
 }

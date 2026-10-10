@@ -60,6 +60,12 @@ export function mapMarkdownDocument(
         omitted.length = omittedCount;
         if (serialize(child).trim()) return false;
         omitted.push({ from: rightOffset, to: rightOffset + child.nodeSize });
+        // Newer Markdown parsers preserve the blank block left by an omitted
+        // atom. Consume that placeholder without mapping it onto the media.
+        if (child.isAtom && leftChild?.type.name === "paragraph" && leftChild.content.size === 0) {
+          leftOffset += leftChild.nodeSize;
+          leftIndex++;
+        }
       }
       rightOffset += child.nodeSize;
     }

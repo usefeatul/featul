@@ -1,6 +1,5 @@
 export * from "./auth"
 export * from "./client"
-export * from "./workspace"
 export * from "./session"
 export * from "./password"
 export * from "./email"

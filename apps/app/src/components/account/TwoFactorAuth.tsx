@@ -49,12 +49,12 @@ export default function TwoFactorAuth({ twoFactorEnabled = false, hasPassword = 
         setLoading(true)
         const toastId = toast.loading("Setting up 2FA...")
         try {
-            const result = await authClient.twoFactor.enable({ password })
+            const result = await authClient.twoFactor.enable({ password, method: "totp" })
             if (result?.error) {
                 toast.error(result.error.message || "Failed to enable 2FA", { id: toastId })
                 return
             }
-            if (result?.data?.totpURI) {
+            if (result?.data?.method === "totp" && result.data.totpURI) {
                 setTotpUri(result.data.totpURI)
                 if (result.data.backupCodes) {
                     setBackupCodes(result.data.backupCodes)

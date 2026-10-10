@@ -21,7 +21,7 @@ import {
 
 type CommentNode = WidgetComment & { replies: CommentNode[] };
 
-export type UploadedImage = { url: string; name: string };
+export type UploadedImage = { url: string; name: string; previewUrl?: string };
 
 export type ComposerProps = {
   draft: string;
@@ -190,7 +190,7 @@ function CommentComposer({
       {uploadedImage ? (
         <div className="relative mt-2 w-fit shrink-0">
           <WidgetImage
-            url={uploadedImage.url}
+            url={uploadedImage.previewUrl || uploadedImage.url}
             alt={uploadedImage.name}
             className="h-16 w-24"
           />

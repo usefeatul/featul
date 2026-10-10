@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { db, workspace } from "@featul/db";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
 
 export type WorkspaceSummaryBySlug = {
@@ -35,7 +35,7 @@ export const getWorkspaceBySlugRecord = cache(async function getWorkspaceBySlugR
       timezone: workspace.timezone,
     })
     .from(workspace)
-    .where(eq(workspace.slug, slug))
+    .where(and(eq(workspace.slug, slug), eq(workspace.isActive, true)))
     .limit(1);
 
   if (!ws) return null;
@@ -57,7 +57,7 @@ export async function getWorkspaceSummaryBySlug(
       ownerId: workspace.ownerId,
     })
     .from(workspace)
-    .where(eq(workspace.slug, slug))
+    .where(and(eq(workspace.slug, slug), eq(workspace.isActive, true)))
     .limit(1);
 
   return ws ?? null;
@@ -67,7 +67,7 @@ export async function getWorkspaceIdBySlug(slug: string): Promise<string | null>
   const [ws] = await db
     .select({ id: workspace.id })
     .from(workspace)
-    .where(eq(workspace.slug, slug))
+    .where(and(eq(workspace.slug, slug), eq(workspace.isActive, true)))
     .limit(1);
 
   return ws?.id ?? null;

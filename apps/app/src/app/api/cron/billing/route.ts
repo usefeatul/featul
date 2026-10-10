@@ -1,4 +1,5 @@
 import { reconcileBilling } from "@featul/auth/billing/reconcile"
+import { checkStorageCleanup } from "@featul/api/storage/health"
 import * as Sentry from "@sentry/nextjs"
 
 export const runtime = "nodejs"
@@ -12,6 +13,8 @@ export async function GET(request: Request) {
   try {
     const result = await Sentry.withMonitor("billing-reconciliation", async () => {
       const result = await reconcileBilling()
+      // Reconcile first so a cleanup outage never prevents billing retries.
+      await checkStorageCleanup()
       if (result.failures || result.overdueEvents) {
         throw new Error(`Billing reconciliation: ${result.failures} failures, ${result.overdueEvents} overdue events`)
       }
@@ -21,7 +24,10 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error("[billing] Reconciliation failed", error)
     Sentry.captureException(error, { tags: { job: "billing-reconciliation" } })
-    await Sentry.flush(2000)
     return Response.json({ error: "Billing reconciliation failed" }, { status: 500 })
+  } finally {
+    // Serverless execution may freeze after the response. Deliver the final
+    // successful check-in too, otherwise Sentry reports a false timeout.
+    await Sentry.flush(2000)
   }
 }

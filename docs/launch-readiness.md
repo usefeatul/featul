@@ -1,4 +1,6 @@
-# Launch readiness — 29 September 2026
+# Launch readiness — historical review, 29 September 2026
+
+> Superseded by [the 10 October security remediation and release status](security-remediation.md). Production Stripe/cron configuration now exists; the confirmed production database has all 27 migrations; private storage and release gates are configured; tests have been restored; the approved releases are live, the legacy attachment cutover is complete, and paid sandbox/customer-account acceptance checks have passed. The current document also records shared monitoring for the free Sentry plan. Statements below describe the earlier review, not current blockers.
 
 **Code fixes completed; hold the public launch until production billing and operational checks are complete.** This is a targeted review, not an exhaustive audit. Changes are local and have not been deployed.
 

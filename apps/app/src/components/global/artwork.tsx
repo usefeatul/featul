@@ -49,7 +49,6 @@ export function LogoutIcon({ size = 20, ...props }: IconProps) {
   );
 }
 
-export { RoadmapIcon, ChangelogIcon } from "@featul/ui/icons/product";
 
 export function ShareIcon(props: SVGProps<SVGSVGElement>) {
   return (

@@ -9,6 +9,7 @@ import { cn } from "@featul/ui/lib/utils"
 
 type GalleryImage = {
   url: string
+  previewUrl?: string
   name?: string
 }
 
@@ -29,13 +30,13 @@ export function PostImageGallery({
   onRemove?: (index: number) => void
   removeDisabled?: boolean
 }) {
-  const images = items ?? listPostImages(image, metadata)
+  const images: GalleryImage[] = items ?? listPostImages(image, metadata)
   const scrollerRef = React.useRef<HTMLDivElement>(null)
   const previousCountRef = React.useRef(0)
   const [viewerIndex, setViewerIndex] = React.useState<number | null>(null)
 
   const lightboxImages = images.map((item, index) => ({
-    url: item.url,
+    url: item.previewUrl || item.url,
     alt: item.name || (images.length > 1 ? `${alt} ${index + 1}` : alt),
   }))
 
@@ -65,7 +66,7 @@ export function PostImageGallery({
             className="relative shrink-0 snap-start"
           >
             <ContentImage
-              url={item.url}
+              url={item.previewUrl || item.url}
               alt={item.name || (images.length > 1 ? `${alt} ${index + 1}` : alt)}
               className="h-16 w-24"
               onPreview={() => setViewerIndex(index)}

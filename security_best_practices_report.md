@@ -1,5 +1,7 @@
 # Featul security and launch readiness review
 
+> Remediation update (10 October 2026): fixes and current verification are recorded in [security-remediation.md](docs/security-remediation.md). The original findings below are preserved as the audit baseline.
+
 Reviewed 8 October 2026 against commit `c6d9aa49` and the current working tree.
 
 ## Executive assessment

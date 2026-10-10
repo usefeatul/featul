@@ -20,6 +20,7 @@ type PlanOptionCardProps = {
   planKey: PlanKey;
   currentPlan: PlanKey;
   billingCycle: BillingCycle;
+  currentBillingCycle: BillingCycle;
   workspaceId?: string;
   workspaceSlug: string;
   canManageBilling: boolean;
@@ -31,6 +32,7 @@ export default function PlanOptionCard({
   planKey,
   currentPlan,
   billingCycle,
+  currentBillingCycle,
   workspaceId,
   workspaceSlug,
   canManageBilling,
@@ -38,7 +40,7 @@ export default function PlanOptionCard({
   currentSubscriptionId,
 }: PlanOptionCardProps) {
   const plan = getPlan(planKey);
-  const isCurrent = currentPlan === planKey;
+  const isCurrent = currentPlan === planKey && (planKey === "free" || billingCycle === currentBillingCycle);
   const amount =
     billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
   const valueClass =

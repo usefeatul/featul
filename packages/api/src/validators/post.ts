@@ -17,6 +17,7 @@ const postContentSchema = z
   .string()
   .trim()
   .min(POST_CONTENT_MIN_LENGTH)
+  .max(50000)
 
 const postImagesSchema = z
   .array(

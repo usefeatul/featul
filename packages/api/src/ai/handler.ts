@@ -1,7 +1,9 @@
+import { readBoundedJson } from "../request/json";
 import { runChangelogConversation } from "./conversation";
 import { HTTPException } from "hono/http-exception";
 import { aiAssistSchema } from "../validators/changelog";
-import { requireBoardManagerBySlug } from "../shared/access";
+import { reserveAiRequest } from "./quota";
+import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
 import { applyRateLimitHeaders } from "../services/ratelimiter";
 import {
   authorizePrivateChangelogAiRequest,
@@ -51,10 +53,10 @@ export async function createChangelogAiStreamResponse(req: Request) {
 
   let parsedInput;
   try {
-    const json = await req.json();
+    const json = await readBoundedJson(req);
     parsedInput = aiAssistSchema.parse(json);
-  } catch {
-    return changelogAiJsonResponse(400, { message: "Invalid request" });
+  } catch (error) {
+    return changelogAiJsonResponse(error instanceof HTTPException ? error.status : 400, { message: error instanceof HTTPException ? error.message : "Invalid request" });
   }
 
   const { db } = await import("@featul/db");
@@ -69,6 +71,14 @@ export async function createChangelogAiStreamResponse(req: Request) {
     return changelogAiJsonResponse(status, { message });
   }
 
+  let releaseQuota: () => Promise<void>;
+  try {
+    releaseQuota = await reserveAiRequest(workspace.id, await getWorkspaceAccessPlan(workspace.id));
+  } catch (error) {
+    return changelogAiJsonResponse(error instanceof HTTPException ? error.status : 503, {
+      message: error instanceof HTTPException ? error.message : "AI usage tracking is unavailable",
+    });
+  }
   const model = resolveOpenRouterStreamModel();
   const hasExistingContent = Boolean(parsedInput.contentMarkdown?.trim());
   const intent = parsedInput.intent ?? "conversation";
@@ -78,6 +88,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
 
   let cancelled = false;
   const upstream = new AbortController();
+  const timeout = setTimeout(() => upstream.abort(), 90_000);
   const abort = () => {
     cancelled = true;
     upstream.abort();
@@ -186,6 +197,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
             githubUrls,
             availableTagNames,
             send,
+            signal: upstream.signal,
           });
 
           if (!result.contentMarkdown) {
@@ -270,6 +282,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
             accumulated += text;
             send({ type: "delta", text });
           },
+          upstream.signal,
         );
 
         const trimmed = accumulated.trim();
@@ -331,7 +344,9 @@ export async function createChangelogAiStreamResponse(req: Request) {
         send({ type: "error", message: sanitizeChangelogAiError(err) });
         close();
       } finally {
+        clearTimeout(timeout);
         req.signal.removeEventListener("abort", abort);
+        await releaseQuota();
       }
     },
     cancel: abort,

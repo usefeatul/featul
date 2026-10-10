@@ -1,5 +1,6 @@
 import { db } from "@featul/db";
 import { runStorageOrphanGc } from "@featul/api/storage/delete";
+import { recordStorageCleanup } from "@featul/api/storage/health";
 import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
@@ -20,14 +21,17 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await Sentry.withMonitor("storage-orphan-gc", () => runStorageOrphanGc(db), {
-      schedule: { type: "crontab", value: "0 4 * * *" }, checkinMargin: 60, maxRuntime: 2, timezone: "UTC",
-    });
+    const result = await runStorageOrphanGc(db);
+    if (result.skipped) throw new Error("Storage cleanup is not configured");
+    // The five-minute monitor checks this heartbeat, including missed runs.
+    // This keeps both jobs covered by Sentry's single included cron monitor.
+    await recordStorageCleanup();
     return Response.json(result);
   } catch (error) {
     console.error("Storage orphan GC failed:", error);
     Sentry.captureException(error, { tags: { job: "storage-orphan-gc" } });
-    await Sentry.flush(2000);
     return Response.json({ error: "Storage GC failed" }, { status: 500 });
+  } finally {
+    await Sentry.flush(2000);
   }
 }

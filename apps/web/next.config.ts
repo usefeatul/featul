@@ -16,7 +16,7 @@ const nextConfig = {
     },
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   images: {
     qualities: [100, 75],
@@ -32,6 +32,10 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  async redirects() {
+    // Preserve the terms link used by the existing Google OAuth consent screen.
+    return [{ source: '/term', destination: '/terms', permanent: true }]
   },
   async rewrites() {
     return {
@@ -76,7 +80,7 @@ const nextConfig = {
         key: 'Content-Security-Policy',
         value: [
           "default-src 'self'",
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.marblecms.com https://news.google.com https://cdn.seline.com",
+          `script-src 'self' 'unsafe-inline' ${process.env.NODE_ENV === 'development' ? "'unsafe-eval'" : ""} https://*.marblecms.com https://news.google.com https://cdn.seline.com`,
           "style-src 'self' 'unsafe-inline'",
           "img-src 'self' data: blob: https:",
           "font-src 'self' data:",

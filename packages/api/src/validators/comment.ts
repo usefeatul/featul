@@ -2,15 +2,14 @@ import { z } from "zod"
 import { fingerprintSchema } from "./shared"
 
 const attachmentSchema = z.object({
-  name: z.string(),
-  url: z.string().url(),
-  type: z.string(),
+  name: z.string().max(255),
+  url: z.string().url().max(2048),
+  type: z.string().max(128),
 })
 
 const metadataSchema = z.object({
-  attachments: z.array(attachmentSchema).optional(),
-  mentions: z.array(z.string()).optional(),
-  editHistory: z.array(z.object({ content: z.string(), editedAt: z.string() })).optional(),
+  attachments: z.array(attachmentSchema).max(5).optional(),
+  mentions: z.array(z.string().max(128)).max(50).optional(),
 })
 
 const commentSurfaceSchema = z.enum(["workspace", "public"])

@@ -3,6 +3,7 @@ import { client } from "@featul/api/client"
 type UploadUrlResponse = {
   uploadUrl?: string
   key?: string
+  previewUrl?: string
   publicUrl?: string
   message?: string
 }
@@ -14,7 +15,7 @@ export async function getPostImageUploadUrl(
   contentType: string,
   fileSize: number,
   boardSlug: string
-): Promise<{ uploadUrl: string; key: string; publicUrl: string }> {
+): Promise<{ uploadUrl: string; key: string; publicUrl: string; previewUrl?: string }> {
   const res = await client.storage.getPublicPostImageUploadUrl.$post({
     workspaceSlug,
     fileName,
@@ -34,6 +35,7 @@ export async function getPostImageUploadUrl(
     uploadUrl: data.uploadUrl,
     key: data.key,
     publicUrl: data.publicUrl,
+    previewUrl: data.previewUrl,
   }
 }
 

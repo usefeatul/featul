@@ -202,7 +202,7 @@ export function WidgetFeedbackDetail({
       });
       if (!put.ok) throw new Error("Upload failed");
 
-      setUploadedImage({ url: data.publicUrl, name: file.name });
+      setUploadedImage({ url: data.publicUrl, previewUrl: data.previewUrl, name: file.name });
     } catch {
       setComposeError("That image couldn’t be added.");
       setUploadedImage(null);

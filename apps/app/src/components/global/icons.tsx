@@ -1,3 +1,4 @@
+import { RoadmapIcon, ChangelogIcon } from "@featul/ui/icons/product";
 /**
  * App icon entry point. Components import semantic names from here so repeated
  * actions share artwork. Add new library mappings here, or custom SVGs in artwork.tsx.
@@ -39,8 +40,6 @@ import {
 } from "@tabler/icons-react";
 import {
   LogoutIcon,
-  RoadmapIcon,
-  ChangelogIcon,
   ShareIcon,
   LowTractionIcon,
   FilterIcon,

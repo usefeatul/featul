@@ -198,7 +198,7 @@ async function resolveTagPostIds(
       and(
         eq(board.workspaceId, workspaceId),
         eq(board.isSystem, false),
-        ...(publicOnly ? [eq(board.isPublic, true)] : []),
+        ...(publicOnly ? [eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true)] : []),
         inArray(tag.slug, tagSlugs),
       ),
     );
@@ -226,7 +226,7 @@ function buildPostFilters({
     eq(board.isSystem, false),
   ];
   if (publicOnly) {
-    filters.push(eq(board.isPublic, true), eq(post.status, "published"));
+    filters.push(eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true), eq(post.status, "published"));
   }
   const wantsStale = matchStatuses.some(isStaleStatusFilter);
   const wantsLowInteraction = matchStatuses.some(isLowInteractionStatusFilter);
@@ -511,6 +511,7 @@ export async function getWorkspacePosts(
 
   const withAvatars: RequestItemRow[] = rows.map((r) => ({
     ...r,
+    metadata: publicOnly ? { attachments: r.metadata?.attachments } : r.metadata,
     isOwner: r.authorId === ws.ownerId,
     isFeatul: r.authorId === "featul-founder",
     isOnboarding: isOnboardingPost(
@@ -697,7 +698,7 @@ export async function getWorkspaceBoards(
         // Only include public boards in the public workspace feed.
         // Private boards should never appear on the public sidebar,
         // even briefly on initial page load.
-        eq(board.isPublic, true),
+        eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true),
       ),
     )
     .orderBy(asc(board.name))

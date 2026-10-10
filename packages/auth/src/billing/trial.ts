@@ -91,10 +91,10 @@ export async function getAccountTrialCheckoutParams(userId: string, referenceId:
   const eligible = Boolean(days) && await isAccountTrialEligible(userId)
   return {
     payment_method_collection: eligible ? "if_required" as const : "always" as const,
-    // Replace the plugin's workspace-scoped subscription_data completely,
-    // retaining the metadata required by webhook synchronization.
+    // Trial policy belongs to the account, not the individual workspace.
     subscription_data: {
       ...(eligible ? { trial_period_days: days } : {}),
+      ...(eligible ? { trial_settings: { end_behavior: { missing_payment_method: "cancel" as const } } } : {}),
       metadata: { userId, referenceId, subscriptionId },
     },
   }

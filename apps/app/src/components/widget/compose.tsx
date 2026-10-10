@@ -55,6 +55,7 @@ type Props = {
 };
 
 type UploadedImage = {
+  previewUrl?: string;
   url: string;
   name: string;
   type: string;
@@ -174,7 +175,7 @@ export function WidgetFeedbackCompose({
 
       setUploadedImages((prev) => [
         ...prev,
-        { url: data.publicUrl, name: file.name, type: file.type },
+        { url: data.publicUrl, previewUrl: data.previewUrl, name: file.name, type: file.type },
       ]);
       return true;
     } catch {
@@ -328,7 +329,7 @@ export function WidgetFeedbackCompose({
 
       {uploadedImages.length ? (
         <WidgetImageStrip
-          urls={uploadedImages.map((item) => item.url)}
+          urls={uploadedImages.map((item) => item.previewUrl || item.url)}
           alt={title.trim() || "Attached image"}
           className="mt-2 shrink-0 pt-0.5"
           onRemove={(index) => void removeUploadedImage(index)}

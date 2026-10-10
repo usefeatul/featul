@@ -145,7 +145,7 @@ export async function loadPublicBoardRequestDetailPageData({
     mergedInto: postWithAuthor.mergedInto ?? null,
     mergedSources: postWithAuthor.mergedSources,
     author: postWithAuthor.author,
-    metadata: postWithAuthor.metadata ?? null,
+    metadata: { attachments: postWithAuthor.metadata?.attachments },
     createdAt: toIsoString(postWithAuthor.createdAt),
     publishedAt: toOptionalIsoString(postWithAuthor.publishedAt),
     hasVoted,
@@ -187,7 +187,7 @@ export async function loadPublicMergedPostRedirectSlug({
       and(
         eq(board.workspaceId, ws.id),
         sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
-        eq(board.isPublic, true),
+        eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true),
         eq(post.status, "archived"),
         eq(post.slug, postSlug),
       ),
@@ -213,7 +213,7 @@ export async function loadPublicMergedPostRedirectSlug({
           eq(post.id, targetId),
           eq(board.workspaceId, ws.id),
           sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
-          eq(board.isPublic, true),
+          eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true),
         ),
       )
       .limit(1);
@@ -257,7 +257,7 @@ async function loadPostWithAuthorAndBoard(
       and(
         eq(board.workspaceId, workspaceId),
         sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
-        eq(board.isPublic, true),
+        eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true),
         eq(post.status, "published"),
         eq(post.slug, postSlug),
       ),
