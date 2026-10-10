@@ -7,7 +7,7 @@
     "build": "bun run validate-seo && next build",
     "start": "next start",
     "lint": "eslint .",
-    "check-types": "tsc --noEmit",
+    "check-types": "next typegen && tsc --noEmit",
     "validate-seo": "bun run scripts/validate-seo.ts"
   },
   "dependencies": {
