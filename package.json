@@ -21,7 +21,7 @@
     "check-types": "turbo run check-types",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "test": "bun test packages/api/src apps/app/tests && bun test tests/security && bun test tests/ai",
+    "test": "bun test packages/api/src apps/app/tests && bun test --preload ./tests/security/setup.ts tests/security && bun test tests/ai",
     "release:check": "bun packages/api/scripts/readiness.ts",
     "test:integration": "bun test tests/integration"
   },

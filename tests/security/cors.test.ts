@@ -1,5 +1,5 @@
+import "./setup";
 import { expect, test } from "bun:test";
-process.env.AUTH_TRUSTED_ORIGINS = "https://app.example.com";
 const { withCors, handlePreflight } =
   await import("../../packages/auth/src/trust");
 

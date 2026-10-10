@@ -1,3 +1,4 @@
+import "./setup";
 import { expect, test } from "bun:test";
 import {
   protectedImageKey,
@@ -5,7 +6,6 @@ import {
 } from "../../packages/api/src/storage/protected";
 import { consentTarget } from "../../apps/web/src/lib/consent";
 import { assertWorkspaceAssetUrl } from "../../packages/api/src/storage/urls";
-process.env.NEXT_PUBLIC_APP_URL = "https://app.example.com";
 
 test("content writes reject legacy public URLs after private storage cutover", () => {
   const previousBase = process.env.R2_PUBLIC_BASE_URL;

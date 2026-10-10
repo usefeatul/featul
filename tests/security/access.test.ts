@@ -1,7 +1,5 @@
+import "./setup";
 import { expect, mock, test } from "bun:test";
-process.env.DATABASE_URL = "postgresql://test:test@127.0.0.1:55439/security";
-process.env.API_RATE_LIMIT_ENABLED = "false";
-process.env.AUTH_RATE_LIMIT_ENABLED = "false";
 const procedure = {
   input: () => procedure,
   get: (fn: unknown) => fn,
