@@ -21,7 +21,7 @@
     "@featul/editor": "workspace:*",
     "@featul/widget": "workspace:*",
     "@neondatabase/serverless": "^0.10.4",
-    "@sentry/nextjs": "^10.76.2",
+    "@sentry/nextjs": "^11.5.0",
     "@tabler/icons-react": "^3.49.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@tanstack/react-query": "^5.104.1",
