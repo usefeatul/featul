@@ -84,8 +84,6 @@ export function identifyAnalyticsUser(user: {
   posthog.identify(
     user.id,
     cleanProperties({
-      email: user.email ?? undefined,
-      name: user.name ?? undefined,
     }),
   )
 }

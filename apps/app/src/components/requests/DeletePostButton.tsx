@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { PopoverListItem } from "@featul/ui/components/popover";
 import { Button } from "@featul/ui/components/button";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
-import { TrashIcon } from "@featul/ui/icons/trash";
+import { TrashIcon } from "@/components/global/icons";
 import { toolbarItemClass } from "@featul/ui/components/toolbar";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

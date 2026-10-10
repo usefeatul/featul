@@ -22,6 +22,7 @@ import type { CommentData } from "../../types/comment"
 import type { CommentSurface } from "@/lib/comment/shared"
 import { settingsCardInnerClass } from "@/components/settings/global/SectionCard"
 import { cn } from "@featul/ui/lib/utils"
+import { commentComposerBackgroundClass } from "./styles"
 
 interface CommentItemProps {
   comment: CommentData
@@ -51,6 +52,7 @@ export default function CommentItem({
   hidePublicMemberIdentity,
 }: CommentItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false)
+  const [isReplyBusy, setIsReplyBusy] = useState(false)
 
   const { isOwner, role } = useWorkspaceRole(workspaceSlug || "")
   const isAuthor = currentUserId ? comment.authorId === currentUserId : false
@@ -175,10 +177,11 @@ export default function CommentItem({
               onEdit={() => setIsEditing(true)}
               onDeleteSuccess={onUpdate}
             />
-            {canReply && !showReplyForm ? (
+            {canReply ? (
               <CommentReplyButton
-                onClick={() => setShowReplyForm(true)}
-                isActive={false}
+                onClick={() => setShowReplyForm((open) => !open)}
+                isActive={showReplyForm}
+                disabled={isReplyBusy}
               />
             ) : null}
           </div>
@@ -186,7 +189,7 @@ export default function CommentItem({
       </div>
 
       {showReplyForm ? (
-        <div className={cn(settingsCardInnerClass, "mt-3")}>
+        <div className={cn(settingsCardInnerClass, commentComposerBackgroundClass[surface], "mt-3")}>
           <CommentForm
             postId={comment.postId}
             parentId={comment.id}
@@ -197,7 +200,7 @@ export default function CommentItem({
               setShowReplyForm(false)
               onReplySuccess?.()
             }}
-            onCancel={() => setShowReplyForm(false)}
+            onBusyChange={setIsReplyBusy}
             compact
             placeholder="Write a reply..."
             autoFocus

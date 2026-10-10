@@ -1,3 +1,4 @@
+import { publicBoardConditions, requirePostAccess } from "../post/access"
 import { j, privateProcedure, publicProcedure } from "../jstack"
 import { getUploadUrlInputSchema, getCommentImageUploadUrlInputSchema, getPostImageUploadUrlInputSchema, getAvatarUploadUrlInputSchema, deleteUploadInputSchema } from "../validators/storage"
 import { HTTPException } from "hono/http-exception"
@@ -124,14 +125,14 @@ export function createStorageRouter() {
         const [ws] = await ctx.db
           .select({ id: workspace.id, slug: workspace.slug })
           .from(workspace)
-          .where(eq(workspace.slug, input.workspaceSlug))
+          .where(and(eq(workspace.slug, input.workspaceSlug), eq(workspace.isActive, true)))
           .limit(1)
         if (!ws) throw new HTTPException(404, { message: "Workspace not found" })
 
         const [targetBoard] = await ctx.db
           .select({ id: board.id, isPublic: board.isPublic, allowAnonymous: board.allowAnonymous })
           .from(board)
-          .where(and(eq(board.workspaceId, ws.id), eq(board.slug, input.boardSlug)))
+          .where(and(eq(board.workspaceId, ws.id), eq(board.slug, input.boardSlug), publicBoardConditions()))
           .limit(1)
         if (!targetBoard) throw new HTTPException(404, { message: "Board not found" })
         if (!targetBoard.isPublic) {
@@ -174,6 +175,7 @@ export function createStorageRouter() {
       .input(getCommentImageUploadUrlInputSchema)
       .post(async ({ ctx, input, c }) => {
         const userId = String(ctx.session.user.id || "")
+        await requirePostAccess(ctx.db, input.postId, userId, { allowUnpublishedForMembers: true })
         const commentRateLimit = await limitStorageComment(userId)
         applyRateLimitHeaders(c, commentRateLimit, "Too many upload URL requests. Please try again shortly.")
 

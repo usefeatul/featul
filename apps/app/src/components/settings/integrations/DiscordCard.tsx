@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { DiscordIcon } from "@featul/ui/icons/discord";
+import { DiscordIcon } from "@/components/global/icons";
 import type { Integration } from "@/hooks/useIntegrations";
 import WebhookIntegrationCard from "./WebhookIntegrationCard";
 

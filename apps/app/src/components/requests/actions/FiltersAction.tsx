@@ -1,6 +1,8 @@
 "use client";
 
+import { TagDot } from "@/components/global/tag";
 import React from "react";
+import StatusIcon from "../StatusIcon";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -13,16 +15,21 @@ import {
   PopoverSeparator,
 } from "@featul/ui/components/popover";
 import { Button } from "@featul/ui/components/button";
-import { FilterIcon } from "@featul/ui/icons/filter";
-import { ListFilterIcon } from "@featul/ui/icons/list-filter";
-import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
+import {
+  FilterIcon,
+  ListFilterIcon,
+  CalendarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Clock,
+  MessageCircleOff,
+  ArrowUpDownIcon,
+  BoardIcon as LayersIcon,
+  TagIcon,
+} from "@/components/global/icons";
+
 import { SORT_OPTIONS, type SortOrder } from "@/types/sort";
-import { LayersIcon } from "@featul/ui/icons/layers";
-import { TagIcon } from "@featul/ui/icons/tag";
-import { CalendarIcon } from "@featul/ui/icons/calendar";
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
-import { ChevronRightIcon } from "@featul/ui/icons/chevron-right";
-import { Clock, MessageCircleOff } from "lucide-react";
+
 import { client } from "@featul/api/client";
 import { STALE_STATUS_KEY } from "@featul/api/shared/stale";
 import { LOW_INTERACTION_STATUS_KEY } from "@featul/api/shared/low-interaction";
@@ -324,12 +331,13 @@ export default function FiltersAction({
           type="button"
           variant="card"
           size="icon-sm"
-          aria-label="Filter and sort requests"
+          aria-label={isActive ? "Filter and sort requests, filters active" : "Filter and sort requests"}
           title="Filter and sort requests"
           aria-pressed={isActive}
           className={cn(
             className,
-            isActive && "bg-primary/30 text-primary ring-0 hover:bg-primary/40 hover:text-primary dark:bg-primary/30 dark:hover:bg-primary/40",
+            "text-accent hover:text-foreground focus-visible:text-foreground dark:text-accent dark:hover:text-foreground dark:focus-visible:text-foreground",
+            isActive && "ring-0",
           )}
         >
           <FilterIcon className="size-4" size={16} />
@@ -389,10 +397,7 @@ export default function FiltersAction({
                   )
                 }
               >
-                <MessageCircleOff
-                  className="size-4 shrink-0"
-                  strokeWidth={2.25}
-                />
+                <MessageCircleOff className="size-4 shrink-0" />
                 <span className="text-sm">Low Traction</span>
                 <span aria-hidden="true" className="ml-auto w-3 text-xs">{isLowInteractionActive ? "✓" : null}</span>
               </PopoverListItem>
@@ -406,7 +411,7 @@ export default function FiltersAction({
                   toggleSpecialStatus(SNOOZED_STATUS_KEY, isSnoozedActive)
                 }
               >
-                <Clock className="size-4 shrink-0" strokeWidth={2.25} />
+                <Clock className="size-4 shrink-0" />
                 <span className="text-sm">Snoozed</span>
                 <span aria-hidden="true" className="ml-auto w-3 text-xs">{isSnoozedActive ? "✓" : null}</span>
               </PopoverListItem>
@@ -447,6 +452,7 @@ export default function FiltersAction({
                   id: item.id,
                   label: item.name,
                   value: item.slug,
+                  icon: <span className="size-1.5 rounded-full bg-primary" />,
                 }))}
                 selected={boardFilter.selected}
                 isAllSelected={boardFilter.isAllSelected}
@@ -462,6 +468,7 @@ export default function FiltersAction({
                   id: option.value,
                   label: option.label,
                   value: option.value,
+                  icon: <StatusIcon status={option.value} className="size-4" />,
                 }))}
                 selected={regularStatusSelected}
                 isAllSelected={
@@ -480,7 +487,7 @@ export default function FiltersAction({
                   id: item.id,
                   label: item.name,
                   value: item.slug,
-
+                  icon: <TagDot />,
                 }))}
                 selected={tagFilter.selected}
                 isAllSelected={tagFilter.isAllSelected}
@@ -495,7 +502,7 @@ export default function FiltersAction({
         {showClear && isActive ? (
           <>
             <PopoverSeparator />
-            <PopoverList>
+            <PopoverList className="w-full">
               <PopoverListItem onClick={() => {
                 const href = buildRequestsUrl(slug, sp, { status: [], board: [], tag: [], order: "newest", page: 1 });
                 if (onQueryChange) onQueryChange(href.split("?")[1] || "");

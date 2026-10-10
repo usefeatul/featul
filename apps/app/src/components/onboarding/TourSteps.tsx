@@ -1,9 +1,13 @@
 import type React from "react";
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
-import { CollectIcon } from "@featul/ui/icons/collect";
-import { RoadmapIcon } from "@featul/ui/icons/roadmap";
-import { ChangelogIcon } from "@featul/ui/icons/changelog";
-import { BoardIcon } from "@featul/ui/icons/board";
+import {
+  FeatulLogoIcon,
+  CollectIcon,
+  RoadmapIcon,
+  ChangelogIcon,
+  BoardIcon,
+} from "@/components/global/icons";
+
+
 
 export type WelcomeTourStep = {
   id: string;

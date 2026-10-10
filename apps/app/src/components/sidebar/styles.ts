@@ -1,11 +1,17 @@
 export const sidebarRowClassName =
   "group relative flex min-w-0 w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs md:text-sm";
 
+export const sidebarHeaderActionClassName =
+  "flex size-8 shrink-0 items-center justify-center rounded-md bg-transparent text-muted-foreground transition-colors hover:bg-transparent hover:text-primary dark:bg-transparent dark:text-muted-foreground dark:hover:bg-transparent dark:hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
 export const sidebarLeadSlotClassName =
   "relative z-[1] flex size-5 shrink-0 items-center justify-center";
 
 export const sidebarSectionLabelClassName =
   "flex min-h-5 items-center gap-2 px-2 text-xs font-medium text-accent";
 
+export const sidebarSearchBackgroundClassName =
+  "bg-sidebar-accent hover:bg-sidebar-accent dark:bg-neutral-900 dark:hover:bg-neutral-950";
+
 export const sidebarSearchClassName =
-  "mt-3 h-9 w-full justify-start gap-2 rounded-md border border-border/60 bg-muted/70 px-3 text-sm text-foreground shadow-none ring-0 before:hidden hover:bg-muted dark:border-white/10 dark:bg-white/[0.07] dark:hover:bg-white/[0.1] [&_svg]:text-neutral-600 dark:[&_svg]:text-neutral-300 [&_kbd]:h-6 [&_kbd]:min-w-7 [&_kbd]:rounded-md [&_kbd]:border-0 [&_kbd]:bg-background/90 [&_kbd]:px-1.5 [&_kbd]:text-muted-foreground [&_kbd]:shadow-none dark:[&_kbd]:bg-black/30";
+  "mt-3 h-9 w-full justify-start gap-2 rounded-md border border-border/60 px-3 text-sm text-foreground shadow-none ring-0 before:hidden dark:border-white/10 [&>svg]:size-5 [&>svg]:shrink-0 [&_svg]:text-neutral-600 dark:[&_svg]:text-neutral-300 [&_kbd]:h-5 [&_kbd]:min-w-5 [&_kbd]:rounded-[4px] [&_kbd]:border-0 [&_kbd]:bg-muted [&_kbd]:px-1 [&_kbd]:text-muted-foreground [&_kbd]:shadow-none dark:[&_kbd]:bg-black/30 " + sidebarSearchBackgroundClassName;

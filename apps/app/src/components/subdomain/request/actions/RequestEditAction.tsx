@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { EditIcon } from "@featul/ui/icons/edit";
+import { EditIcon } from "@/components/global/icons";
 import { PopoverListItem } from "@featul/ui/components/popover";
 
 interface RequestEditActionProps {

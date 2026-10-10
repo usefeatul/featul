@@ -1,6 +1,6 @@
 const PREFIX = "featul:changelog-ai:";
 
-type PersistedActivity = "ask" | "rewrite" | "patch" | "tags";
+type PersistedActivity = "conversation" | "ask" | "rewrite" | "patch" | "tags";
 
 export type PersistedAiChatMessage = {
   id: string;

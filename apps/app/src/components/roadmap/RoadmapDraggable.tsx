@@ -34,8 +34,8 @@ export default function RoadmapDraggable({
         transform: transform ? CSS.Translate.toString(transform) : undefined,
       }}
       className={cn(
-        "h-[108px] cursor-grab overflow-hidden rounded-lg bg-muted/55 shadow-none ring-1 ring-border/40 transition-[background-color,box-shadow,opacity] hover:bg-muted/80 hover:ring-border/70 active:cursor-grabbing dark:bg-white/[0.035] dark:ring-white/[0.055] dark:hover:bg-white/[0.055] dark:hover:ring-white/[0.09]",
-        isSaving && "opacity-80 ring-primary/60",
+        "h-[108px] cursor-grab overflow-hidden rounded-lg border border-border/70 bg-card shadow-none transition-[background-color,border-color,opacity] hover:border-border active:cursor-grabbing dark:border-white/[0.08] dark:hover:border-white/[0.14]",
+        isSaving && "border-primary/60 opacity-80",
         isDragging && "opacity-0",
         className,
       )}

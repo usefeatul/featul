@@ -1,6 +1,9 @@
 "use client";
 
-import { MarketingContainer, marketingRailClass } from "@/components/layout/container";
+import {
+  MarketingContainer,
+  marketingRailClass,
+} from "@/components/layout/container";
 import type { ComponentType } from "react";
 import Link from "next/link";
 import { SlackIcon } from "@featul/ui/icons/slack";
@@ -9,8 +12,6 @@ import { NotraIcon } from "@featul/ui/icons/notra";
 import { NoltIcon } from "@featul/ui/icons/nolt";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
-import { AccentBar } from "@featul/ui/components/cardElements";
-import { SkyDashboardFrame } from "@/components/layout/sky-banner";
 
 type IntegrationItem = {
   slug: string;
@@ -71,16 +72,13 @@ export default function Integrations() {
           <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
             Integrate with your favorite tools
           </h2>
-          <div className="mt-3 flex items-start gap-2">
-            <AccentBar width={8} />
-            <p className="text-accent max-w-2xl text-sm leading-6 sm:text-base">
-              Connect notifications, imports, and migration paths so feedback
-              stays close to the tools your team already uses.
-            </p>
-          </div>
+          <p className="mt-3 text-accent max-w-2xl text-sm leading-6 sm:text-base">
+            Connect notifications, imports, and migration paths so feedback
+            stays close to the tools your team already uses.
+          </p>
 
-          <SkyDashboardFrame className="mt-8">
-            <div className="grid grid-cols-1 gap-px bg-border sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-9 overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:mt-12">
+            <div className="-mb-px -mr-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {integrations.map((item) => {
                 const Icon = item.icon;
 
@@ -88,20 +86,20 @@ export default function Integrations() {
                   <Link
                     key={item.name}
                     href={`/integrations/${item.slug}`}
-                    className="group flex h-full flex-col bg-background px-5 py-5 transition-colors hover:bg-muted/40 sm:px-6 sm:py-6"
+                    className="flex h-full flex-col border-b border-r border-border p-6 transition-colors duration-200 hover:bg-muted/40 focus-visible:bg-muted/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none sm:p-7"
                   >
-                    <Icon aria-hidden className="size-6" />
-                    <h3 className="mt-4 text-sm font-medium text-foreground sm:text-base">
+                    <h3 className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
+                      <Icon aria-hidden className="size-4 shrink-0" />
                       {item.name}
                     </h3>
-                    <p className="text-accent mt-1.5 text-pretty text-sm leading-6">
+                    <p className="mt-6 text-pretty text-sm leading-6 text-accent">
                       {item.description}
                     </p>
                   </Link>
                 );
               })}
             </div>
-          </SkyDashboardFrame>
+          </div>
         </div>
       </section>
     </MarketingContainer>

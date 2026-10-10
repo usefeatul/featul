@@ -28,6 +28,7 @@ type RequestFilterItem = {
   label: string;
   value: string;
   meta?: ReactNode;
+  icon?: ReactNode;
 };
 
 type UseRequestMultiSelectFilterOptions = {
@@ -153,6 +154,7 @@ export function RequestMultiSelectFilterList({
           aria-checked={selected.includes(item.value)}
           onClick={() => onToggle(item.value)}
         >
+          {item.icon ? <span aria-hidden className="flex size-4 shrink-0 items-center justify-center">{item.icon}</span> : null}
           <span className="truncate text-sm">{item.label}</span>
           {item.meta}
           {selected.includes(item.value) ? (

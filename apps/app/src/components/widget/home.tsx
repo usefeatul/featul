@@ -1,17 +1,22 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
-import { FillChangelogIcon } from "@featul/ui/icons/fill-changelog";
-import { FillFeedbackIcon } from "@featul/ui/icons/fill-feedback";
-import { FillRoadmapIcon } from "@featul/ui/icons/fill-roadmap";
+import { WidgetButton } from "./button";
+
+import {
+  ChevronRight,
+  ChangelogIcon as FillChangelogIcon,
+  CollectIcon as FillFeedbackIcon,
+  RoadmapIcon as FillRoadmapIcon,
+} from "@/components/global/icons";
+
 import StatusIcon from "@/components/requests/StatusIcon";
-import { WidgetAuthorAvatar } from "./avatar";
+import { UpdateByline } from "./byline";
 import { WidgetEmpty } from "./empty";
 import { RoadmapRow, type WidgetRoadmapItem } from "./roadmap";
 import { WidgetPostRow } from "./row";
 import { Bone, WidgetPostRowSkeleton, WidgetRoadmapRowSkeleton } from "./skeleton";
 import type { IdentifiedUser, WidgetApiBase, WidgetLayoutStyle, WidgetPost } from "./types";
-import { UpdateMetaRow, type WidgetChangelogEntry } from "./updates";
+import type { WidgetChangelogEntry } from "./updates";
 
 type Props = {
   featuredEntry?: WidgetChangelogEntry;
@@ -84,12 +89,9 @@ export function Home({
       className={`flex w-full cursor-pointer items-center justify-between gap-3 border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${px} py-4 text-left`}
     >
       <span className="text-sm text-[rgb(var(--widget-fg)/0.35)]">What’s on your mind?</span>
-      <span
-        className="inline-flex h-8 shrink-0 items-center rounded-md px-3 text-xs font-semibold text-white"
-        style={{ backgroundColor: accent }}
-      >
-        Post
-      </span>
+      <WidgetButton asChild className="h-8 px-3 text-xs font-semibold">
+        <span>Post</span>
+      </WidgetButton>
     </button>
   );
 
@@ -113,9 +115,9 @@ export function Home({
         <button
           type="button"
           onClick={onSeeRoadmap}
-          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
+          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-primary"
         >
-          See roadmap →
+          See roadmap
         </button>
       </div>
       <div>
@@ -180,9 +182,9 @@ export function Home({
         <button
           type="button"
           onClick={onSeeUpdates}
-          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-[rgb(var(--widget-fg)/0.75)]"
+          className="cursor-pointer text-xs text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:text-primary"
         >
-          See updates →
+          See updates
         </button>
       </div>
       {changelogLoading ? (
@@ -209,10 +211,10 @@ export function Home({
               onClick={() => onOpenChangelog(entry.id)}
               className={`flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] ${px} py-3.5 text-left last:border-b-0`}
             >
-              <UpdateMetaRow entry={entry} accent={accent} fallbackBadge="Just Shipped" />
               <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
                 {entry.title}
               </span>
+              <UpdateByline entry={entry} accent={accent} />
             </button>
           ))}
         </div>
@@ -286,48 +288,21 @@ export function Home({
         <button
           type="button"
           onClick={() => onOpenChangelog(featured.id)}
-          className={`group w-full border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${px} pb-6 text-left`}
+          className={`group w-full cursor-pointer border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${px} pb-6 text-left`}
         >
-          <UpdateMetaRow entry={featured} accent={accent} fallbackBadge="Just Shipped" />
-          <h2 className="mt-3 text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
+          <h2 className="text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
             {featured.title}
           </h2>
+          <UpdateByline entry={featured} accent={accent} />
           {featured.preview ? (
             <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[rgb(var(--widget-fg)/0.55)]">
               {featured.preview}
             </p>
           ) : null}
-          {featured.authorName || featured.authorImage ? (
-            <div className="mt-5 flex items-center justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-2.5">
-                <WidgetAuthorAvatar
-                  name={featured.authorName || "Author"}
-                  image={featured.authorImage}
-                  className="size-7"
-                />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
-                    {featured.authorName || "Author"}
-                  </p>
-                  <p
-                    className="truncate font-heading text-xs font-medium"
-                    style={{ color: accent }}
-                  >
-                    {featured.authorRoleLabel || "Team"}
-                  </p>
-                </div>
-              </div>
-              <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-[rgb(var(--widget-fg)/0.4)] transition-colors group-hover:text-[rgb(var(--widget-fg)/0.7)]">
-                View updates
-                <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-              </span>
-            </div>
-          ) : (
-            <span className="mt-5 inline-flex items-center gap-1 text-xs font-medium text-[rgb(var(--widget-fg)/0.4)] transition-colors group-hover:text-[rgb(var(--widget-fg)/0.7)]">
-              View updates
-              <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-            </span>
-          )}
+          <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-[rgb(var(--widget-fg)/0.5)] transition-colors group-hover:text-primary">
+            Read update
+            <ChevronRight className="size-3.5" />
+          </span>
         </button>
       ) : null}
 

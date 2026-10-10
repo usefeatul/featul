@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { FlagIcon } from "@featul/ui/icons/flag"
+import { FlagIcon } from "@/components/global/icons"
 import { PopoverListItem } from "@featul/ui/components/popover"
 
 interface CommentReportActionProps {

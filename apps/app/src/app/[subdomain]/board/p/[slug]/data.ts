@@ -145,7 +145,7 @@ export async function loadPublicBoardRequestDetailPageData({
     mergedInto: postWithAuthor.mergedInto ?? null,
     mergedSources: postWithAuthor.mergedSources,
     author: postWithAuthor.author,
-    metadata: postWithAuthor.metadata ?? null,
+    metadata: { attachments: postWithAuthor.metadata?.attachments },
     createdAt: toIsoString(postWithAuthor.createdAt),
     publishedAt: toOptionalIsoString(postWithAuthor.publishedAt),
     hasVoted,
@@ -162,6 +162,69 @@ export async function loadPublicBoardRequestDetailPageData({
     initialCollapsedIds,
     backLink: `/board/${post.boardSlug}`,
   };
+}
+
+/**
+ * Resolve an old public URL for a post that was archived by merging it into
+ * another post. This keeps shared links working while ensuring archived posts
+ * are not rendered as separate public entries.
+ */
+export async function loadPublicMergedPostRedirectSlug({
+  subdomain,
+  postSlug,
+}: {
+  subdomain: string;
+  postSlug: string;
+}): Promise<string | null> {
+  const ws = await loadWorkspaceBySlug(subdomain);
+  if (!ws) return null;
+
+  const [source] = await db
+    .select({ duplicateOfId: post.duplicateOfId })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
+        eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true),
+        eq(post.status, "archived"),
+        eq(post.slug, postSlug),
+      ),
+    )
+    .limit(1);
+
+  let targetId = source?.duplicateOfId || null;
+  const visited = new Set<string>();
+
+  while (targetId && !visited.has(targetId)) {
+    visited.add(targetId);
+    const [target] = await db
+      .select({
+        id: post.id,
+        slug: post.slug,
+        status: post.status,
+        duplicateOfId: post.duplicateOfId,
+      })
+      .from(post)
+      .innerJoin(board, eq(post.boardId, board.id))
+      .where(
+        and(
+          eq(post.id, targetId),
+          eq(board.workspaceId, ws.id),
+          sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
+          eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true),
+        ),
+      )
+      .limit(1);
+
+    if (!target) return null;
+    if (target.status === "published") return target.slug;
+    if (target.status !== "archived") return null;
+    targetId = target.duplicateOfId;
+  }
+
+  return null;
 }
 
 /** Published feedback post with author, board, and merge metadata. */
@@ -194,7 +257,7 @@ async function loadPostWithAuthorAndBoard(
       and(
         eq(board.workspaceId, workspaceId),
         sql`(board.system_type is null or board.system_type not in ('roadmap','changelog'))`,
-        eq(board.isPublic, true),
+        eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true),
         eq(post.status, "published"),
         eq(post.slug, postSlug),
       ),

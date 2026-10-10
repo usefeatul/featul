@@ -1,4 +1,5 @@
-const CONTENT_FOLDERS = new Set(["posts", "comments"])
+import { protectedImageKey } from "./protected"
+export { isDeletableContentKey, workspaceSlugFromContentKey } from "./keys"
 
 export function normalizePublicBase(publicBase: string): string {
   return publicBase.replace(/\/+$/, "")
@@ -12,6 +13,8 @@ export function objectKeyFromPublicUrl(
   publicUrl: string,
   publicBase: string,
 ): string | null {
+  const protectedKey = protectedImageKey(publicUrl)
+  if (protectedKey) return protectedKey
   let parsed: URL
   try {
     parsed = new URL(publicUrl)
@@ -37,26 +40,12 @@ export function objectKeyFromPublicUrl(
   const path = parsed.pathname
   if (basePath && !path.startsWith(`${basePath}/`)) return null
 
-  const key = decodeURIComponent(
-    (basePath ? path.slice(basePath.length) : path).replace(/^\//, ""),
-  )
+  let key: string
+  try {
+    key = decodeURIComponent((basePath ? path.slice(basePath.length) : path).replace(/^\//, ""))
+  } catch { return null }
   if (!key || key.startsWith("/") || key.includes("..") || key.includes("//")) {
     return null
   }
   return key
-}
-
-export function isDeletableContentKey(key: string): boolean {
-  const parts = key.split("/")
-  if (parts.length < 4) return false
-  if (parts[0] !== "workspaces") return false
-  if (!parts[1] || parts[1].includes(".")) return false
-  if (!CONTENT_FOLDERS.has(parts[2] || "")) return false
-  const fileName = parts.slice(3).join("/")
-  return Boolean(fileName) && !fileName.includes("..")
-}
-
-export function workspaceSlugFromContentKey(key: string): string | null {
-  if (!isDeletableContentKey(key)) return null
-  return key.split("/")[1] || null
 }

@@ -1,6 +1,6 @@
 import { Button } from "@featul/ui/components/button";
-import { GoogleIcon } from "@featul/ui/icons/google";
-import GitHubIcon from "@featul/ui/icons/github";
+import { GoogleIcon, GitHubIcon } from "@/components/global/icons";
+
 import { LastUsedTag } from "./LastUsedTag";
 
 export function SocialAuthButtons({

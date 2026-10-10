@@ -3,8 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@featul/ui/components/input";
 import { PopoverListItem } from "@featul/ui/components/popover";
-import { CheckIcon } from "@featul/ui/icons/check";
-import { SearchIcon } from "@featul/ui/icons/search";
+import {
+  CheckIcon,
+  SearchIcon,
+} from "@/components/global/icons";
+
 import { cn } from "@featul/ui/lib/utils";
 import { SidebarBadge } from "@/components/sidebar/badge";
 import { formatTime12h } from "@/lib/time";

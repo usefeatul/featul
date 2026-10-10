@@ -1,60 +1,29 @@
-import { MarketingContainer } from "@/components/layout/container";
-import { SkyCtaFrame } from "@/components/layout/sky-banner";
+import {
+  MarketingContainer,
+  marketingRailClass,
+} from "@/components/layout/container";
+import { Promotion } from "@/components/shared/promotion";
 import Link from "next/link";
 import type { Alternative } from "@/config/alternatives";
-import { HotkeyLink } from "@/components/global/hotkey";
-import { LiveDemo } from "@/components/global/demo";
-import {
-  heroPrimaryCtaClass,
-  skyCardKbdClassName,
-  skyCardPrimaryCtaClass,
-} from "@/components/shared/cta";
-import { cn } from "@featul/ui/lib/utils";
 
 type VerdictProps = {
   alt: Alternative;
 };
 
 export default function Verdict({ alt }: VerdictProps) {
-  const topWin = alt.victoryPoints?.[0]?.toLowerCase() || "privacy-first EU hosting";
+  const topWin =
+    alt.victoryPoints?.[0]?.toLowerCase() || "privacy-first EU hosting";
 
   return (
     <MarketingContainer>
       <section className="py-10 sm:py-14" data-component="AlternativeVerdict">
-        <div className="mx-auto w-full max-w-5xl px-0 sm:px-6">
-          <SkyCtaFrame>
-            <p className="text-sm text-foreground/70">
-              The clear {alt.name} alternative
-            </p>
-
-            <h2 className="mt-3 max-w-2xl text-balance font-heading text-xl font-medium text-foreground sm:text-2xl lg:text-3xl">
-              Switch from {alt.name} to Featul. Keep the workflow, gain{" "}
-              {topWin}.
-            </h2>
-
-            <p className="mt-3 max-w-xl text-sm text-foreground/80 sm:text-base">
-              Boards, roadmaps, and changelogs in one place. Set up in minutes.
-            </p>
-
-            <div className="mt-7 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
-              <HotkeyLink
-                variant="nav"
-                label="Try Featul free"
-                className={cn(
-                  "h-10 min-h-[40px] w-full min-w-[40px] sm:w-auto",
-                  skyCardPrimaryCtaClass,
-                )}
-                kbdClassName={skyCardKbdClassName}
-              />
-              <LiveDemo
-                variant="default"
-                className={cn(
-                  "h-10 min-h-[40px] w-full min-w-[40px] shadow-sm sm:w-auto",
-                  heroPrimaryCtaClass,
-                )}
-              />
-            </div>
-          </SkyCtaFrame>
+        <div className={marketingRailClass}>
+          <Promotion
+            eyebrow={`The clear ${alt.name} alternative`}
+            title={`Switch from ${alt.name} to Featul. Keep the workflow, gain ${topWin}.`}
+            description="Boards, roadmaps, and changelogs in one place. Set up in minutes."
+            label="Try Featul free"
+          />
 
           {alt.website ? (
             <p className="mt-3 text-sm text-accent">

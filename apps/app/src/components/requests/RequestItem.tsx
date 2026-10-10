@@ -1,10 +1,11 @@
 "use client";
 
+import { TagDot } from "@/components/global/tag";
 import React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import StatusIcon from "./StatusIcon";
-import { CommentsIcon } from "@featul/ui/icons/comments";
+import { CommentsIcon } from "@/components/global/icons";
 import {
   Avatar,
   AvatarImage,
@@ -37,6 +38,7 @@ import { requestBadgeClass } from "./styles";
 
 interface RequestItemProps {
   item: RequestItemData;
+  selectionIndex?: number;
   workspaceSlug: string;
   linkBase?: string;
   isSelecting?: boolean;
@@ -101,11 +103,7 @@ export function RequestTagPills({
     >
       {visible.map((tag) => (
         <RequestMetaChip key={tag.id} title={tag.name}>
-          <span
-            className="size-1.5 shrink-0 rounded-full bg-primary"
-            style={tag.color ? { backgroundColor: tag.color } : undefined}
-            aria-hidden
-          />
+          <TagDot />
           <span className="min-w-0 truncate">{tag.name}</span>
         </RequestMetaChip>
       ))}
@@ -134,7 +132,7 @@ export function RequestEngagementChip({
       <span
         className={cn(
           requestBadgeClass,
-          "gap-1",
+          "gap-1 text-muted-foreground/70",
           !showComments && "hidden sm:inline-flex",
         )}
         title={`${commentCount} comments`}
@@ -157,6 +155,7 @@ export function RequestEngagementChip({
 
 function RequestItemBase({
   item,
+  selectionIndex,
   workspaceSlug,
   linkBase,
   isSelecting,
@@ -215,7 +214,10 @@ function RequestItemBase({
   const publishedLabel = relativeTime(item.publishedAt ?? item.createdAt);
 
   return (
-    <li className="list-none">
+    <li
+      className="list-none"
+      data-request-select-index={isSelectingMode ? selectionIndex : undefined}
+    >
       <RequestItemContextMenu
         item={item}
         workspaceSlug={workspaceSlug}

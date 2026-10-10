@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { UpvoteButton } from "@/components/upvote/UpvoteButton";
-import { CommentsIcon } from "@featul/ui/icons/comments";
+import { CommentsIcon } from "@/components/global/icons";
 import type { SimilarPost } from "@/types/post";
 
 interface SimilarPostsProps {

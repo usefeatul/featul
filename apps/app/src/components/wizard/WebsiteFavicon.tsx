@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { DomainIcon } from "@featul/ui/icons/domain"
+import { DomainIcon } from "@/components/global/icons"
 import { faviconUrlForDomain, hostFromDomain } from "@/utils/domain"
 
 export function WebsiteFavicon({

@@ -45,6 +45,9 @@ export function createBrandingRouter() {
         if (!limits.allowBranding) {
           if (typeof input.logoUrl !== "undefined" || typeof input.primaryColor !== "undefined" || typeof input.showLogo !== "undefined" || typeof input.showWorkspaceName !== "undefined") throw new HTTPException(403, { message: "Branding not available on current plan" })
         }
+        if (typeof input.logoUrl !== "undefined") {
+          assertOptionalWorkspaceAssetUrl(input.logoUrl, ws.slug, WORKSPACE_BRANDING_FOLDERS)
+        }
         if (typeof input.primaryColor !== "undefined") update.primaryColor = input.primaryColor
         if (typeof input.theme !== "undefined") update.theme = input.theme
         if (typeof input.showLogo !== "undefined") update.showLogo = input.showLogo
@@ -75,11 +78,7 @@ export function createBrandingRouter() {
         }
 
         if (typeof input.logoUrl !== "undefined") {
-          if (!limits.allowBranding) throw new HTTPException(403, { message: "Logo upload not available on current plan" })
-          assertOptionalWorkspaceAssetUrl(input.logoUrl, ws.slug, WORKSPACE_BRANDING_FOLDERS)
-          try {
-            await ctx.db.update(workspace).set({ logo: input.logoUrl }).where(eq(workspace.id, ws.id))
-          } catch {}
+          await ctx.db.update(workspace).set({ logo: input.logoUrl }).where(eq(workspace.id, ws.id))
         }
 
         return c.json({ ok: true })

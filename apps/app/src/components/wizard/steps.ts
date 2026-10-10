@@ -23,5 +23,4 @@ export const WIZARD_STEPS = [
 
 export type WizardStepId = (typeof WIZARD_STEPS)[number]["id"]
 
-export const WIZARD_PREVIEW_BACKGROUND = "/image/sky.PNG"
 export const WIZARD_PREVIEW_IMAGE = "/image/dashboard.png"

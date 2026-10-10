@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
 import { toolbarItemClass } from "@featul/ui/components/toolbar";
-import { NotraIcon } from "@featul/ui/icons/notra";
+import { NotraIcon } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 import { NotraConnectionSection } from "@/components/changelog/notra/NotraConnectionSection";
 import { NotraCredentialsSection } from "@/components/changelog/notra/NotraCredentialsSection";

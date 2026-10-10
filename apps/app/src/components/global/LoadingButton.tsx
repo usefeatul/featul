@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@featul/ui/components/button"
-import { LoaderIcon } from "@featul/ui/icons/loader"
+import { LoaderIcon } from "@/components/global/icons";
 import * as React from "react"
 
 type LoadingButtonProps = React.ComponentProps<typeof Button> & {
@@ -22,7 +22,7 @@ export function LoadingButton({
       className={className}
       {...props}
     >
-      {loading ? <LoaderIcon className="size-4 animate-spin" /> : null}
+      {loading ? <LoaderIcon className="size-4" /> : null}
       {children}
     </Button>
   )

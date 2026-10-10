@@ -3,7 +3,7 @@
 import React from "react"
 import { useQuery } from "@tanstack/react-query"
 import { client } from "@featul/api/client"
-import { CommentsIcon } from "@featul/ui/icons/comments"
+import { CommentsIcon } from "@/components/global/icons"
 import { cn } from "@featul/ui/lib/utils"
 import {
   COMMENT_CREATED_EVENT,

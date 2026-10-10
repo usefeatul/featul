@@ -19,13 +19,13 @@ export default function BillingCycleSegment({ billingCycle, onChange }: BillingC
 
   return (
     <Tabs value={billingCycle} onValueChange={handleValueChange} className="gap-0">
-      <TabsList className="h-auto w-auto gap-0 overflow-visible rounded-xl border border-border/60 bg-muted/30 p-0.5 dark:border-white/10 dark:bg-black/40 [&>div.pointer-events-none.absolute]:hidden">
+      <TabsList className="h-auto w-auto gap-0 overflow-visible rounded-md border border-border/70 bg-muted/40 p-0.5 [&>div.pointer-events-none.absolute]:hidden">
         <TabsTrigger
           value="monthly"
           className={cn(
             "h-auto cursor-pointer rounded-md border-0 px-2.5 py-1 text-xs text-accent",
             billingCycle === "monthly" &&
-              "bg-background text-foreground shadow-xs dark:bg-black/60",
+              "bg-card text-foreground dark:bg-black/50",
           )}
         >
           Monthly
@@ -35,7 +35,7 @@ export default function BillingCycleSegment({ billingCycle, onChange }: BillingC
           className={cn(
             "h-auto cursor-pointer rounded-md border-0 px-2.5 py-1 text-xs text-accent",
             billingCycle === "yearly" &&
-              "bg-background text-foreground shadow-xs dark:bg-black/60",
+              "bg-card text-foreground dark:bg-black/50",
           )}
         >
           Yearly

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@featul/ui/components/button";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { LoaderIcon } from "@/components/global/icons";
 
 type NotraDialogActionsProps = {
   hasStoredConnection: boolean;
@@ -38,7 +38,7 @@ export function NotraDialogActions({
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitDisabled}>
-          {isPending ? <LoaderIcon className="size-4 animate-spin" /> : null}
+          {isPending ? <LoaderIcon className="size-4" /> : null}
           Sync Now
         </Button>
       </div>

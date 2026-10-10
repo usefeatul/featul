@@ -10,15 +10,32 @@ export type TagRemovalDecision =
   | null;
 
 const ACCEPT_RE =
-  /^(?:yes|yeah|yep|sure|okay|ok|please|go ahead|do it|add them|add it|use them|use it)\b/i;
+  /^(?:yes|yeah|yep|sure|okay|ok|please|go ahead|do it|add them|add it|use them|use it)(?:\s+please)?[.! ]*$/i;
 const DECLINE_RE =
-  /^(?:no|nope|not now|leave it|skip|don(?:'|’)t|do not|none)\b/i;
-const APPLY_RE = /\b(?:add|use|apply|select|choose)\b/i;
+  /^(?:no|nope|not now|leave it|skip|don(?:'|’)t|do not|none)[.! ]*$/i;
 const REMOVE_RE = /\b(?:remove|delete|clear|untag)\b/i;
 const REMOVE_ALL_RE =
   /\b(?:untagged|untag\s+(?:it|this|the\s+(?:entry|changelog))|remove\s+(?:all\s+)?tags|clear\s+(?:all\s+)?tags|no\s+tags|without\s+(?:any\s+)?tags)\b/i;
 const AMBIGUOUS_REMOVE_RE =
   /\b(?:remove|delete|clear|untag)\s+(?:a|one|the)?\s*tags?\b/i;
+
+function mentionedTags(value: string, names: string[]) {
+  let remaining = value;
+  const mentioned = new Set<string>();
+  // Longest names first: "UI improvements" should not also select "UI".
+  for (const name of [...names].sort((a, b) => b.length - a.length)) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const pattern = new RegExp(
+      `(^|[^\\p{L}\\p{N}])${escaped}(?=$|[^\\p{L}\\p{N}])`,
+      "giu",
+    );
+    remaining = remaining.replace(pattern, (_match, prefix: string) => {
+      mentioned.add(name);
+      return `${prefix} `;
+    });
+  }
+  return { names: names.filter((name) => mentioned.has(name)), remaining };
+}
 
 export function getTagDecision(
   text: string,
@@ -28,12 +45,17 @@ export function getTagDecision(
   if (!value) return null;
   if (DECLINE_RE.test(value)) return { kind: "decline" };
 
-  const lower = value.toLowerCase();
-  const mentioned = suggestedNames.filter((name) =>
-    lower.includes(name.toLowerCase()),
-  );
-  if (mentioned.length > 0 && (APPLY_RE.test(value) || ACCEPT_RE.test(value))) {
-    return { kind: "accept", names: mentioned };
+  const mentioned = mentionedTags(value, suggestedNames);
+  const remainder = mentioned.remaining
+    .replace(
+      /\b(?:add|use|apply|select|choose|please|yes|yeah|yep|sure|okay|ok|only|just|and|the|tags?|to|this|changelog|entry|it|can|could|you)\b/gi,
+      "",
+    )
+    .replace(/[\s,.!&"'“”‘’]/g, "");
+  // Accept the suggested names without requiring "tag", but leave requests with
+  // additional writing instructions ("add a paragraph about UI") to conversation.
+  if (mentioned.names.length > 0 && !remainder) {
+    return { kind: "accept", names: mentioned.names };
   }
   if (ACCEPT_RE.test(value)) {
     return { kind: "accept", names: suggestedNames };
@@ -48,10 +70,14 @@ export function getTagRemovalDecision(
   const value = text.trim();
   if (!value) return null;
 
-  const lower = value.toLowerCase();
-  const mentioned = selectedNames.filter((name) =>
-    lower.includes(name.toLowerCase()),
-  );
+  if (
+    /\b(?:sentence|paragraph|section|heading|word|mention|explain|describe)\b/i.test(
+      value,
+    )
+  )
+    return null;
+
+  const mentioned = mentionedTags(value, selectedNames).names;
 
   if (REMOVE_RE.test(value) && mentioned.length > 0) {
     return { kind: "remove", names: mentioned };

@@ -16,9 +16,12 @@ import {
   AvatarImage,
 } from "@featul/ui/components/avatar";
 import { cn } from "@featul/ui/lib/utils";
-import { LogoutIcon } from "@featul/ui/icons/logout";
-import { BoardIcon } from "@featul/ui/icons/board";
-import { TrashIcon } from "@featul/ui/icons/trash";
+import {
+  LogoutIcon,
+  BoardIcon,
+  TrashIcon,
+} from "@/components/global/icons";
+
 import { authClient } from "@featul/auth/client";
 import { toast } from "sonner";
 import { getDisplayUser, getInitials } from "@/utils/user";

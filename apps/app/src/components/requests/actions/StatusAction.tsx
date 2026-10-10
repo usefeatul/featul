@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { ListFilterIcon } from "@featul/ui/icons/list-filter";
+import StatusIcon from "../StatusIcon";
+import { ListFilterIcon } from "@/components/global/icons";
 import {
   RequestMultiSelectFilter,
   useRequestMultiSelectFilter,
@@ -43,6 +44,7 @@ export default function StatusAction({
         id: option.value,
         label: option.label,
         value: option.value,
+                  icon: <StatusIcon status={option.value} className="size-4" />,
       }))}
       selected={selected}
       isAllSelected={isAllSelected}

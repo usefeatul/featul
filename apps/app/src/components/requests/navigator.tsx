@@ -2,8 +2,8 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, X } from "lucide-react";
-import { PanelIcon } from "@featul/ui/icons/panel";
+import { Search, X, SidebarPanelIcon, LoaderIcon } from "@/components/global/icons";
+
 import { Button } from "@featul/ui/components/button";
 import {
   Tooltip,
@@ -13,6 +13,7 @@ import {
 import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
 import { PanelShortcutKeys } from "@/components/global/keys";
 import { cn } from "@featul/ui/lib/utils";
+import { sidebarHeaderActionClassName, sidebarSearchBackgroundClassName } from "@/components/sidebar/styles";
 import {
   keepPreviousData,
   useInfiniteQuery,
@@ -20,7 +21,7 @@ import {
 } from "@tanstack/react-query";
 import { loadMoreRequests } from "@/lib/requests.actions";
 import FiltersAction from "./actions/FiltersAction";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+
 import { parseRequestFiltersFromSearchParams } from "@/utils/request/filters";
 import { QueueItem } from "./queueitem";
 import { motion } from "framer-motion";
@@ -195,7 +196,7 @@ export default function Navigator({
           label="Resize request sidebar"
           className="hidden md:flex"
         />
-        <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-background md:w-[var(--resizable-panel-width)] md:rounded-none md:border-0 md:border-r md:border-border/60 md:shadow-none dark:md:border-white/10">
+        <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-background md:w-[var(--resizable-panel-width)] md:rounded-none md:border-0 md:border-r md:border-border/60 md:shadow-none dark:border-sidebar-border">
           <div
             aria-hidden
             className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-border md:hidden"
@@ -219,17 +220,17 @@ export default function Navigator({
                 }
                 aria-expanded={searchOpen}
                 className={cn(
-                  "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] dark:hover:bg-white/[0.03]",
-                  search && "bg-primary/15 text-primary",
+                  "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] hover:text-foreground focus-visible:text-foreground dark:bg-transparent dark:hover:bg-white/[0.03]",
+                  search && "text-primary",
                 )}
               >
-                <Search className="size-[18px]" />
+                <Search className="size-5" />
               </Button>
               <FiltersAction
                 query={query}
                 onQueryChange={setFilterQuery}
                 showClear
-                className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03] [&_svg]:size-[18px]"
+                className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground focus-visible:text-foreground data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03] [&_svg]:size-[18px]"
               />
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -240,9 +241,10 @@ export default function Navigator({
                     aria-keyshortcuts={PANEL_ARIA_SHORTCUTS}
                     aria-expanded={true}
                     aria-controls="request-navigator"
-                    className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/10 dark:bg-transparent dark:hover:bg-white/[0.03]"
+                    size="icon-sm"
+                    className={sidebarHeaderActionClassName}
                   >
-                    <PanelIcon filled className="size-[18px]" />
+                    <SidebarPanelIcon className="size-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent
@@ -258,16 +260,16 @@ export default function Navigator({
           </div>
 
           {searchOpen ? (
-            <div className="px-3 pb-2">
-              <label className="flex h-8 items-center gap-2 rounded-md border border-border/60 bg-black/5 px-2.5 text-accent focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10 dark:bg-white/[0.08]">
-                <Search className="size-3.5 shrink-0" />
+            <div className="px-3 pb-2 pt-1">
+              <label className={cn("flex h-9 items-center gap-2 rounded-md border border-border/60 px-3 text-muted-foreground focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10", sidebarSearchBackgroundClassName)}>
+                <Search className="size-5 shrink-0 text-neutral-600 dark:text-neutral-300" />
                 <input
                   autoFocus
                   aria-label="Search request queue"
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search requests…"
-                  className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-accent"
+                  className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 />
                 {search ? (
                   <button
@@ -290,7 +292,7 @@ export default function Navigator({
                   key={chip.key}
                   type="button"
                   onClick={() => clearFilter(chip.key)}
-                  className="inline-flex h-6 shrink-0 items-center gap-1 rounded-md bg-primary/10 px-2 text-[10px] font-medium capitalize text-primary transition-colors hover:bg-primary/15"
+                  className="inline-flex h-6 shrink-0 cursor-pointer items-center gap-1 rounded-md bg-black/5 px-2 text-[10px] font-medium capitalize text-muted-foreground transition-colors hover:bg-black/10 hover:text-foreground dark:bg-white/[0.05] dark:hover:bg-white/[0.08]"
                   aria-label={`Remove ${chip.label} filter`}
                 >
                   {chip.label}
@@ -352,7 +354,7 @@ export default function Navigator({
               ) : null}
               {!isError && data && isFetching ? (
                 <LoaderIcon
-                  className="size-3.5 animate-spin text-muted-foreground motion-reduce:animate-none"
+                  className="size-3.5 text-muted-foreground"
                   size={14}
                 />
               ) : null}

@@ -1,6 +1,9 @@
+import { readBoundedJson } from "../request/json";
+import { runChangelogConversation } from "./conversation";
 import { HTTPException } from "hono/http-exception";
 import { aiAssistSchema } from "../validators/changelog";
-import { requireBoardManagerBySlug } from "../shared/access";
+import { reserveAiRequest } from "./quota";
+import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
 import { applyRateLimitHeaders } from "../services/ratelimiter";
 import {
   authorizePrivateChangelogAiRequest,
@@ -17,9 +20,6 @@ import {
   getMaxTokensByAction,
 } from "./constants";
 import {
-  buildChatAskOpenRouterMessages,
-  buildChatPatchOpenRouterMessages,
-  buildChatRefineOpenRouterMessages,
   buildChatTagsOpenRouterMessages,
   buildStreamRefineUserPrompt,
 } from "./prompts";
@@ -39,19 +39,9 @@ import {
 } from "./title";
 import type {
   AiAction,
-  AiChatIntent,
   ChangelogAiStreamEvent,
   StructuredGenerationAction,
 } from "./types";
-
-function resolveIntent(input: {
-  intent?: AiChatIntent;
-  selectionMarkdown?: string;
-}): AiChatIntent {
-  if (input.intent) return input.intent;
-  if (input.selectionMarkdown?.trim()) return "patch";
-  return "rewrite";
-}
 
 export async function createChangelogAiStreamResponse(req: Request) {
   const authResult = await authorizePrivateChangelogAiRequest(req);
@@ -63,10 +53,10 @@ export async function createChangelogAiStreamResponse(req: Request) {
 
   let parsedInput;
   try {
-    const json = await req.json();
+    const json = await readBoundedJson(req);
     parsedInput = aiAssistSchema.parse(json);
-  } catch {
-    return changelogAiJsonResponse(400, { message: "Invalid request" });
+  } catch (error) {
+    return changelogAiJsonResponse(error instanceof HTTPException ? error.status : 400, { message: error instanceof HTTPException ? error.message : "Invalid request" });
   }
 
   const { db } = await import("@featul/db");
@@ -81,27 +71,51 @@ export async function createChangelogAiStreamResponse(req: Request) {
     return changelogAiJsonResponse(status, { message });
   }
 
-  const model = resolveOpenRouterStreamModel(parsedInput.action);
+  let releaseQuota: () => Promise<void>;
+  try {
+    releaseQuota = await reserveAiRequest(workspace.id, await getWorkspaceAccessPlan(workspace.id));
+  } catch (error) {
+    return changelogAiJsonResponse(error instanceof HTTPException ? error.status : 503, {
+      message: error instanceof HTTPException ? error.message : "AI usage tracking is unavailable",
+    });
+  }
+  const model = resolveOpenRouterStreamModel();
   const hasExistingContent = Boolean(parsedInput.contentMarkdown?.trim());
-  const intent = resolveIntent(parsedInput);
+  const intent = parsedInput.intent ?? "conversation";
   const structured =
-    intent === "rewrite" &&
+    parsedInput.action !== "chat" &&
     usesStructuredChangelogStream(parsedInput.action, hasExistingContent);
+
+  let cancelled = false;
+  const upstream = new AbortController();
+  const timeout = setTimeout(() => upstream.abort(), 90_000);
+  const abort = () => {
+    cancelled = true;
+    upstream.abort();
+  };
+  req.signal.addEventListener("abort", abort, { once: true });
+  if (req.signal.aborted) abort();
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const encoder = new TextEncoder();
       const send = (event: ChangelogAiStreamEvent) => {
-        controller.enqueue(encoder.encode(encodeChangelogAiSseEvent(event)));
+        if (!cancelled)
+          controller.enqueue(encoder.encode(encodeChangelogAiSseEvent(event)));
+      };
+
+      const close = () => {
+        if (!cancelled) controller.close();
       };
 
       try {
+        if (cancelled) return;
         send({ type: "status", phase: "preparing" });
 
         const needsSourcePosts = Boolean(parsedInput.sourcePostIds?.length);
 
         const workspaceName = workspace.name?.trim() || "this product";
-        const needsBrandContext = intent !== "ask" && intent !== "tags";
+        const needsBrandContext = intent !== "ask";
         const [sourcePosts, brandContext] = await Promise.all([
           needsSourcePosts
             ? fetchAiSourcePostsByIds({
@@ -127,7 +141,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
             message:
               "No valid shipped feedback items were found for generation",
           });
-          controller.close();
+          close();
           return;
         }
 
@@ -138,17 +152,37 @@ export async function createChangelogAiStreamResponse(req: Request) {
 
         send({ type: "status", phase: "generating" });
 
-        if (structured) {
-          const structuredAction: StructuredGenerationAction =
-            parsedInput.action === "chat"
-              ? sourcePosts?.length
-                ? "generateFromPosts"
-                : "prompt"
-              : (parsedInput.action as StructuredGenerationAction);
+        if (parsedInput.action === "chat" && intent !== "tags") {
+          const result = await runChangelogConversation(
+            model,
+            {
+              prompt: parsedInput.prompt!,
+              title: parsedInput.title,
+              summary: parsedInput.summary,
+              contentMarkdown: parsedInput.contentMarkdown,
+              selectionMarkdown: parsedInput.selectionMarkdown,
+              history: parsedInput.messages,
+              workspaceName,
+              sourcePosts,
+              brandVoice: brandContext.brandVoice,
+              githubUrls,
+              availableTagNames: brandContext.tagNames,
+              selectedTagNames: parsedInput.selectedTagNames,
+              pendingTagNames: parsedInput.pendingTagNames,
+              readOnly: intent === "ask",
+            },
+            upstream.signal,
+            (text) => send({ type: "delta", text }),
+          );
+          send({ type: "done", ...result });
+          close();
+          return;
+        }
 
+        if (structured) {
           const result = await streamStructuredChangelog({
             model,
-            action: structuredAction,
+            action: parsedInput.action as StructuredGenerationAction,
             temperature: AI_TEMPERATURE_BY_ACTION[parsedInput.action],
             maxBodyTokens: getMaxTokensByAction(
               parsedInput.action,
@@ -163,11 +197,12 @@ export async function createChangelogAiStreamResponse(req: Request) {
             githubUrls,
             availableTagNames,
             send,
+            signal: upstream.signal,
           });
 
           if (!result.contentMarkdown) {
             send({ type: "error", message: "AI response was empty" });
-            controller.close();
+            close();
             return;
           }
 
@@ -184,7 +219,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
             suggestedTags: meta.suggestedTags,
             summary: extractSummaryFromMarkdown(contentMarkdown),
           });
-          controller.close();
+          close();
           return;
         }
 
@@ -198,87 +233,42 @@ export async function createChangelogAiStreamResponse(req: Request) {
             reply: "This workspace does not have any changelog tags yet.",
             suggestedTags: [],
           });
-          controller.close();
+          close();
           return;
         }
 
         const chatMessages =
-          parsedInput.action === "chat" && intent === "ask"
-            ? buildChatAskOpenRouterMessages({
+          parsedInput.action === "chat"
+            ? buildChatTagsOpenRouterMessages({
                 prompt: parsedInput.prompt ?? "",
                 title: parsedInput.title,
                 contentMarkdown: parsedInput.contentMarkdown,
                 workspaceName,
-                sourcePosts,
-                history: parsedInput.messages,
-                githubUrls,
+                availableTagNames,
               })
-            : parsedInput.action === "chat" && intent === "tags"
-              ? buildChatTagsOpenRouterMessages({
-                  prompt: parsedInput.prompt ?? "",
-                  title: parsedInput.title,
-                  contentMarkdown: parsedInput.contentMarkdown,
-                  workspaceName,
-                  availableTagNames,
-                })
-              : parsedInput.action === "chat" && intent === "patch"
-                ? buildChatPatchOpenRouterMessages({
-                    prompt: parsedInput.prompt ?? "",
-                    title: parsedInput.title,
-                    contentMarkdown: parsedInput.contentMarkdown,
-                    selectionMarkdown: parsedInput.selectionMarkdown ?? "",
+            : [
+                {
+                  role: "system" as const,
+                  content:
+                    parsedInput.action === "summary"
+                      ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
+                      : AI_STREAM_REFINE_SYSTEM_PROMPT,
+                },
+                {
+                  role: "user" as const,
+                  content: buildStreamRefineUserPrompt({
+                    ...parsedInput,
                     workspaceName,
                     sourcePosts,
-                    history: parsedInput.messages,
-                    brandVoice: brandContext.brandVoice,
-                  })
-                : parsedInput.action === "chat"
-                  ? buildChatRefineOpenRouterMessages({
-                      prompt: parsedInput.prompt ?? "",
-                      title: parsedInput.title,
-                      contentMarkdown: parsedInput.contentMarkdown,
-                      workspaceName,
-                      sourcePosts,
-                      history: parsedInput.messages,
-                      brandVoice: brandContext.brandVoice,
-                      githubUrls,
-                      availableTagNames,
-                    })
-                  : [
-                      {
-                        role: "system" as const,
-                        content:
-                          parsedInput.action === "summary"
-                            ? AI_STREAM_SUMMARY_SYSTEM_PROMPT
-                            : AI_STREAM_REFINE_SYSTEM_PROMPT,
-                      },
-                      {
-                        role: "user" as const,
-                        content: buildStreamRefineUserPrompt({
-                          action: parsedInput.action,
-                          prompt: parsedInput.prompt,
-                          title: parsedInput.title,
-                          contentMarkdown: parsedInput.contentMarkdown,
-                          tone: parsedInput.tone,
-                          detailLevel: parsedInput.detailLevel,
-                          workspaceName,
-                          sourcePosts,
-                        }),
-                      },
-                    ];
+                  }),
+                },
+              ];
 
         let accumulated = "";
         const maxTokens =
-          intent === "ask"
-            ? 700
-            : intent === "tags"
-              ? 120
-              : intent === "patch"
-                ? 1400
-                : getMaxTokensByAction(
-                    parsedInput.action,
-                    parsedInput.detailLevel,
-                  );
+          intent === "tags"
+            ? 120
+            : getMaxTokensByAction(parsedInput.action, parsedInput.detailLevel);
 
         await streamOpenRouterChat(
           {
@@ -292,12 +282,13 @@ export async function createChangelogAiStreamResponse(req: Request) {
             accumulated += text;
             send({ type: "delta", text });
           },
+          upstream.signal,
         );
 
         const trimmed = accumulated.trim();
         if (!trimmed) {
           send({ type: "error", message: "AI response was empty" });
-          controller.close();
+          close();
           return;
         }
 
@@ -306,7 +297,7 @@ export async function createChangelogAiStreamResponse(req: Request) {
             type: "done",
             summary: trimmed.slice(0, 512),
           });
-          controller.close();
+          close();
           return;
         }
 
@@ -326,24 +317,15 @@ export async function createChangelogAiStreamResponse(req: Request) {
               : "No relevant tags were found.",
             suggestedTags,
           });
-          controller.close();
-          return;
-        }
-
-        if (intent === "ask") {
-          send({
-            type: "done",
-            reply: trimmed.slice(0, 4000),
-          });
-          controller.close();
+          close();
           return;
         }
 
         const meta = extractAiOutputMeta(trimmed);
-        const contentMarkdown =
-          intent === "patch"
-            ? meta.body
-            : ensureFeedbackSection(meta.body, sourcePosts ?? []);
+        const contentMarkdown = ensureFeedbackSection(
+          meta.body,
+          sourcePosts ?? [],
+        );
 
         send({
           type: "done",
@@ -357,12 +339,17 @@ export async function createChangelogAiStreamResponse(req: Request) {
               : extractSummaryFromMarkdown(contentMarkdown),
           suggestedTags: meta.suggestedTags,
         });
-        controller.close();
+        close();
       } catch (err) {
         send({ type: "error", message: sanitizeChangelogAiError(err) });
-        controller.close();
+        close();
+      } finally {
+        clearTimeout(timeout);
+        req.signal.removeEventListener("abort", abort);
+        await releaseQuota();
       }
     },
+    cancel: abort,
   });
 
   const headers = createSseStreamHeaders();

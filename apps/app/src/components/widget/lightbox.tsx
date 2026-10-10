@@ -8,7 +8,7 @@ import {
   DialogInner,
   DialogTitle,
 } from "@featul/ui/components/dialog";
-import { ImageIcon } from "@featul/ui/icons/image";
+import { ImageIcon } from "@/components/global/icons";
 import { ImageLightboxNav, ImageLightboxView, imageLightboxContentClassName, type LightboxImage } from "@/components/global/ImageLightbox";
 import { isSafeImageUrl } from "./messaging";
 

@@ -1,13 +1,15 @@
 import type { FC, SVGProps } from "react"
-import { LockIcon } from "@featul/ui/icons/lock"
-import { PinIcon } from "@featul/ui/icons/pin"
-import { StarIcon } from "@featul/ui/icons/star"
-import { StarPinIcon } from "@featul/ui/icons/star-pin"
 import {
+  StarIcon,
+  LockIcon,
+  PinIcon,
+  StarPinIcon,
   PinLockIcon,
   StarLockIcon,
   StarPinLockIcon,
-} from "@featul/ui/icons/flag-merge"
+} from "@/components/global/icons";
+
+import { cn } from "@featul/ui/lib/utils"
 import type { RequestFlagKey, RequestFlags } from "@/types/request"
 
 export const REQUEST_FLAG_VISUALS = [
@@ -92,9 +94,11 @@ export function getFlagRibbonIcon(
 export function RequestFlagReadout({
   flags,
   className,
+  itemClassName,
 }: {
   flags: RequestFlags
   className?: string
+  itemClassName?: string
 }) {
   const active = getActiveRequestFlags(flags)
   if (active.length === 0) return null
@@ -102,7 +106,10 @@ export function RequestFlagReadout({
   return (
     <span className={className}>
       {active.map((flag) => (
-        <span key={flag.key} className="inline-flex items-center gap-1">
+        <span
+          key={flag.key}
+          className={cn("inline-flex items-center gap-1", itemClassName)}
+        >
           <flag.Icon
             width={12}
             height={12}

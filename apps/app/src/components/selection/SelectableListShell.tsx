@@ -28,6 +28,7 @@ type SelectableListShellProps = {
   deleteDescription: string;
   totalCount: number;
   extraActions?: ReactNode;
+  emptySelectionHint?: string;
   children: ReactNode;
   className?: string;
   toolbarClassName?: string;
@@ -48,6 +49,7 @@ export function SelectableListShell({
   deleteDescription,
   totalCount,
   extraActions,
+  emptySelectionHint,
   children,
   className,
   toolbarClassName,
@@ -74,6 +76,7 @@ export function SelectableListShell({
       onToggleAll={selection.toggleAll}
       onConfirmDelete={() => setConfirmOpen(true)}
       extraActions={extraActions}
+      emptySelectionHint={emptySelectionHint}
       className={
         isNested
           ? cn(

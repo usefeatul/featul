@@ -1,3 +1,4 @@
+import { protectedImageKey, protectedImageUrl } from "./protected"
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -73,7 +74,7 @@ export async function deleteUnreferencedImageUrls(
         if (await isImageUrlReferenced(db, url)) return
         await storage.s3.send(
           new DeleteObjectCommand({
-            Bucket: storage.bucket,
+            Bucket: protectedImageKey(url) ? process.env.R2_PRIVATE_BUCKET : storage.bucket,
             Key: key,
           }),
         )
@@ -101,7 +102,7 @@ export async function deleteUploadByPublicUrl({
     throw new HTTPException(400, { message: "Invalid image URL" })
   }
 
-  if (await isImageUrlReferenced(db, publicUrlForKey(storage.publicBase, key))) {
+  if (await isImageUrlReferenced(db, publicUrl)) {
     throw new HTTPException(409, {
       message: "Image is still attached to a post or comment",
     })
@@ -109,7 +110,7 @@ export async function deleteUploadByPublicUrl({
 
   await storage.s3.send(
     new DeleteObjectCommand({
-      Bucket: storage.bucket,
+      Bucket: protectedImageKey(publicUrl) ? process.env.R2_PRIVATE_BUCKET : storage.bucket,
       Key: key,
     }),
   )
@@ -225,13 +226,20 @@ async function clearGcCursor(storage: StorageContext): Promise<void> {
   )
 }
 
-export async function runStorageOrphanGc(
+async function runBucketOrphanGc(
   db: any,
   options?: { maxAgeDays?: number; maxDeletes?: number },
+  protectedContent = false,
 ): Promise<StorageOrphanGcResult> {
   const storage = tryCreateStorageContext()
   if (!storage) {
     return { skipped: true, scanned: 0, deleted: 0, referenced: 0, tooNew: 0 }
+  }
+
+  if (protectedContent) {
+    const privateBucket = process.env.R2_PRIVATE_BUCKET
+    if (!privateBucket || privateBucket === storage.bucket) return { skipped: true, scanned: 0, deleted: 0, referenced: 0, tooNew: 0 }
+    storage.bucket = privateBucket
   }
 
   const maxAgeDays = positiveNumberOrDefault(
@@ -283,7 +291,7 @@ export async function runStorageOrphanGc(
         tooNew += 1
         continue
       }
-      const url = publicUrlForKey(storage.publicBase, key)
+      const url = protectedContent ? protectedImageUrl(key) : publicUrlForKey(storage.publicBase, key)
       if (referenced.has(url)) {
         referencedCount += 1
         continue
@@ -313,4 +321,21 @@ export async function runStorageOrphanGc(
   }
 
   return { scanned, deleted, referenced: referencedCount, tooNew }
+}
+
+/** Apply the same orphan protection to public legacy and private content buckets. */
+export async function runStorageOrphanGc(db: any, options?: { maxAgeDays?: number; maxDeletes?: number }): Promise<StorageOrphanGcResult> {
+  const budget = Math.max(1, Math.floor(positiveNumberOrDefault(options?.maxDeletes ?? process.env.STORAGE_ORPHAN_GC_MAX_DELETES, DEFAULT_ORPHAN_MAX_DELETES)))
+  const privateResult = await runBucketOrphanGc(db, { ...options, maxDeletes: budget }, true)
+  // Legacy storage is shared by old environments; do not delete it automatically.
+  // Enable only after migrating every reference and separating environment storage.
+  if (process.env.STORAGE_LEGACY_GC_ENABLED !== "true" || privateResult.deleted >= budget) return privateResult
+  const publicResult = await runBucketOrphanGc(db, { ...options, maxDeletes: budget - privateResult.deleted })
+  return {
+    skipped: privateResult.skipped && publicResult.skipped,
+    scanned: privateResult.scanned + publicResult.scanned,
+    deleted: privateResult.deleted + publicResult.deleted,
+    referenced: privateResult.referenced + publicResult.referenced,
+    tooNew: privateResult.tooNew + publicResult.tooNew,
+  }
 }

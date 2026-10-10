@@ -1,6 +1,6 @@
 import React from "react";
 import SettingsCard from "../../global/SettingsCard";
-import { IntegrationIcon } from "@featul/ui/icons/integration";
+import { IntegrationIcon } from "@/components/global/icons";
 
 type Props = {
   onSuggest?: () => void;

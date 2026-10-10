@@ -17,7 +17,17 @@ import {
 } from "@featul/db";
 import { resolvePostAuthorImage } from "@/lib/author/avatar";
 import { isOnboardingPost, getOnboardingPostKind } from "@/lib/onboarding/post";
-import { eq, and, inArray, desc, asc, sql, type SQL } from "drizzle-orm";
+import {
+  eq,
+  and,
+  or,
+  isNull,
+  inArray,
+  desc,
+  asc,
+  sql,
+  type SQL,
+} from "drizzle-orm";
 import type { RequestItemRow } from "@/lib/request/item";
 import type {
   ChangelogTag,
@@ -45,6 +55,8 @@ import {
   isSnoozedStatusFilter,
 } from "@featul/api/shared/snooze";
 import { getEffectiveWorkspacePlan } from "@featul/auth/billing";
+import { isWorkspaceTrialEligible } from "@featul/auth/billing/policy";
+import { isAccountTrialEligible } from "@featul/auth/billing/trial";
 import {
   getBrandingBySlug,
   getBrandingColorsBySlug,
@@ -186,7 +198,7 @@ async function resolveTagPostIds(
       and(
         eq(board.workspaceId, workspaceId),
         eq(board.isSystem, false),
-        ...(publicOnly ? [eq(board.isPublic, true)] : []),
+        ...(publicOnly ? [eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true)] : []),
         inArray(tag.slug, tagSlugs),
       ),
     );
@@ -213,7 +225,9 @@ function buildPostFilters({
     eq(board.workspaceId, workspaceId),
     eq(board.isSystem, false),
   ];
-  if (publicOnly) filters.push(eq(board.isPublic, true));
+  if (publicOnly) {
+    filters.push(eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true), eq(post.status, "published"));
+  }
   const wantsStale = matchStatuses.some(isStaleStatusFilter);
   const wantsLowInteraction = matchStatuses.some(isLowInteractionStatusFilter);
   const wantsSnoozed = matchStatuses.some(isSnoozedStatusFilter);
@@ -223,6 +237,15 @@ function buildPostFilters({
       !isLowInteractionStatusFilter(s) &&
       !isSnoozedStatusFilter(s),
   );
+  const roadmapStatusFilter =
+    roadmapStatuses.length === 0
+      ? undefined
+      : roadmapStatuses.includes("pending")
+        ? or(
+            inArray(post.roadmapStatus, roadmapStatuses),
+            isNull(post.roadmapStatus),
+          )
+        : inArray(post.roadmapStatus, roadmapStatuses);
 
   if (wantsSnoozed) {
     filters.push(buildActiveSnoozeCondition());
@@ -232,11 +255,9 @@ function buildPostFilters({
 
   if (wantsStale) {
     filters.push(buildStalePostCondition());
-    if (roadmapStatuses.length > 0) {
-      filters.push(inArray(post.roadmapStatus, roadmapStatuses));
-    }
-  } else if (roadmapStatuses.length > 0) {
-    filters.push(inArray(post.roadmapStatus, roadmapStatuses));
+    if (roadmapStatusFilter) filters.push(roadmapStatusFilter);
+  } else if (roadmapStatusFilter) {
+    filters.push(roadmapStatusFilter);
   }
   if (wantsLowInteraction) {
     filters.push(buildLowInteractionPostCondition());
@@ -308,33 +329,35 @@ export async function listUserWorkspaces(
     plan?: "free" | "starter" | "professional" | null;
   }>
 > {
-  const owned = await db
-    .select({
-      id: workspace.id,
-      name: workspace.name,
-      slug: workspace.slug,
-      logo: workspace.logo,
-      plan: workspace.plan,
-    })
-    .from(workspace)
-    .where(eq(workspace.ownerId, userId));
-
-  const memberRows = await db
-    .select({
-      id: workspace.id,
-      name: workspace.name,
-      slug: workspace.slug,
-      logo: workspace.logo,
-      plan: workspace.plan,
-    })
-    .from(workspaceMember)
-    .innerJoin(workspace, eq(workspaceMember.workspaceId, workspace.id))
-    .where(
-      and(
-        eq(workspaceMember.userId, userId),
-        eq(workspaceMember.isActive, true),
+  // Ownership and membership reads are independent; keep their merge order below.
+  const [owned, memberRows] = await Promise.all([
+    db
+      .select({
+        id: workspace.id,
+        name: workspace.name,
+        slug: workspace.slug,
+        logo: workspace.logo,
+        plan: workspace.plan,
+      })
+      .from(workspace)
+      .where(eq(workspace.ownerId, userId)),
+    db
+      .select({
+        id: workspace.id,
+        name: workspace.name,
+        slug: workspace.slug,
+        logo: workspace.logo,
+        plan: workspace.plan,
+      })
+      .from(workspaceMember)
+      .innerJoin(workspace, eq(workspaceMember.workspaceId, workspace.id))
+      .where(
+        and(
+          eq(workspaceMember.userId, userId),
+          eq(workspaceMember.isActive, true),
+        ),
       ),
-    );
+  ]);
 
   const map = new Map<
     string,
@@ -356,7 +379,7 @@ export async function listUserWorkspaces(
   );
 }
 
-/** Filtered feedback posts; publicOnly hides private-board items. */
+/** Filtered feedback posts; publicOnly returns only publicly viewable posts. */
 export async function getWorkspacePosts(
   slug: string,
   opts?: {
@@ -367,9 +390,9 @@ export async function getWorkspacePosts(
     search?: string;
     limit?: number;
     offset?: number;
-    // When true, only include posts from public boards.
-    // Used for public-facing subdomain pages so that
-    // posts in private boards are fully hidden.
+    // When true, only include published posts from public boards.
+    // Used for public-facing subdomain pages so that private, draft,
+    // pending, spam, and archived posts are fully hidden.
     publicOnly?: boolean;
     includeReportCounts?: boolean;
   },
@@ -488,6 +511,7 @@ export async function getWorkspacePosts(
 
   const withAvatars: RequestItemRow[] = rows.map((r) => ({
     ...r,
+    metadata: publicOnly ? { attachments: r.metadata?.attachments } : r.metadata,
     isOwner: r.authorId === ws.ownerId,
     isFeatul: r.authorId === "featul-founder",
     isOnboarding: isOnboardingPost(
@@ -519,9 +543,9 @@ export async function getWorkspacePostsCount(
     boardSlugs?: string[];
     tagSlugs?: string[];
     search?: string;
-    // When true, only count posts from public boards.
-    // Used for public-facing subdomain pages so that
-    // counts match the visible (public) posts.
+    // When true, only count published posts from public boards.
+    // Used for public-facing subdomain pages so that counts match the
+    // posts that can actually be opened on the public site.
     publicOnly?: boolean;
   },
 ) {
@@ -663,7 +687,10 @@ export async function getWorkspaceBoards(
       postCount: sql<number>`count(${post.id})`,
     })
     .from(board)
-    .leftJoin(post, eq(post.boardId, board.id))
+    .leftJoin(
+      post,
+      and(eq(post.boardId, board.id), eq(post.status, "published")),
+    )
     .where(
       and(
         eq(board.workspaceId, ws.id),
@@ -671,7 +698,7 @@ export async function getWorkspaceBoards(
         // Only include public boards in the public workspace feed.
         // Private boards should never appear on the public sidebar,
         // even briefly on initial page load.
-        eq(board.isPublic, true),
+        eq(board.isPublic, true), eq(board.isVisible, true), eq(board.isActive, true),
       ),
     )
     .orderBy(asc(board.name))
@@ -747,10 +774,12 @@ export async function getBoardByWorkspaceSlug(
 export async function getSettingsInitialData(
   slug: string,
   meId?: string,
+  section?: string,
 ): Promise<{
   initialPlan?: string;
   initialWorkspaceId?: string;
   initialWorkspaceOwnerId?: string;
+  initialTrialEligible?: boolean;
   initialBillingSubscription?: {
     id: string;
     plan: string;
@@ -777,6 +806,10 @@ export async function getSettingsInitialData(
   const ws = await getWorkspaceBySlugRecord(slug);
   if (!ws?.id) return {};
 
+  const needs = (...sections: string[]) => !section || sections.includes(section);
+  // Refresh billing before reading the subscription details used by settings.
+  const verifiedPlan = await getEffectiveWorkspacePlan(ws.id);
+
   const feedbackBoardSelect = {
     id: board.id,
     name: board.name,
@@ -801,11 +834,11 @@ export async function getSettingsInitialData(
     feedbackRoadmap,
     feedbackTagsRows,
     integrationsRows,
-    activeBillingSubscription,
+    billingSubscriptions,
     effectivePlan,
     branding,
   ] = await Promise.all([
-    db
+    needs("changelog") ? db
       .select({
         isVisible: board.isVisible,
         isPublic: board.isPublic,
@@ -815,13 +848,13 @@ export async function getSettingsInitialData(
       .where(
         and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")),
       )
-      .limit(1),
-    db
+      .limit(1) : Promise.resolve([]),
+    needs("branding") ? db
       .select({ hidePoweredBy: brandingConfig.hidePoweredBy })
       .from(brandingConfig)
       .where(eq(brandingConfig.workspaceId, ws.id))
-      .limit(1),
-    db
+      .limit(1) : Promise.resolve([]),
+    needs("team") ? db
       .select({
         userId: workspaceMember.userId,
         role: workspaceMember.role,
@@ -833,8 +866,8 @@ export async function getSettingsInitialData(
       })
       .from(workspaceMember)
       .innerJoin(user, eq(user.id, workspaceMember.userId))
-      .where(eq(workspaceMember.workspaceId, ws.id)),
-    db
+      .where(eq(workspaceMember.workspaceId, ws.id)) : Promise.resolve([]),
+    needs("team") ? db
       .select({
         id: workspaceInvite.id,
         email: workspaceInvite.email,
@@ -845,8 +878,8 @@ export async function getSettingsInitialData(
         createdAt: workspaceInvite.createdAt,
       })
       .from(workspaceInvite)
-      .where(eq(workspaceInvite.workspaceId, ws.id)),
-    db
+      .where(eq(workspaceInvite.workspaceId, ws.id)) : Promise.resolve([]),
+    needs("domain", "changelog") ? db
       .select({
         id: workspaceDomain.id,
         host: workspaceDomain.host,
@@ -858,22 +891,22 @@ export async function getSettingsInitialData(
       })
       .from(workspaceDomain)
       .where(eq(workspaceDomain.workspaceId, ws.id))
-      .limit(1),
-    db
+      .limit(1) : Promise.resolve([]),
+    needs("feedback", "board") ? db
       .select(feedbackBoardSelect)
       .from(board)
       .leftJoin(post, eq(post.boardId, board.id))
       .where(and(eq(board.workspaceId, ws.id), eq(board.isSystem, false)))
       .groupBy(board.id)
-      .orderBy(asc(board.sortOrder), asc(board.createdAt)),
-    db
+      .orderBy(asc(board.sortOrder), asc(board.createdAt)) : Promise.resolve([]),
+    needs("feedback", "board") ? db
       .select(feedbackBoardSelect)
       .from(board)
       .leftJoin(post, eq(post.boardId, board.id))
       .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "roadmap")))
       .groupBy(board.id)
-      .orderBy(asc(board.sortOrder), asc(board.createdAt)),
-    db
+      .orderBy(asc(board.sortOrder), asc(board.createdAt)) : Promise.resolve([]),
+    needs("feedback") ? db
       .select({
         id: tag.id,
         name: tag.name,
@@ -893,8 +926,8 @@ export async function getSettingsInitialData(
         ),
       )
       .where(eq(tag.workspaceId, ws.id))
-      .groupBy(tag.id, tag.name, tag.slug, tag.color),
-    db
+      .groupBy(tag.id, tag.name, tag.slug, tag.color) : Promise.resolve([]),
+    needs("integrations") ? db
       .select({
         id: workspaceIntegration.id,
         type: workspaceIntegration.type,
@@ -903,8 +936,8 @@ export async function getSettingsInitialData(
         createdAt: workspaceIntegration.createdAt,
       })
       .from(workspaceIntegration)
-      .where(eq(workspaceIntegration.workspaceId, ws.id)),
-    db
+      .where(eq(workspaceIntegration.workspaceId, ws.id)) : Promise.resolve([]),
+    needs("billing") ? db
       .select({
         id: subscription.id,
         plan: subscription.plan,
@@ -913,30 +946,31 @@ export async function getSettingsInitialData(
         billingInterval: subscription.billingInterval,
         periodEnd: subscription.periodEnd,
         cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+        trialStart: subscription.trialStart,
         trialEnd: subscription.trialEnd,
       })
       .from(subscription)
-      .where(
-        and(
-          eq(subscription.referenceId, ws.id),
-          sql`${subscription.status} in ('active', 'trialing', 'past_due')`,
-        ),
-      )
-      .orderBy(desc(subscription.updatedAt), desc(subscription.createdAt))
-      .limit(1),
-    getEffectiveWorkspacePlan(ws.id),
-    getBrandingBySlug(slug),
+      .where(eq(subscription.referenceId, ws.id))
+      .orderBy(sql`case when ${subscription.plan} = ${verifiedPlan} then 0 else 1 end`, desc(subscription.createdAt))
+      : Promise.resolve([]),
+    Promise.resolve(verifiedPlan),
+    needs("branding") ? getBrandingBySlug(slug) : Promise.resolve(null),
   ]);
 
   const b = changelogRows[0];
   const br = brandingRows[0];
   const d = domainRows[0];
   const feedbackBoards = [...feedbackRoadmap, ...feedbackBoardsNonSystem];
+  const activeBillingSubscription = billingSubscriptions.filter((row) =>
+    row.status !== null && row.status !== "canceled" && row.status !== "incomplete_expired",
+  );
 
   return {
     initialPlan: effectivePlan,
     initialWorkspaceId: ws.id,
     initialWorkspaceOwnerId: ws.ownerId,
+    initialTrialEligible: needs("billing") && isWorkspaceTrialEligible(billingSubscriptions)
+      && await isAccountTrialEligible(ws.ownerId).catch(() => false),
     initialBillingSubscription: activeBillingSubscription[0]
       ? {
           id: activeBillingSubscription[0].id,
@@ -984,14 +1018,14 @@ export async function getSettingsInitialData(
       ? (b.changelogTags as ChangelogTag[])
       : [],
     initialHidePoweredBy: Boolean(br?.hidePoweredBy),
-    initialBrandingConfig: {
+    initialBrandingConfig: branding ? {
       logoUrl: ws?.logo || undefined,
       primaryColor: branding.primary,
       theme: branding.theme,
       layoutStyle: branding.layoutStyle,
       sidebarPosition: branding.sidebarPosition,
       hidePoweredBy: branding.hidePoweredBy,
-    },
+    } : undefined,
     initialDomainInfo: d || null,
     initialDefaultDomain: String(ws?.domain || ""),
     initialFeedbackBoards: feedbackBoards.map((b) => ({

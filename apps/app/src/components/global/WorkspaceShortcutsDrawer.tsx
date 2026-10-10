@@ -6,8 +6,11 @@ import { overlayDialogClass, overlayDialogInnerClass } from "@featul/ui/lib/over
 import { cn } from "@featul/ui/lib/utils";
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
-import { SearchIcon } from "@featul/ui/icons/search";
-import { XMarkIcon } from "@featul/ui/icons/xmark";
+import {
+  SearchIcon,
+  XMarkIcon,
+} from "@/components/global/icons";
+
 import {
   WORKSPACE_SHORTCUT_GROUP_ORDER,
   WORKSPACE_SHORTCUTS,

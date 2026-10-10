@@ -1,5 +1,7 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import { isDeletableContentKey } from "./object"
+import { protectedImageUrl } from "./protected"
 import { SIGNED_UPLOAD_URL_TTL_SECONDS } from "./upload"
 
 function getEnv(name: string): string {
@@ -47,13 +49,21 @@ export async function buildSignedUpload({
   contentType: string
   contentLength: number
 }) {
+  const protectedContent = isDeletableContentKey(key)
+  if (protectedContent) {
+    const privateBucket = getEnv("R2_PRIVATE_BUCKET")
+    if (privateBucket === bucket) throw new Error("Content storage must use a separate private bucket")
+    bucket = privateBucket
+  }
   const cmd = new PutObjectCommand({
     Bucket: bucket,
     Key: key,
     ContentType: contentType,
     ContentLength: contentLength,
+    CacheControl: protectedContent ? "private, no-store" : undefined,
   })
   const uploadUrl = await getSignedUrl(s3, cmd, { expiresIn: SIGNED_UPLOAD_URL_TTL_SECONDS })
-  const publicUrl = `${publicBase}/${key}`
-  return { uploadUrl, key, publicUrl }
+  const publicUrl = protectedContent ? protectedImageUrl(key) : `${publicBase}/${key}`
+  const previewUrl = protectedContent ? await getSignedUrl(s3, new GetObjectCommand({ Bucket: bucket, Key: key }), { expiresIn: 120 }) : publicUrl
+  return { uploadUrl, key, publicUrl, previewUrl }
 }

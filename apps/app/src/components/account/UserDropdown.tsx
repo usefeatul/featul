@@ -25,7 +25,7 @@ import { toast } from "sonner";
 import { getSlugFromPath } from "@/config/nav";
 import { client } from "@featul/api/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { AccountIcon } from "@featul/ui/icons/account";
+import { AccountIcon } from "@/components/global/icons";
 import SignIn from "@/components/auth/SignIn";
 import SignUp from "@/components/auth/SignUp";
 import type { AuthMode } from "@/types/auth";

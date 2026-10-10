@@ -8,7 +8,7 @@ import { getDisplayUser } from "@/utils/user"
 import { Input } from "@featul/ui/components/input"
 import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
-import { UserFocusIcon } from "@featul/ui/icons/userfocus"
+import { UserFocusIcon } from "@/components/global/icons"
 import { updateAccountUserInCache } from "./cache"
 import { accountQueryKeys } from "./keys"
 

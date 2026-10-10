@@ -122,7 +122,6 @@ function PricingPlanCard({
   const ctaLabel = getPlanCtaLabel(planKey)
   const buttonClassName = cn(
     "h-9 w-full text-sm",
-    planKey === "starter" && "bg-primary text-primary-foreground hover:bg-primary/90",
     planKey === "professional" && "bg-orange-500 text-white hover:bg-orange-500/90",
   )
   const highlightValueClass =

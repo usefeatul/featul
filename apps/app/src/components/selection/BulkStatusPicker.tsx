@@ -9,8 +9,8 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { LayersIcon } from "@featul/ui/icons/layers";
-import { DropdownIcon } from "@featul/ui/icons/dropdown";
+import { BoardIcon as LayersIcon } from "@/components/global/icons";
+
 import { cn } from "@featul/ui/lib/utils";
 import { statusOptions } from "@/components/requests/RequestItemSubmenus";
 import StatusIcon from "@/components/requests/StatusIcon";
@@ -36,7 +36,7 @@ export function BulkStatusPicker({
           variant="card"
           size="sm"
           className={cn(
-            "h-8 gap-1.5 rounded-sm px-3",
+            "h-8 gap-1.5 rounded-sm px-3 py-0",
             disabled && "pointer-events-none opacity-40",
           )}
           disabled={disabled || isPending}
@@ -44,7 +44,6 @@ export function BulkStatusPicker({
         >
           <LayersIcon className="size-3.5" />
           <span>{isPending ? "Updating…" : "Status"}</span>
-          <DropdownIcon className="size-3" />
         </Button>
       </PopoverTrigger>
       <PopoverContent list className="min-w-0 w-fit">

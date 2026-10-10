@@ -1,12 +1,14 @@
 "use client";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ArrowUpRight } from "lucide-react";
+import { FaqAccordion } from "@/components/shared/accordion";
 import { SkyPageShell } from "@/components/layout/shell";
-import { getDefinitionBySlug, getDefinitionContent } from "@/content/definitions";
+import {
+  getDefinitionBySlug,
+  getDefinitionContent,
+} from "@/content/definitions";
 import type { Definition } from "@/types/definitions";
 import { findToolForDefinition } from "@/types/tools";
-import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card";
-import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 
 export default function DefinitionDetail({ def }: { def: Definition }) {
   const overview = def.overview ?? `${def.practical} ${def.expert}`;
@@ -38,7 +40,6 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
   };
   const publishedLabel = formatPublishedLabel(def.publishedAt);
   const author = def.author ?? "Jean Daly";
-  const isMobile = useIsMobile();
   const relatedTool = findToolForDefinition(def.slug);
   const relatedToolHref = relatedTool
     ? `/tools/categories/${relatedTool.categorySlug}/${relatedTool.tool.slug}`
@@ -47,44 +48,52 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
     <SkyPageShell
       dataComponent="DefinitionDetail"
       title={def.name}
-      description={def.short}
-      meta={
-        <div className="mb-2 flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/definitions"
-              className="inline-flex items-center gap-1 text-sm text-accent hover:text-foreground"
-            >
-              <ChevronLeft className="size-4" />
-              Back
-            </Link>
-            <span className="mt-0.5 min-w-0 flex-1 truncate text-xs uppercase tracking-wide text-accent">
-              {def.eli5}
-            </span>
-          </div>
-          {isMobile ? (
-            <div className="text-xs text-accent">
-              <span>Published on {publishedLabel}</span>
-              <span className="mx-2">•</span>
-              <span>Written by {author}</span>
+      headerClassName="max-w-none mb-8 sm:mb-10"
+      description={
+        <div>
+          <p>{def.short}</p>
+          <dl className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:text-sm">
+            <div className="flex items-baseline gap-1.5">
+              <dt className="text-accent">By</dt>
+              <dd className="font-medium text-foreground">{author}</dd>
             </div>
-          ) : null}
+            <div className="flex flex-wrap items-baseline gap-1.5">
+              <dt className="text-accent">Published</dt>
+              <dd className="text-accent">{publishedLabel}</dd>
+            </div>
+          </dl>
         </div>
       }
+      meta={
+        <Link
+          href="/definitions"
+          className="inline-flex items-center gap-1.5 rounded-sm text-sm text-accent transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+        >
+          <ChevronLeft className="size-4" />
+          All definitions
+        </Link>
+      }
     >
-      <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-12">
-        <div className="space-y-10">
+      <div className="w-full min-w-0 space-y-12 sm:space-y-16">
+        <article
+          aria-label={`${def.name} guide`}
+          className="w-full min-w-0 space-y-9 sm:space-y-10"
+        >
           <section>
-            <h2 className="text-lg font-semibold text-foreground">Overview</h2>
-            <div className="mt-2 space-y-4 text-sm leading-7 text-accent sm:text-base">
+            <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
+              Overview
+            </h2>
+            <div className="mt-3 space-y-4 text-sm leading-7 text-accent sm:text-base">
               {def.essay?.intro ? <p>{def.essay.intro}</p> : null}
               <p>{overview}</p>
             </div>
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-foreground">Definition</h2>
-            <div className="mt-2 space-y-4 text-sm leading-7 text-accent sm:text-base">
+            <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
+              Definition
+            </h2>
+            <div className="mt-3 space-y-4 text-sm leading-7 text-accent sm:text-base">
               {def.essay?.analysis ? <p>{def.essay.analysis}</p> : null}
               <p>{full}</p>
             </div>
@@ -92,28 +101,27 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
 
           {def.formula ? (
             <section>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
                 {def.formula.title}
               </h2>
-              <div className="mt-2 space-y-4 text-sm leading-7 text-accent sm:text-base">
+              <div className="mt-3 space-y-4 text-sm leading-7 text-accent sm:text-base">
                 <p>{def.formula.body}</p>
                 {def.essay?.formulaContext ? (
                   <p>{def.essay.formulaContext}</p>
                 ) : null}
               </div>
               {def.formula.code ? (
-                <OverlayCard className="mt-4">
-                  <OverlayCardPanel className="p-0">
-                    <pre className="whitespace-pre-wrap px-4 py-3 text-sm text-foreground">
-                      {def.formula.code}
-                    </pre>
-                  </OverlayCardPanel>
-                </OverlayCard>
+                <pre className="mt-5 whitespace-pre-wrap break-words rounded-md bg-muted/60 px-5 py-4 text-sm leading-6 text-foreground">
+                  <code>{def.formula.code}</code>
+                </pre>
               ) : null}
               {relatedToolHref ? (
                 <p className="mt-4 text-sm leading-7 text-accent sm:text-base">
                   Use the{" "}
-                  <Link href={relatedToolHref} className="font-medium text-primary hover:underline">
+                  <Link
+                    href={relatedToolHref}
+                    className="font-medium text-primary hover:underline"
+                  >
                     {relatedTool?.tool.name}
                   </Link>{" "}
                   to run this formula with your own numbers.
@@ -124,10 +132,10 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
 
           {def.example ? (
             <section>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
                 {def.example.title}
               </h2>
-              <div className="mt-2 space-y-4 text-sm leading-7 text-accent sm:text-base">
+              <div className="mt-3 space-y-4 text-sm leading-7 text-accent sm:text-base">
                 <p>{def.example.body}</p>
                 {def.essay?.exampleContext ? (
                   <p>{def.essay.exampleContext}</p>
@@ -138,15 +146,15 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
 
           {def.pitfalls && def.pitfalls.length ? (
             <section>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
                 Common pitfalls
               </h2>
-              <div className="mt-2 space-y-4 text-sm leading-7 text-accent sm:text-base">
+              <div className="mt-3 space-y-4 text-sm leading-7 text-accent sm:text-base">
                 {def.essay?.pitfallsContext ? (
                   <p>{def.essay.pitfallsContext}</p>
                 ) : null}
               </div>
-              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-7 text-accent sm:text-base">
+              <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-7 text-accent sm:text-base">
                 {def.pitfalls.map((p, i) => (
                   <li key={i}>{p}</li>
                 ))}
@@ -156,10 +164,10 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
 
           {def.benchmarks ? (
             <section>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
                 Benchmarks
               </h2>
-              <div className="mt-2 space-y-4 text-sm leading-7 text-accent sm:text-base">
+              <div className="mt-3 space-y-4 text-sm leading-7 text-accent sm:text-base">
                 <p>{def.benchmarks}</p>
                 {def.essay?.benchmarksContext ? (
                   <p>{def.essay.benchmarksContext}</p>
@@ -170,13 +178,15 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
 
           {def.notes && def.notes.length ? (
             <section>
-              <h2 className="text-lg font-semibold text-foreground">Notes</h2>
-              <div className="mt-2 space-y-4 text-sm leading-7 text-accent sm:text-base">
+              <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
+                Notes
+              </h2>
+              <div className="mt-3 space-y-4 text-sm leading-7 text-accent sm:text-base">
                 {def.essay?.notesContext ? (
                   <p>{def.essay.notesContext}</p>
                 ) : null}
               </div>
-              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-7 text-accent sm:text-base">
+              <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-7 text-accent sm:text-base">
                 {def.notes.map((n, i) => (
                   <li key={i}>{n}</li>
                 ))}
@@ -186,13 +196,15 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
 
           {def.useCases && def.useCases.length ? (
             <section>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
                 Use cases
               </h2>
               <div className="mt-4 space-y-5">
                 {def.useCases.map((item) => (
                   <div key={item.title} className="space-y-2">
-                    <h3 className="font-medium text-foreground">{item.title}</h3>
+                    <h3 className="font-medium text-foreground">
+                      {item.title}
+                    </h3>
                     <p className="text-sm leading-7 text-accent sm:text-base">
                       {item.body}
                     </p>
@@ -206,7 +218,7 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
             <>
               {def.sections.map((section) => (
                 <section key={section.title}>
-                  <h2 className="text-lg font-semibold text-foreground">
+                  <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
                     {section.title}
                   </h2>
                   <p className="mt-2 text-sm leading-7 text-accent sm:text-base">
@@ -216,65 +228,64 @@ export default function DefinitionDetail({ def }: { def: Definition }) {
               ))}
             </>
           ) : null}
+        </article>
 
-          {def.related && def.related.length ? (
-            <section>
-              <h2 className="text-lg font-semibold text-foreground">
-                Related terms
-              </h2>
-              <div className="mt-2 space-y-4 text-sm leading-7 text-accent sm:text-base">
-                {def.essay?.relatedContext ? (
-                  <p>{def.essay.relatedContext}</p>
-                ) : null}
-              </div>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                {def.related.map((r) => {
-                  const related = getDefinitionBySlug(r);
-                  return (
-                    <Link key={r} href={`/definitions/${r}`} className="group block">
-                      <OverlayCard>
-                        <OverlayCardPanel className="px-4 py-3">
-                          <span className="text-sm font-medium text-foreground group-hover:text-primary">
-                            {related?.name ?? r}
-                          </span>
-                        </OverlayCardPanel>
-                      </OverlayCard>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          ) : null}
+        {def.related && def.related.length ? (
+          <section>
+            <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
+              Related terms
+            </h2>
+            <div className="mt-3 space-y-4 text-sm leading-7 text-accent sm:text-base">
+              {def.essay?.relatedContext ? (
+                <p>{def.essay.relatedContext}</p>
+              ) : null}
+            </div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              {def.related.map((r) => {
+                const related = getDefinitionBySlug(r);
+                return (
+                  <Link
+                    key={r}
+                    href={`/definitions/${r}`}
+                    className="group flex items-start justify-between gap-4 border-b border-border py-4 transition-colors hover:border-primary/40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  >
+                    <div>
+                      <span className="font-heading text-base font-medium text-foreground group-hover:text-primary">
+                        {related?.name ?? r}
+                      </span>
+                      {related?.short ? (
+                        <p className="mt-1.5 text-sm leading-6 text-accent">
+                          {related.short}
+                        </p>
+                      ) : null}
+                    </div>
+                    <ArrowUpRight
+                      className="mt-1 size-4 shrink-0 text-accent transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transform-none"
+                      aria-hidden
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
 
-          {def.faqs && def.faqs.length ? (
-            <section>
-              <h2 className="text-lg font-semibold text-foreground">FAQs</h2>
-              <div className="mt-4 space-y-4 text-accent">
-                {def.essay?.faqsContext ? (
-                  <p className="text-sm leading-7 sm:text-base">
-                    {def.essay.faqsContext}
-                  </p>
-                ) : null}
-                {def.faqs.map((f, i) => (
-                  <div key={i} className="space-y-2">
-                    <p className="font-medium text-foreground">{f.q}</p>
-                    <p className="text-sm leading-7 text-accent sm:text-base">
-                      {f.a}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-        </div>
-        <aside className="mt-0 hidden lg:block lg:self-start">
-          <div className="space-y-2 text-sm text-accent">
-            <p className="text-xs uppercase tracking-wide">Published on</p>
-            <p className="text-foreground">{publishedLabel}</p>
-            <p className="mt-4 text-xs uppercase tracking-wide">Written by</p>
-            <p className="text-foreground">{author}</p>
-          </div>
-        </aside>
+        {def.faqs && def.faqs.length ? (
+          <section
+            aria-label="Frequently asked questions"
+            data-component="DefinitionFAQ"
+          >
+            <FaqAccordion
+              title="Questions & Answers"
+              description={def.essay?.faqsContext}
+              items={def.faqs.map((faq, index) => ({
+                id: `${def.slug}-faq-${index}`,
+                question: faq.q,
+                answer: faq.a,
+              }))}
+            />
+          </section>
+        ) : null}
       </div>
     </SkyPageShell>
   );

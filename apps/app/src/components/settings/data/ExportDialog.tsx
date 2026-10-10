@@ -5,9 +5,12 @@ import { SettingsDialogShell } from "../global/SettingsDialogShell";
 import { Button } from "@featul/ui/components/button";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
-import { FileExportIcon } from "@featul/ui/icons/file-export";
-import { LoaderIcon } from "@featul/ui/icons/loader";
-import { DownloadIcon } from "@featul/ui/icons/download";
+import {
+  FileExportIcon,
+  LoaderIcon,
+  DownloadIcon,
+} from "@/components/global/icons";
+
 import { motion, AnimatePresence } from "framer-motion";
 
 type Props = {
@@ -103,7 +106,7 @@ export function ExportDialog({ slug, open, onOpenChange }: Props) {
               transition={{ duration: 0.2 }}
               className="flex flex-col items-center justify-center py-6 gap-3"
             >
-              <LoaderIcon className="animate-spin text-muted-foreground size-5" />
+              <LoaderIcon className="text-muted-foreground size-5" />
               <p className="text-sm text-accent">Exporting your data...</p>
             </motion.div>
           )}
@@ -161,4 +164,3 @@ export function ExportDialog({ slug, open, onOpenChange }: Props) {
     </SettingsDialogShell>
   );
 }
-

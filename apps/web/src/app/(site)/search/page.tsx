@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { Button } from "@featul/ui/components/button"
 import { DEFINITIONS } from "@/content/definitions"
 import { TOOL_CATEGORIES } from "@/types/tools"
 import { SkyPageShell } from "@/components/layout/shell"
@@ -79,12 +80,13 @@ export default async function SearchPage({ searchParams }: Props) {
             placeholder="Search definitions and tools…"
             className="h-10 flex-1 rounded-md border border-border bg-background px-3 text-sm"
           />
-          <button
+          <Button
             type="submit"
-            className="inline-flex h-10 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
+            variant="default"
+            className="h-10 px-4"
           >
             Search
-          </button>
+          </Button>
         </div>
       </form>
 

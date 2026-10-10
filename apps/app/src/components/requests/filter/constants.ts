@@ -8,7 +8,7 @@ export const FILTER_ISLAND_MAX_WIDTH_CLASS =
 export const FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS = "w-80 min-w-0";
 
 export const FILTER_ISLAND_SHELL_CLASS =
-  "isolate cursor-pointer overflow-hidden rounded-md bg-secondary text-foreground";
+  "isolate cursor-pointer overflow-hidden rounded-md border border-border/60 bg-secondary text-foreground dark:border-white/10";
 
 export const FILTER_ISLAND_MUTED_ICON_CLASS = "text-muted-foreground";
 

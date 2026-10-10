@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { Button } from "@featul/ui/components/button"
-import { GoogleIcon } from "@featul/ui/icons/google"
-import { cn } from "@featul/ui/lib/utils"
+import { useEffect } from "react";
+import { Button } from "@featul/ui/components/button";
+import { GoogleIcon } from "@featul/ui/icons/google";
+import { cn } from "@featul/ui/lib/utils";
 
 import {
   addPreferredSource,
@@ -11,40 +11,42 @@ import {
   getPreferredSourceLang,
   getPreferredSourceTheme,
   initPreferredSource,
-} from "@/lib/preferred-source"
+} from "@/lib/preferred-source";
 
-export const PREFERRED_SOURCE_BUTTON_LABEL = "Make us preferred on Google"
+export const PREFERRED_SOURCE_BUTTON_LABEL = "Make us preferred on Google";
 
 type PreferredSourceButtonProps = {
-  className?: string
-}
+  className?: string;
+};
 
-export function PreferredSourceButton({ className }: PreferredSourceButtonProps) {
+export function PreferredSourceButton({
+  className,
+}: PreferredSourceButtonProps) {
   useEffect(() => {
-    ensurePreferredSourceScript()
+    ensurePreferredSourceScript();
 
-    let lastTheme: string | null = null
-    let lastLang: string | null = null
+    let lastTheme: string | null = null;
+    let lastLang: string | null = null;
 
     const sync = () => {
-      const theme = getPreferredSourceTheme(document.documentElement)
-      const lang = getPreferredSourceLang(document.documentElement)
-      if (theme === lastTheme && lang === lastLang) return
-      lastTheme = theme
-      lastLang = lang
-      initPreferredSource({ theme, lang })
-    }
+      const theme = getPreferredSourceTheme(document.documentElement);
+      const lang = getPreferredSourceLang(document.documentElement);
+      if (theme === lastTheme && lang === lastLang) return;
+      lastTheme = theme;
+      lastLang = lang;
+      initPreferredSource({ theme, lang });
+    };
 
-    sync()
+    sync();
 
-    const observer = new MutationObserver(sync)
+    const observer = new MutationObserver(sync);
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["class", "lang"],
-    })
+    });
 
-    return () => observer.disconnect()
-  }, [])
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <Button
@@ -54,8 +56,8 @@ export function PreferredSourceButton({ className }: PreferredSourceButtonProps)
       className={cn("font-heading text-xs", className)}
       onClick={() => addPreferredSource()}
     >
-      <GoogleIcon className="size-3.5" />
+      <GoogleIcon className="size-3.5 grayscale" />
       {PREFERRED_SOURCE_BUTTON_LABEL}
     </Button>
-  )
+  );
 }

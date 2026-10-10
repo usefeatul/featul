@@ -17,7 +17,7 @@ import {
   getImageUploadValidationError,
 } from "@/hooks/useSignedUpload";
 import { Button } from "@featul/ui/components/button";
-import { AvatarIcon } from "@featul/ui/icons/avatar";
+import { AvatarIcon } from "@/components/global/icons";
 import { updateAccountUserInCache } from "./cache";
 import { accountQueryKeys } from "./keys";
 

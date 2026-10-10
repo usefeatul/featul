@@ -10,14 +10,12 @@ export default function SubdomainThemeProvider({
   theme: "light" | "dark" | "system"
   children: React.ReactNode
 }) {
-  // Use the branding theme as the initial/default theme, but allow the user
-  // to override it via the theme switcher (no forcedTheme here).
-  const defaultTheme = theme ?? "system"
-
+  // Branding supplies the public-site default; a visitor's saved selection
+  // can override it without inheriting the dashboard's app-theme preference.
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme={defaultTheme}
+      defaultTheme={theme}
       enableSystem
       storageKey="theme"
       disableTransitionOnChange
@@ -26,4 +24,3 @@ export default function SubdomainThemeProvider({
     </ThemeProvider>
   )
 }
-

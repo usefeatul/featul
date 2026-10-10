@@ -2,8 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@featul/ui/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
 import type { NavItem } from "../../types/nav";
 import { SidebarBadge } from "./badge";
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
@@ -33,6 +35,7 @@ function SidebarItem({
   collapsed?: boolean;
 }) {
   const Icon = item.icon;
+  const router = useRouter();
   const reduceMotion = useReducedMotion();
   const [mounted, setMounted] = React.useState(false);
   const [hovered, setHovered] = React.useState(false);
@@ -54,14 +57,14 @@ function SidebarItem({
   );
   const content = (
     <>
-      {hovered ? (
+      {hovered && !(collapsed && active) ? (
         <motion.span
           layoutId="sidebar-hover-pill"
           className="absolute inset-0 z-0 rounded-md bg-sidebar-accent/70"
           transition={pillTransition(reduceMotion)}
         />
       ) : null}
-      {indicator && active ? (
+      {indicator && active && !collapsed ? (
         <motion.span
           layoutId="sidebar-active-pill"
           className="absolute inset-0 z-0 rounded-md bg-sidebar-accent dark:bg-white/[0.07]"
@@ -94,41 +97,53 @@ function SidebarItem({
   );
 
   const hoverProps = {
-    onMouseEnter: () => setHovered(true),
+    onMouseEnter: () => {
+      setHovered(true);
+      if (!item.external) router.prefetch(item.href);
+    },
     onMouseLeave: () => setHovered(false),
   };
 
-  if (item.external) {
-    return (
-      <a
-        href={item.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={classes}
-        aria-current={active ? "page" : undefined}
-        aria-label={collapsed ? item.label : undefined}
-        title={collapsed ? item.label : undefined}
-        onClick={onClick}
-        {...hoverProps}
-      >
-        {content}
-      </a>
-    );
-  }
-
-  return (
+  const link = item.external ? (
+    <a
+      href={item.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={classes}
+      aria-current={active ? "page" : undefined}
+      aria-label={collapsed ? item.label : undefined}
+      onClick={onClick}
+      {...(!collapsed ? hoverProps : {})}
+    >
+      {content}
+    </a>
+  ) : (
     <Link
       href={item.href}
+      prefetch={item.label === "Settings" || item.label === "Back" ? true : undefined}
+      onFocus={() => router.prefetch(item.href)}
       replace={item.replace}
       className={classes}
       aria-current={active ? "page" : undefined}
       aria-label={collapsed ? item.label : undefined}
-      title={collapsed ? item.label : undefined}
       onClick={onClick}
-      {...hoverProps}
+      {...(!collapsed ? hoverProps : {})}
     >
       {content}
     </Link>
+  );
+
+  if (!collapsed) return link;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild {...hoverProps}>
+        {link}
+      </TooltipTrigger>
+      <TooltipContent side="right" sideOffset={10} className="text-xs">
+        {item.label}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 export default React.memo(SidebarItem);

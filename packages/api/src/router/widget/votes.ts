@@ -1,7 +1,8 @@
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { togglePostVote, toggleCommentVote } from "../../post/voting";
+import { publicBoardConditions } from "../../post/access";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
-import { board, comment, commentReaction, post } from "@featul/db";
-import { vote } from "@featul/db";
+import { board, comment, post } from "@featul/db";
 import { publicProcedure } from "../../jstack";
 import { getRequestFingerprint } from "../../request/fingerprint";
 import { getWidgetRequest, resolveAuthorId, resolveWidget } from "./resolve";
@@ -25,7 +26,7 @@ export const widgetVote = publicProcedure
           eq(post.id, input.postId),
           eq(post.status, "published"),
           eq(board.workspaceId, resolved.workspaceId),
-          eq(board.isPublic, true),
+          publicBoardConditions(),
         ),
       )
       .limit(1);
@@ -43,42 +44,7 @@ export const widgetVote = publicProcedure
     const fingerprint = voterId
       ? null
       : getRequestFingerprint(request, input.fingerprint);
-    const anonymousFingerprint = fingerprint || "";
-    const existingWhere = voterId
-      ? and(eq(vote.postId, input.postId), eq(vote.widgetUserId, voterId))
-      : and(
-          eq(vote.postId, input.postId),
-          isNull(vote.userId),
-          eq(vote.fingerprint, anonymousFingerprint),
-        );
-
-    const [existing] = await ctx.db
-      .select({ id: vote.id })
-      .from(vote)
-      .where(existingWhere)
-      .limit(1);
-    if (existing) {
-      await ctx.db.delete(vote).where(eq(vote.id, existing.id));
-      const [updated] = await ctx.db
-        .update(post)
-        .set({ upvotes: sql`greatest(0, ${post.upvotes} - 1)` })
-        .where(eq(post.id, input.postId))
-        .returning({ upvotes: post.upvotes });
-      return c.superjson({ hasVoted: false, upvotes: updated?.upvotes || 0 });
-    }
-
-    await ctx.db.insert(vote).values({
-      postId: input.postId,
-      widgetUserId: voterId,
-      fingerprint,
-      type: "upvote",
-    });
-    const [updated] = await ctx.db
-      .update(post)
-      .set({ upvotes: sql`${post.upvotes} + 1` })
-      .where(eq(post.id, input.postId))
-      .returning({ upvotes: post.upvotes });
-    return c.superjson({ hasVoted: true, upvotes: updated?.upvotes || 0 });
+    return c.superjson(await togglePostVote(ctx.db, input.postId, { widgetUserId: voterId, fingerprint }));
   });
 
 export const widgetVoteComment = publicProcedure
@@ -106,7 +72,7 @@ export const widgetVoteComment = publicProcedure
           eq(comment.isInternal, false),
           eq(post.status, "published"),
           eq(board.workspaceId, resolved.workspaceId),
-          eq(board.isPublic, true),
+          publicBoardConditions(),
         ),
       )
       .limit(1);
@@ -123,48 +89,6 @@ export const widgetVoteComment = publicProcedure
     const fingerprint = voterId
       ? null
       : getRequestFingerprint(request, input.fingerprint);
-    const anonymousFingerprint = fingerprint || "";
-    const existingWhere = voterId
-      ? and(
-          eq(commentReaction.commentId, input.commentId),
-          eq(commentReaction.widgetUserId, voterId),
-          eq(commentReaction.type, "upvote"),
-        )
-      : and(
-          eq(commentReaction.commentId, input.commentId),
-          isNull(commentReaction.userId),
-          eq(commentReaction.fingerprint, anonymousFingerprint),
-          eq(commentReaction.type, "upvote"),
-        );
-
-    const [existing] = await ctx.db
-      .select({ id: commentReaction.id })
-      .from(commentReaction)
-      .where(existingWhere)
-      .limit(1);
-
-    if (existing) {
-      await ctx.db
-        .delete(commentReaction)
-        .where(eq(commentReaction.id, existing.id));
-      const [updated] = await ctx.db
-        .update(comment)
-        .set({ upvotes: sql`greatest(0, ${comment.upvotes} - 1)` })
-        .where(eq(comment.id, input.commentId))
-        .returning({ upvotes: comment.upvotes });
-      return c.superjson({ hasVoted: false, upvotes: updated?.upvotes || 0 });
-    }
-
-    await ctx.db.insert(commentReaction).values({
-      commentId: input.commentId,
-      widgetUserId: voterId,
-      fingerprint,
-      type: "upvote",
-    });
-    const [updated] = await ctx.db
-      .update(comment)
-      .set({ upvotes: sql`${comment.upvotes} + 1` })
-      .where(eq(comment.id, input.commentId))
-      .returning({ upvotes: comment.upvotes });
-    return c.superjson({ hasVoted: true, upvotes: updated?.upvotes || 0 });
+    const result = await toggleCommentVote(ctx.db, input.commentId, "upvote", { widgetUserId: voterId, fingerprint });
+    return c.superjson({ upvotes: result.upvotes, hasVoted: result.userVote === "upvote" });
   });

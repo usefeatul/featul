@@ -13,8 +13,12 @@ import {
   PopoverTrigger,
 } from "@featul/ui/components/popover";
 import { Textarea } from "@featul/ui/components/textarea";
-import { FlagIcon } from "@featul/ui/icons/flag";
-import { Check, ChevronsUpDown } from "lucide-react";
+import {
+  FlagIcon,
+  Check,
+  ChevronsUpDown,
+} from "@/components/global/icons";
+
 import { toast } from "sonner";
 
 type ReportDialogProps = {

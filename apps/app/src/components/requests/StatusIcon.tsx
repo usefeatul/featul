@@ -1,12 +1,19 @@
 "use client"
 
 import type { FC } from "react"
-import PlannedIcon from "@featul/ui/icons/planned"
-import ProgressIcon from "@featul/ui/icons/progress"
-import ReviewingIcon from "@featul/ui/icons/review"
-import CompletedIcon from "@featul/ui/icons/completed"
-import PendingIcon from "@featul/ui/icons/pending"
-import ClosedIcon from "@featul/ui/icons/closed"
+import {
+  PlannedIcon,
+  ProgressIcon,
+  ReviewIcon as ReviewingIcon,
+  CompletedIcon,
+  PendingIcon,
+  ClosedIcon,
+} from "@/components/global/icons";
+
+
+
+
+
 
 export default function StatusIcon({ status, className = "" }: { status?: string; className?: string }) {
   const s = (status || "").toLowerCase()

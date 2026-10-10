@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@featul/ui/components/button";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { LoaderIcon } from "@/components/global/icons";
 import {
   settingsCardInnerClass,
   settingsCardShellClass,
@@ -78,7 +78,7 @@ export default function SettingsCard({
                   onClick={onAction}
                   disabled={disabled || isLoading}
                 >
-                  {isLoading ? <LoaderIcon className="animate-spin" size={16} /> : buttonLabel}
+                  {isLoading ? <LoaderIcon size={16} /> : buttonLabel}
                 </Button>
               )}
             </>

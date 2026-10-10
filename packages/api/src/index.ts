@@ -26,7 +26,6 @@ const routerImports = {
 const api = j
   .router()
   .basePath("/api")
-  .use(j.defaults.cors)
   .onError(j.defaults.errorHandler);
 
 const appRouter = j.mergeRouters(api, {

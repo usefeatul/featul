@@ -1,42 +1,33 @@
-import React from "react";
+import type { SVGProps } from "react";
 
-interface SearchIconProps {
-  className?: string;
-  size?: number;
-}
+type SearchIconProps = SVGProps<SVGSVGElement> & {
+  size?: number | string;
+};
 
-export const SearchIcon: React.FC<SearchIconProps> = ({
-  className = "",
-  size = 18,
-}) => {
+export function SearchIcon({ size = 18, ...props }: SearchIconProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      x="0px"
-      y="0px"
       width={size}
       height={size}
       viewBox="0 0 18 18"
-      className={className}
+      aria-hidden={props["aria-label"] ? undefined : true}
+      {...props}
     >
       <path
-        d="M15.75 15.75L11.6386 11.6386"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      ></path>
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11.1083 11.1083C11.4012 10.8154 11.876 10.8154 12.1689 11.1083L16.2803 15.2197C16.5732 15.5126 16.5732 15.9874 16.2803 16.2803C15.9874 16.5732 15.5126 16.5732 15.2197 16.2803L11.1083 12.1689C10.8154 11.876 10.8154 11.4012 11.1083 11.1083Z"
+        fill="currentColor"
+      />
       <path
-        d="M7.75 13.25C10.7875 13.25 13.25 10.7875 13.25 7.75C13.25 4.7125 10.7875 2.25 7.75 2.25C4.7125 2.25 2.25 4.7125 2.25 7.75C2.25 10.7875 4.7125 13.25 7.75 13.25Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      ></path>
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M1.5 7.75C1.5 4.29829 4.29829 1.5 7.75 1.5C11.2017 1.5 14 4.29829 14 7.75C14 11.2017 11.2017 14 7.75 14C4.29829 14 1.5 11.2017 1.5 7.75ZM7.75 3C5.12671 3 3 5.12671 3 7.75C3 10.3733 5.12671 12.5 7.75 12.5C10.3733 12.5 12.5 10.3733 12.5 7.75C12.5 5.12671 10.3733 3 7.75 3Z"
+        fill="currentColor"
+      />
     </svg>
   );
-};
+}
 
 export default SearchIcon;

@@ -30,8 +30,8 @@ export function DomainSidebar({
   const { sidebarPosition } = useDomainBranding()
   const alignClass = sidebarPosition === "left" ? "justify-start" : "justify-end"
   return (
-    <aside className="space-y-4">
-      <div className={`flex items-center ${alignClass}`}>
+    <aside className="min-w-0 space-y-4">
+      <div className={`flex min-h-10 items-center ${alignClass}`}>
         <Toolbar size="sm" className="w-fit">
           <SortPopover subdomain={subdomain} slug={slug} basePath={sortBasePath} keepParams={sortKeepParams} />
           <ToolbarSeparator />

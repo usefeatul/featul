@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell"
-import DocumentTextIcon from "@featul/ui/icons/document-text"
+import { DocumentTextIcon } from "@/components/global/icons"
 import { PostHeader } from "./PostHeader"
 import { PostContent } from "./PostContent"
 import { PostFooter } from "./PostFooter"

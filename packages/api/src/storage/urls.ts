@@ -1,3 +1,4 @@
+import { protectedImageKey } from "./protected"
 import { HTTPException } from "hono/http-exception"
 
 export const WORKSPACE_POST_FOLDERS = ["posts"] as const
@@ -35,6 +36,13 @@ export function assertWorkspaceAssetUrl(
     throw new HTTPException(400, { message: "Invalid image URL" })
   }
 
+  const protectedKey = protectedImageKey(imageUrl)
+  if (protectedKey && folders.some(folder => protectedKey.startsWith(`workspaces/${slug}/${folder}/`))) return
+  // Legacy content has been migrated. Never let a stale client persist a public
+  // post/comment URL again; branding and changelog assets remain public.
+  if (folders.some(folder => folder === "posts" || folder === "comments")) {
+    throw new HTTPException(400, { message: "Upload this image again to protected storage" })
+  }
   const allowed = folders.some((folder) =>
     imageUrl.startsWith(`${publicBase}/workspaces/${slug}/${folder}/`),
   )

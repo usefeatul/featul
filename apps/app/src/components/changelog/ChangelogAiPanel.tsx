@@ -9,8 +9,13 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from "react";
-import { ArrowLeft, History as HistoryIcon, Plus } from "lucide-react";
-import { PanelIcon } from "@featul/ui/icons/panel";
+import {
+  ArrowLeft,
+  History as HistoryIcon,
+  Plus,
+  PanelIcon,
+} from "@/components/global/icons";
+
 import { motion } from "framer-motion";
 import { usePanelResize } from "@/hooks/usePanelResize";
 import { Resizer } from "@/components/global/resizer";
@@ -37,26 +42,18 @@ import { Actions, type AssistantAction } from "./assistant/actions";
 import { Composer } from "./assistant/composer";
 import { ConversationHistory } from "./assistant/history";
 import { Messages, type AssistantMessage } from "./assistant/messages";
+import { resolveTagSelection } from "./assistant/tags";
+import { getRetryPrompt } from "./assistant/retry";
 import {
   assistantCopy,
   getAtQuery,
   nextId,
   STARTERS,
-  withoutEmDash,
   type AtQuery,
 } from "./assistant/config";
 import { Attachments, Sources, type SourceItem } from "./assistant/sources";
-import {
-  getFallbackTagSuggestions,
-  getTagDecision,
-  getTagRemovalDecision,
-} from "./assistant/decisions";
-import {
-  detectChatIntent,
-  extractGithubUrls,
-  isSummaryRequest,
-  isWithinPastWeek,
-} from "./ai/intent";
+import { getTagDecision, getTagRemovalDecision } from "./assistant/decisions";
+import { extractGithubUrls, isWithinPastWeek } from "./ai/intent";
 import {
   clearChangelogAiChat,
   loadChangelogAiChat,
@@ -80,9 +77,11 @@ type PendingPrompt = {
 };
 
 type EditorSnapshot = {
+  content: ReturnType<FeedEditorRef["getContent"]>;
   markdown: string;
   title: string;
   tags: string[];
+  summary: string;
 };
 
 function conversationTitle(messages: AssistantMessage[]) {
@@ -124,6 +123,7 @@ interface ChangelogAiPanelProps {
   entryId?: string;
   title: string;
   setTitle: (value: string) => void;
+  summary: string;
   setSummary: (value: string) => void;
   selectedTags: string[];
   setSelectedTags: (value: string[]) => void;
@@ -146,6 +146,7 @@ export function ChangelogAiPanel({
   entryId,
   title,
   setTitle,
+  summary,
   setSummary,
   selectedTags,
   setSelectedTags,
@@ -187,6 +188,18 @@ export function ChangelogAiPanel({
   const syncPromiseRef = useRef<Promise<string | null> | null>(null);
   const { sourcePosts, isLoadingPosts } = useAiSourcePosts(workspaceSlug, open);
 
+  const currentDraftRef = useRef({
+    title,
+    summary,
+    tags: selectedTags,
+    availableTags,
+  });
+  currentDraftRef.current = {
+    title,
+    summary,
+    tags: selectedTags,
+    availableTags,
+  };
   mentionRef.current = mention;
 
   useEffect(() => {
@@ -384,24 +397,28 @@ export function ChangelogAiPanel({
 
   const captureSnapshot = useCallback(() => {
     const snapshot = {
+      content: editorRef.current?.getContent(),
       markdown: editorRef.current?.getMarkdown() ?? "",
-      title,
-      tags: selectedTags,
+      title: currentDraftRef.current.title,
+      tags: currentDraftRef.current.tags,
+      summary: currentDraftRef.current.summary,
     };
     undoSnapshotRef.current = snapshot;
     setUndoSnapshot(snapshot);
-  }, [editorRef, selectedTags, title]);
+  }, [editorRef]);
 
   const restoreSnapshot = useCallback(() => {
     const snapshot = undoSnapshotRef.current;
     if (!snapshot) return;
-    editorRef.current?.setContentFromMarkdown(snapshot.markdown);
+    if (snapshot.content) editorRef.current?.setContent(snapshot.content);
+    else editorRef.current?.setContentFromMarkdown(snapshot.markdown);
     setTitle(snapshot.title);
+    setSummary(snapshot.summary);
     setSelectedTags(snapshot.tags);
     undoSnapshotRef.current = null;
     setUndoSnapshot(null);
     setIsDirty(true);
-  }, [editorRef, setIsDirty, setSelectedTags, setTitle]);
+  }, [editorRef, setIsDirty, setSelectedTags, setTitle, setSummary]);
 
   useEffect(() => {
     setMentionIndex(0);
@@ -480,6 +497,7 @@ export function ChangelogAiPanel({
   const applyWorkspaceTags = (names: string[]) => {
     const tags = resolveWorkspaceTags(names);
     if (tags.length === 0) return [];
+    captureSnapshot();
     setSelectedTags(
       Array.from(new Set([...selectedTags, ...tags.map((tag) => tag.id)])),
     );
@@ -586,9 +604,9 @@ export function ChangelogAiPanel({
           content:
             removedTags.length > 0
               ? removal.kind === "removeAll"
-                ? "I have removed all tags from this changelog. It is now untagged."
-                : `I have removed ${tagList} from this changelog.`
-              : "This changelog is already untagged, so I have not changed anything.",
+                ? "Removed all tags."
+                : `Removed ${tagList}.`
+              : "This entry is already untagged.",
           effect:
             removedTags.length > 0
               ? `${removedTags.length} tag${removedTags.length === 1 ? "" : "s"} removed`
@@ -615,8 +633,7 @@ export function ChangelogAiPanel({
             {
               id: nextId(),
               role: "assistant",
-              content:
-                "No problem. I will leave the tags unchanged. We can revisit them whenever you are ready.",
+              content: "Okay, I'll leave the tags as they are.",
             },
           ]);
           setPendingTagNames([]);
@@ -634,74 +651,12 @@ export function ChangelogAiPanel({
             role: "assistant",
             content:
               applied.length > 0
-                ? `I have added ${tagList} to this changelog. Would you like help with anything else?`
-                : "Those tags are no longer available in this workspace, so I have not changed anything.",
+                ? `Added ${tagList}.`
+                : "Those tags are no longer available in this workspace.",
             effect:
               applied.length > 0
                 ? `${applied.length} tag${applied.length === 1 ? "" : "s"} added`
                 : undefined,
-          },
-        ]);
-        setPendingTagNames([]);
-        setPrompt("");
-        return;
-      }
-    }
-
-    const earlyIntent = detectChatIntent({ text, hasSelection: false });
-    if (earlyIntent === "tags") {
-      const lower = text.toLowerCase();
-      const mentionedTags = availableTags.filter((tag) =>
-        lower.includes(tag.name.trim().toLowerCase()),
-      );
-
-      if (mentionedTags.length > 0) {
-        const newTags = mentionedTags.filter(
-          (tag) => !selectedTags.includes(tag.id),
-        );
-        const names = mentionedTags.map((tag) => `“${tag.name}”`).join(", ");
-        const userMessage: AssistantMessage = {
-          id: nextId(),
-          role: "user",
-          content: text,
-        };
-
-        setMessages((current) => [
-          ...current,
-          userMessage,
-          {
-            id: nextId(),
-            role: "assistant",
-            content:
-              newTags.length > 0
-                ? `${names} ${mentionedTags.length === 1 ? "is" : "are"} available in this workspace and could fit this changelog. Would you like me to add ${mentionedTags.length === 1 ? "it" : "them"}?`
-                : `${names} ${mentionedTags.length === 1 ? "is already" : "are already"} applied to this changelog.`,
-            suggestedTags:
-              newTags.length > 0 ? newTags.map((tag) => tag.name) : undefined,
-          },
-        ]);
-        setPendingTagNames(newTags.map((tag) => tag.name));
-        setPrompt("");
-        return;
-      }
-
-      const unselectedTags = availableTags.filter(
-        (tag) => !selectedTags.includes(tag.id),
-      );
-      if (unselectedTags.length === 0) {
-        const selectedNames = selectedWorkspaceTags
-          .map((tag) => `“${tag.name}”`)
-          .join(", ");
-        setMessages((current) => [
-          ...current,
-          { id: nextId(), role: "user", content: text },
-          {
-            id: nextId(),
-            role: "assistant",
-            content:
-              selectedWorkspaceTags.length > 0
-                ? `The available workspace ${selectedWorkspaceTags.length === 1 ? "tag is" : "tags are"} already applied: ${selectedNames}. There are no other existing tags to suggest.`
-                : "This workspace does not have any existing tags to suggest yet.",
           },
         ]);
         setPendingTagNames([]);
@@ -729,25 +684,15 @@ export function ChangelogAiPanel({
     const textSelection: EditorTextSelection | null =
       selectionContext ?? editorRef.current?.getTextSelection() ?? null;
     const selectionMarkdown = textSelection?.text ?? "";
-    const intent = detectChatIntent({
-      text,
-      hasSelection: Boolean(textSelection && selectionMarkdown.trim()),
-    });
-    const summaryRequest =
-      intent === "rewrite" && !textSelection && isSummaryRequest(text);
-    const streamIntoEditor =
-      intent === "rewrite" && !hadContent && !summaryRequest;
-    const availableTagNames =
-      intent === "tags"
-        ? availableTags
-            .filter((tag) => !selectedTags.includes(tag.id))
-            .map((tag) => tag.name)
-        : availableTags.map((tag) => tag.name);
+    const intent = "conversation" as const;
+    const originalDocument = JSON.stringify(editorRef.current?.getContent());
+    const availableTagNames = availableTags.map((tag) => tag.name);
     const history: AiChatMessage[] = messages
-      .filter((message) => !message.status)
+      .filter((message) => !message.status && message.content.trim())
+      .slice(-20)
       .map((message) => ({
         role: message.role,
-        content: message.content,
+        content: message.content.slice(0, 4000),
       }));
     const attachedPosts = sourcePosts.filter((post) =>
       postIds.includes(post.id),
@@ -793,10 +738,6 @@ export function ChangelogAiPanel({
     setIsLoading(true);
     onGeneratingChange?.(true);
 
-    if (intent === "patch" || (intent === "rewrite" && !summaryRequest)) {
-      captureSnapshot();
-    }
-
     const controller = new AbortController();
     abortRef.current = controller;
     const planningTimer = window.setTimeout(() => {
@@ -813,26 +754,29 @@ export function ChangelogAiPanel({
       let appliedTitle: string | undefined;
       let replyText: string | undefined;
       let suggestedTags: string[] | undefined;
+      let effect: string | undefined;
 
       await runChangelogAiStream(
         {
           slug: workspaceSlug,
-          action: summaryRequest ? "summary" : "chat",
+          action: "chat",
           prompt: text,
-          title: title.trim() || undefined,
-          contentMarkdown: contentMarkdown?.trim() || undefined,
+          title,
+          summary,
+          contentMarkdown: contentMarkdown || undefined,
           sourcePostIds: postIds.length > 0 ? postIds : undefined,
           messages: history.length > 0 ? history : undefined,
           intent,
-          selectionMarkdown: intent === "patch" ? selectionMarkdown : undefined,
+          selectionMarkdown:
+            intent === "conversation"
+              ? selectionMarkdown || undefined
+              : undefined,
           githubUrls: githubUrls.length > 0 ? githubUrls : undefined,
           availableTagNames,
+          selectedTagNames: selectedWorkspaceTags.map((tag) => tag.name),
+          pendingTagNames,
         },
         {
-          editorRef,
-          usesStructuredSections: streamIntoEditor,
-          applyToEditor: streamIntoEditor,
-          patchSelection: intent === "patch",
           signal: controller.signal,
           onStatus: (phase) => {
             if (phase === "generating") {
@@ -846,29 +790,103 @@ export function ChangelogAiPanel({
               );
             }
           },
-          onStreamStart: () => {
-            setMessages((current) =>
-              current.map((message) =>
-                message.id === assistantId
-                  ? { ...message, phase: "writing" }
-                  : message,
-              ),
-            );
+          onComplete: (result) => {
+            replyText = result.reply || replyText;
+            suggestedTags = result.suggestedTags;
+            const nextTagIds =
+              result.tagNames === undefined
+                ? undefined
+                : resolveTagSelection(
+                    result.tagNames,
+                    currentDraftRef.current.availableTags,
+                  );
+            const changesTags = nextTagIds !== undefined;
+            const changesBody = result.contentMarkdown !== undefined;
+            const changesSelection = result.selectionMarkdown !== undefined;
+            const changesTitle = result.title !== undefined;
+            const changesSummary = result.summary !== undefined;
+            if (
+              !changesBody &&
+              !changesSelection &&
+              !changesTitle &&
+              !changesSummary &&
+              !changesTags
+            )
+              return;
+
+            const editor = editorRef.current;
+            const changesText =
+              changesBody || changesSelection || changesTitle || changesSummary;
+            if (
+              !editor ||
+              (changesText &&
+                (JSON.stringify(editor.getContent()) !== originalDocument ||
+                  currentDraftRef.current.title !== title ||
+                  currentDraftRef.current.summary !== summary)) ||
+              (changesTags &&
+                (currentDraftRef.current.tags.length !== selectedTags.length ||
+                  currentDraftRef.current.tags.some(
+                    (id) => !selectedTags.includes(id),
+                  )))
+            ) {
+              throw new Error(
+                "Your draft changed while I was responding. Please send the request again so I can work with your latest version.",
+              );
+            }
+            // Capture undo only for a validated, complete edit, never for a chat reply.
+            captureSnapshot();
+            if (changesSelection) {
+              if (
+                !textSelection ||
+                !editor.replaceTextRangeWithMarkdown(
+                  textSelection,
+                  result.selectionMarkdown!,
+                )
+              ) {
+                throw new Error(
+                  "The selected text changed before the edit finished. Select it again and retry.",
+                );
+              }
+              setSelectionContext(null);
+            } else if (changesBody) {
+              if (result.edits?.length) {
+                if (!editor.applyMarkdownEdits(result.edits)) {
+                  throw new Error(
+                    "I could not safely apply that edit to the current formatting. Your draft has not changed.",
+                  );
+                }
+              } else {
+                editor.setContentFromMarkdown(result.contentMarkdown!);
+              }
+              setSelectionContext(null);
+            }
+            if (changesTitle) {
+              appliedTitle = result.title;
+              setTitle(result.title!);
+            }
+            if (changesSummary) setSummary(result.summary!);
+            if (nextTagIds !== undefined) {
+              setSelectedTags(nextTagIds);
+              setPendingTagNames([]);
+            }
+            effect = changesSelection
+              ? "Selection updated"
+              : changesBody
+                ? "Draft updated"
+                : changesTitle
+                  ? "Title updated"
+                  : changesSummary
+                    ? "Summary updated"
+                    : "Tags updated";
+            setIsDirty(true);
           },
-          onTitle: (value) => {
-            appliedTitle = value;
-            setTitle(value);
-          },
-          onReplyDelta: (accumulated) => {
-            if (intent === "tags") return;
-            const formalReply = withoutEmDash(accumulated);
-            replyText = formalReply;
+          onReplyDelta: (reply) => {
             setMessages((current) =>
               current.map((message) =>
                 message.id === assistantId
                   ? {
                       ...message,
-                      content: formalReply,
+                      content: reply,
                       status: "streaming",
                       phase: "writing",
                     }
@@ -876,59 +894,13 @@ export function ChangelogAiPanel({
               ),
             );
           },
-          onComplete: (result) => {
-            if (result.title) {
-              appliedTitle = result.title;
-              setTitle(result.title);
-            }
-            if (result.summary) {
-              setSummary(result.summary);
-            }
-            if (summaryRequest) {
-              replyText = withoutEmDash(result.summary || replyText || "");
-              setIsDirty(true);
-              return;
-            }
-            suggestedTags =
-              intent === "tags" ? result.suggestedTags : undefined;
-            if (intent === "ask" || intent === "tags") {
-              replyText = withoutEmDash(result.reply || replyText || "");
-              return;
-            }
-            if (intent === "patch" && result.contentMarkdown) {
-              const applied = textSelection
-                ? editorRef.current?.replaceTextRangeWithMarkdown(
-                    textSelection,
-                    result.contentMarkdown,
-                  )
-                : false;
-              if (!applied) {
-                throw new Error(
-                  "The selected text changed before the edit finished. Select it again and retry.",
-                );
-              }
-              setSelectionContext(null);
-            } else if (result.contentMarkdown) {
-              editorRef.current?.setContentFromMarkdown(result.contentMarkdown);
-            }
-            setIsDirty(true);
-          },
         },
       );
 
-      let resolvedSuggestions =
-        intent === "tags"
-          ? resolveWorkspaceTags(suggestedTags).map((tag) => tag.name)
-          : [];
-      if (intent === "tags" && resolvedSuggestions.length === 0) {
-        resolvedSuggestions = getFallbackTagSuggestions(
-          `${title}\n${contentMarkdown ?? ""}`,
-          availableTagNames,
-        );
-      }
-      if (intent === "tags") {
-        setPendingTagNames(resolvedSuggestions);
-      }
+      const resolvedSuggestions = resolveWorkspaceTags(suggestedTags).map(
+        (tag) => tag.name,
+      );
+      if (suggestedTags !== undefined) setPendingTagNames(resolvedSuggestions);
 
       setMessages((current) =>
         current.map((message) =>
@@ -944,35 +916,30 @@ export function ChangelogAiPanel({
                   title: appliedTitle,
                   sourceCount: postIds.length,
                   reply: replyText,
-                  summaryUpdated: summaryRequest,
                   suggestedTags: resolvedSuggestions,
                   selectedTagNames: selectedWorkspaceTags.map(
                     (tag) => tag.name,
                   ),
                 }),
                 suggestedTags:
-                  intent === "tags" && resolvedSuggestions.length > 0
+                  resolvedSuggestions.length > 0
                     ? resolvedSuggestions
                     : undefined,
-                effect:
-                  intent === "ask"
-                    ? undefined
-                    : intent === "tags"
-                      ? undefined
-                      : summaryRequest
-                        ? "Summary updated"
-                        : intent === "patch"
-                          ? "Selection updated"
-                          : "Entry updated",
+                activity:
+                  effect === "Tags updated"
+                    ? "tags"
+                    : effect
+                      ? textSelection
+                        ? "patch"
+                        : "rewrite"
+                      : "ask",
+                effect,
               }
             : message,
         ),
       );
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") {
-        if (intent === "rewrite" || intent === "patch") {
-          restoreSnapshot();
-        }
         setMessages((current) =>
           current.map((message) =>
             message.id === assistantId
@@ -1118,8 +1085,7 @@ export function ChangelogAiPanel({
     const activeMention = mentionRef.current;
     if (!activeMention) return;
 
-    const mentionEnd =
-      activeMention.start + activeMention.query.length + 1;
+    const mentionEnd = activeMention.start + activeMention.query.length + 1;
     const before = prompt.slice(0, activeMention.start).trimEnd();
     const after = prompt.slice(mentionEnd).trimStart();
     const next = before && after ? `${before} ${after}` : before || after;
@@ -1393,11 +1359,9 @@ export function ChangelogAiPanel({
                 <Messages
                   messages={messages}
                   bottomRef={bottomRef}
-                  onRetry={() => {
-                    const lastUser = [...messages]
-                      .reverse()
-                      .find((message) => message.role === "user");
-                    if (lastUser) void sendMessage(lastUser.content);
+                  onRetry={(messageId) => {
+                    const retryPrompt = getRetryPrompt(messages, messageId);
+                    if (retryPrompt) void sendMessage(retryPrompt);
                   }}
                 />
               )}
@@ -1420,7 +1384,8 @@ export function ChangelogAiPanel({
               !prompt.trim() ? (
                 <div className="mb-2">
                   <p className="mb-2 text-[11px] font-light leading-relaxed text-muted-foreground/70">
-                    Tip: Select text in the editor, then tell me how to change it.
+                    Tip: Select text in the editor, then tell me how to change
+                    it.
                   </p>
                   <Actions
                     actions={STARTERS}

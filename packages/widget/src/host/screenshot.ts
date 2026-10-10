@@ -59,35 +59,29 @@ function waitMs(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
-function isSameOriginUrl(value: string): boolean {
-  if (!value || value.startsWith("data:") || value.startsWith("blob:")) {
-    return true;
-  }
-  try {
-    return new URL(value, window.location.href).origin === window.location.origin;
-  } catch {
-    return false;
-  }
-}
-
-function wouldTaintCanvas(element: Element): boolean {
-  if (element instanceof HTMLImageElement) {
-    const src = element.currentSrc || element.src;
-    return Boolean(src) && !isSameOriginUrl(src);
-  }
-  if (element instanceof HTMLVideoElement) return true;
-  if (element instanceof SVGImageElement) {
-    const href = element.href.baseVal || element.getAttribute("href") || "";
-    return Boolean(href) && !isSameOriginUrl(href);
-  }
-  return false;
-}
-
 function assertDataUrl(dataUrl: string): string {
   if (!isWidgetScreenshotDataUrl(dataUrl)) {
     throw new ScreenshotCaptureError("capture-failed", "Screenshot was empty");
   }
   return dataUrl;
+}
+
+/** A DOM render can succeed without painting anything except its background. */
+export function assertScreenshotContent(canvas: HTMLCanvasElement): void {
+  if (!canvas.width || !canvas.height) {
+    throw new ScreenshotCaptureError("capture-failed", "Screenshot was empty");
+  }
+  const sample = document.createElement("canvas");
+  sample.width = 64;
+  sample.height = 64;
+  const ctx = sample.getContext("2d");
+  if (!ctx) throw new ScreenshotCaptureError("capture-failed");
+  ctx.drawImage(canvas, 0, 0, 64, 64);
+  const pixels = ctx.getImageData(0, 0, 64, 64).data;
+  for (let index = 4; index < pixels.length; index += 4) {
+    if ([0, 1, 2, 3].some((channel) => Math.abs(pixels[index + channel]! - pixels[channel]!) > 2)) return;
+  }
+  throw new ScreenshotCaptureError("capture-failed", "Screenshot was blank");
 }
 
 async function captureWithHtml(ignore: Element[]): Promise<string> {
@@ -107,15 +101,15 @@ async function captureWithHtml(ignore: Element[]): Promise<string> {
     height,
     windowWidth: width,
     windowHeight: height,
-    scrollX: -window.scrollX,
-    scrollY: -window.scrollY,
+    scrollX: window.scrollX,
+    scrollY: window.scrollY,
     scale,
     useCORS: true,
     allowTaint: false,
     logging: false,
     backgroundColor,
     ignoreElements: (element) =>
-      wouldTaintCanvas(element) ||
+      element instanceof HTMLVideoElement ||
       ignore.some((node) => node === element || node.contains(element)),
     onclone: (doc) => {
       doc.querySelectorAll("[data-featul-widget]").forEach((node) => {
@@ -123,6 +117,7 @@ async function captureWithHtml(ignore: Element[]): Promise<string> {
       });
     },
   });
+  assertScreenshotContent(canvas);
   return assertDataUrl(jpegDataUrlFromCanvas(canvas));
 }
 
@@ -175,6 +170,7 @@ async function captureWithDisplayMedia(
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new ScreenshotCaptureError("capture-failed");
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    assertScreenshotContent(canvas);
     return assertDataUrl(jpegDataUrlFromCanvas(canvas));
   } finally {
     for (const track of stream.getTracks()) track.stop();

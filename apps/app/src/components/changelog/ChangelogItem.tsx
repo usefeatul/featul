@@ -1,11 +1,15 @@
 "use client"
 
+import { TagDot } from "@/components/global/tag";
 import React from "react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import { cn } from "@featul/ui/lib/utils"
-import { ChangelogDraftIcon } from "@featul/ui/icons/changelog-draft"
-import { ChangelogPublishedIcon } from "@featul/ui/icons/changelog-published"
+import {
+  ChangelogDraftIcon,
+  ChangelogPublishedIcon,
+} from "@/components/global/icons";
+
 import type { ChangelogEntryWithTags } from "@/app/workspaces/[slug]/changelog/data"
 import { ChangelogItemContextMenu } from "./ChangelogItemContextMenu"
 import { SelectionControl } from "@/components/selection/SelectionControl"
@@ -114,13 +118,7 @@ function ChangelogItem({
                     )}
                     title={tag.name}
                   >
-                    <span
-                      className="size-1.5 shrink-0 rounded-full bg-primary"
-                      style={
-                        tag.color ? { backgroundColor: tag.color } : undefined
-                      }
-                      aria-hidden
-                    />
+                    <TagDot />
                     <span className="truncate">{tag.name}</span>
                   </span>
                 ))}

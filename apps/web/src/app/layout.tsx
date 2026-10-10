@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Inter_Tight } from "next/font/google";
+import { Geist_Mono, Inter_Tight } from "next/font/google";
 import { DebugTools } from "@featul/ui/global/debug-tools";
 import Script from "next/script";
 import "./globals.css";
@@ -11,7 +11,6 @@ import {
   DEFAULT_KEYWORDS,
 } from "@/config/seo";
 import OrganizationJsonLd from "@/components/seo/organization";
-import { MarketingEdgePattern } from "@/components/layout/edge-pattern";
 import {
   buildSiteNavigationSchema,
   buildSoftwareApplicationSchema,
@@ -21,18 +20,17 @@ import { navigationConfig } from "@/config/homeNav";
 import { footerNavigationConfig } from "@/config/footerNav";
 import { serializeJsonLd } from "@/lib/security";
 
-const inter = Inter({
+const interTight = Inter_Tight({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-jakarta",
+  variable: "--font-inter-tight",
 });
 
-const interTight = Inter_Tight({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-playfair",
+  variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
@@ -83,9 +81,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [{ url: "/favicon.svg?v=3", type: "image/svg+xml" }],
-    shortcut: "/favicon-96x96.png",
-    apple: "/apple-touch-icon.png",
+    icon: [{ url: "/favicon.svg?v=4", type: "image/svg+xml" }],
+    shortcut: "/favicon-96x96.png?v=4",
+    apple: "/apple-touch-icon.png?v=4",
   },
   manifest: "/site.webmanifest",
   verification: {
@@ -108,20 +106,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${interTight.variable}`}
+      className={`${interTight.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
       <head>
         <script
           id="home-scroll-memory"
           dangerouslySetInnerHTML={{
-            __html: `(function(){if(location.pathname!=="/")return;history.scrollRestoration="manual";var nav=performance.getEntriesByType("navigation")[0];var reload=nav&&(nav.type==="reload"||nav.type==="back_forward");var y=0;try{y=parseInt(sessionStorage.getItem("featul:home-scroll:v4")||"0",10)||0}catch(e){}if(!reload)y=0;var h=document.documentElement;h.style.scrollBehavior="auto";if(y>0){h.setAttribute("data-scrolled","");if(y>=80)h.style.opacity="0"}try{if(reload&&y>0&&sessionStorage.getItem("featul:nav-over-create:v1")==="1")h.setAttribute("data-over-create","")}catch(e){}function go(){scrollTo(0,y);if(y>=80)h.style.opacity=""}go();addEventListener("DOMContentLoaded",go);addEventListener("load",go)})();`,
-          }}
-        />
-        <style
-          id="nav-create-boot-css"
-          dangerouslySetInnerHTML={{
-            __html: `[data-nav-create-mask]{--background:var(--primary);--foreground:oklch(99.7% 0.001 11.5);--accent:color-mix(in oklab,white 82%,var(--primary));--card:color-mix(in oklab,white 14%,var(--primary));--border:color-mix(in oklab,white 22%,var(--primary));--muted:color-mix(in oklab,white 16%,var(--primary));clip-path:inset(100% 0 0 0)}html[data-over-create] [data-nav-create-mask]{clip-path:inset(0)}`,
+            __html: `(function(){if(location.pathname!=="/")return;history.scrollRestoration="manual";var nav=performance.getEntriesByType("navigation")[0];var reload=nav&&(nav.type==="reload"||nav.type==="back_forward");var y=0;try{y=parseInt(sessionStorage.getItem("featul:home-scroll:v4")||"0",10)||0}catch(e){}if(!reload)y=0;var h=document.documentElement;h.style.scrollBehavior="auto";if(y>0){h.setAttribute("data-scrolled","");if(y>=80)h.style.opacity="0"}function go(){scrollTo(0,y);if(y>=80)h.style.opacity=""}go();addEventListener("DOMContentLoaded",go);addEventListener("load",go)})();`,
           }}
         />
         {selineToken ? (
@@ -172,7 +164,6 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
-        <MarketingEdgePattern />
         {children}
         <DebugTools />
       </body>

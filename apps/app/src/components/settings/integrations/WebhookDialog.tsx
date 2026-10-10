@@ -4,9 +4,8 @@ import React, { useState } from "react";
 import { SettingsDialogShell } from "../global/SettingsDialogShell";
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
-import { DiscordIcon } from "@featul/ui/icons/discord";
-import { SlackIcon } from "@featul/ui/icons/slack";
-import { LoaderIcon } from "@featul/ui/icons/loader";
+import { DiscordIcon, SlackIcon, LoaderIcon } from "@/components/global/icons";
+
 import type { IntegrationType } from "@/hooks/useIntegrations";
 
 interface WebhookDialogProps {
@@ -119,7 +118,7 @@ export default function WebhookDialog({
             Cancel
           </Button>
           <Button type="submit" disabled={isPending || !webhookUrl.trim()}>
-            {isPending ? <LoaderIcon className="w-4 h-4 animate-spin" /> : "Connect"}
+            {isPending ? <LoaderIcon className="w-4 h-4" /> : "Connect"}
           </Button>
         </div>
       </form>

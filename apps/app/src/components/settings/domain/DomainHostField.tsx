@@ -4,7 +4,7 @@ import React from "react";
 import { Input } from "@featul/ui/components/input";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
-import { XMarkIcon } from "@featul/ui/icons/xmark";
+import { XMarkIcon } from "@/components/global/icons";
 
 const fieldInputClass = cn(
   toolbarItemClass,

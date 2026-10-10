@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Command as CommandPrimitive } from "cmdk"
-import { SearchIcon } from "lucide-react"
+import { SearchIcon } from "@featul/ui/icons/search"
 
 import { cn } from "@featul/ui/lib/utils"
 import {
@@ -33,9 +33,11 @@ type CommandDialogProps = Omit<
   title?: string
   children?: React.ReactNode
   footer?: React.ReactNode
-  width?: "default" | "wide" | "widest" | "xl" | "xxl"
+  width?: "default" | "wide" | "search" | "widest" | "xl" | "xxl"
   offsetY?: string | number
   icon?: React.ReactNode
+  shouldFilter?: boolean
+  contentClassName?: string
 }
 
 function CommandDialog({
@@ -45,6 +47,8 @@ function CommandDialog({
   width = "default",
   offsetY = "15%",
   icon,
+  shouldFilter,
+  contentClassName,
   ...props
 }: CommandDialogProps) {
   const styleWidth =
@@ -54,6 +58,8 @@ function CommandDialog({
       ? { width: "min(92vw, 780px)", maxWidth: "none" as const }
       : width === "widest"
       ? { width: "min(92vw, 680px)", maxWidth: "none" as const }
+      : width === "search"
+      ? { width: "min(92vw, 560px)", maxWidth: "none" as const }
       : width === "wide"
       ? { width: "min(92vw, 520px)", maxWidth: "none" as const }
       : { width: "min(92vw, 450px)", maxWidth: "none" as const }
@@ -71,8 +77,8 @@ function CommandDialog({
           </DialogTitle>
         </DialogHeader>
         <DialogInner className="p-0">
-          <div className="p-2">
-            <Command className="">
+          <div className={cn("p-2", contentClassName)}>
+            <Command shouldFilter={shouldFilter}>
               {children}
             </Command>
           </div>
@@ -85,12 +91,13 @@ function CommandDialog({
 
 function CommandInput({
   className,
+  wrapperClassName,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+}: React.ComponentProps<typeof CommandPrimitive.Input> & { wrapperClassName?: string }) {
   return (
     <div
       data-slot="command-input-wrapper"
-      className="flex h-8 items-center gap-3 px-6"
+      className={cn("flex h-8 items-center gap-3 px-6", wrapperClassName)}
     >
       <SearchIcon className="size-5 shrink-0 opacity-50" />
       <CommandPrimitive.Input

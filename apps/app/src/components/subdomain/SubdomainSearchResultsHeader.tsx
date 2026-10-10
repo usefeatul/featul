@@ -1,6 +1,6 @@
 "use client";
 
-import { XMarkIcon } from "@featul/ui/icons/xmark";
+import { XMarkIcon } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 
 type SubdomainSearchResultsHeaderProps = {

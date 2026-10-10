@@ -20,7 +20,7 @@ import {
   REQUEST_FLAG_VISUALS,
   getActiveRequestFlags,
 } from "@/components/global/flag-visuals";
-import { FlagIcon } from "@featul/ui/icons/flag";
+import { FlagIcon } from "@/components/global/icons";
 
 export default function FlagsPicker({
   postId,

@@ -12,7 +12,7 @@ import { Input } from "@featul/ui/components/input"
 import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
 import { client } from "@featul/api/client"
-import { TrashIcon } from "@featul/ui/icons/trash"
+import { TrashIcon } from "@/components/global/icons"
 
 const CONFIRMATION_WORD = "DELETE"
 

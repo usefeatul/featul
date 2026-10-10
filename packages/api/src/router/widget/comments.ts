@@ -1,3 +1,6 @@
+import { createCommentAtomically } from "../../post/comments";
+import { requireImageReferenceAccess } from "../../storage/delivery";
+import { publicBoardConditions } from "../../post/access";
 import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import {
@@ -85,7 +88,7 @@ export const widgetComments = publicProcedure
           eq(post.id, input.postId),
           eq(post.status, "published"),
           eq(board.workspaceId, resolved.workspaceId),
-          eq(board.isPublic, true),
+          publicBoardConditions()!,
         ),
       )
       .limit(1);
@@ -191,7 +194,7 @@ export const widgetCreateComment = publicProcedure
           eq(post.id, input.postId),
           eq(post.status, "published"),
           eq(board.workspaceId, resolved.workspaceId),
-          eq(board.isPublic, true),
+          publicBoardConditions()!,
         ),
       )
       .limit(1);
@@ -250,6 +253,7 @@ export const widgetCreateComment = publicProcedure
           depth: comment.depth,
           postId: comment.postId,
           isInternal: comment.isInternal,
+          status: comment.status,
         })
         .from(comment)
         .where(eq(comment.id, input.parentId))
@@ -258,16 +262,12 @@ export const widgetCreateComment = publicProcedure
       if (!parentComment || parentComment.postId !== input.postId) {
         throw new HTTPException(404, { message: "Parent comment not found" });
       }
-      if (parentComment.isInternal) {
+      if (parentComment.isInternal || parentComment.status !== "published") {
         throw new HTTPException(403, {
           message: "Cannot reply to this comment",
         });
       }
       depth = (parentComment.depth || 0) + 1;
-      await ctx.db
-        .update(comment)
-        .set({ replyCount: sql`${comment.replyCount} + 1` })
-        .where(eq(comment.id, input.parentId));
     }
 
     const content = input.content.trim();
@@ -278,6 +278,7 @@ export const widgetCreateComment = publicProcedure
     if (fingerprint) metadata.fingerprint = fingerprint;
     if (input.image) {
       assertWidgetPostImageUrl(input.image, resolved.workspaceSlug);
+      await requireImageReferenceAccess(ctx.db, [input.image], null);
       metadata.attachments = [
         {
           name: "image",
@@ -287,35 +288,16 @@ export const widgetCreateComment = publicProcedure
       ];
     }
 
-    const [created] = await ctx.db
-      .insert(comment)
-      .values({
-        postId: input.postId,
-        parentId: input.parentId || null,
-        content: content || (input.image ? " " : ""),
-        widgetUserId: authorId,
-        authorName: authorId ? authorName : "Guest",
-        depth,
-        status: "published",
-        isInternal: false,
-        isAnonymous: !authorId,
+    const { comment: created, commentCount } = await createCommentAtomically(ctx.db, {
+      values: {
+        postId: input.postId, parentId: input.parentId || null,
+        content: content || (input.image ? " " : ""), widgetUserId: authorId,
+        authorName: authorId ? authorName : "Guest", depth, status: "published",
+        isInternal: false, isAnonymous: !authorId,
         metadata: Object.keys(metadata).length ? metadata : null,
-        upvotes: 1,
-      })
-      .returning();
-
-    await ctx.db.insert(commentReaction).values({
-      commentId: created.id,
-      widgetUserId: authorId,
-      fingerprint: authorId ? null : fingerprint,
-      type: "upvote",
+      },
+      reaction: { widgetUserId: authorId, fingerprint: authorId ? null : fingerprint },
     });
-
-    const [updatedPost] = await ctx.db
-      .update(post)
-      .set({ commentCount: sql`${post.commentCount} + 1` })
-      .where(eq(post.id, input.postId))
-      .returning({ commentCount: post.commentCount });
 
     const image = firstCommentImage(created.metadata, input.image);
 
@@ -343,6 +325,6 @@ export const widgetCreateComment = publicProcedure
         createdAt: created.createdAt,
         hasVoted: true,
       },
-      commentCount: updatedPost?.commentCount || 0,
+      commentCount,
     });
   });

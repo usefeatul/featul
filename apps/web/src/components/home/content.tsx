@@ -1,49 +1,41 @@
-"use client";
-
+import type { ReactNode } from "react";
 import { HeroCta } from "@/components/shared/cta";
-import { HeroHighlights } from "@/components/shared/highlights";
 import {
-  HeadingHighlight,
   marketingDisplayHeadingClass,
   marketingLeadClass,
 } from "@/components/shared/heading-highlight";
 import { cn } from "@featul/ui/lib/utils";
 
-export function HeroContent() {
+export function HeroContent({
+  title = (
+    <>
+      Build what your customers
+      <br className="hidden sm:block" />{" "}
+      <span className="text-accent">actually want.</span>
+    </>
+  ),
+  description = "Turn customer feedback into your next great feature. Gather ideas, decide what’s next, and bring your customers along as you ship.",
+  dataComponent = "HeroContent",
+}: {
+  title?: ReactNode;
+  description?: ReactNode;
+  dataComponent?: string;
+}) {
   return (
-    <div className="max-w-2xl text-left" data-component="HeroContent">
-      <h1 className={cn(marketingDisplayHeadingClass, "xl:text-5xl")}>
-        From upvote to shipped.{" "}
-        <HeadingHighlight>In one workspace.</HeadingHighlight>
+    <div
+      className="relative mx-auto max-w-5xl text-center"
+      data-component={dataComponent}
+    >
+      <h1
+        className={cn(
+          marketingDisplayHeadingClass,
+          "text-3xl leading-[1.08] min-[375px]:text-4xl sm:text-4xl sm:leading-[1.08] md:text-5xl lg:text-[3.5rem] xl:text-6xl",
+        )}
+      >
+        {title}
       </h1>
-
-      <p className={marketingLeadClass}>
-        MIT licensed. Billed per workspace, not per seat.
-        <br />
-        Start in minutes. Built and hosted in the{" "}
-        <span className="inline-flex items-center gap-1.5 align-baseline">
-          <svg
-            aria-hidden
-            viewBox="0 0 18 12"
-            className="h-3.5 w-[1.3rem] shrink-0 overflow-hidden rounded-[1px] ring-1 ring-border/60"
-          >
-            <rect width="18" height="12" fill="#003399" />
-            <g fill="#FFCC00">
-              {Array.from({ length: 12 }, (_, i) => {
-                const angle = (i * 30 * Math.PI) / 180;
-                const cx = 9 + Math.cos(angle - Math.PI / 2) * 3.1;
-                const cy = 6 + Math.sin(angle - Math.PI / 2) * 3.1;
-                return <circle key={i} cx={cx} cy={cy} r="0.45" />;
-              })}
-            </g>
-          </svg>
-          EU
-        </span>
-        .
-      </p>
-
-      <HeroCta />
-      <HeroHighlights />
+      <p className={cn(marketingLeadClass, "mx-auto")}>{description}</p>
+      <HeroCta centered />
     </div>
   );
 }

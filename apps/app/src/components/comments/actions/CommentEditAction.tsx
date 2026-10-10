@@ -2,7 +2,7 @@
 
 import React from "react"
 import { PopoverListItem } from "@featul/ui/components/popover"
-import { EditIcon } from "@featul/ui/icons/edit"
+import { EditIcon } from "@/components/global/icons"
 
 interface CommentEditActionProps {
   onEdit?: () => void

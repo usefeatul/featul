@@ -23,7 +23,7 @@ type VerificationMethod = "totp" | "backup";
 
 export default function TwoFactorChallenge() {
   const router = useRouter();
-  const { safeRedirectParam, redirect } = useAuthRedirect();
+  const { safeRedirectParam } = useAuthRedirect();
   const styles = getAuthLayoutStyles(false);
   const [method, setMethod] = useState<VerificationMethod>("totp");
   const [totpCode, setTotpCode] = useState("");

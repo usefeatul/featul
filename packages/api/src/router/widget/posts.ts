@@ -1,3 +1,5 @@
+import { requireImageReferenceAccess } from "../../storage/delivery";
+import { publicBoardConditions } from "../../post/access";
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { board, post, vote, widgetUser } from "@featul/db";
@@ -143,7 +145,7 @@ export const widgetSimilar = publicProcedure
         and(
           eq(board.workspaceId, resolved.workspaceId),
           eq(board.isSystem, false),
-          eq(board.isPublic, true),
+          publicBoardConditions()!,
           eq(post.status, "published"),
           input.boardId ? eq(board.id, input.boardId) : sql`true`,
           or(ilike(post.title, q), ilike(post.content, q)),
@@ -176,7 +178,7 @@ export const widgetCreate = publicProcedure
           eq(board.id, input.boardId),
           eq(board.workspaceId, resolved.workspaceId),
           eq(board.isSystem, false),
-          eq(board.isPublic, true),
+          publicBoardConditions()!,
         ),
       )
       .limit(1);
@@ -224,6 +226,7 @@ export const widgetCreate = publicProcedure
       mergePostMetadata(undefined, imageFields.attachments),
     )) {
       assertWidgetPostImageUrl(url, resolved.workspaceSlug);
+      await requireImageReferenceAccess(ctx.db, [url], null);
     }
 
     const request = getWidgetRequest(c);

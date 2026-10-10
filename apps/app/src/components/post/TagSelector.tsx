@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@featul/ui/components/button";
-import { TagIcon } from "@featul/ui/icons/tag";
+import { TagIcon } from "@/components/global/icons";
 import {
   Popover,
   PopoverContent,

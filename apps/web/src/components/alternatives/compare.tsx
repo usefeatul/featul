@@ -1,6 +1,6 @@
 import { MarketingContainer } from "@/components/layout/container";
-import type { Alternative } from "@/config/alternatives"
-import { SquareIcon } from "@featul/ui/icons/square"
+import type { Alternative } from "@/config/alternatives";
+import { SquareIcon } from "@featul/ui/icons/square";
 import {
   ComparisonStatusCell,
   ComparisonStatusHeader,
@@ -10,8 +10,8 @@ import {
   ComparisonThead,
   ComparisonTr,
   STATUS_COLUMN_CLASS,
-} from "./table"
-import { StatusIcon } from "./icon"
+} from "./table";
+import { StatusIcon } from "./icon";
 
 export default function Compare({ alt }: { alt: Alternative }) {
   return (
@@ -27,7 +27,9 @@ export default function Compare({ alt }: { alt: Alternative }) {
           </p>
 
           <div className="mt-10 sm:mt-12">
-            <ComparisonTable caption={`${alt.name} vs Featul feature comparison`}>
+            <ComparisonTable
+              caption={`${alt.name} vs Featul feature comparison`}
+            >
               <ComparisonThead>
                 <ComparisonTr>
                   <ComparisonTh>Feature</ComparisonTh>
@@ -38,12 +40,12 @@ export default function Compare({ alt }: { alt: Alternative }) {
                       slug={alt.slug}
                     />
                   </ComparisonTh>
-                  <ComparisonTh align="center" className={STATUS_COLUMN_CLASS}>
-                    <ComparisonStatusHeader
-                      name="Featul"
-                      href="/"
-                      featured
-                    />
+                  <ComparisonTh
+                    align="center"
+                    className={STATUS_COLUMN_CLASS}
+                    featured
+                  >
+                    <ComparisonStatusHeader name="Featul" href="/" featured />
                   </ComparisonTh>
                 </ComparisonTr>
               </ComparisonThead>
@@ -60,10 +62,17 @@ export default function Compare({ alt }: { alt: Alternative }) {
                         </p>
                       ) : null}
                     </ComparisonTd>
-                    <ComparisonTd align="center" className={`${STATUS_COLUMN_CLASS} align-middle`}>
+                    <ComparisonTd
+                      align="center"
+                      className={`${STATUS_COLUMN_CLASS} align-middle`}
+                    >
                       <ComparisonStatusCell value={f.competitor} />
                     </ComparisonTd>
-                    <ComparisonTd align="center" className={`${STATUS_COLUMN_CLASS} align-middle`}>
+                    <ComparisonTd
+                      align="center"
+                      className={`${STATUS_COLUMN_CLASS} align-middle`}
+                      featured
+                    >
                       <ComparisonStatusCell value={f.Featul} />
                     </ComparisonTd>
                   </ComparisonTr>
@@ -89,5 +98,5 @@ export default function Compare({ alt }: { alt: Alternative }) {
         </div>
       </section>
     </MarketingContainer>
-  )
+  );
 }

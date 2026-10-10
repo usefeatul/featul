@@ -4,7 +4,7 @@ import { Button } from "@featul/ui/components/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar";
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover";
 import { cn } from "@featul/ui/lib/utils";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical } from "@/components/global/icons";
 import type { Invite } from "../../../types/team";
 import { getInitials } from "@/utils/user";
 import { client } from "@featul/api/client";

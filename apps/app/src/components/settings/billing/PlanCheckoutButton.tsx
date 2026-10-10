@@ -14,6 +14,7 @@ type PlanCheckoutButtonProps = {
   workspaceId?: string
   workspaceSlug: string
   canManageBilling: boolean
+  trialEligible: boolean
   currentSubscriptionId?: string
   className?: string
 }
@@ -25,6 +26,7 @@ export default function PlanCheckoutButton({
   workspaceId,
   workspaceSlug,
   canManageBilling,
+  trialEligible,
   currentSubscriptionId,
   className,
 }: PlanCheckoutButtonProps) {
@@ -56,7 +58,7 @@ export default function PlanCheckoutButton({
         subscriptionId: currentSubscriptionId,
         successUrl: billingUrl,
         cancelUrl: billingUrl,
-        returnUrl: billingUrl,
+        returnUrl: `${window.location.origin}/api/billing/success?workspaceId=${encodeURIComponent(workspaceId)}`,
         disableRedirect: true,
       })
 
@@ -109,7 +111,7 @@ export default function PlanCheckoutButton({
       disabled={!canManageBilling || isCurrent || isCheckingOut}
       onClick={handleCheckout}
     >
-      {plan.trialDays ? "Start trial" : "Choose plan"}
+      {plan.trialDays && trialEligible ? `Start ${plan.trialDays}-day free trial` : "Choose plan"}
     </LoadingButton>
   )
 }

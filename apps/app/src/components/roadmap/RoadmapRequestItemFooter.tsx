@@ -5,7 +5,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@featul/ui/components/avatar";
-import { CommentsIcon } from "@featul/ui/icons/comments";
+import { CommentsIcon } from "@/components/global/icons";
 import RoleBadge from "@/components/global/RoleBadge";
 import { UpvoteButton } from "@/components/upvote/UpvoteButton";
 import { getInitials } from "@/utils/user";

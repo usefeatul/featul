@@ -2,7 +2,7 @@
 
 import React from "react"
 import { cn } from "@featul/ui/lib/utils"
-import LoaderIcon from "@featul/ui/icons/loader"
+import { LoaderIcon } from "@/components/global/icons";
 
 interface LoadingSpinnerProps {
   label?: string
@@ -12,7 +12,7 @@ interface LoadingSpinnerProps {
 export function LoadingSpinner({ label = "Loading...", className }: LoadingSpinnerProps) {
   return (
     <div className={cn("flex items-center justify-center gap-2 py-6 text-sm text-accent", className)}>
-      <LoaderIcon className="size-4 animate-spin" />
+      <LoaderIcon className="size-4" />
       <span>{label}</span>
     </div>
   )

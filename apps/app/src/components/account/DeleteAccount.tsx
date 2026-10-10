@@ -3,7 +3,7 @@
 import React from "react"
 import SettingsCard from "@/components/global/SettingsCard"
 import { DeleteAccountDialog } from "@/components/account/DeleteAccountDialog"
-import { TrashIcon } from "@featul/ui/icons/trash"
+import { TrashIcon } from "@/components/global/icons"
 
 export default function DeleteAccount() {
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)

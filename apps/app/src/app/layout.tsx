@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import Script from "next/script";
-import { Inter, Inter_Tight } from "next/font/google";
+import { Geist_Mono, Inter_Tight } from "next/font/google";
 import { Providers } from "../components/providers/providers";
 import ConditionalThemeProvider from "@/components/global/ConditionalThemeProvider";
-// import WidgetTestEmbed from "@/components/widget/embed";
+import WidgetTestEmbed from "@/components/widget/embed";
 import "./globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 import {
@@ -15,18 +16,17 @@ import {
 } from "@/config/seo";
 import { buildSoftwareApplicationSchema } from "@/lib/structured/data";
 
-const inter = Inter({
+const interTight = Inter_Tight({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-jakarta",
+  variable: "--font-inter-tight",
 });
 
-const interTight = Inter_Tight({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-playfair",
+  variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
@@ -63,8 +63,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.svg?v=3", type: "image/svg+xml" },
+      { url: "/favicon.svg?v=4", type: "image/svg+xml" },
     ],
+    shortcut: "/favicon-96x96.png?v=4",
+    apple: "/apple-touch-icon.png?v=4",
   },
   manifest: "/site.webmanifest",
   verification: {
@@ -81,15 +83,19 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerStore = await headers();
+  const isPublicWorkspace =
+    headerStore.get("x-featul-public-workspace") === "1";
+
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${interTight.variable}`}
+      className={`${interTight.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -104,12 +110,14 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <Providers>
-          <ConditionalThemeProvider>{children}</ConditionalThemeProvider>
+          <ConditionalThemeProvider publicWorkspace={isPublicWorkspace}>
+            {children}
+          </ConditionalThemeProvider>
         </Providers>
-        {/* {process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||
+        {process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||
         process.env.NEXT_PUBLIC_FEATUL_WORKSPACE_ID ? (
           <WidgetTestEmbed />
-        ) : null} */}
+        ) : null}
       </body>
     </html>
   );

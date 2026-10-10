@@ -4,7 +4,7 @@ import React from "react"
 import { cn } from "@featul/ui/lib/utils"
 import { commentBadgeClass } from "./styles"
 import { Tooltip, TooltipTrigger, TooltipContent } from "@featul/ui/components/tooltip"
-import { PinIcon } from "@featul/ui/icons/pin"
+import { PinIcon } from "@/components/global/icons";
 
 export default function PinnedBadge({ className, size = 10 }: { className?: string; size?: number }) {
   return (

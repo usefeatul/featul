@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Copy } from "lucide-react";
+import { Copy } from "@/components/global/icons";
 import { toast } from "sonner";
 import { LoadingButton } from "@/components/global/LoadingButton";
 

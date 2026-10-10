@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import { Button } from "@featul/ui/components/button"
 import CreatePostModal from "./CreatePostModal"
-import { IdeaIcon } from "@featul/ui/icons/idea"
+import { IdeaIcon } from "@/components/global/icons"
 import {
   settingsCardInnerClass,
   settingsCardShellClass,

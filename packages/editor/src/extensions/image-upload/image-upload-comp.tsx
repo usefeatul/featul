@@ -1,9 +1,10 @@
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
 import { LoaderIcon } from "@featul/ui/icons/loader";
+import { ImageIcon } from "@featul/ui/icons/image";
 import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import { CheckIcon, ImageIcon, XIcon } from "lucide-react";
+import { CheckIcon, XIcon } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { MediaItem } from "../../types";

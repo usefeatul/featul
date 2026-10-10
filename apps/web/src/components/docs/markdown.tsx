@@ -1,4 +1,5 @@
 import React from "react"
+import { buttonVariants } from "@featul/ui/components/button"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeHighlight from "rehype-highlight"
@@ -94,7 +95,7 @@ export function DocsMarkdown({ markdown }: { markdown: string }) {
               return (
                 <a
                   href={url}
-                  className="inline-flex items-center gap-2 rounded-md border border-border bg-primary px-3 py-1.5 text-sm font-medium text-white! no-underline transition-colors hover:bg-primary/90"
+                  className={cn(buttonVariants({ variant: "default" }), "gap-2 px-3 py-1.5 text-white! no-underline")}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
                 >

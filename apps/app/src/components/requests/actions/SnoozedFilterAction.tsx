@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { Button } from "@featul/ui/components/button"
 import { ToolbarSeparator } from "@featul/ui/components/toolbar"
-import { Clock } from "lucide-react"
+import { Clock } from "@/components/global/icons"
 import {
   Tooltip,
   TooltipTrigger,
@@ -79,7 +79,7 @@ export default function SnoozedFilterAction({
             onClick={handleClick}
             className={filterToolbarButtonClass(isActive, className)}
           >
-            <Clock className="size-4" strokeWidth={2.25} />
+            <Clock className="size-4" />
           </Button>
         </TooltipTrigger>
         <TooltipContent

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import { Button } from "@featul/ui/components/button"
-import { TrashIcon } from "@featul/ui/icons/trash"
+import { TrashIcon } from "@/components/global/icons"
 import { cn } from "@featul/ui/lib/utils"
 import { SelectionControl } from "./SelectionControl"
 import { pluralizeItemLabel } from "./pluralize"
@@ -18,6 +18,7 @@ export interface SelectionToolbarProps {
   onConfirmDelete?: () => void
   hideDelete?: boolean
   extraActions?: ReactNode
+  emptySelectionHint?: string
   className?: string
 }
 
@@ -32,6 +33,7 @@ export function SelectionToolbar({
   onConfirmDelete,
   hideDelete = false,
   extraActions,
+  emptySelectionHint = "Tap rows to select",
   className,
 }: SelectionToolbarProps) {
   const hasSelection = selectedCount > 0
@@ -45,7 +47,7 @@ export function SelectionToolbar({
   return (
     <div
       className={cn(
-        "sticky top-0 z-30 flex h-10 w-full items-center gap-3 border-b border-border/70 bg-card",
+        "sticky top-0 z-30 flex h-10 w-full items-center gap-3 border-b border-border/70 bg-sidebar dark:bg-card",
         className ?? "px-3 sm:px-4",
       )}
       role="toolbar"
@@ -66,7 +68,7 @@ export function SelectionToolbar({
           {selectedCount} {pluralLabel}
         </span>
       ) : (
-        <span className="text-xs text-muted-foreground">Tap rows to select</span>
+        <span className="text-xs text-muted-foreground">{emptySelectionHint}</span>
       )}
 
       {showActions ? (
@@ -78,7 +80,7 @@ export function SelectionToolbar({
               variant="card"
               size="sm"
               className={cn(
-                "h-8 gap-1.5 rounded-sm px-3 bg-destructive text-white border-destructive/70 hover:bg-destructive/90 hover:text-white dark:bg-destructive/80 dark:hover:bg-destructive/70",
+                "h-8 gap-1.5 rounded-sm px-3 py-0 bg-destructive text-white border-destructive/70 hover:bg-destructive/90 hover:text-white dark:bg-destructive/80 dark:hover:bg-destructive/70",
                 !hasSelection && "pointer-events-none opacity-40",
               )}
               disabled={!hasSelection || isPending}

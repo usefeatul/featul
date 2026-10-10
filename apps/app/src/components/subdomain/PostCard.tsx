@@ -3,7 +3,7 @@
 import React from "react"
 import Link from "next/link"
 import { UpvoteButton } from "@/components/upvote/UpvoteButton"
-import { CommentsIcon } from "@featul/ui/icons/comments"
+import { CommentsIcon } from "@/components/global/icons"
 import type { RequestItemData } from "@/types/request"
 import StatusIcon from "@/components/requests/StatusIcon"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"

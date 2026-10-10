@@ -3,7 +3,6 @@
 import * as React from "react";
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
 type TooltipProviderProps = React.PropsWithChildren<
@@ -13,7 +12,7 @@ type TooltipProviderProps = React.PropsWithChildren<
 >;
 
 function TooltipProvider({
-	delayDuration = 0,
+	delayDuration = 150,
 	children,
 	...props
 }: TooltipProviderProps) {
@@ -56,16 +55,7 @@ function TooltipTrigger({
 			<BaseTooltip.Trigger
 				data-slot="tooltip-trigger"
 				{...props}
-				render={(triggerProps) => {
-					const child = React.Children.only(
-						children,
-					) as React.ReactElement<any>;
-					const triggerAttrs = triggerProps as Record<string, unknown>;
-					return React.cloneElement(
-						child,
-						Object.assign({}, triggerAttrs, child.props),
-					);
-				}}
+				render={React.Children.only(children) as React.ReactElement}
 			/>
 		);
 	}
@@ -89,7 +79,7 @@ type TooltipContentProps = React.ComponentPropsWithoutRef<
 
 function TooltipContent({
 	className,
-	sideOffset = 0,
+	sideOffset = 6,
 	side,
 	align,
 	children,
@@ -97,19 +87,20 @@ function TooltipContent({
 }: TooltipContentProps) {
 	return (
 		<BaseTooltip.Portal>
-			<BaseTooltip.Positioner sideOffset={sideOffset} side={side} align={align}>
+			<BaseTooltip.Positioner className="z-50" sideOffset={sideOffset} side={side} align={align}>
 				<BaseTooltip.Popup
 					data-slot="tooltip-content"
 					className={cn(
-						overlayShellClass,
-						"z-50 w-fit max-w-3xs p-1 outline-hidden animate-in fade-in-0 zoom-in-95 data-ending-style:opacity-0 data-starting-style:opacity-0",
+						"overflow-hidden rounded-lg border border-[#444444] border-t-[#666666] border-b-[#181818] bg-[#3a3a3a] text-zinc-100 dark:border-[#d4d4d4] dark:border-t-white dark:border-b-[#bcbcbc] dark:bg-[#f5f5f5] dark:text-zinc-900",
+						"w-fit max-w-[min(20rem,calc(100vw-1rem))] p-px outline-hidden origin-[var(--transform-origin)] transition-[opacity,transform] duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 motion-reduce:transition-none",
 					)}
 					{...props}
 				>
 					<div
 						className={cn(
-							overlayInnerClass,
-							"bg-black px-1.5 py-1 text-[11px] leading-normal text-white whitespace-normal wrap-break-word dark:bg-white dark:text-zinc-900",
+							"rounded-[6px] bg-[#292929] px-2.5 py-1 text-xs font-normal leading-5 text-inherit whitespace-normal wrap-break-word dark:bg-[#eeeeee]",
+							"bg-[linear-gradient(180deg,#363636_0%,#252525_100%)] dark:bg-[linear-gradient(180deg,#dedede_0%,#f4f4f4_100%)]",
+                            "[&_kbd]:border-white/15 [&_kbd]:bg-white/10 [&_kbd]:text-zinc-200 dark:[&_kbd]:border-black/10 dark:[&_kbd]:bg-black/[0.06] dark:[&_kbd]:text-zinc-600",
 							className,
 						)}
 					>

@@ -18,6 +18,7 @@ import { getPlanLimits, normalizePlan, type PlanKey } from "../shared/plan"
 import { limitInvite } from "../services/ratelimiter"
 import { mapPermissions } from "../shared/permissions"
 import type { AuthenticatedRouterContext as TeamRouterContext } from "../types/router"
+import { activateMembership } from "../team/membership"
 import { getWorkspaceAccessPlan } from "../shared/access"
 
 async function getWorkspaceMemberEmails(
@@ -309,7 +310,9 @@ export function createTeamRouter() {
             brand,
             inviterName,
           })
-        } catch { }
+        } catch {
+          throw new HTTPException(502, { message: "Invitation saved, but the email could not be sent. Use Resend to try again." })
+        }
 
         return c.superjson({ ok: true, token })
       }),
@@ -368,7 +371,9 @@ export function createTeamRouter() {
             brand,
             inviterName,
           })
-        } catch { }
+        } catch {
+          throw new HTTPException(502, { message: "The invitation email could not be sent. Please try again." })
+        }
 
         return c.json({ ok: true })
       }),
@@ -387,7 +392,7 @@ export function createTeamRouter() {
         const [me] = await ctx.db
           .select({ role: workspaceMember.role, permissions: workspaceMember.permissions })
           .from(workspaceMember)
-          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId)))
+          .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, meId), eq(workspaceMember.isActive, true)))
           .limit(1)
         const allowed = me || ws.ownerId === meId
         if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
@@ -497,30 +502,15 @@ export function createTeamRouter() {
           .where(eq(workspace.id, inv.workspaceId))
           .limit(1)
 
-        const [existing] = await ctx.db
-          .select({ id: workspaceMember.id })
-          .from(workspaceMember)
-          .where(and(eq(workspaceMember.workspaceId, inv.workspaceId), eq(workspaceMember.userId, me.id)))
-          .limit(1)
-        if (!existing) {
-          await assertMemberLimitNotReached(ctx, inv.workspaceId)
-          await ctx.db.insert(workspaceMember).values({
-            workspaceId: inv.workspaceId,
-            userId: me.id,
-            role: inv.role,
-            permissions: mapPermissions(inv.role),
-            joinedAt: new Date(),
-          })
-        }
-
-        // Delete all pending invites for this email (not just the one with the token)
-        await ctx.db
-          .delete(workspaceInvite)
-          .where(and(
-            eq(workspaceInvite.workspaceId, inv.workspaceId),
-            eq(workspaceInvite.email, inv.email),
-            isNull(workspaceInvite.acceptedAt)
-          ))
+        const plan = normalizePlan(await getWorkspaceAccessPlan(inv.workspaceId))
+        const maxMembers = getPlanLimits(plan).maxMembers
+        const activated = await activateMembership(ctx.db, {
+          workspaceId: inv.workspaceId, userId: me.id, email: me.email,
+          role: inv.role, maxMembers, inviteToken: input.token,
+        })
+        if (!activated) throw new HTTPException(409, {
+          message: "The invitation is no longer available or the workspace member limit has been reached.",
+        })
 
         return c.json({ ok: true, workspaceSlug: ws?.slug || null })
       }),
@@ -591,29 +581,15 @@ export function createTeamRouter() {
           .limit(1)
 
         if (u?.id) {
-          const [existing] = await ctx.db
-            .select({ id: workspaceMember.id })
-            .from(workspaceMember)
-            .where(and(eq(workspaceMember.workspaceId, ws.id), eq(workspaceMember.userId, u.id)))
-            .limit(1)
-          if (!existing) {
-            await assertMemberLimitNotReached(ctx, ws.id)
-            await ctx.db.insert(workspaceMember).values({
-              workspaceId: ws.id,
-              userId: u.id,
-              role: input.role,
-              permissions: mapPermissions(input.role),
-              joinedAt: new Date(),
-            })
-            // Delete any pending invites for this email since they're now a member
-            await ctx.db
-              .delete(workspaceInvite)
-              .where(and(
-                eq(workspaceInvite.workspaceId, ws.id),
-                eq(workspaceInvite.email, input.email.trim().toLowerCase()),
-                isNull(workspaceInvite.acceptedAt)
-              ))
-          }
+          const plan = normalizePlan(await getWorkspaceAccessPlan(ws.id))
+          const maxMembers = getPlanLimits(plan).maxMembers
+          const activated = await activateMembership(ctx.db, {
+            workspaceId: ws.id, userId: u.id, email: input.email.trim().toLowerCase(),
+            role: input.role, maxMembers,
+          })
+          if (!activated) throw new HTTPException(403, {
+            message: getMemberLimitMessage(plan, maxMembers!),
+          })
           return c.json({ ok: true, invited: false })
         }
 

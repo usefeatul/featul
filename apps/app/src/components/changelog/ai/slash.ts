@@ -1,8 +1,8 @@
 import type { Editor } from "@tiptap/core";
 import type { Range } from "@tiptap/core";
 import type { SuggestionItem } from "@featul/editor";
-import { AiIcon } from "@featul/ui/icons/ai";
 import {
+  AiIcon,
   Sparkles,
   Maximize2,
   Wand2,
@@ -10,7 +10,7 @@ import {
   CalendarDays,
   ClipboardCheck,
   Code2,
-} from "lucide-react";
+} from "@/components/global/icons";
 
 type SlashAiHandlers = {
   onOpenPanel: () => void;

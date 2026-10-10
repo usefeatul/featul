@@ -1,7 +1,7 @@
 "use client";
 import { MarketingContainer } from "@/components/layout/container";
 import Link from "next/link";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { edgeChromeInsetClass } from "@/components/layout/edge-pattern";
 import { Button } from "@featul/ui/components/button";
@@ -12,16 +12,9 @@ import { navigationConfig } from "@/config/homeNav";
 type MobileMenuProps = {
   open: boolean;
   onClose: () => void;
-  overCreate?: boolean;
-  style?: CSSProperties;
 };
 
-export function MobileMenu({
-  open,
-  onClose,
-  overCreate = false,
-  style,
-}: MobileMenuProps) {
+export function MobileMenu({ open, onClose }: MobileMenuProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -50,12 +43,10 @@ export function MobileMenu({
   return createPortal(
     <div
       className={cn(
-        "fixed bottom-0 top-16 z-[40] overflow-y-auto overscroll-contain bg-background md:hidden",
+        "fixed bottom-0 top-[6.5rem] z-[40] overflow-y-auto overscroll-contain bg-background md:hidden",
         edgeChromeInsetClass,
       )}
       data-component="MobileMenu"
-      data-over-create={overCreate ? "" : undefined}
-      style={style}
     >
       <MarketingContainer>
         <nav className="py-4 grid gap-2">
@@ -81,16 +72,7 @@ export function MobileMenu({
                 {item.name}
               </Link>
             ))}
-            <Button
-              asChild
-              variant="nav"
-              className={cn(
-                "w-full font-semibold",
-                overCreate
-                  ? "border-white/80 bg-white text-primary hover:bg-white/90 hover:text-primary"
-                  : "border-primary/80 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
-              )}
-            >
+            <Button asChild variant="default" className="w-full font-semibold">
               <Link
                 href={APP_URL}
                 data-sln-event="cta: start for free clicked"
@@ -103,6 +85,6 @@ export function MobileMenu({
         </nav>
       </MarketingContainer>
     </div>,
-    document.body
+    document.body,
   );
 }

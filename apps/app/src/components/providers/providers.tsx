@@ -9,6 +9,7 @@ import { HTTPException } from "hono/http-exception"
 import { type PropsWithChildren, useState } from "react"
 import { usePathname } from "next/navigation"
 import { Toaster } from "@featul/ui/components/sonner"
+import { LoaderIcon, TickIcon } from "@/components/global/icons"
 import { PostHogIdentifier } from "./PostHogIdentifier"
 
 function WidgetAwareChrome({ children }: PropsWithChildren) {
@@ -18,7 +19,15 @@ function WidgetAwareChrome({ children }: PropsWithChildren) {
     <>
       {isWidget ? null : <PostHogIdentifier />}
       {children}
-      {isWidget ? null : <Toaster position="bottom-right" />}
+      {isWidget ? null : (
+        <Toaster
+          position="bottom-right"
+          icons={{
+            success: <TickIcon className="size-4 text-green-600 dark:text-green-400" />,
+            loading: <LoaderIcon className="size-4" />,
+          }}
+        />
+      )}
     </>
   )
 }

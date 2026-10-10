@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Button } from "@featul/ui/components/button"
 import { cn } from "@featul/ui/lib/utils"
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left"
+import { ChevronLeftIcon } from "@/components/global/icons"
 import { MergePopover } from "./MergePopover"
 import { DeletePostButton } from "./DeletePostButton"
 import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"

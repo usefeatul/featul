@@ -1,10 +1,9 @@
 "use client";
 
 import type { RefObject } from "react";
-import { Check } from "lucide-react";
+import { CheckCircle } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 import { Content } from "./content";
-import { withoutEmDash } from "./config";
 import {
   Progress,
   type AssistantActivity,
@@ -32,7 +31,7 @@ export function Messages({
 }: {
   messages: AssistantMessage[];
   bottomRef: RefObject<HTMLDivElement | null>;
-  onRetry: (content: string) => void;
+  onRetry: (messageId: string) => void;
 }) {
   return (
     <div className="space-y-5 px-4 py-5">
@@ -50,38 +49,27 @@ export function Messages({
               message.status === "error" && "text-destructive",
             )}
           >
-            {message.status === "pending" ? (
-              <Progress
-                phase={message.phase ?? "reading"}
-                activity={message.activity ?? "ask"}
-                startedAt={message.startedAt}
-              />
-            ) : message.role === "assistant" ? (
-              <>
-                {message.status === "streaming" ? (
-                  <div className="mb-2.5">
-                    <Progress
-                      phase={message.phase ?? "writing"}
-                      activity={message.activity ?? "ask"}
-                      startedAt={message.startedAt}
-                      compact
-                    />
-                  </div>
-                ) : null}
-                {!message.status && message.activity && message.durationMs ? (
-                  <div className="mb-4">
-                    <Progress
-                      phase={
-                        message.activity === "ask" ? "writing" : "applying"
-                      }
-                      activity={message.activity}
-                      durationMs={message.durationMs}
-                      complete
-                    />
-                  </div>
-                ) : null}
-                <Content>{withoutEmDash(message.content)}</Content>
-              </>
+            {message.role === "assistant" &&
+            (message.status === "pending" ||
+              message.status === "streaming" ||
+              (!message.status && message.activity && message.durationMs)) ? (
+              <div
+                className={cn(
+                  message.status === "streaming" && "mb-2.5",
+                  !message.status && "mb-4",
+                )}
+              >
+                <Progress
+                  phase={message.phase ?? "reading"}
+                  activity={message.activity ?? "ask"}
+                  durationMs={message.durationMs}
+                  complete={!message.status}
+                />
+              </div>
+            ) : null}
+            {message.status === "pending" ? null : message.role ===
+              "assistant" ? (
+              <Content>{message.content}</Content>
             ) : (
               <span className="whitespace-pre-wrap">{message.content}</span>
             )}
@@ -114,7 +102,7 @@ export function Messages({
 
             {message.effect ? (
               <div className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                <Check className="size-3" />
+                <CheckCircle className="size-3.5 shrink-0" aria-hidden="true" />
                 {message.effect}
               </div>
             ) : null}
@@ -123,7 +111,7 @@ export function Messages({
               <button
                 type="button"
                 className="mt-2 block text-xs font-medium underline underline-offset-2"
-                onClick={() => onRetry(message.content)}
+                onClick={() => onRetry(message.id)}
               >
                 Try again
               </button>

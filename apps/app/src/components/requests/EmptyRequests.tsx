@@ -8,13 +8,13 @@ export default function EmptyRequests({ workspaceSlug, className = "" }: { works
   const href = `https://${workspaceSlug}.featul.com`
 
   return (
-    <div className={cn("flex min-h-[50vh] items-center justify-center", className)}>
+    <div data-page-empty className={cn("flex flex-1 items-center justify-center", className)}>
       <div className="flex flex-col items-center px-4 py-12 text-center">
         <div className="text-sm font-medium text-foreground">No requests yet</div>
         <p className="mt-1 max-w-sm text-sm text-muted-foreground">
           Your feedback board is live. Share it with users to start collecting ideas.
         </p>
-        <Button variant="quiet" asChild className="mt-4 px-5">
+        <Button variant="default" asChild className="mt-4 px-5">
           <a href={href} target="_blank" rel="noopener noreferrer">
             Open live board
           </a>

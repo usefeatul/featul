@@ -1,6 +1,6 @@
 
 import React from "react"
-import { FlagIcon } from "@featul/ui/icons/flag"
+import { FlagIcon } from "@/components/global/icons"
 import { cn } from "@featul/ui/lib/utils"
 
 interface ReportIndicatorProps {

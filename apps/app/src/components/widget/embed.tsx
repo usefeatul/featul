@@ -19,13 +19,15 @@ const TEST_WIDGET_PROJECT_ID =
 
 export default function WidgetTestEmbed() {
   const pathname = usePathname();
+  const isWidgetRoute = pathname?.startsWith("/widget") ?? false;
   const { data: session, isPending } = useSession();
+  const sessionUserId = session?.user?.id;
   const initializedRef = useRef(false);
   const refreshTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!TEST_WIDGET_PROJECT_ID) return;
-    if (pathname?.startsWith("/widget")) return;
+    if (isWidgetRoute) return;
     if (typeof window === "undefined") return;
 
     window.$featulq = window.$featulq || [];
@@ -49,7 +51,7 @@ export default function WidgetTestEmbed() {
       const script = document.createElement("script");
       script.async = true;
       script.src = `${window.location.origin}/widget/sdk/v1.js${
-        process.env.NODE_ENV === "development" ? `?local=${Date.now()}` : ""
+        process.env.NODE_ENV === "development" ? `?local=${Date.now()}` : "?rev=2"
       }`;
       script.dataset.featulWidget = "true";
       document.head.appendChild(script);
@@ -58,16 +60,16 @@ export default function WidgetTestEmbed() {
     if (!initializedRef.current) {
       window.featul?.init(TEST_WIDGET_PROJECT_ID, {
         widget: true,
-        theme: "dark",
+        theme: "auto",
         position: "right",
       });
       initializedRef.current = true;
     }
-  }, [pathname]);
+  }, [isWidgetRoute]);
 
   useEffect(() => {
     if (!TEST_WIDGET_PROJECT_ID) return;
-    if (pathname?.startsWith("/widget")) return;
+    if (isWidgetRoute) return;
     if (typeof window === "undefined") return;
     if (isPending) return;
 
@@ -87,7 +89,7 @@ export default function WidgetTestEmbed() {
     const refreshIdentity = async () => {
       clearRefreshTimer();
       try {
-        if (!session?.user) {
+        if (!sessionUserId) {
           applyIdentity(null);
           return;
         }
@@ -99,6 +101,7 @@ export default function WidgetTestEmbed() {
         const response = await identityClient.$get({
           projectId: TEST_WIDGET_PROJECT_ID,
         });
+        if (canceled) return;
         if (!response.ok) {
           applyIdentity(null);
           return;
@@ -137,9 +140,9 @@ export default function WidgetTestEmbed() {
       clearRefreshTimer();
       window.featul?.off("ready", onReady);
     };
-  }, [isPending, pathname, session?.user?.id]);
+  }, [isPending, isWidgetRoute, sessionUserId]);
 
-  if (pathname?.startsWith("/widget")) return null;
+  if (isWidgetRoute) return null;
 
   return <WidgetHostImageDialog />;
 }

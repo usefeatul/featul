@@ -1,11 +1,21 @@
 "use client";
 
+import { ShortcutKey } from "./keys";
+
 import React from "react";
-import { ArrowBigUp } from "lucide-react";
-import { SearchIcon } from "@featul/ui/icons/search";
-import { LoaderIcon } from "@featul/ui/icons/loader";
-import { CommentsIcon } from "@featul/ui/icons/comments";
+import {
+  ArrowBigUp,
+  SearchIcon,
+  CommentsIcon,
+  LoaderIcon,
+} from "@/components/global/icons";
+
 import { Button } from "@featul/ui/components/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@featul/ui/components/tooltip";
 import {
   CommandDialog,
   CommandInput,
@@ -22,6 +32,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@featul/ui/lib/utils";
 import { filterToolbarButtonClass } from "@/utils/filter/toolbar";
 import StatusIcon from "@/components/requests/StatusIcon";
+import { requestBadgeClass } from "@/components/requests/styles";
 
 export type WorkspaceSearchResult = {
   id: string;
@@ -44,13 +55,14 @@ type WorkspaceSearchActionProps = {
   showShortcut?: boolean;
   showNoResults?: boolean;
   compact?: boolean;
+  publicOnly?: boolean;
   onSearchSubmit: (value: string) => void;
   onResultSelect: (result: WorkspaceSearchResult) => void;
   onClearSearch?: () => void;
 };
 
-const MIN_QUERY_LENGTH = 2;
-const DEBOUNCE_MS = 300;
+const MIN_QUERY_LENGTH = 3;
+const DEBOUNCE_MS = 150;
 
 function SearchResultItem({
   result,
@@ -65,34 +77,50 @@ function SearchResultItem({
     <>
       <StatusIcon
         status={status}
-        className="size-[18px] shrink-0 self-center text-foreground/80"
+        className="size-4 shrink-0 text-foreground/80"
       />
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-foreground">
-          <HighlightMatch text={result.title} query={query} />
-        </p>
+      <p
+        className="min-w-0 flex-1 truncate text-sm font-medium leading-5 text-foreground"
+        title={result.title}
+      >
+        <HighlightMatch text={result.title} query={query} />
+      </p>
+      <div className="flex shrink-0 items-center gap-1.5 tabular-nums">
+        <span
+          className={cn(requestBadgeClass, "gap-1 text-muted-foreground/70")}
+          title={`${result.upvotes ?? 0} upvotes`}
+        >
+          <ArrowBigUp className="size-3" aria-hidden />
+          <span>{result.upvotes ?? 0}</span>
+        </span>
+        <span
+          className={cn(requestBadgeClass, "gap-1 text-muted-foreground/70")}
+          title={`${result.commentCount ?? 0} comments`}
+        >
+          <CommentsIcon className="size-3" aria-hidden />
+          <span>{result.commentCount ?? 0}</span>
+        </span>
         {result.boardName ? (
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">
-            {result.boardName}
-          </p>
+          <span
+            className={cn(requestBadgeClass, "hidden max-w-20 sm:inline-flex")}
+            title={result.boardName}
+          >
+            <span
+              className="size-1.5 shrink-0 rounded-full bg-primary"
+              aria-hidden
+            />
+            <span className="truncate uppercase tracking-wide">
+              {result.boardName}
+            </span>
+          </span>
         ) : null}
-      </div>
-      <div className="flex shrink-0 items-center gap-3 self-center text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1">
-          <ArrowBigUp className="size-3.5 opacity-70" aria-hidden />
-          <span className="tabular-nums">{result.upvotes ?? 0}</span>
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <CommentsIcon className="size-3.5 opacity-70" aria-hidden />
-          <span className="tabular-nums">{result.commentCount ?? 0}</span>
-        </span>
       </div>
     </>
   );
 }
 
 function useIsMac() {
-  const [isMac, setIsMac] = React.useState(false);
+  const [isMac, setIsMac] = React.useState<boolean | null>(null);
 
   React.useEffect(() => {
     setIsMac(/Mac|iPhone|iPad|iPod/i.test(navigator.userAgent));
@@ -164,6 +192,7 @@ export function WorkspaceSearchAction({
   showShortcut = false,
   showNoResults = false,
   compact = false,
+  publicOnly = false,
   onSearchSubmit,
   onResultSelect,
   onClearSearch,
@@ -228,16 +257,19 @@ export function WorkspaceSearchAction({
     });
   }, [open]);
 
-  const hasQuery = debouncedQuery.length >= MIN_QUERY_LENGTH;
+  const hasQuery =
+    value.trim().length >= MIN_QUERY_LENGTH &&
+    debouncedQuery.length >= MIN_QUERY_LENGTH;
   const isDebouncing = value.trim() !== debouncedQuery;
 
   const { data: results = [], isFetching } = useQuery({
-    queryKey: ["search", workspaceSlug, debouncedQuery],
+    queryKey: ["search", workspaceSlug, debouncedQuery, publicOnly],
     enabled: open && hasQuery,
     queryFn: async () => {
       const res = await client.board.searchPostsByWorkspaceSlug.$get({
         slug: workspaceSlug,
         q: debouncedQuery,
+        publicOnly,
       });
       const data = await res.json();
       return (data?.posts || []) as WorkspaceSearchResult[];
@@ -245,9 +277,10 @@ export function WorkspaceSearchAction({
     staleTime: 10_000,
   });
 
-  const isSearching = isDebouncing || isFetching;
+  const isSearching =
+    value.trim().length >= MIN_QUERY_LENGTH && (isDebouncing || isFetching);
   const trimmedValue = value.trim();
-  const canSubmit = trimmedValue.length > 0;
+  const canSubmit = trimmedValue.length >= MIN_QUERY_LENGTH;
   const canClear = trimmedValue.length > 0 || currentSearch.length > 0;
 
   const handleSubmit = () => {
@@ -277,63 +310,97 @@ export function WorkspaceSearchAction({
 
   const isMac = useIsMac();
   const platformKey = isMac ? "⌘" : "Ctrl";
+  const searchLabel = isMac === null ? "Search" : `Search (${platformKey}K)`;
   const enterKey = isMac ? "Return" : "Enter";
   const escKey = "Esc";
   const isSearchActive = Boolean(currentSearch.trim());
 
   return (
     <>
-      <Button
-        ref={buttonRef}
-        type="button"
-        variant={buttonVariant}
-        size="icon-sm"
-        aria-label={`Search (${platformKey}K)`}
-        title={`Search (${platformKey}K)`}
-        aria-pressed={isSearchActive}
-        className={cn(
-          filterToolbarButtonClass(isSearchActive && !compact, className),
-          compact &&
-            "group border-0 bg-transparent text-neutral-400 shadow-none ring-0 before:hidden hover:bg-muted/60 hover:text-primary dark:bg-transparent dark:text-neutral-300 dark:hover:bg-white/[0.05] dark:hover:text-primary",
-        )}
-        onClick={() => setOpen(true)}
-      >
-        <SearchIcon
-          className={cn(
-            "size-4",
-            compact && "size-5 transition-colors duration-200",
-          )}
-          size={compact ? 20 : 16}
-        />
-        {showLabel ? (
+      <Tooltip open={compact && !open ? undefined : false}>
+        <TooltipTrigger asChild>
+          <Button
+            ref={buttonRef}
+            type="button"
+            variant={buttonVariant}
+            size="icon-sm"
+            aria-label={searchLabel}
+            title={compact ? undefined : searchLabel}
+            aria-pressed={isSearchActive}
+            className={cn(
+              filterToolbarButtonClass(isSearchActive && !compact),
+              compact &&
+                "group border-0 bg-transparent text-neutral-400 shadow-none ring-0 before:hidden hover:bg-muted/60 hover:text-primary dark:bg-transparent dark:text-neutral-300 dark:hover:bg-white/[0.05] dark:hover:text-primary",
+              className,
+            )}
+            onClick={() => setOpen(true)}
+          >
+            <SearchIcon
+              className={cn(
+                "size-4",
+                compact && "size-5 transition-colors duration-200",
+              )}
+              size={compact ? 20 : 16}
+            />
+            {showLabel ? (
+              <span
+                className={cn(
+                  "min-w-0 truncate text-left font-normal",
+                  currentSearch ? "text-foreground" : "text-muted-foreground",
+                )}
+              >
+                {currentSearch || placeholder}
+              </span>
+            ) : null}
+            {showShortcut ? (
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "ml-auto inline-flex shrink-0 items-center gap-1",
+                  isMac === null && "invisible",
+                )}
+              >
+                {[platformKey, "K"].map((key) => (
+                  <ShortcutKey
+                    key={key}
+                    className="bg-muted text-muted-foreground dark:bg-black/30 dark:text-muted-foreground"
+                  >
+                    {key}
+                  </ShortcutKey>
+                ))}
+              </span>
+            ) : null}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent
+          side="right"
+          sideOffset={10}
+          className="flex items-center gap-2 text-xs"
+        >
+          <span>Search</span>
           <span
             className={cn(
-              "min-w-0 truncate text-left font-normal",
-              currentSearch ? "text-foreground" : "text-muted-foreground",
+              "flex items-center gap-1",
+              isMac === null && "invisible",
             )}
-          >
-            {currentSearch || placeholder}
-          </span>
-        ) : null}
-        {showShortcut ? (
-          <kbd
             aria-hidden="true"
-            className="ml-auto inline-flex shrink-0 items-center gap-0.5 rounded border border-border/50 px-1 py-0.5 font-sans text-[10px] leading-none text-accent"
           >
-            <span>{platformKey}</span>
-            <span>K</span>
-          </kbd>
-        ) : null}
-      </Button>
+            <ShortcutKey>{platformKey}</ShortcutKey>
+            <ShortcutKey>K</ShortcutKey>
+          </span>
+        </TooltipContent>
+      </Tooltip>
 
       <CommandDialog
         open={open}
         onOpenChange={handleOpenChange}
         title="Search"
-        width="wide"
+        shouldFilter={false}
+        contentClassName="px-0"
+        width="search"
         icon={<SearchIcon className="size-3.5 opacity-80" />}
         footer={
-          <div className="flex items-center justify-between bg-muted/25 px-4 py-2.5 text-sm text-muted-foreground">
+          <div className="flex items-center justify-between border-t border-foreground/10 bg-sidebar px-4 py-2.5 text-sm text-muted-foreground">
             <span>
               {currentSearch ? (
                 <>
@@ -357,7 +424,8 @@ export function WorkspaceSearchAction({
           onValueChange={setValue}
           placeholder={placeholder}
           aria-label={placeholder}
-          className="text-sm"
+          wrapperClassName="px-6 [&>svg]:size-4"
+          className="px-0 text-sm"
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               event.preventDefault();
@@ -369,7 +437,7 @@ export function WorkspaceSearchAction({
             }
           }}
         />
-        <CommandList className="max-h-[min(50vh,360px)]">
+        <CommandList className="scrollbar-hide max-h-[min(55vh,400px)]">
           <CommandEmpty />
           {!hasQuery && !isSearching ? (
             <SearchStatusMessage variant="placeholder">
@@ -378,15 +446,12 @@ export function WorkspaceSearchAction({
           ) : null}
           {isSearching ? (
             <SearchStatusMessage>
-              <LoaderIcon
-                className="size-4 animate-spin opacity-70"
-                size={16}
-              />
+              <LoaderIcon className="size-4 opacity-70" size={16} />
               Searching…
             </SearchStatusMessage>
           ) : null}
           {!isSearching && hasQuery && results.length > 0 ? (
-            <CommandGroup className="gap-0.5 px-1 py-1">
+            <CommandGroup className="py-1">
               {results.map((result) => (
                 <CommandItem
                   key={result.id}
@@ -395,7 +460,7 @@ export function WorkspaceSearchAction({
                     setOpen(false);
                     onResultSelect(result);
                   }}
-                  className="my-0.5 items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-muted/40 aria-selected:bg-muted/70 aria-selected:text-foreground"
+                  className="my-0 min-h-10 items-center gap-3 rounded-none border-t border-border/40 first:border-t-0 dark:border-white/6 px-6 py-2 hover:bg-muted/50 hover:text-foreground aria-selected:bg-muted/50 aria-selected:text-foreground dark:hover:bg-white/[0.04] dark:aria-selected:bg-white/[0.04]"
                 >
                   <SearchResultItem result={result} query={debouncedQuery} />
                 </CommandItem>
@@ -409,8 +474,10 @@ export function WorkspaceSearchAction({
           ) : null}
           {canSubmit && !isSearching ? (
             <>
-              {hasQuery && results.length > 0 ? <CommandSeparator /> : null}
-              <CommandGroup>
+              {hasQuery && results.length > 0 ? (
+                <CommandSeparator className="mx-0 bg-foreground/10" />
+              ) : null}
+              <CommandGroup className="px-2">
                 <CommandItem onSelect={handleSubmit} className="text-primary">
                   <SearchIcon className="size-3.5 opacity-70" size={14} />
                   <span>View all results for &ldquo;{trimmedValue}&rdquo;</span>

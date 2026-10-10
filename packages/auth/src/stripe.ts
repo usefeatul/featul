@@ -24,6 +24,8 @@ export function getStripeClient() {
 
   stripeClient = new Stripe(stripeSecretKey, {
     apiVersion: STRIPE_API_VERSION,
+    timeout: 10_000,
+    maxNetworkRetries: 1,
   })
 
   return stripeClient

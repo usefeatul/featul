@@ -3,9 +3,8 @@
 import { useCallback, useRef, useState } from "react";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
-import { ImageIcon } from "@featul/ui/icons/image";
-import { LoaderIcon } from "@featul/ui/icons/loader";
-import { X } from "lucide-react";
+import { ImageIcon, X, LoaderIcon } from "@/components/global/icons";
+
 import { toast } from "sonner";
 import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload/policy";
 import { uploadFileToSignedUrl } from "@/lib/upload";
@@ -103,7 +102,7 @@ export function CoverImageUploader({
                 ) : (
                     <span className="flex flex-col items-center gap-2 px-6 text-center">
                         {isUploading ? (
-                            <LoaderIcon className="size-5 animate-spin text-muted-foreground" />
+                            <LoaderIcon className="size-5 text-muted-foreground" />
                         ) : (
                             <span className="flex size-9 items-center justify-center rounded-lg bg-black/5 text-muted-foreground dark:bg-white/[0.06]">
                                 <ImageIcon className="size-4" />

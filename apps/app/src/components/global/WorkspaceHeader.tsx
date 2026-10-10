@@ -6,13 +6,16 @@ import { Button } from "@featul/ui/components/button";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 
 import { Switch } from "@featul/ui/components/switch";
-import { ChevronLeftIcon } from "@featul/ui/icons/chevron-left";
+import {
+  ChevronLeftIcon,
+  Plus,
+} from "@/components/global/icons";
 import { SECTIONS, WORKSPACE_TITLES, getSectionMeta } from "@/config/sections";
 import { getAccountSectionMeta } from "@/config/account/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
 import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
 import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
-import { Plus } from "lucide-react";
+
 import {
   useEditorHeaderActionsOptional,
   type EditorAction,
@@ -212,7 +215,7 @@ export default function WorkspaceHeader({
   if (isCompactListHeader) {
     const changelogTitle = editorTitle?.trim() || "Untitled changelog";
     return (
-      <header className="relative z-20 shrink-0 bg-background px-4 sm:px-6">
+      <header className="relative z-40 shrink-0 bg-background px-4 sm:px-6">
         <div className="flex min-h-12 min-w-0 items-center justify-between gap-2 sm:gap-3">
           {embeddedInEditor && showChangelogEditActions ? (
             <nav aria-label="Changelog navigation" className="min-w-0 flex-1">
@@ -239,7 +242,7 @@ export default function WorkspaceHeader({
               </ol>
             </nav>
           ) : (
-            <h1 className="min-w-0 flex-1 truncate text-sm font-medium">
+            <h1 className="min-w-0 shrink-0 truncate text-sm font-medium">
               {title}
             </h1>
           )}
@@ -253,7 +256,7 @@ export default function WorkspaceHeader({
   }
 
   return (
-    <header className="relative z-20 shrink-0 bg-background">
+    <header className="relative z-40 shrink-0 bg-background">
       <div className="flex min-h-12 items-center gap-2 px-4 text-sm sm:px-6">
         <Link
           href={`/workspaces/${workspaceSlug}`}
@@ -290,8 +293,7 @@ export default function WorkspaceHeader({
             className={cn(
               "flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2",
               !showPageHeading && "mb-5",
-              (isSettingsSection || isAccountSection) &&
-                "mx-auto w-full max-w-4xl",
+              (isSettingsSection || isAccountSection) && "mx-auto w-full max-w-5xl",
             )}
           >
             {showFilterSummary ? (

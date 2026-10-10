@@ -13,6 +13,7 @@ import {
   resolveSearchParams,
 } from "@/utils/search/params"
 import type { RequestItemData } from "@/types/request"
+import { parseRoadmapStatusFilter } from "@/utils/subdomain/status"
 
 export const revalidate = 0
 export const dynamic = "force-dynamic"
@@ -28,7 +29,7 @@ export default async function SitePage({
   searchParams,
 }: {
   params: Promise<{ subdomain: string; slug: string }>
-  searchParams: Promise<{ page?: string; board?: string; order?: "newest" | "oldest" | "likes"; search?: string }>
+  searchParams: Promise<{ page?: string; board?: string; status?: string; order?: "newest" | "oldest" | "likes"; search?: string }>
 }) {
   const { subdomain, slug } = await params
   const sp = (await resolveSearchParams(searchParams)) ?? {}
@@ -45,8 +46,10 @@ export default async function SitePage({
   const boardSlug = sp.board || undefined
   const order = parseSortOrderParam(sp.order, "likes")
   const search = (sp.search || "").trim()
+  const statuses = parseRoadmapStatusFilter(sp.status)
 
   const rows = await getWorkspacePosts(slug, {
+    statuses,
     order,
     limit: PAGE_SIZE,
     offset,
@@ -65,6 +68,7 @@ export default async function SitePage({
   )
 
   const totalCount = await getWorkspacePostsCount(slug, {
+    statuses,
     boardSlugs: search ? undefined : boardSlug ? [boardSlug] : undefined,
     search: search || undefined,
     publicOnly: true,

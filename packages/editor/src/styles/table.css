@@ -1,4 +1,26 @@
 .ProseMirror {
+  .tableScroll {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    margin-block: 1.25rem;
+  }
+
+  .tableScroll:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .tableScroll > table {
+    margin-block: 0;
+  }
+
+  .tableScroll table td:not(:last-child)::after,
+  .tableScroll table th:not(:last-child)::after {
+    display: none;
+  }
+
   .tableWrapper {
     margin-top: 3rem;
     margin-bottom: 3rem;

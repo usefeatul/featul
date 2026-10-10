@@ -8,8 +8,6 @@ import { serializeJsonLd } from "@/lib/security";
 import { Hero } from "@/components/home/hero";
 import Faq from "@/components/home/faq";
 import StatsSection from "@/components/home/cta";
-import Setup from "@/components/home/setup";
-import Create from "@/components/home/create";
 import Access from "@/components/home/access";
 import Integrations from "@/components/home/integrations";
 import FeaturesSection from "@/components/home/features";
@@ -30,7 +28,11 @@ export default function Home() {
   );
 
   return (
-    <main className="min-h-screen overflow-x-clip">
+    <main
+      id="home-content"
+      data-page="home"
+      className="min-h-screen overflow-x-clip"
+    >
       <HomeScrollMemory />
       <script
         id="home-faq-jsonld"
@@ -42,10 +44,8 @@ export default function Home() {
         <SectionStack>
           <ConversionHero />
           <FeaturesSection />
-          <Integrations />
-          <Setup />
-          <Create />
           <Access />
+          <Integrations />
           <Faq />
           <StatsSection />
         </SectionStack>

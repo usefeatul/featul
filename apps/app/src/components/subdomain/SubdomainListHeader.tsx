@@ -35,9 +35,10 @@ export function SubdomainListHeader({
 
   return (
     <div className={cn("mb-4", className)}>
-      {title ? (
-        <div className={cn(showUp, "items-center mb-5", align)}>
-          <h1 className="text-lg font-semibold">{title}</h1>
+      {title || desktopSecondary ? (
+        <div className={cn(showUp, "min-h-10 min-w-0 items-center gap-3", title ? "justify-between" : align)}>
+          {title ? <h1 className="text-lg font-semibold">{title}</h1> : null}
+          {desktopSecondary}
         </div>
       ) : null}
 
@@ -76,9 +77,6 @@ export function SubdomainListHeader({
         ) : null}
       </div>
 
-      {desktopSecondary ? (
-        <div className={cn(showUp, "items-center", align)}>{desktopSecondary}</div>
-      ) : null}
     </div>
   )
 }

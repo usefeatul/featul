@@ -7,6 +7,7 @@ import { useDomainBranding } from "./DomainBrandingProvider";
 import type { SubdomainRequestDetailData } from "../../types/subdomain";
 import { RequestHeader } from "./request/RequestHeader";
 import { RequestContent } from "./request/RequestContent";
+import { subdomainColumns } from "./layout";
 
 export default function SubdomainRequestDetail({
   post,
@@ -28,16 +29,12 @@ export default function SubdomainRequestDetail({
   const { sidebarPosition = "right" } = useDomainBranding();
 
   return (
-    <section className="mt-4 md:mt-6 mb-12">
+    <section className="min-w-0 mb-12">
       <RequestHeader sidebarPosition={sidebarPosition} backLink={backLink} />
 
       {/* Main Content Grid */}
       <div
-        className={
-          sidebarPosition === "left"
-            ? "grid md:grid-cols-[minmax(0,0.3fr)_minmax(0,0.7fr)] gap-6"
-            : "grid md:grid-cols-[minmax(0,0.7fr)_minmax(0,0.3fr)] gap-6"
-        }
+        className={subdomainColumns(sidebarPosition)}
       >
         {/* Left Sidebar */}
         {sidebarPosition === "left" ? (

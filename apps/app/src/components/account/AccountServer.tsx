@@ -22,7 +22,7 @@ export default function AccountServer({ selectedSection, initialUser, twoFactorE
     ? selectedSection
     : defaultSection
   return (
-    <section className="mx-auto w-full max-w-4xl">
+    <section className="mx-auto w-full max-w-5xl">
       <SectionRenderer section={selected} initialUser={initialUser || undefined} twoFactorEnabled={twoFactorEnabled} initialSessions={initialSessions} initialAccounts={initialAccounts} initialPasskeys={initialPasskeys} />
     </section>
   )

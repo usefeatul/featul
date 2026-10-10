@@ -93,7 +93,15 @@ export async function createPostMetadata(subdomain: string, postSlug: string, pa
     .select({ title: post.title, content: post.content, image: post.image })
     .from(post)
     .innerJoin(board, eq(post.boardId, board.id))
-    .where(and(eq(board.workspaceId, ws.id), eq(post.slug, postSlug)))
+    .where(
+      and(
+        eq(board.workspaceId, ws.id),
+        eq(board.isPublic, true),
+        eq(board.isSystem, false),
+        eq(post.status, 'published'),
+        eq(post.slug, postSlug),
+      ),
+    )
     .limit(1)
 
   if (!p) return {}

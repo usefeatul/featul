@@ -3,10 +3,14 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { PopoverList, PopoverSeparator } from "@featul/ui/components/popover";
-import { EditIcon } from "@featul/ui/icons/edit";
-import { LoaderIcon } from "@featul/ui/icons/loader";
-import { TrashIcon } from "@featul/ui/icons/trash";
-import { PenIcon } from "@featul/ui/icons/pen";
+import {
+  EditIcon,
+  TrashIcon,
+  LoaderIcon,
+  ChangelogDraftIcon,
+  ChangelogPublishedIcon,
+} from "@/components/global/icons";
+
 import { useChangelogEntryActions } from "@/hooks/useChangelogEntryActions";
 import { useContextMenuPosition } from "@/hooks/useContextMenuPosition";
 import { ChangelogDeleteDialog } from "./ChangelogDeleteDialog";
@@ -70,13 +74,14 @@ export function ChangelogItemContextMenu({
               <ContextMenuItem
                 icon={
                   isPending ? (
-                    <LoaderIcon className="size-4 animate-spin" />
-                  ) : (
                     <LoaderIcon className="size-4" />
+                  ) : (
+                    <ChangelogPublishedIcon className="size-4" />
                   )
                 }
                 label="Publish"
                 onClick={publish}
+                disabled={isPending}
               />
             ) : null}
 
@@ -84,13 +89,14 @@ export function ChangelogItemContextMenu({
               <ContextMenuItem
                 icon={
                   isPending ? (
-                    <LoaderIcon className="size-4 animate-spin" />
+                    <LoaderIcon className="size-4" />
                   ) : (
-                    <PenIcon className="size-4" />
+                    <ChangelogDraftIcon className="size-4" />
                   )
                 }
                 label="Unpublish"
                 onClick={unpublish}
+                disabled={isPending}
               />
             ) : null}
 

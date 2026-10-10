@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
+import { FeatulLogoIcon } from "@/components/global/icons";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import { useDomainBranding } from "./DomainBrandingProvider"
@@ -27,7 +27,7 @@ export function PoweredBy() {
           )}
         >
           <span>Powered by featul</span>
-          <FeatulLogoIcon className="size-3.5 shrink-0 text-accent" size={14} />
+          <FeatulLogoIcon className="size-3.5 shrink-0" size={14} />
         </a>
       </Toolbar>
     </div>

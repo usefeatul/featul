@@ -42,13 +42,20 @@ export async function buildTrustedOrigins(request: Request): Promise<string[]> {
 export async function withCors(req: Request, res: Response): Promise<Response> {
   const origin = req.headers.get("origin") || ""
   const trusted = await isTrustedOrigin(origin)
-  if (origin && trusted) {
-    const h = new Headers(res.headers)
-    const ch = corsHeaders(origin)
-    Object.entries(ch).forEach(([k, v]) => h.set(k, v))
-    return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h })
+  const h = new Headers(res.headers)
+  if (req.headers.has("cookie") || req.headers.has("authorization")) h.set("Cache-Control", "private, no-store")
+  // This outer boundary must also remove permissive headers from inner routers.
+  for (const name of [...h.keys()]) {
+    if (name.toLowerCase().startsWith("access-control-")) h.delete(name)
   }
-  return res
+  const vary = new Set((h.get("vary") || "").split(",").map(v => v.trim()).filter(Boolean))
+  vary.add("Origin")
+  h.set("Vary", [...vary].join(", "))
+  if (origin && trusted) {
+    const ch = corsHeaders(origin)
+    Object.entries(ch).forEach(([k, v]) => { if (k !== "Vary") h.set(k, v) })
+  }
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h })
 }
 
 export const handlePreflight = async (req: Request) => {
@@ -58,5 +65,5 @@ export const handlePreflight = async (req: Request) => {
     h.set("Access-Control-Max-Age", "600")
     return new Response(null, { status: 204, headers: h })
   }
-  return new Response(null, { status: 204 })
+  return new Response(null, { status: 204, headers: { Vary: "Origin" } })
 }

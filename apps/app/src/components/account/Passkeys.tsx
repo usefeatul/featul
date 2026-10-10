@@ -5,7 +5,7 @@ import SettingsCard from "@/components/global/SettingsCard"
 import { authClient } from "@featul/auth/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { FingerprintIcon } from "lucide-react"
+import { FingerprintIcon } from "@/components/global/icons"
 
 export type PasskeyItem = {
     id: string

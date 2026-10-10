@@ -18,6 +18,8 @@ import { SubdomainListEmptyState } from "./SubdomainListEmptyState";
 import { SubdomainActiveSearchHeader } from "./SubdomainActiveSearchHeader";
 import EmptyDomainPosts from "./EmptyPosts";
 import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
+import { RoadmapStatusFilter } from "./status";
+import { parseRoadmapStatusFilter } from "@/utils/subdomain/status";
 
 type Item = RequestItemData;
 
@@ -47,13 +49,14 @@ export function MainContent({
   const search = useSearchParams();
   const boardParam = search.get("board") || undefined;
   const searchQuery = (search.get("search") || "").trim();
+  const selectedStatuses = parseRoadmapStatusFilter(search.get("status"));
   const paginationBasePath = selectedBoard ? `/board/${selectedBoard}` : "/";
   const paginationKeepParams = selectedBoard
-    ? ["order", "search"]
-    : ["board", "order", "search"];
+    ? ["order", "search", "status"]
+    : ["board", "order", "search", "status"];
   const sortKeepParams = selectedBoard
-    ? ["page", "search"]
-    : ["page", "board", "search"];
+    ? ["page", "search", "status"]
+    : ["page", "board", "search", "status"];
   const [listItems, setListItems] = React.useState<Item[]>(items || []);
   React.useEffect(() => {
     setListItems(items || []);
@@ -109,6 +112,7 @@ export function MainContent({
                 slug={slug}
                 basePath={paginationBasePath}
                 keepParams={sortKeepParams}
+                compact
               />
               <ToolbarSeparator />
               <SearchAction slug={slug} />
@@ -121,6 +125,8 @@ export function MainContent({
                 initialBoards={initialBoards}
                 selectedBoard={selectedBoard || boardParam}
               />
+              <ToolbarSeparator />
+              <RoadmapStatusFilter compact />
             </Toolbar>
           }
           desktopSecondary={
@@ -130,6 +136,8 @@ export function MainContent({
                 initialBoards={initialBoards}
                 selectedBoard={selectedBoard || boardParam}
               />
+              <ToolbarSeparator />
+              <RoadmapStatusFilter />
             </Toolbar>
           }
         />
@@ -148,6 +156,11 @@ export function MainContent({
               <SubdomainListEmptyState
                 title="No results found"
                 description="Try different keywords or clear your search."
+              />
+            ) : selectedStatuses.length > 0 ? (
+              <SubdomainListEmptyState
+                title="No posts found"
+                description="Try another roadmap status or clear the filter."
               />
             ) : (
               <EmptyDomainPosts subdomain={subdomain} slug={slug} />

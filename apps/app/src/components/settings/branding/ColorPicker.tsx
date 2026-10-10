@@ -2,7 +2,7 @@
 
 import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
-import { DropdownIcon } from "@featul/ui/icons/dropdown"
+import { DropdownIcon } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils"
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { BRANDING_COLORS } from "../../../types/colors"

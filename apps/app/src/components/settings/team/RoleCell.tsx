@@ -3,7 +3,7 @@ import { TableCell } from "@featul/ui/components/table";
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover";
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical } from "@/components/global/icons";
 import type { Member } from "../../../types/team";
 import { roleBadgeClass } from "./RoleBadge";
 

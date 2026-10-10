@@ -1,3 +1,4 @@
+import { publicBoardConditions } from "../../post/access";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { board, post } from "@featul/db";
 import { publicProcedure } from "../../jstack";
@@ -55,7 +56,7 @@ export const widgetRoadmap = publicProcedure
         and(
           eq(board.workspaceId, resolved.workspaceId),
           eq(board.isSystem, false),
-          eq(board.isPublic, true),
+          publicBoardConditions()!,
           eq(post.status, "published"),
           inArray(post.roadmapStatus, ["planned", "progress", "completed"]),
         ),

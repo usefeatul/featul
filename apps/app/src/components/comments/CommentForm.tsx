@@ -1,17 +1,21 @@
 "use client"
 
-import React, { useState, useRef } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import MentionList from "./MentionList"
 import { MentionTextarea } from "./MentionTextarea"
 import { Button } from "@featul/ui/components/button"
-import { LoaderIcon } from "@featul/ui/icons/loader"
-import { ImageIcon } from "@featul/ui/icons/image"
-import { LockIcon } from "@featul/ui/icons/lock"
+import {
+  LoaderIcon,
+  ImageIcon,
+  LockIcon,
+  XMarkIcon,
+} from "@/components/global/icons";
+
 import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip"
 import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { cn } from "@featul/ui/lib/utils"
 import ContentImage from "@/components/global/ContentImage"
-import { XMarkIcon } from "@featul/ui/icons/xmark"
+
 import { useImageUpload } from "../../hooks/useImageUpload"
 import { useMentions } from "../../hooks/useMentions"
 import { useCommentSubmit } from "../../hooks/useCommentSubmit"
@@ -21,7 +25,7 @@ interface CommentFormProps {
   postId: string
   parentId?: string
   onSuccess?: () => void
-  onCancel?: () => void
+  onBusyChange?: (busy: boolean) => void
   placeholder?: string
   autoFocus?: boolean
   buttonText?: string
@@ -35,7 +39,7 @@ export default function CommentForm({
   postId,
   parentId,
   onSuccess,
-  onCancel,
+  onBusyChange,
   placeholder = "Write a comment...",
   autoFocus = false,
   buttonText = "Comment",
@@ -88,6 +92,12 @@ export default function CommentForm({
     resetForm,
   })
 
+  const isBusy = isPending || uploadingImage
+  useEffect(() => {
+    onBusyChange?.(isBusy)
+    return () => onBusyChange?.(false)
+  }, [isBusy, onBusyChange])
+
   return (
     <form
       onSubmit={(e) =>
@@ -132,7 +142,7 @@ export default function CommentForm({
       {uploadedImage && (
         <div className="relative inline-block">
           <ContentImage
-            url={uploadedImage.url}
+            url={uploadedImage.previewUrl || uploadedImage.url}
             alt={uploadedImage.name}
             className="h-16 w-24"
           />
@@ -162,13 +172,16 @@ export default function CommentForm({
             type="button"
             size="xs"
             variant="plain"
-            className={cn(toolbarItemClass, "w-8 px-0 text-accent hover:text-foreground")}
+            className={cn(
+              toolbarItemClass,
+              "w-8 px-0 text-foreground hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/15",
+            )}
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"
           >
             {uploadingImage ? (
-              <LoaderIcon className="h-4 w-4 animate-spin" />
+              <LoaderIcon className="h-4 w-4" />
             ) : (
               <ImageIcon className="size-4" />
             )}
@@ -218,20 +231,6 @@ export default function CommentForm({
         </Toolbar>
 
         <div className="flex items-center gap-2">
-          {onCancel ? (
-            <Toolbar variant="soft" size="sm" className="w-fit">
-              <Button
-                type="button"
-                size="xs"
-                variant="plain"
-                className={cn(toolbarItemClass, "px-3")}
-                onClick={onCancel}
-                disabled={isPending || uploadingImage}
-              >
-                Cancel
-              </Button>
-            </Toolbar>
-          ) : null}
           <Button
             type="submit"
             size="xs"
@@ -242,7 +241,7 @@ export default function CommentForm({
             }
           >
             {isPending ? (
-              <LoaderIcon className="h-3 w-3 animate-spin" />
+              <LoaderIcon className="h-3 w-3" />
             ) : (
               buttonText
             )}

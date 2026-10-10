@@ -3,7 +3,7 @@
 import React from "react"
 import { useRouter, usePathname } from "next/navigation"
 import SettingsCard from "@/components/global/SettingsCard"
-import { KeyIcon } from "@featul/ui/icons/key"
+import { KeyIcon } from "@/components/global/icons"
 import TwoFactorAuth from "@/components/account/TwoFactorAuth"
 import ActiveSessions from "@/components/account/ActiveSessions"
 import type { SessionItem } from "@/types/session"

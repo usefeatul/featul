@@ -4,7 +4,7 @@ import React from "react";
 import { Label } from "@featul/ui/components/label";
 import { LoadingButton } from "@/components/global/LoadingButton";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
-import DomainIcon from "@featul/ui/icons/domain";
+import { DomainIcon } from "@/components/global/icons";
 import { isDomainValid, suggestDomainFix } from "@/lib/validators";
 import { hostFromDomain } from "@/utils/domain";
 import DomainHostField from "./DomainHostField";

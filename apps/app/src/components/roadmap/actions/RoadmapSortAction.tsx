@@ -8,7 +8,7 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { ArrowUpDownIcon } from "@featul/ui/icons/arrow-up-down";
+import { ArrowUpDownIcon } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { getSlugFromPath } from "@/config/nav";

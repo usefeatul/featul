@@ -3,8 +3,11 @@
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { useReducedMotion } from "framer-motion";
-import { MoveVerticalIcon } from "@featul/ui/icons/vertical";
-import { FillPlusIcon } from "@featul/ui/icons/fill-plus";
+import {
+  MoveVerticalIcon,
+  PlusIcon as FillPlusIcon,
+} from "@/components/global/icons";
+
 import { Button } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
 import StatusIcon from "@/components/requests/StatusIcon";
@@ -62,10 +65,8 @@ export default function RoadmapColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex h-full min-h-0 w-full flex-col overflow-hidden text-foreground transition-colors duration-200",
-        collapsed
-          ? "rounded-lg bg-card dark:bg-[#232323]"
-          : "bg-transparent",
+        "flex max-h-full min-h-0 w-full flex-col overflow-hidden rounded-lg bg-muted/55 text-foreground transition-colors duration-200 dark:bg-black/25",
+        collapsed && "h-full",
         isOver && "bg-green-500/[0.025]",
       )}
     >
@@ -168,7 +169,7 @@ export default function RoadmapColumn({
         inert={!!collapsed}
       >
         <div className="flex h-full min-h-0 flex-col overflow-hidden">
-          <ul className="scrollbar-hide min-h-0 flex-1 space-y-1.5 overflow-y-auto bg-transparent px-1.5 pb-2">
+          <ul className={cn("scrollbar-hide min-h-0 flex-1 space-y-1.5 overflow-y-auto bg-transparent px-1.5 pb-2", showContent && count === 0 && !isOver && "flex flex-col")}>
             {showContent ? children : null}
             {showContent && count === 0 && !isOver ? (
               <RoadmapEmptyColumn

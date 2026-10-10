@@ -3,10 +3,8 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { MarketingContainer, MarketingRail } from "@/components/layout/container";
-import {
-  DASHBOARD_BLUR_DATA_URL,
-  SkyDashboardFrame,
-} from "@/components/layout/sky-banner";
+import { SkyDashboardFrame } from "@/components/layout/sky-banner";
+import dashboard from "../../../public/image/dashboard.png";
 import { cn } from "@featul/ui/lib/utils";
 
 type SkyMarketingHeroProps = {
@@ -42,14 +40,11 @@ export function SkyMarketingHero({
             className={bannerClassName}
           >
             <Image
-              src="/image/dashboard.png"
+              src={dashboard}
               alt={imageAlt}
-              width={1762}
-              height={1124}
               priority
               sizes="(max-width: 1280px) 100vw, 1152px"
               placeholder="blur"
-              blurDataURL={DASHBOARD_BLUR_DATA_URL}
               className="block h-auto w-full"
             />
           </SkyDashboardFrame>

@@ -4,6 +4,7 @@ import type {
   FeatulWidgetSection,
   FeatulWidgetUser,
 } from "../index";
+import { animatePanelResize } from "./motion";
 import {
   FRAME_SOURCE,
   HOST_SOURCE,
@@ -22,11 +23,11 @@ const BUTTON_RADIUS = "12px";
 const LAUNCHER_SIZE = 40;
 const LAUNCHER_PAD = 3;
 const LAUNCHER_INNER_RADIUS = "9px";
-const PANEL_WIDTH = 396;
+const PANEL_WIDTH = 420;
 const PANEL_WIDTH_EXPANDED = 500;
 const PANEL_HEIGHT = 800;
 const PANEL_HEIGHT_EXPANDED = 880;
-const PANEL_HEIGHT_RATIO = 0.7;
+const PANEL_HEIGHT_RATIO = 0.74;
 const PANEL_HEIGHT_EXPANDED_RATIO = 0.75;
 const PANEL_EXPAND_MS = 520;
 const PANEL_EXPAND_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
@@ -64,6 +65,7 @@ type WidgetState = {
   placeTimer: number | null;
   accent: string;
   theme: "light" | "dark";
+  themeReady: boolean;
   listeners: Record<WidgetHostEvent, Set<(payload?: unknown) => void>>;
 };
 
@@ -117,6 +119,7 @@ function boot() {
     placeTimer: null,
     accent: "#4d96e8",
     theme: "dark",
+    themeReady: false,
     listeners: { ready: new Set(), open: new Set(), close: new Set() },
   };
 
@@ -187,7 +190,9 @@ function boot() {
   }
 
   function syncTheme() {
-    state.theme = resolveTheme(state.options.theme || "auto");
+    const mode = state.options.theme || "auto";
+    if (mode !== "auto" || !state.themeReady) state.theme = resolveTheme(mode);
+    if (mode !== "auto") state.themeReady = true;
     if (state.iframe) {
       state.iframe.style.background = shellBackground();
       state.iframe.style.colorScheme = state.theme;
@@ -550,9 +555,23 @@ function boot() {
     if (state.expanded === next) return;
     state.expanded = next;
     if (!state.open || state.overlay) return;
+    const previous = state.iframe?.getBoundingClientRect();
+    cancelPanelAnim();
     applyPanelRect();
     applyShellPanelRect();
     syncFrameLayout();
+    if (state.iframe && previous && !state.animating) {
+      const animation = animatePanelResize(
+        state.iframe,
+        previous,
+        getPanelRect(state.position),
+        prefersReducedMotion(),
+      );
+      state.panelAnim = animation;
+      if (animation) animation.onfinish = () => {
+        if (state.panelAnim === animation) state.panelAnim = null;
+      };
+    }
   }
 
   function setPanelOverlay(overlay: boolean) {
@@ -560,6 +579,7 @@ function boot() {
     if (state.overlay === next) return;
     state.overlay = next;
     if (!state.open) return;
+    cancelPanelAnim();
     applyPanelRect();
     applyShellPanelRect();
     setHostScrollLocked(true);
@@ -812,7 +832,7 @@ function boot() {
   }
 
   function syncButtonVisibility() {
-    setButtonHidden(state.open || state.animating);
+    setButtonHidden(!state.themeReady || state.open || state.animating);
   }
 
   function buildFrame() {
@@ -1074,11 +1094,14 @@ function boot() {
       "theme" in data.payload
     ) {
       const theme = (data.payload as { theme?: string }).theme;
-      state.theme = theme === "light" ? "light" : "dark";
+      if (theme !== "light" && theme !== "dark") return;
+      state.theme = theme;
+      state.themeReady = true;
       if (state.iframe) state.iframe.style.colorScheme = state.theme;
       if (state.shell && state.open)
         state.shell.style.background = shellBackground();
       syncLauncherTheme();
+      syncButtonVisibility();
     }
     if (data.type === "close") {
       state.expanded = false;
@@ -1160,6 +1183,7 @@ function boot() {
       state.listeners[event]?.delete(listener);
     },
     destroy() {
+      cancelPanelAnim();
       clearTimers();
       closeImageLightbox();
       setHostScrollLocked(false);
@@ -1176,6 +1200,7 @@ function boot() {
       state.lightbox = null;
       state.safeProbe = null;
       state.ready = false;
+      state.themeReady = false;
       state.open = false;
       state.expanded = false;
       state.overlay = false;

@@ -1,6 +1,6 @@
 "use client";
 
-import { FilterIcon } from "@featul/ui/icons/filter";
+import { FilterIcon } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 import {
   FILTER_ISLAND_BUTTON_HOVER_CLASS,

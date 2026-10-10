@@ -7,7 +7,12 @@ export type AiAction =
   | "summary"
   | "generateFromPosts";
 
-export type AiChatIntent = "ask" | "rewrite" | "patch" | "tags";
+export type AiChatIntent =
+  | "conversation"
+  | "ask"
+  | "rewrite"
+  | "patch"
+  | "tags";
 
 export type AiChatMessage = {
   role: "user" | "assistant";
@@ -44,7 +49,10 @@ export type ChangelogAiStreamEvent =
       summary?: string;
       title?: string;
       reply?: string;
+      selectionMarkdown?: string;
+      edits?: Array<{ before: string; after: string }>;
       suggestedTags?: string[];
+      tagNames?: string[];
     }
   | { type: "error"; message: string };
 

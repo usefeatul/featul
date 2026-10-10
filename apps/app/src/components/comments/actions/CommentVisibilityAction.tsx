@@ -2,7 +2,7 @@
 
 import React, { useTransition } from "react"
 import { PopoverListItem } from "@featul/ui/components/popover"
-import { LockIcon } from "@featul/ui/icons/lock"
+import { LockIcon } from "@/components/global/icons"
 import { client } from "@featul/api/client"
 import { toast } from "sonner"
 

@@ -275,16 +275,6 @@ export default function Invite({
       const targetSlug =
         data.workspaceSlug?.trim() || workspaceSlug?.trim() || null;
 
-      if (targetSlug) {
-        try {
-          await authClient.organization.setActive({
-            organizationSlug: targetSlug,
-          });
-        } catch {
-          // Non-blocking: redirect still succeeds even if org activation request fails.
-        }
-      }
-
       captureAnalyticsEvent(analyticsEvents.inviteAccepted, {
         workspace_name: workspaceName || null,
         workspace_slug: targetSlug,

@@ -60,11 +60,11 @@ export default function RoadmapRequestItem({
       <div className="min-h-0 flex-1 px-2.5 pt-2.5">
         <Link
           href={href}
-          className="line-clamp-2 block text-xs font-medium leading-[17px] text-foreground/95 hover:text-primary"
+          className="line-clamp-2 block text-sm font-medium leading-5 text-foreground/95 hover:text-primary"
         >
           {item.title}
         </Link>
-        <p className="mt-1 line-clamp-1 text-[10px] leading-4 text-muted-foreground">
+        <p className="mt-1 line-clamp-1 text-xs leading-4 text-muted-foreground">
           {preview}
         </p>
       </div>

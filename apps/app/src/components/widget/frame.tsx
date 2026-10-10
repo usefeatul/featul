@@ -4,7 +4,7 @@ import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { client } from "@featul/api/client";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { FeatulLogoIcon } from "@/components/global/icons";
 import { normalizeRoadmapStatus } from "@/lib/roadmap";
 import { WidgetFeedbackCompose } from "./compose";
 import { WidgetFeedbackDetail } from "./detail";
@@ -28,6 +28,7 @@ import {
 import { WidgetFeedbackList } from "./list";
 import { MessagingProvider, postToParent, readHostMessage } from "./messaging";
 import { Nav } from "./nav";
+import { WidgetPanel } from "./panel";
 import { WidgetRoadmap, type WidgetRoadmapItem } from "./roadmap";
 import {
   WidgetFeedbackListSkeleton,
@@ -150,6 +151,7 @@ export default function WidgetFrame({
   const [selectedPost, setSelectedPost] = React.useState<WidgetPost | null>(
     null,
   );
+  const [linkedPostId, setLinkedPostId] = React.useState<string | null>(null);
   const [detailReturn, setDetailReturn] = React.useState<Section | null>(null);
   const [listRefreshKey, setListRefreshKey] = React.useState(0);
   const [listVotePatch, setListVotePatch] = React.useState<{
@@ -225,6 +227,8 @@ export default function WidgetFrame({
   }, [hasBootstrap, parentOrigin]);
 
   React.useEffect(() => {
+    // The server already validated and loaded this config for the frame request.
+    if (hasBootstrap) return;
     let canceled = false;
     async function load() {
       if (!hasBootstrap) {
@@ -233,6 +237,7 @@ export default function WidgetFrame({
       }
       try {
         const res = await client.widget.config.$get(apiBase);
+        if (!res.ok) throw new Error("Could not load widget configuration");
         const data = await res.json();
         if (canceled) return;
         const next = readBootstrap(data, projectId);
@@ -484,7 +489,11 @@ export default function WidgetFrame({
   const goFeedback = (view: FeedbackView = "list") => {
     setSection("feedback");
     setFeedbackView(view);
-    if (view !== "detail") setSelectedPost(null);
+    if (view !== "detail") {
+      setSelectedPost(null);
+      setLinkedPostId(null);
+      setDetailReturn(null);
+    }
     if (view !== "compose") {
       setScreenshotUrl(null);
       setCapturingScreenshot(false);
@@ -565,10 +574,10 @@ export default function WidgetFrame({
   React.useEffect(() => {
     const prev = prevSectionRef.current;
     prevSectionRef.current = section;
-    if (prev === "changelog" && section !== "changelog") {
+    if (prev === "changelog" && section !== "changelog" && detailReturn !== "changelog") {
       setSelectedChangelogId(null);
     }
-  }, [section]);
+  }, [section, detailReturn]);
 
   React.useEffect(() => {
     if (!listVotePatch) return;
@@ -645,6 +654,7 @@ export default function WidgetFrame({
                 const next = detailReturn;
                 setDetailReturn(null);
                 setSelectedPost(null);
+                setLinkedPostId(null);
                 setFeedbackView("list");
                 setSection(next);
                 return;
@@ -713,7 +723,7 @@ export default function WidgetFrame({
 
             {!loading && !loadFailed ? (
               <>
-                <div className={section === "home" ? "flex min-h-0 flex-1 flex-col" : "hidden"}>
+                <WidgetPanel active={section === "home"}>
                   <Home
                     featuredEntry={featuredEntry}
                     homeRoadmap={homeRoadmap}
@@ -760,15 +770,9 @@ export default function WidgetFrame({
                       );
                     }}
                   />
-                </div>
+                </WidgetPanel>
 
-                <div
-                  className={
-                    section === "feedback"
-                      ? "relative flex min-h-0 flex-1 flex-col"
-                      : "hidden"
-                  }
-                >
+                <WidgetPanel active={section === "feedback"} className="relative">
                   <div
                     className={
                       feedbackView === "list"
@@ -837,9 +841,9 @@ export default function WidgetFrame({
                     </motion.div>
                   ) : null}
 
-                  {feedbackView === "detail" && selectedPost ? (
+                  {feedbackView === "detail" && (selectedPost || linkedPostId) ? (
                     <motion.div
-                      key={`feedback-detail-${selectedPost.id}`}
+                      key={`feedback-detail-${selectedPost?.id || linkedPostId}`}
                       initial={reduceMotion ? false : { opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={contentTransition}
@@ -849,7 +853,7 @@ export default function WidgetFrame({
                         apiBase={apiBase}
                         workspaceSlug={workspaceSlug}
                         accent={accent}
-                        postId={selectedPost.id}
+                        postId={selectedPost?.id || linkedPostId!}
                         initialPost={selectedPost}
                         userId={userId}
                         identity={identity}
@@ -864,15 +868,9 @@ export default function WidgetFrame({
                       />
                     </motion.div>
                   ) : null}
-                </div>
+                </WidgetPanel>
 
-                <div
-                  className={
-                    section === "roadmap"
-                      ? "flex min-h-0 flex-1 flex-col"
-                      : "hidden"
-                  }
-                >
+                <WidgetPanel active={section === "roadmap"}>
                   {!roadmapReady ? (
                     <WidgetRoadmapSkeleton />
                   ) : (
@@ -912,15 +910,9 @@ export default function WidgetFrame({
                       }}
                     />
                   )}
-                </div>
+                </WidgetPanel>
 
-                <div
-                  className={
-                    section === "changelog"
-                      ? "flex min-h-0 flex-1 flex-col"
-                      : "hidden"
-                  }
-                >
+                <WidgetPanel active={section === "changelog"}>
                   {!changelogReady ? (
                     <WidgetUpdatesSkeleton />
                   ) : (
@@ -930,9 +922,16 @@ export default function WidgetFrame({
                       selectedId={selectedChangelogId}
                       onOpen={(entry) => setSelectedChangelogId(entry.id)}
                       onBack={() => setSelectedChangelogId(null)}
+                      onOpenRelatedPost={(post) => {
+                        setSelectedPost(null);
+                        setLinkedPostId(post.id);
+                        setDetailReturn("changelog");
+                        setSection("feedback");
+                        setFeedbackView("detail");
+                      }}
                     />
                   )}
-                </div>
+                </WidgetPanel>
               </>
             ) : null}
           </div>

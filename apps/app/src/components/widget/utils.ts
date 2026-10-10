@@ -135,7 +135,7 @@ export function readErrorMessage(value: unknown, fallback: string): string {
 /** Require both signed PUT URL and public URL. Incomplete payloads return null. */
 export function readSignedUpload(
   value: unknown,
-): { uploadUrl: string; publicUrl: string } | null {
+): { uploadUrl: string; publicUrl: string; previewUrl?: string } | null {
   if (!value || typeof value !== "object") return null;
   const uploadUrl =
     "uploadUrl" in value && typeof value.uploadUrl === "string"
@@ -146,7 +146,8 @@ export function readSignedUpload(
       ? value.publicUrl
       : "";
   if (!uploadUrl || !publicUrl) return null;
-  return { uploadUrl, publicUrl };
+  const previewUrl = "previewUrl" in value && typeof value.previewUrl === "string" ? value.previewUrl : undefined;
+  return { uploadUrl, publicUrl, previewUrl };
 }
 
 /** Best-effort remote delete after the UI already dropped the image. */

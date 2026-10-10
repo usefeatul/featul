@@ -16,6 +16,11 @@ export const createEntrySchema = z.object({
   summary: z.string().max(512).optional(),
   coverImage: z.string().url().optional(),
   tags: z.array(z.string()).optional(),
+  relatedPostIds: z
+    .array(z.string().min(1))
+    .max(20)
+    .transform((ids) => [...new Set(ids)])
+    .optional(),
   status: z.enum(["draft", "published"]).optional(),
 });
 
@@ -27,6 +32,11 @@ export const updateEntrySchema = z.object({
   summary: z.string().max(512).optional().nullable(),
   coverImage: z.string().url().optional().nullable(),
   tags: z.array(z.string()).optional(),
+  relatedPostIds: z
+    .array(z.string().min(1))
+    .max(20)
+    .transform((ids) => [...new Set(ids)])
+    .optional(),
   status: z.enum(["draft", "published"]).optional(),
 });
 
@@ -38,7 +48,13 @@ export const aiChatMessageSchema = z.object({
   content: z.string().min(1).max(4000),
 });
 
-export const aiChatIntentSchema = z.enum(["ask", "rewrite", "patch", "tags"]);
+export const aiChatIntentSchema = z.enum([
+  "conversation",
+  "ask",
+  "rewrite",
+  "patch",
+  "tags",
+]);
 
 export const changelogAiStoredMessageSchema = z.object({
   id: z.string().min(1).max(128),
@@ -88,6 +104,7 @@ export const aiAssistSchema = z
     ]),
     prompt: z.string().min(1).max(2000).optional(),
     title: z.string().max(256).optional(),
+    summary: z.string().max(512).optional(),
     contentMarkdown: z.string().min(1).max(20000).optional(),
     sourcePostIds: z.array(z.string().min(1)).min(1).max(20).optional(),
     tone: aiToneSchema.optional(),
@@ -97,6 +114,8 @@ export const aiAssistSchema = z
     selectionMarkdown: z.string().min(1).max(8000).optional(),
     githubUrls: z.array(z.string().url().max(500)).max(10).optional(),
     availableTagNames: z.array(z.string().min(1).max(40)).max(30).optional(),
+    selectedTagNames: z.array(z.string().min(1).max(64)).max(30).optional(),
+    pendingTagNames: z.array(z.string().min(1).max(64)).max(4).optional(),
   })
   .superRefine((val, ctx) => {
     if ((val.action === "prompt" || val.action === "chat") && !val.prompt) {

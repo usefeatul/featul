@@ -1,10 +1,11 @@
 "use client";
 
+import { WidgetButton } from "./button";
+
 import * as React from "react";
 import { client } from "@featul/api/client";
-import { ImageIcon } from "@featul/ui/icons/image";
-import { LoaderIcon } from "@featul/ui/icons/loader";
-import { X } from "lucide-react";
+import { ImageIcon, X, LoaderIcon } from "@/components/global/icons";
+
 import { VoteIcon } from "@/components/upvote/VoteIcon";
 import { getBrowserFingerprint } from "@/utils/fingerprint";
 import type { IdentifiedUser, WidgetApiBase, WidgetComment } from "./types";
@@ -20,7 +21,7 @@ import {
 
 type CommentNode = WidgetComment & { replies: CommentNode[] };
 
-export type UploadedImage = { url: string; name: string };
+export type UploadedImage = { url: string; name: string; previewUrl?: string };
 
 export type ComposerProps = {
   draft: string;
@@ -166,7 +167,6 @@ function CommentComposer({
   canUpload,
   canSubmit,
   submitting,
-  accent,
   error,
   onSubmit,
   placeholder,
@@ -190,7 +190,7 @@ function CommentComposer({
       {uploadedImage ? (
         <div className="relative mt-2 w-fit shrink-0">
           <WidgetImage
-            url={uploadedImage.url}
+            url={uploadedImage.previewUrl || uploadedImage.url}
             alt={uploadedImage.name}
             className="h-16 w-24"
           />
@@ -211,11 +211,11 @@ function CommentComposer({
               type="button"
               onClick={onPickImage}
               disabled={uploading || Boolean(uploadedImage) || !canUpload}
-              className={`${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center text-[rgb(var(--widget-fg)/0.45)] hover:text-[rgb(var(--widget-fg))] disabled:cursor-not-allowed disabled:opacity-40`}
+              className={`${widgetToolbarItemClass} flex size-8 cursor-pointer items-center justify-center text-[rgb(var(--widget-fg))] hover:bg-[rgb(var(--widget-cta)/0.12)] hover:text-[rgb(var(--widget-cta))] disabled:cursor-not-allowed disabled:opacity-40`}
               aria-label="Add image"
             >
               {uploading ? (
-                <LoaderIcon className="size-3.5 animate-spin" />
+                <LoaderIcon className="size-3.5" />
               ) : (
                 <ImageIcon className="size-3.5" />
               )}
@@ -226,15 +226,14 @@ function CommentComposer({
           {error ? (
             <p className="truncate text-xs text-[rgb(var(--widget-fg)/0.5)]">{error}</p>
           ) : null}
-          <button
+          <WidgetButton
             type="button"
             disabled={!canSubmit}
             onClick={onSubmit}
-            className="inline-flex h-8 shrink-0 cursor-pointer items-center rounded-md px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-[rgb(var(--widget-fg)/0.12)] disabled:text-[rgb(var(--widget-fg)/0.35)] disabled:opacity-100"
-            style={{ backgroundColor: canSubmit ? accent : undefined }}
+            className="h-8 gap-1.5 px-3 text-xs font-semibold"
           >
-            {submitting ? <LoaderIcon className="size-3.5 animate-spin" /> : submitLabel}
-          </button>
+            {submitting ? <LoaderIcon className="size-3.5" /> : submitLabel}
+          </WidgetButton>
         </div>
       </div>
     </div>

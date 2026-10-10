@@ -12,7 +12,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       icons={{
-        loading: <LoaderIcon className="size-4 animate-spin" />,
+        loading: <LoaderIcon className="size-4" />,
       }}
       toastOptions={{
         unstyled: true,

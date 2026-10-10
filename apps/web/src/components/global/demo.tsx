@@ -1,9 +1,10 @@
 "use client";
 
+import { ExternalLinkIcon } from "@/components/global/icons";
+
 import Link from "next/link";
 import type { VariantProps } from "class-variance-authority";
 import { Button, type buttonVariants } from "@featul/ui/components/button";
-import { LinkIcon } from "@featul/ui/icons/link";
 import { cn } from "@featul/ui/lib/utils";
 import { LIVE_DEMO_URL } from "@/config/auth";
 
@@ -31,7 +32,7 @@ export function LiveDemo({
         data-sln-event="cta: view live demo clicked"
       >
         View live demo
-        <LinkIcon aria-hidden className="size-4" />
+        <ExternalLinkIcon aria-hidden className="size-4" />
       </Link>
     </Button>
   );

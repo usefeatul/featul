@@ -34,6 +34,7 @@ import {
   createEntrySchema,
   updateEntrySchema,
 } from "../validators/changelog";
+import { getRelatedPosts } from "../changelog/related";
 import { ACTIVITY_ACTIONS } from "../activity/actions";
 
 function extractMentionedUserIdsFromContent(content: unknown): string[] {
@@ -339,6 +340,13 @@ export function createChangelogRouter() {
     ...createChangelogAutomationProcedures(),
     ...createChangelogHistoryProcedures(),
 
+    relatedPostsSearch: privateProcedure
+      .input(z.object({ slug: bySlugSchema.shape.slug, search: z.string().max(200).optional(), ids: z.array(z.string().min(1)).max(20).optional() }))
+      .get(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        return c.superjson({ posts: await getRelatedPosts(ctx.db, ws.id, input) });
+      }),
+
     // Entry CRUD operations
     entriesCreate: privateProcedure
       .input(createEntrySchema)
@@ -372,6 +380,10 @@ export function createChangelogRouter() {
           (max) => `Changelog entries limit reached (${max})`,
         );
 
+        const relatedPostIds = input.relatedPostIds ?? [];
+        if ((await getRelatedPosts(ctx.db, ws.id, { ids: relatedPostIds })).length !== relatedPostIds.length) {
+          throw new HTTPException(400, { message: "Some related posts are unavailable in this workspace" });
+        }
         const entrySlug = toSlug(input.title) + "-" + Date.now().toString(36);
         const isPublished = input.status === "published";
 
@@ -393,6 +405,7 @@ export function createChangelogRouter() {
             authorId: ctx.session.user.id,
             status: input.status || "draft",
             tags: input.tags || [],
+            relatedPostIds,
             publishedAt: isPublished ? new Date() : null,
           })
           .returning();
@@ -486,6 +499,13 @@ export function createChangelogRouter() {
           updates.coverImage = input.coverImage || null;
         }
         if (input.tags !== undefined) updates.tags = input.tags;
+        if (input.relatedPostIds !== undefined) {
+          const posts = await getRelatedPosts(ctx.db, ws.id, { ids: input.relatedPostIds });
+          if (posts.length !== input.relatedPostIds.length) {
+            throw new HTTPException(400, { message: "Some related posts are unavailable in this workspace" });
+          }
+          updates.relatedPostIds = input.relatedPostIds;
+        }
         if (input.status !== undefined) {
           updates.status = input.status;
           if (input.status === "published" && !existing.publishedAt) {
@@ -656,6 +676,7 @@ export function createChangelogRouter() {
           isOwner = wsOwner?.ownerId === entry.authorId;
         }
 
+        const relatedPosts = await getRelatedPosts(ctx.db, ws.id, { ids: entry.relatedPostIds, publicOnly: true });
         const allTags = getChangelogTags(b.changelogTags);
         const entryTags = findTagsByIds(allTags, entry.tags);
 
@@ -666,6 +687,8 @@ export function createChangelogRouter() {
         return c.superjson({
           entry: {
             ...entry,
+            relatedPostIds: undefined,
+            relatedPosts,
             author: {
               name: entry.authorName,
               image: entry.authorImage,
@@ -939,6 +962,7 @@ export function createChangelogRouter() {
         const tagsMap = createTagsMap(allTags);
         const entriesWithTags = entries.map((e: EntryWithAuthor) => ({
           ...e,
+          relatedPostIds: undefined,
           tags: e.tags
             .map((id: string) => tagsMap.get(id))
             .filter(

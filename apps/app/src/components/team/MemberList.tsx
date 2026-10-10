@@ -32,9 +32,9 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
   const items = data
 
   return (
-    <section className="min-w-0" aria-busy={isLoading}>
+    <section className="min-w-0 has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-1 has-[[data-page-empty]]:flex-col" aria-busy={isLoading}>
       {items.length === 0 && !isLoading ? (
-        <div className="px-4 py-16 text-center sm:px-6">
+        <div data-page-empty className="flex flex-1 flex-col items-center justify-center px-4 py-12 text-center sm:px-6">
           <p className="text-sm font-medium text-foreground">No members yet</p>
           <p className="mt-1 text-xs text-accent">
             Workspace members will appear here.

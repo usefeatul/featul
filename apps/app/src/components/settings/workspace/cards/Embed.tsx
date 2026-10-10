@@ -2,7 +2,7 @@
 
 import React from "react";
 import SettingsCard from "../../../global/SettingsCard";
-import { ClipboardIcon as Clipboard } from "@featul/ui/icons/clipboard";
+import { ClipboardIcon as Clipboard } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 import { toast } from "sonner";
 
@@ -23,7 +23,7 @@ export default function EmbedCard({ workspaceId }: Props) {
     get: (_, method) => (...args) => window.$featulq.push([method, ...args])
   });
 </script>
-<script async src="${appUrl}/widget/sdk/v1.js"></script>
+<script async src="${appUrl}/widget/sdk/v1.js?rev=2"></script>
 <script>
   featul.init("${workspaceId || "YOUR_WORKSPACE_ID"}", {
     widget: true,

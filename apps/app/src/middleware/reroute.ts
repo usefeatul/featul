@@ -5,7 +5,12 @@ import { NextResponse } from "next/server";
 function rewriteTo(req: NextRequest, pathname: string) {
   const url = req.nextUrl.clone();
   url.pathname = pathname;
-  return NextResponse.rewrite(url);
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-featul-public-workspace", "1");
+
+  return NextResponse.rewrite(url, {
+    request: { headers: requestHeaders },
+  });
 }
 
 /**

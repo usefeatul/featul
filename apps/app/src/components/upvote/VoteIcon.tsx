@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowBigDown, ArrowBigUp } from "lucide-react";
+import { ArrowBigDown, ArrowBigUp } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 
 interface VoteIconProps {
@@ -26,7 +26,6 @@ export function VoteIcon({ hasVoted, direction = "up" }: VoteIconProps) {
             !hasVoted && "group-hover/vote:scale-110 transition-transform"
           )}
           fill={hasVoted ? "currentColor" : "none"}
-          strokeWidth={2}
         />
       </motion.span>
       <AnimatePresence>

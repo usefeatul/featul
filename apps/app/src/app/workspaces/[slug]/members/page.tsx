@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MembersPage({ params }: Props) {
   const { slug } = await params
   const user = await requireSignedInUser(`/workspaces/${slug}/members`)
-  const data = await getSettingsInitialData(slug, user.id)
+  const data = await getSettingsInitialData(slug, user.id, "team")
   const initialMembers = data.initialTeam?.members ?? []
 
   return (

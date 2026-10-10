@@ -18,8 +18,9 @@ export function SubdomainListEmptyState({
 }: SubdomainListEmptyStateProps) {
   return (
     <div
+      data-page-empty
       className={cn(
-        "flex flex-col items-center justify-center py-12 text-center text-muted-foreground",
+        "flex flex-1 flex-col items-center justify-center py-12 text-center text-muted-foreground",
         className
       )}
     >

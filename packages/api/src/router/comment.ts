@@ -1,3 +1,7 @@
+import { createCommentAtomically } from "../post/comments";
+import { requireImageReferenceAccess } from "../storage/delivery";
+import { toggleCommentVote } from "../post/voting";
+import { requireCommentAccess, requirePostAccess } from "../post/access";
 import { eq, and, sql, desc, or, isNull } from "drizzle-orm";
 import { j, privateProcedure, publicProcedure } from "../jstack";
 import {
@@ -173,6 +177,9 @@ export function createCommentRouter() {
       .input(listCommentsInputSchema)
       .get(async ({ ctx, input, c }) => {
         const { postId, fingerprint, surface } = input;
+        c.header("Cache-Control", "private, no-store");
+        const userId = await getSessionUserId(c.req.raw.headers);
+        await requirePostAccess(ctx.db, postId, userId, { allowUnpublishedForMembers: true });
         const [targetPost] = await ctx.db
           .select({
             postId: post.id,
@@ -196,7 +203,6 @@ export function createCommentRouter() {
           return c.superjson({ comments: [] });
         }
 
-        const userId = await getSessionUserId(c.req.raw.headers);
         const anonymousFingerprint = !userId
           ? getRequestFingerprint(c.req.raw, fingerprint)
           : null;
@@ -335,12 +341,14 @@ export function createCommentRouter() {
 
             return {
               ...row,
+              metadata: { attachments: row.metadata?.attachments, mentions: row.metadata?.mentions },
+              workspaceOwnerId: undefined,
               authorImage: row.userImage || toAvatar(avatarSeed),
               authorName: row.userName || row.authorName || "Anonymous",
               userVote: userVotes.get(row.id) || null,
               role: isOwner ? null : row.memberRole || null, // null means owner (handled separately)
               isOwner: Boolean(isOwner),
-              reportCount: row.reportCount ? Number(row.reportCount) : 0,
+              reportCount: canViewInternal && row.reportCount ? Number(row.reportCount) : 0,
             };
           },
         );
@@ -357,6 +365,7 @@ export function createCommentRouter() {
           input;
 
         const userId = await getSessionUserId(c.req.raw.headers);
+        await requirePostAccess(ctx.db, postId, userId, { allowUnpublishedForMembers: true });
 
         const [targetPost] = await ctx.db
           .select({
@@ -439,6 +448,8 @@ export function createCommentRouter() {
           targetPost.workspaceSlug,
         );
 
+        await requireImageReferenceAccess(ctx.db, (metadata?.attachments || []).map(a => a.url), userId);
+
         let resolvedIsInternal = Boolean(isInternal);
 
         // Get user info if authenticated
@@ -487,14 +498,6 @@ export function createCommentRouter() {
           depth = (parentComment.depth || 0) + 1;
           resolvedIsInternal =
             resolvedIsInternal || Boolean(parentComment.isInternal);
-
-          // Update parent comment reply count
-          await ctx.db
-            .update(comment)
-            .set({
-              replyCount: sql`${comment.replyCount} + 1`,
-            })
-            .where(eq(comment.id, parentId));
         }
 
         if (resolvedIsInternal && !canUseInternal) {
@@ -503,48 +506,32 @@ export function createCommentRouter() {
           });
         }
 
+        if (parentId) {
+          await requireCommentAccess(ctx.db, parentId, userId, { allowUnpublishedForMembers: true });
+        }
+
         const commentMetadata = {
           ...(metadata || {}),
           fingerprint: anonymousFingerprint || undefined,
         };
 
-        const [newComment] = await ctx.db
-          .insert(comment)
-          .values({
-            postId,
-            parentId: parentId || null,
-            content,
-            authorId: userId,
-            authorName,
-            authorEmail,
-            depth,
-            status: "published",
+        const { comment: newComment } = await createCommentAtomically(ctx.db, {
+          values: {
+            postId, parentId: parentId || null, content, authorId: userId,
+            authorName, authorEmail, depth, status: "published",
             isInternal: resolvedIsInternal,
-            metadata:
-              Object.keys(commentMetadata).length > 0 ? commentMetadata : null,
+            metadata: Object.keys(commentMetadata).length > 0 ? commentMetadata : null,
             isAnonymous: !userId,
-          })
-          .returning();
-
-        if (targetPost.workspaceId) {
-          await ctx.db.insert(activityLog).values({
-            workspaceId: targetPost.workspaceId,
-            userId,
-            action: ACTIVITY_ACTIONS.COMMENT_CREATED,
-            actionType: "create",
-            entity: "comment",
-            entityId: String(newComment.id),
+          },
+          reaction: { userId: userId || null, fingerprint: userId ? null : anonymousFingerprint || null },
+          activity: {
+            workspaceId: targetPost.workspaceId, userId,
+            action: ACTIVITY_ACTIONS.COMMENT_CREATED, actionType: "create", entity: "comment",
             title: targetPost.postTitle,
-            metadata: {
-              postId: newComment.postId,
-              postTitle: targetPost.postTitle,
-              roadmapStatus: targetPost.roadmapStatus,
-              parentId: newComment.parentId,
-              isAnonymous: !userId,
-              isInternal: resolvedIsInternal,
-            },
-          });
-        }
+            metadata: { postId, postTitle: targetPost.postTitle, roadmapStatus: targetPost.roadmapStatus,
+              parentId: parentId || null, isAnonymous: !userId, isInternal: resolvedIsInternal },
+          },
+        });
 
         // Parse typed or inserted @mentions against workspace members only
         try {
@@ -561,33 +548,12 @@ export function createCommentRouter() {
           }
         } catch {}
 
-        // Auto-upvote the comment by the author
-        await ctx.db.insert(commentReaction).values({
-          commentId: newComment.id,
-          userId: userId || null,
-          fingerprint: userId ? null : anonymousFingerprint || null,
-          type: "upvote",
-        });
-
-        const [finalComment] = await ctx.db
-          .update(comment)
-          .set({
-            upvotes: 1,
-          })
-          .where(eq(comment.id, newComment.id))
-          .returning();
-
-        // Update post comment count
-        await ctx.db
-          .update(post)
-          .set({
-            commentCount: sql`${post.commentCount} + 1`,
-          })
-          .where(eq(post.id, postId));
-
         return c.superjson({
           comment: {
-            ...finalComment,
+            ...newComment,
+            createdAt: newComment.createdAt.toISOString(),
+            updatedAt: newComment.updatedAt.toISOString(),
+            editedAt: newComment.editedAt?.toISOString() || null,
             hasVoted: true,
           },
         });
@@ -599,6 +565,9 @@ export function createCommentRouter() {
       .post(async ({ ctx, input, c }) => {
         const { commentId, content } = input;
         const userId = ctx.session.user.id;
+
+        const access = await requireCommentAccess(ctx.db, commentId, userId, { allowUnpublishedForMembers: true });
+        if (access.isLocked) throw new HTTPException(403, { message: "This post is locked" });
 
         // Check if comment exists and user is author
         const [existingComment] = await ctx.db
@@ -825,6 +794,7 @@ export function createCommentRouter() {
       .post(async ({ ctx, input, c }) => {
         const { commentId } = input;
         const userId = ctx.session.user.id;
+        await requireCommentAccess(ctx.db, commentId, userId, { allowUnpublishedForMembers: true });
 
         const [existingComment] = await ctx.db
           .select({
@@ -940,208 +910,11 @@ export function createCommentRouter() {
           ? getRequestFingerprint(c.req.raw, fingerprint)
           : null;
 
-        const [targetComment] = await ctx.db
-          .select({
-            id: comment.id,
-            postId: comment.postId,
-          })
-          .from(comment)
-          .where(eq(comment.id, commentId))
-          .limit(1);
-
-        if (!targetComment) {
-          throw new HTTPException(404, { message: "Comment not found" });
-        }
-
-        const [postInfo] = await ctx.db
-          .select({
-            workspaceId: workspace.id,
-            postTitle: post.title,
-            roadmapStatus: post.roadmapStatus,
-          })
-          .from(post)
-          .innerJoin(board, eq(post.boardId, board.id))
-          .innerJoin(workspace, eq(board.workspaceId, workspace.id))
-          .where(eq(post.id, targetComment.postId))
-          .limit(1);
-
-        if (!postInfo) {
-          throw new HTTPException(404, { message: "Post not found" });
-        }
-
-        // Check if user already voted
-        let existingReaction;
-
-        if (userId) {
-          [existingReaction] = await ctx.db
-            .select()
-            .from(commentReaction)
-            .where(
-              and(
-                eq(commentReaction.commentId, commentId),
-                eq(commentReaction.userId, userId),
-              ),
-            )
-            .limit(1);
-        } else if (anonymousFingerprint) {
-          // Check by fingerprint for anonymous users
-          [existingReaction] = await ctx.db
-            .select()
-            .from(commentReaction)
-            .where(
-              and(
-                eq(commentReaction.commentId, commentId),
-                isNull(commentReaction.userId),
-                eq(commentReaction.fingerprint, anonymousFingerprint),
-              ),
-            )
-            .limit(1);
-        }
-
-        if (existingReaction) {
-          if (existingReaction.type === voteType) {
-            // Remove vote (toggle off)
-            await ctx.db
-              .delete(commentReaction)
-              .where(eq(commentReaction.id, existingReaction.id));
-
-            const [updatedComment] = await ctx.db
-              .update(comment)
-              .set({
-                [voteType === "upvote" ? "upvotes" : "downvotes"]:
-                  sql`greatest(0, ${
-                    voteType === "upvote" ? comment.upvotes : comment.downvotes
-                  } - 1)`,
-              })
-              .where(eq(comment.id, commentId))
-              .returning({
-                upvotes: comment.upvotes,
-                downvotes: comment.downvotes,
-              });
-
-            if (postInfo.workspaceId) {
-              await ctx.db.insert(activityLog).values({
-                workspaceId: postInfo.workspaceId,
-                userId,
-                action: ACTIVITY_ACTIONS.COMMENT_VOTE_REMOVED,
-                actionType: "delete",
-                entity: "comment",
-                entityId: String(commentId),
-                title: postInfo.postTitle,
-                metadata: {
-                  postId: targetComment.postId,
-                  postTitle: postInfo.postTitle,
-                  roadmapStatus: postInfo.roadmapStatus,
-                  voteType,
-                  fingerprint: userId ? null : anonymousFingerprint || null,
-                },
-              });
-            }
-
-            return c.superjson({
-              upvotes: updatedComment?.upvotes || 0,
-              downvotes: updatedComment?.downvotes || 0,
-              userVote: null,
-            });
-          } else {
-            // Change vote type
-            await ctx.db
-              .update(commentReaction)
-              .set({ type: voteType })
-              .where(eq(commentReaction.id, existingReaction.id));
-
-            const [updatedComment] = await ctx.db
-              .update(comment)
-              .set({
-                [existingReaction.type === "upvote" ? "upvotes" : "downvotes"]:
-                  sql`greatest(0, ${
-                    existingReaction.type === "upvote"
-                      ? comment.upvotes
-                      : comment.downvotes
-                  } - 1)`,
-                [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${
-                  voteType === "upvote" ? comment.upvotes : comment.downvotes
-                } + 1`,
-              })
-              .where(eq(comment.id, commentId))
-              .returning({
-                upvotes: comment.upvotes,
-                downvotes: comment.downvotes,
-              });
-
-            if (postInfo.workspaceId) {
-              await ctx.db.insert(activityLog).values({
-                workspaceId: postInfo.workspaceId,
-                userId,
-                action: ACTIVITY_ACTIONS.COMMENT_VOTE_CHANGED,
-                actionType: "update",
-                entity: "comment",
-                entityId: String(commentId),
-                title: postInfo.postTitle,
-                metadata: {
-                  postId: targetComment.postId,
-                  postTitle: postInfo.postTitle,
-                  roadmapStatus: postInfo.roadmapStatus,
-                  from: existingReaction.type,
-                  to: voteType,
-                  fingerprint: userId ? null : anonymousFingerprint || null,
-                },
-              });
-            }
-
-            return c.superjson({
-              upvotes: updatedComment?.upvotes || 0,
-              downvotes: updatedComment?.downvotes || 0,
-              userVote: voteType,
-            });
-          }
-        } else {
-          // Add vote
-          await ctx.db.insert(commentReaction).values({
-            commentId,
-            userId: userId || null,
-            fingerprint: userId ? null : anonymousFingerprint || null,
-            type: voteType,
-          });
-
-          const [updatedComment] = await ctx.db
-            .update(comment)
-            .set({
-              [voteType === "upvote" ? "upvotes" : "downvotes"]: sql`${
-                voteType === "upvote" ? comment.upvotes : comment.downvotes
-              } + 1`,
-            })
-            .where(eq(comment.id, commentId))
-            .returning({
-              upvotes: comment.upvotes,
-              downvotes: comment.downvotes,
-            });
-
-          if (postInfo.workspaceId) {
-            await ctx.db.insert(activityLog).values({
-              workspaceId: postInfo.workspaceId,
-              userId,
-              action: ACTIVITY_ACTIONS.COMMENT_VOTED,
-              actionType: "create",
-              entity: "comment",
-              entityId: String(commentId),
-              title: postInfo.postTitle,
-              metadata: {
-                postId: targetComment.postId,
-                postTitle: postInfo.postTitle,
-                roadmapStatus: postInfo.roadmapStatus,
-                voteType,
-                fingerprint: userId ? null : anonymousFingerprint || null,
-              },
-            });
-          }
-
-          return c.superjson({
-            upvotes: updatedComment?.upvotes || 0,
-            downvotes: updatedComment?.downvotes || 0,
-            userVote: voteType,
-          });
-        }
+        const access = await requireCommentAccess(ctx.db, commentId, userId);
+        return c.superjson(await toggleCommentVote(ctx.db, commentId, voteType, { userId, fingerprint: anonymousFingerprint }, {
+          workspaceId: access.workspaceId, title: access.title,
+          metadata: { postId: access.postId, roadmapStatus: access.roadmapStatus, voteType },
+        }));
       }),
 
     // Report a comment

@@ -4,8 +4,8 @@ import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@featul/ui/components/button"
 import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem } from "@featul/ui/components/popover"
-import { ChevronDownIcon } from "@featul/ui/icons/chevron-down"
-import ArrowUpDownIcon from "@featul/ui/icons/arrow-up-down"
+import { ChevronDownIcon, ArrowUpDownIcon } from "@/components/global/icons";
+
 import { cn } from "@featul/ui/lib/utils"
 import { toolbarItemClass } from "@featul/ui/components/toolbar"
 
@@ -15,12 +15,14 @@ export function SortPopover({
   basePath = "/",
   keepParams = ["page", "board"],
   className,
+  compact = false,
 }: {
   slug: string
   subdomain: string
   basePath?: string
   keepParams?: string[]
   className?: string
+  compact?: boolean
 }) {
   const router = useRouter()
   const search = useSearchParams()
@@ -48,12 +50,18 @@ export function SortPopover({
         <Button
           type="button"
           variant="plain"
-          className={cn(toolbarItemClass, "h-8 justify-start gap-2 px-3", className)}
+          className={cn(
+            toolbarItemClass,
+            "h-8 justify-start gap-2 px-3",
+            compact && "w-8 justify-center px-2",
+            className,
+          )}
           aria-label="Sort"
+          title={label}
         >
           <ArrowUpDownIcon className="size-4" />
-          <span className="truncate">{label}</span>
-          <ChevronDownIcon className="size-3 ml-auto" />
+          <span className={compact ? "sr-only" : "truncate"}>{label}</span>
+          {!compact ? <ChevronDownIcon className="size-3 ml-auto" /> : null}
         </Button>
       </PopoverTrigger>
       <PopoverContent id={`popover-${subdomain}-${slug}-sort`} align="end" list className="w-fit">

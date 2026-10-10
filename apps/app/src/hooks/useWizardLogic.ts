@@ -26,7 +26,7 @@ type UseWizardLogicOptions = {
 };
 
 /** Workspace create wizard: name, slug, domain, timezone, and submit. Marks the welcome tour pending on first workspace. */
-export function useWizardLogic(options: UseWizardLogicOptions = {}) {
+export function useWizardLogic(_options: UseWizardLogicOptions = {}) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();

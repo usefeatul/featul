@@ -3,7 +3,7 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
-import { WorkspaceTimerIcon } from "@featul/ui/icons/workspace";
+import { Clock as WorkspaceTimerIcon } from "@/components/global/icons";
 import { getSlugFromPath } from "../../config/nav";
 import { formatTime12h } from "@/lib/time";
 import { friendlyTimezoneCity } from "@/lib/timezone";
