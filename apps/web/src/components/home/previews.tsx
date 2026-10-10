@@ -83,7 +83,7 @@ function FeedContent({ section, widget, extraPost }: FeedProps) {
   const posts = extraPost ? [extraPost, ...feedPosts] : feedPosts;
   if (selected && section === "Feedback")
     return (
-      <div className="h-[208px] overflow-y-auto px-4 py-3">
+      <div className="scrollbar-hide h-[208px] overflow-y-auto px-4 py-3">
         <button
           type="button"
           className={cn(
@@ -163,7 +163,7 @@ function FeedContent({ section, widget, extraPost }: FeedProps) {
       </div>
     );
   return (
-    <div className="h-[208px] overflow-y-auto overscroll-contain">
+    <div className="scrollbar-hide h-[208px] overflow-y-auto overscroll-contain">
       {widget && (
         <label className="mx-3 mb-1 flex items-center gap-2 rounded-md border border-border/40 bg-foreground/5 px-2.5 py-2 text-accent">
           <SearchIcon className="size-3.5" />
@@ -385,7 +385,7 @@ export function WidgetPreview() {
             value={content}
             onChange={(event) => setContent(event.target.value)}
             placeholder="Add more detail..."
-            className="min-h-0 flex-1 resize-none rounded-sm bg-transparent py-2 text-sm leading-5 outline-none placeholder:text-muted-foreground/60 focus-visible:ring-2 focus-visible:ring-primary"
+            className="scrollbar-hide min-h-0 flex-1 resize-none rounded-sm bg-transparent py-2 text-sm leading-5 outline-none placeholder:text-muted-foreground/60 focus-visible:ring-2 focus-visible:ring-primary"
           />
           <div className="flex justify-end pt-3">
             <Button

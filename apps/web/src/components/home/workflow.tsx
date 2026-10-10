@@ -157,7 +157,7 @@ export function SimilarPreview() {
           </p>
           <p className="mt-3 break-words text-base font-semibold">{title}</p>
           {content && (
-            <p className="mt-3 max-h-32 overflow-auto break-words text-xs leading-5 text-accent">
+            <p className="scrollbar-hide mt-3 max-h-32 overflow-auto break-words text-xs leading-5 text-accent">
               {content}
             </p>
           )}
@@ -229,10 +229,10 @@ export function SimilarPreview() {
               value={content}
               onChange={(event) => setContent(event.target.value)}
               placeholder="Add post contents"
-              className="mt-1 h-6 w-full resize-none rounded-sm bg-transparent text-xs leading-6 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="scrollbar-hide mt-1 h-6 w-full resize-none rounded-sm bg-transparent text-xs leading-6 outline-none focus-visible:ring-2 focus-visible:ring-primary"
             />
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-contain">
             {matches.length > 0 && (
               <>
                 <p className="border-t border-border/50 px-4 py-2 text-[9px] font-light uppercase tracking-wide text-accent">
@@ -390,7 +390,7 @@ export function DiscussionPreview() {
         </span>
       </div>
       <div
-        className="mt-4 max-h-28 space-y-3 overflow-y-auto overscroll-contain"
+        className="scrollbar-hide mt-4 max-h-28 space-y-3 overflow-y-auto overscroll-contain"
         aria-live="polite"
       >
         {comments
@@ -449,7 +449,7 @@ export function DiscussionPreview() {
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           maxLength={280}
-          className="h-16 w-full resize-none rounded-md border border-border/40 bg-card p-2 text-xs leading-5 outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          className="scrollbar-hide h-16 w-full resize-none rounded-md border border-border/40 bg-card p-2 text-xs leading-5 outline-none focus-visible:ring-2 focus-visible:ring-primary"
         />
         <div className="flex items-center justify-between gap-2">
           <Toolbar variant="soft" size="sm" className="w-fit">
