@@ -24,8 +24,22 @@ import {
   IconThumbUpFilled,
   IconUserFilled,
   IconWorldFilled,
+  IconEditFilled,
+  IconTagFilled,
+  IconListCheckFilled,
 } from "@tabler/icons-react";
-import { ChevronDown, GitMerge, Link2, Menu } from "lucide-react";
+import {
+  ArrowBigUp,
+  ArrowLeft,
+  Check,
+  ChevronDown,
+  GitMerge,
+  Link2,
+  Menu,
+  Undo2,
+} from "lucide-react";
+import { HomeIcon as ProductHomeIcon } from "@featul/ui/icons/home";
+import { SearchIcon as ProductSearchIcon } from "@featul/ui/icons/search";
 import {
   RoadmapIcon as ProductRoadmapIcon,
   ChangelogIcon as ProductChangelogIcon,
@@ -54,6 +68,10 @@ export const BoardIcon = marketingIcon(IconLayoutBoardFilled);
 export const RoadmapIcon = marketingIcon(ProductRoadmapIcon);
 export const ChangelogIcon = marketingIcon(ProductChangelogIcon);
 export const FeedbackIcon = marketingIcon(IconMessageFilled);
+export const HomeIcon = marketingIcon(ProductHomeIcon);
+export const EditIcon = marketingIcon(IconEditFilled);
+export const TagIcon = marketingIcon(IconTagFilled);
+export const ListFilterIcon = marketingIcon(IconListCheckFilled);
 export const CommentsIcon = FeedbackIcon;
 export const DomainIcon = marketingIcon(IconWorldFilled);
 export const LockIcon = marketingIcon(IconLockFilled);
@@ -83,3 +101,11 @@ export const MenuIcon = marketingIcon(Menu, 1.5);
 export const ChevronDownIcon = marketingIcon(ChevronDown, 1.5);
 export const MergeIcon = marketingIcon(GitMerge, 1.5);
 export const LinkIcon = marketingIcon(Link2, 1.5);
+export const SearchIcon = marketingIcon(ProductSearchIcon);
+export const ArrowLeftIcon = marketingIcon(ArrowLeft, 1.5);
+export const UndoIcon = marketingIcon(Undo2, 1.5);
+export const CheckmarkIcon = marketingIcon(Check, 1.5);
+/** Voting inherits the button color so the app's orange selected state is visible. */
+export function UpvoteIcon({ size = 18, ...props }: IconProps) {
+  return <ArrowBigUp size={size} strokeWidth={1.5} aria-hidden {...props} />;
+}

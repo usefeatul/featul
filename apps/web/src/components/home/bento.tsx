@@ -17,13 +17,9 @@ export function BentoCard({
 }) {
   return (
     <article className="group flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/80 bg-card shadow-[0_2px_4px_rgba(0,0,0,0.03),0_8px_20px_-12px_rgba(0,0,0,0.12)]">
-      <div
-        aria-hidden
-        inert
-        className="pointer-events-none relative min-h-[280px] sm:min-h-[292px]"
-      >
+      <div className="relative h-[380px] sm:h-[400px]">
         <BentoTexture tone={tone} />
-        <div className="relative flex min-h-[280px] items-center sm:min-h-[292px] justify-center px-4 py-5 motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:group-hover:-translate-y-1 sm:px-6">
+        <div className="absolute inset-0 flex items-center justify-center px-4 py-5 sm:px-5">
           {children}
         </div>
       </div>

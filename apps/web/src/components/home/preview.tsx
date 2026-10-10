@@ -1,92 +1,81 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { Heart } from "lucide-react";
-import { CommentsIcon } from "@/components/global/icons";
+import { useState, type ReactNode } from "react";
+import { UpvoteIcon, CommentsIcon } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 
-/** Decorative app previews: reveal once in view, with no motion for reduced-motion preferences. */
+export const previewControl =
+  "cursor-pointer rounded-md outline-none motion-safe:transition-colors motion-safe:duration-150 hover:bg-foreground/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
+
+/** Local interactive demonstrations, independent of workspace data. */
 export function Preview({
   children,
+  label,
   className,
 }: {
   children: ReactNode;
+  label: string;
   className?: string;
 }) {
-  const reduceMotion = useReducedMotion();
   return (
-    <motion.div
+    <div
+      role="group"
+      aria-label={label}
       data-preview
       className={cn(
-        "w-full min-w-0 rounded-xl border border-border bg-card text-foreground shadow-[0_4px_16px_-6px_rgba(0,0,0,0.16)]",
+        "w-full min-w-0 overflow-hidden rounded-xl border border-border bg-card text-foreground shadow-[0_4px_16px_-6px_rgba(0,0,0,0.16)]",
         className,
       )}
-      initial={reduceMotion ? "visible" : "hidden"}
-      animate={reduceMotion ? "visible" : undefined}
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.35 }}
-      variants={{
-        hidden: { opacity: 0, y: 16, scale: 0.98 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          transition: {
-            duration: reduceMotion ? 0 : 0.45,
-            ease: "easeOut",
-            staggerChildren: reduceMotion ? 0 : 0.14,
-            delayChildren: reduceMotion ? 0 : 0.16,
-          },
-        },
-      }}
     >
       {children}
-    </motion.div>
-  );
-}
-
-export function PreviewStep({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  const reduceMotion = useReducedMotion();
-  return (
-    <motion.div
-      className={className}
-      variants={{
-        hidden: { opacity: 0, y: reduceMotion ? 0 : 8 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: { duration: reduceMotion ? 0 : 0.35, ease: "easeOut" },
-        },
-      }}
-    >
-      {children}
-    </motion.div>
+    </div>
   );
 }
 
 export function Engagement({
   votes,
   comments,
+  title,
+  initiallyVoted = false,
 }: {
   votes: number;
   comments?: number;
+  title: string;
+  initiallyVoted?: boolean;
 }) {
+  const [voted, setVoted] = useState(initiallyVoted);
+  // The supplied total already includes the initial user's vote.
+  const count = votes + Number(voted) - Number(initiallyVoted);
   return (
-    <span className="inline-flex shrink-0 items-center gap-3 text-[11px] tabular-nums text-accent">
-      <span className="inline-flex items-center gap-1">
-        <Heart className="size-3.5" />
-        {votes}
-      </span>
+    <span className="inline-flex shrink-0 items-center gap-2 text-[11px] tabular-nums text-accent">
+      <button
+        type="button"
+        aria-label={`${voted ? "Remove upvote from" : "Upvote"} ${title}`}
+        title={voted ? "Remove upvote" : "Upvote"}
+        aria-pressed={voted}
+        onClick={() => setVoted((value) => !value)}
+        className={cn(
+          previewControl,
+          "group/vote inline-flex items-center gap-1.5 px-1.5 py-1 text-muted-foreground/70 hover:text-orange-500/80 motion-safe:transition-[color,background-color,transform] motion-safe:active:scale-95",
+          voted &&
+            "bg-orange-500/10 text-orange-500 hover:bg-orange-500/15 hover:text-orange-500",
+        )}
+      >
+        <UpvoteIcon
+          aria-hidden
+          className="size-3.5 motion-safe:transition-transform motion-safe:duration-150 motion-safe:group-hover/vote:scale-110"
+          fill={voted ? "currentColor" : "none"}
+        />
+        <span aria-live="polite" aria-atomic="true">
+          {count}
+        </span>
+      </button>
       {comments !== undefined && (
-        <span className="inline-flex items-center gap-1">
-          <CommentsIcon className="size-3.5" />
+        <span
+          className="inline-flex items-center gap-1"
+          aria-label={`${comments} comments`}
+        >
+          <CommentsIcon aria-hidden className="size-3.5" />
           {comments}
         </span>
       )}

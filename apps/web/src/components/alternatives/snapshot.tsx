@@ -2,10 +2,10 @@ import { MarketingContainer } from "@/components/layout/container";
 import {
   ALTERNATIVES_UPDATED_LABEL,
   type Alternative,
-} from "@/config/alternatives"
-import { SquareIcon } from "@featul/ui/icons/square"
-import type { FeatureSupport } from "@/config/alternatives"
-import { StatusIcon } from "./icon"
+} from "@/config/alternatives";
+import { SquareIcon } from "@featul/ui/icons/square";
+import type { FeatureSupport } from "@/config/alternatives";
+import { StatusIcon } from "./icon";
 import {
   ComparisonStatusHeader,
   ComparisonTable,
@@ -13,21 +13,21 @@ import {
   ComparisonTh,
   ComparisonThead,
   ComparisonTr,
-} from "./table"
+} from "./table";
 
-const VALUE_COLUMN_CLASS = "w-[34%] min-w-[10rem] align-top"
+const VALUE_COLUMN_CLASS = "w-[34%] min-w-[10rem] align-top";
 
 function leadingStatus(text: string): FeatureSupport | null {
-  const value = text.trim()
-  if (/^yes\b/i.test(value)) return true
-  if (/^partial\b/i.test(value)) return "partial"
-  if (/^no\b/i.test(value)) return false
-  return null
+  const value = text.trim();
+  if (/^yes\b/i.test(value)) return true;
+  if (/^partial\b/i.test(value)) return "partial";
+  if (/^no\b/i.test(value)) return false;
+  return null;
 }
 
 function SnapshotValue({ text }: { text: string }) {
-  const status = leadingStatus(text)
-  if (status == null) return text
+  const status = leadingStatus(text);
+  if (status == null) return text;
 
   return (
     <span className="inline-flex items-start gap-2">
@@ -36,11 +36,11 @@ function SnapshotValue({ text }: { text: string }) {
       </span>
       <span>{text}</span>
     </span>
-  )
+  );
 }
 
 export default function Snapshot({ alt }: { alt: Alternative }) {
-  if (!alt.snapshot?.length) return null
+  if (!alt.snapshot?.length) return null;
 
   return (
     <MarketingContainer>
@@ -70,7 +70,7 @@ export default function Snapshot({ alt }: { alt: Alternative }) {
                       layout="inline"
                     />
                   </ComparisonTh>
-                  <ComparisonTh className={VALUE_COLUMN_CLASS}>
+                  <ComparisonTh className={VALUE_COLUMN_CLASS} featured>
                     <ComparisonStatusHeader
                       name="Featul"
                       href="/"
@@ -92,7 +92,7 @@ export default function Snapshot({ alt }: { alt: Alternative }) {
                     <ComparisonTd className={VALUE_COLUMN_CLASS}>
                       <SnapshotValue text={row.competitor} />
                     </ComparisonTd>
-                    <ComparisonTd className={`${VALUE_COLUMN_CLASS} text-foreground`}>
+                    <ComparisonTd className={VALUE_COLUMN_CLASS} featured>
                       <SnapshotValue text={row.featul} />
                     </ComparisonTd>
                   </ComparisonTr>
@@ -103,5 +103,5 @@ export default function Snapshot({ alt }: { alt: Alternative }) {
         </div>
       </section>
     </MarketingContainer>
-  )
+  );
 }

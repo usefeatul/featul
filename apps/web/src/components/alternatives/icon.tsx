@@ -1,28 +1,36 @@
 import type { FeatureSupport } from "@/config/alternatives";
-import { Check, Minus, X } from "lucide-react";
+import {
+  IconSquareRoundedCheckFilled,
+  IconSquareRoundedMinusFilled,
+  IconSquareRoundedXFilled,
+} from "@tabler/icons-react";
 
 export function featureSupportLabel(value: FeatureSupport): string {
-  if (value === true) return "Yes"
-  if (value === "partial") return "Partial"
-  return "No"
+  if (value === true) return "Yes";
+  if (value === "partial") return "Partial";
+  return "No";
 }
 
 export function StatusIcon({ value }: { value: FeatureSupport }) {
-  if (value === true)
-    return (
-      <span className="inline-flex items-center justify-center size-6 rounded-md  bg-green-300">
-        <Check className="size-4 text-green-800" />
-      </span>
-    );
-  if (value === "partial")
-    return (
-      <span className="inline-flex items-center justify-center size-6 rounded-md  bg-orange-300">
-        <Minus className="size-4 text-orange-800" />
-      </span>
-    );
+  const Icon =
+    value === true
+      ? IconSquareRoundedCheckFilled
+      : value === "partial"
+        ? IconSquareRoundedMinusFilled
+        : IconSquareRoundedXFilled;
+  const color =
+    value === true
+      ? "text-emerald-600 dark:text-emerald-400"
+      : value === "partial"
+        ? "text-amber-600 dark:text-amber-400"
+        : "text-rose-600 dark:text-rose-400";
+
   return (
-    <span className="inline-flex items-center justify-center size-6 rounded-md  bg-red-400">
-      <X className="size-4 text-red-800" />
+    <span
+      className={`inline-flex size-5 shrink-0 items-center justify-center ${color}`}
+      aria-hidden
+    >
+      <Icon className="size-5" />
     </span>
   );
 }

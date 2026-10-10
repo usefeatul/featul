@@ -1,35 +1,44 @@
-import type { ReactNode } from "react"
-import Link from "next/link"
-import { OverlayCard, OverlayCardPanel } from "@/components/shared/overlay-card"
-import { AlternativeIcon } from "@featul/ui/icons/alternative"
-import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
-import { cn } from "@featul/ui/lib/utils"
-import type { FeatureSupport } from "@/config/alternatives"
-import { StatusIcon, featureSupportLabel } from "./icon"
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { AlternativeIcon } from "@featul/ui/icons/alternative";
+import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import { cn } from "@featul/ui/lib/utils";
+import type { FeatureSupport } from "@/config/alternatives";
+import { StatusIcon, featureSupportLabel } from "./icon";
 
 export function ComparisonTable({
   caption,
   children,
   minWidthClassName = "min-w-[36rem]",
 }: {
-  caption: string
-  children: ReactNode
-  minWidthClassName?: string
+  caption: string;
+  children: ReactNode;
+  minWidthClassName?: string;
 }) {
   return (
-    <OverlayCard className="h-auto w-full">
-      <OverlayCardPanel className="overflow-x-auto p-0">
-        <table className={cn("w-full border-collapse text-sm [&_tbody_tr:hover]:bg-muted/20", minWidthClassName)}>
+    <div className="w-full border border-border bg-card">
+      <div
+        className="overflow-x-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
+        role="region"
+        aria-label={caption}
+        tabIndex={0}
+      >
+        <table
+          className={cn(
+            "w-full border-collapse text-sm [&_tbody_tr]:transition-colors [&_tbody_tr]:duration-150 [&_tbody_tr:hover]:bg-muted/20 motion-reduce:[&_tbody_tr]:transition-none",
+            minWidthClassName,
+          )}
+        >
           <caption className="sr-only">{caption}</caption>
           {children}
         </table>
-      </OverlayCardPanel>
-    </OverlayCard>
-  )
+      </div>
+    </div>
+  );
 }
 
 export function ComparisonThead({ children }: { children: ReactNode }) {
-  return <thead className="border-b border-border bg-primary/20">{children}</thead>
+  return <thead className="border-b border-border">{children}</thead>;
 }
 
 export function ComparisonTh({
@@ -37,53 +46,65 @@ export function ComparisonTh({
   className,
   scope = "col",
   align = "left",
+  featured = false,
 }: {
-  children: ReactNode
-  className?: string
-  scope?: "col" | "row"
-  align?: "left" | "center"
+  children: ReactNode;
+  className?: string;
+  scope?: "col" | "row";
+  featured?: boolean;
+  align?: "left" | "center";
 }) {
   return (
     <th
       scope={scope}
+      data-featured={featured || undefined}
       className={cn(
-        "px-3 py-3 text-xs font-semibold text-foreground sm:px-4 sm:text-sm",
+        "border-l border-border/60 px-4 first:border-l-0 sm:px-6",
+        scope === "col"
+          ? "py-7 align-bottom text-xs font-medium text-accent sm:py-8 sm:text-sm"
+          : "py-5 text-xs font-medium text-foreground sm:text-sm",
         align === "center" ? "text-center" : "text-left",
         className,
       )}
     >
       {children}
     </th>
-  )
+  );
 }
 
 export function ComparisonTd({
   children,
   className,
   align = "left",
+  featured = false,
 }: {
-  children: ReactNode
-  className?: string
-  align?: "left" | "center"
+  children: ReactNode;
+  className?: string;
+  align?: "left" | "center";
+  featured?: boolean;
 }) {
   return (
     <td
+      data-featured={featured || undefined}
       className={cn(
-        "px-3 py-3 text-xs leading-6 text-accent sm:px-4 sm:text-sm",
+        "border-l border-border/60 px-4 py-5 text-xs leading-6 text-accent first:border-l-0 sm:px-6 sm:text-sm",
+        featured && "text-foreground",
         align === "center" ? "text-center" : "text-left",
         className,
       )}
     >
       {children}
     </td>
-  )
+  );
 }
 
 export function ComparisonTr({ children }: { children: ReactNode }) {
-  return <tr className="border-b border-border last:border-b-0">{children}</tr>
+  return (
+    <tr className="border-b border-border/70 last:border-b-0">{children}</tr>
+  );
 }
 
-const STATUS_COLUMN_CLASS = "w-24 min-w-24 sm:w-28 sm:min-w-28"
+const STATUS_COLUMN_CLASS = "w-28 min-w-28 sm:w-36 sm:min-w-36";
 
 export function ComparisonStatusHeader({
   name,
@@ -92,40 +113,42 @@ export function ComparisonStatusHeader({
   featured = false,
   layout = "stack",
 }: {
-  name: string
-  href?: string
-  slug?: string
-  featured?: boolean
-  layout?: "stack" | "inline"
+  name: string;
+  href?: string;
+  slug?: string;
+  featured?: boolean;
+  layout?: "stack" | "inline";
 }) {
   const mark = featured ? (
-    <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-white ring-1 ring-border/70">
-      <FeatulLogoIcon className="size-4 text-primary" size={16} />
+    <span className="flex size-8 shrink-0 items-center justify-center ">
+      <FeatulLogoIcon className="size-7 text-primary" size={28} />
     </span>
   ) : slug ? (
-    <span className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted/40 ring-1 ring-border/70">
+    <span className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md">
       <AlternativeIcon
         slug={slug}
         alt=""
-        size={28}
+        size={32}
         className="size-full object-cover"
       />
     </span>
-  ) : null
+  ) : null;
 
   const label = (
     <span
       className={cn(
-        "inline-flex gap-1.5",
+        "inline-flex gap-2.5",
         layout === "stack" ? "flex-col items-center" : "flex-row items-center",
       )}
     >
       {mark}
-      <span className={cn("leading-none", featured && "text-primary")}>{name}</span>
+      <span className="font-heading text-lg font-semibold leading-none tracking-tight text-foreground sm:text-xl">
+        {name}
+      </span>
     </span>
-  )
+  );
 
-  if (!href) return label
+  if (!href) return label;
 
   return (
     <Link
@@ -136,17 +159,17 @@ export function ComparisonStatusHeader({
     >
       {label}
     </Link>
-  )
+  );
 }
 
 export function ComparisonStatusCell({ value }: { value: FeatureSupport }) {
-  const label = featureSupportLabel(value)
+  const label = featureSupportLabel(value);
   return (
     <span className="inline-flex items-center justify-center" title={label}>
       <StatusIcon value={value} />
       <span className="sr-only">{label}</span>
     </span>
-  )
+  );
 }
 
-export { STATUS_COLUMN_CLASS }
+export { STATUS_COLUMN_CLASS };
