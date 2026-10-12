@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { authClient } from "@featul/auth/client";
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
 import { Label } from "@featul/ui/components/label";
@@ -24,8 +22,7 @@ import { useOtpVerification } from "@/hooks/useOtpVerification";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export default function ForgotPassword() {
-  const router = useRouter();
-  const { safeRedirectParam, redirect } = useAuthRedirect();
+  const { safeRedirectParam } = useAuthRedirect();
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
@@ -36,9 +33,6 @@ export default function ForgotPassword() {
   const [submitted, setSubmitted] = useState(false);
   const [step, setStep] = useState<"request" | "otp" | "password">("request");
   const styles = getAuthLayoutStyles(false);
-  const twoFactorHref = safeRedirectParam
-    ? `/auth/twofactor?redirect=${encodeURIComponent(safeRedirectParam)}`
-    : "/auth/twofactor";
   const { sendCode: sendResetCode, verifyCode: verifyOtp } = useOtpVerification({
     email,
     code,
@@ -82,32 +76,11 @@ export default function ForgotPassword() {
         toast.error(error.message || "Reset failed");
         return;
       }
-      toast.success("Password reset", { duration: 2000 });
-      await new Promise((r) => setTimeout(r, 600));
-      await authClient.signIn.email(
-        { email: email.trim(), password, callbackURL: redirect },
-        {
-          onError: (ctx) => {
-            if (ctx.error.status === 403) {
-              toast.info("Please verify your email");
-              router.push(
-                `/auth/verify?email=${encodeURIComponent(email.trim())}`
-              );
-              return;
-            }
-            setError(ctx.error.message);
-            toast.error(ctx.error.message);
-          },
-          onSuccess: (ctx) => {
-            if ((ctx as { data?: { twoFactorRedirect?: boolean } })?.data?.twoFactorRedirect) {
-              toast.info("Enter your authentication code to finish signing in");
-              router.push(twoFactorHref);
-              return;
-            }
-            setTimeout(() => toast.success("Signed in"), 400);
-            router.push(redirect);
-          },
-        }
+      toast.success("Password reset. Please sign in again.");
+      window.location.replace(
+        safeRedirectParam
+          ? `/auth/signin?redirect=${encodeURIComponent(safeRedirectParam)}`
+          : "/auth/signin"
       );
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Reset failed";

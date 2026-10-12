@@ -22,11 +22,10 @@ import {
 import { sendVerificationOtpEmail, sendWelcome } from "./email";
 import {
   createAuthEndpoint,
-  createAuthMiddleware,
   APIError,
   sessionMiddleware,
 } from "better-auth/api";
-import { getPasswordError } from "./password";
+import { passwordAuthentication } from "./credentials";
 import { getValidatedTrustedOrigins } from "./origins/trusted";
 import { setSessionCookie } from "better-auth/cookies";
 import { getAuthRateLimitStorage } from "./rate/storage";
@@ -173,11 +172,7 @@ export const auth = betterAuth({
     },
   }),
 
-  emailAndPassword: {
-    enabled: true,
-    autoSignIn: false,
-    requireEmailVerification: true,
-  },
+  ...passwordAuthentication,
 
   emailVerification: {
     sendOnSignUp: true,
@@ -287,21 +282,6 @@ export const auth = betterAuth({
         },
       },
     },
-  },
-
-  hooks: {
-    before: createAuthMiddleware(async (ctx) => {
-      const isPasswordOp =
-        ctx.path === "/sign-up/email" ||
-        ctx.path === "/change-password" ||
-        ctx.path === "/set-password";
-      if (!isPasswordOp) return;
-      const pwd = ctx.body?.password ?? ctx.body?.newPassword;
-      const msg = getPasswordError(String(pwd || ""));
-      if (msg) {
-        throw new APIError("BAD_REQUEST", { message: msg });
-      }
-    }),
   },
 });
 
