@@ -66,7 +66,7 @@ export default function ConsentProvider({ children }: ConsentProviderProps) {
       options={{
         mode: hosted({
           backendURL:
-            process.env.NEXT_PUBLIC_C15T_URL ||
+            process.env.NEXT_PUBLIC_C15T_BACKEND_URL ||
             "https://featul-daly-jean-111nte1o.inth.app/",
         }),
         consentCategories: ["necessary", "measurement", "functionality"],

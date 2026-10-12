@@ -93,7 +93,7 @@ preferences dialog and persistent **Privacy choices** control share that provide
 
 - Organization: `daly-jean-111nte1o`; project: `featul`.
 - Runtime: `https://featul-daly-jean-111nte1o.inth.app/`.
-- Public build variable: `NEXT_PUBLIC_C15T_URL`, also listed in `turbo.json`.
+- Public build variable: `NEXT_PUBLIC_C15T_BACKEND_URL`, also listed in `turbo.json`.
   The supplied project URL is the fallback. Rebuild after changing this variable.
 - Registered trusted origins supplied for setup: `*`, including local ports such
   as `localhost:3100`, production `featul.com`, and preview hosts.
