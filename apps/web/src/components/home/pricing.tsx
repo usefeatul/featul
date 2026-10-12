@@ -63,7 +63,8 @@ export function PricingPlans() {
 function PricingTitle() {
   return (
     <>
-      Pricing that grows <HeadingHighlight>with your team.</HeadingHighlight>
+      <span className="inline-block">Pricing that grows</span>{" "}
+      <HeadingHighlight>with your team.</HeadingHighlight>
     </>
   )
 }
