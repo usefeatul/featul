@@ -5,6 +5,7 @@ import { Geist_Mono, Inter_Tight } from "next/font/google";
 import { Providers } from "../components/providers/providers";
 import ConditionalThemeProvider from "@/components/global/ConditionalThemeProvider";
 import WidgetTestEmbed from "@/components/widget/embed";
+import AnalyticsConsent from "@/components/global/consent";
 import "./globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 import {
@@ -112,6 +113,7 @@ export default async function RootLayout({
         <Providers>
           <ConditionalThemeProvider publicWorkspace={isPublicWorkspace}>
             {children}
+            <AnalyticsConsent />
           </ConditionalThemeProvider>
         </Providers>
         {process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||

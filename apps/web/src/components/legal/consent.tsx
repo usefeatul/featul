@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { buttonVariants } from "@featul/ui/components/button";
 import { cn } from "@featul/ui/lib/utils";
+import { writeAnalyticsConsent } from "@featul/ui/lib/consent";
 import {
   ConsentDialog,
   type ConsentManagerOptions,
@@ -44,7 +45,14 @@ export default function MarketingConsentManager({
       options={{
         mode: "hosted",
         backendURL: "/api/c15t",
-        consentCategories: ["necessary", "marketing"],
+        consentCategories: ["necessary", "measurement", "marketing"],
+        callbacks: {
+          onConsentSet: ({ preferences }) => {
+            if (preferences.measurement !== true) writeAnalyticsConsent("denied");
+          },
+          // Only explicit saves count; initialization/region defaults cannot opt users in.
+          onConsentChanged: ({ preferences }) => writeAnalyticsConsent(preferences.measurement === true ? "granted" : "denied"),
+        },
         overrides: process.env.NODE_ENV !== "production" ? { country: "GB" } : undefined,
         theme: { slots: consentTheme },
       }}

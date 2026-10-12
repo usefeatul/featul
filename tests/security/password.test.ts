@@ -136,3 +136,23 @@ test("failed password changes and resets preserve existing sessions", async () =
     await f.expectSessions(true);
   }
 });
+
+for (const method of ["otp", "token"] as const) {
+  test(`${method} reset enforces password policy without consuming a valid recovery credential`, async () => {
+    const f = await fixture();
+    if (method === "otp") {
+      expect((await f.request("/email-otp/send-verification-otp", { email, type: "forget-password" })).status).toBe(200);
+    } else {
+      expect((await f.request("/request-password-reset", { email })).status).toBe(200);
+    }
+    const path = method === "otp" ? "/email-otp/reset-password" : "/reset-password";
+    const body = (value: string) => method === "otp"
+      ? { email, otp: f.getOtp(), password: value }
+      : { token: f.getResetToken(), newPassword: value };
+    for (const weak of ["abcdefgh", "Abcdefgh1", "short"]) {
+      expect((await f.request(path, body(weak))).status).toBe(400);
+      await f.expectSessions(true);
+    }
+    await f.expectPasswordChanged(await f.request(path, body(newPassword)));
+  });
+}

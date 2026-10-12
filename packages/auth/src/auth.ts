@@ -33,7 +33,6 @@ import { isAuthRateLimitEnabled } from "./rate/config";
 import { isWorkspaceBillingOwner } from "./billing";
 import { getStripeClient } from "./stripe";
 import { getAccountTrialCheckoutParams } from "./billing/trial";
-import { captureServerAnalyticsEvent } from "./posthog";
 
 function resolveCookieDomain() {
   const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim();
@@ -268,16 +267,10 @@ export const auth = betterAuth({
           const to = String(created.email || "");
           if (!to) return;
           const name = String(created.name || "") || undefined;
-          const userId = String(created.id || "").trim();
           try {
             await sendWelcome(to, name);
           } catch (error) {
             console.error("Failed to send welcome email", error);
-          }
-          if (userId) {
-            await captureServerAnalyticsEvent("sign_up_completed", userId, {
-              has_name: Boolean(name),
-            });
           }
         },
       },

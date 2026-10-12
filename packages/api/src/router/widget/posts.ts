@@ -1,8 +1,9 @@
+import { createPostAtomically } from "../../post/creation";
 import { requireImageReferenceAccess } from "../../storage/delivery";
 import { publicBoardConditions } from "../../post/access";
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
-import { board, post, vote, widgetUser } from "@featul/db";
+import { board, post, widgetUser } from "@featul/db";
 import { publicProcedure } from "../../jstack";
 import {
   listPostImageUrls,
@@ -236,31 +237,17 @@ export const widgetCreate = publicProcedure
     const baseMetadata = authorId
       ? { widget: true as const }
       : { fingerprint, widget: true as const };
-    const [created] = await ctx.db
-      .insert(post)
-      .values({
-        boardId: targetBoard.id,
-        title: input.title,
-        content: input.content,
-        image: imageFields.image,
-        slug: createPostSlug(input.title),
-        widgetUserId: authorId,
-        isAnonymous: !authorId,
+    const created = await createPostAtomically(ctx.db, {
+      workspaceId: resolved.workspaceId,
+      values: {
+        boardId: targetBoard.id, title: input.title, content: input.content,
+        image: imageFields.image, slug: createPostSlug(input.title),
+        widgetUserId: authorId, isAnonymous: !authorId,
         metadata: mergePostMetadata(baseMetadata, imageFields.attachments),
         roadmapStatus: "pending",
-      })
-      .returning();
-
-    await ctx.db.insert(vote).values({
-      postId: created.id,
-      widgetUserId: authorId,
-      fingerprint,
-      type: "upvote",
+      },
+      voter: { widgetUserId: authorId, fingerprint },
     });
-    await ctx.db
-      .update(post)
-      .set({ upvotes: 1 })
-      .where(eq(post.id, created.id));
 
     return c.superjson({
       post: {

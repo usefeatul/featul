@@ -47,4 +47,5 @@ export const {
   activityLog,
   workspaceIntegration,
   workspaceNotraConnection,
+  webhookDelivery,
 } = schema;

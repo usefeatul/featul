@@ -10,7 +10,7 @@ import { auth } from "@featul/auth"
 import { headers } from "next/headers"
 import { mapPermissions } from "../shared/permissions"
 import { canModerateWorkspace } from "../shared/access"
-import { triggerPostWebhooks } from "../services/webhook"
+import { createPostAtomically } from "../post/creation"
 import { notifyPostStatusChange } from "../status/notify"
 import { normalizeStatus } from "../shared/status"
 import { enforceTrustedBrowserOrigin } from "../request/origin"
@@ -188,99 +188,27 @@ export function createPostRouter() {
           ? await resolveWorkspaceTags(ctx.db, ws.id, tags)
           : { ids: [] as string[], summaries: [] as TagSummary[] }
 
-        // Create Post
-        const [newPost] = await ctx.db.insert(post).values({
-          boardId: b.id,
-          title,
-          content,
-          image: imageFields.image,
-          slug,
-          authorId: userId || null,
-          isAnonymous: !userId,
-          metadata: mergePostMetadata(
-            !userId ? { fingerprint: anonymousFingerprint } : undefined,
-            imageFields.attachments
-          ) as PostMetadata | undefined,
-          roadmapStatus: nextStatus,
-        }).returning()
-
-        const tagSummaries = resolvedTags.summaries
-
-        if (resolvedTags.ids.length > 0) {
-          await ctx.db.insert(postTag).values(
-            resolvedTags.ids.map((tagId) => ({
-              postId: newPost.id,
-              tagId,
-            }))
-          )
-        }
-
-        // Auto-upvote
-        await ctx.db.insert(vote).values({
-          postId: newPost.id,
-          userId: userId || null,
-          fingerprint: userId ? null : anonymousFingerprint || null,
-          type: 'upvote'
-        })
-
-        // Update post upvotes
-        await ctx.db.update(post).set({ upvotes: 1 }).where(eq(post.id, newPost.id))
-        await ctx.db.insert(activityLog).values({
+        const newPost = await createPostAtomically(ctx.db, {
           workspaceId: ws.id,
-          userId,
-          action: ACTIVITY_ACTIONS.POST_CREATED,
-          actionType: "create",
-          entity: "post",
-          entityId: String(newPost.id),
-          title: newPost.title,
-          metadata: {
-            boardId: b.id,
-            slug: newPost.slug,
-            roadmapStatus: newPost.roadmapStatus,
-            tagIds: resolvedTags.ids,
-            tags: tagSummaries,
-            isAnonymous: !userId,
+          values: {
+            boardId: b.id, title, content, image: imageFields.image, slug,
+            authorId: userId || null, isAnonymous: !userId,
+            metadata: mergePostMetadata(
+              !userId ? { fingerprint: anonymousFingerprint } : undefined,
+              imageFields.attachments,
+            ) as PostMetadata | undefined,
+            roadmapStatus: nextStatus,
           },
-        })
-
-        // Trigger webhook notifications (fire and forget)
-        // We need board name, workspace name, and author name for the notification
-        const [boardDetails] = await ctx.db
-          .select({ name: board.name })
-          .from(board)
-          .where(eq(board.id, b.id))
-          .limit(1)
-
-        const [wsDetails] = await ctx.db
-          .select({ name: workspace.name })
-          .from(workspace)
-          .where(eq(workspace.id, ws.id))
-          .limit(1)
-
-        // Get author name if user is logged in
-        let authorName: string | undefined
-        if (userId) {
-          const [authorDetails] = await ctx.db
-            .select({ name: user.name })
-            .from(user)
-            .where(eq(user.id, userId))
-            .limit(1)
-          authorName = authorDetails?.name || undefined
-        }
-
-        triggerPostWebhooks(ctx.db, ws.id, {
-          id: newPost.id,
-          title: newPost.title,
-          content: newPost.content,
-          slug: newPost.slug,
-          boardName: boardDetails?.name || boardSlug,
-          boardSlug,
-          workspaceName: wsDetails?.name || workspaceSlug,
-          workspaceSlug,
-          authorName,
-          status: newPost.roadmapStatus || "pending",
-          image: newPost.image,
-          createdAt: newPost.createdAt,
+          voter: { userId: userId || null, fingerprint: userId ? null : anonymousFingerprint || null },
+          tagIds: resolvedTags.ids,
+          activity: {
+            workspaceId: ws.id, userId, action: ACTIVITY_ACTIONS.POST_CREATED,
+            actionType: "create", entity: "post", title,
+            metadata: {
+              boardId: b.id, slug, roadmapStatus: nextStatus,
+              tagIds: resolvedTags.ids, tags: resolvedTags.summaries, isAnonymous: !userId,
+            },
+          },
         })
 
         return c.superjson({ post: newPost })

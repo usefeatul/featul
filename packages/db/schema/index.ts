@@ -11,3 +11,4 @@ export * from "./reservation";
 export * from "./changelog";
 export * from "./integration";
 export * from "./notra";
+export * from "./delivery";

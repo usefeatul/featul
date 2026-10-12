@@ -16,7 +16,9 @@ export const passwordAuthentication = {
       const isPasswordOp =
         ctx.path === "/sign-up/email" ||
         ctx.path === "/change-password" ||
-        ctx.path === "/set-password";
+        ctx.path === "/set-password" ||
+        ctx.path === "/reset-password" ||
+        ctx.path === "/email-otp/reset-password";
       if (!isPasswordOp) return;
       const pwd = ctx.body?.password ?? ctx.body?.newPassword;
       const msg = getPasswordError(String(pwd || ""));

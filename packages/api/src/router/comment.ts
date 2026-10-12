@@ -1,4 +1,4 @@
-import { createCommentAtomically } from "../post/comments";
+import { createCommentAtomically, deleteCommentAtomically } from "../post/comments";
 import { requireImageReferenceAccess } from "../storage/delivery";
 import { toggleCommentVote } from "../post/voting";
 import { requireCommentAccess, requirePostAccess } from "../post/access";
@@ -844,56 +844,21 @@ export function createCommentRouter() {
           });
         }
 
-        // Hard delete
-        await ctx.db.delete(comment).where(eq(comment.id, commentId));
-
-        await deleteUnreferencedImageUrls(
-          ctx.db,
-          listCommentImageUrls(existingComment.metadata),
-        );
-
-        // Recalculate post comment count
-        const [{ count }] = await ctx.db
-          .select({ count: sql<number>`count(*)` })
-          .from(comment)
-          .where(
-            and(
-              eq(comment.postId, existingComment.postId),
-              eq(comment.status, "published"),
-            ),
-          );
-
-        await ctx.db
-          .update(post)
-          .set({
-            commentCount: count,
-          })
-          .where(eq(post.id, existingComment.postId));
-
-        // Update parent reply count if this was a reply
-        if (existingComment.parentId) {
-          await ctx.db
-            .update(comment)
-            .set({
-              replyCount: sql`greatest(0, ${comment.replyCount} - 1)`,
-            })
-            .where(eq(comment.id, existingComment.parentId));
-        }
-
-        await ctx.db.insert(activityLog).values({
-          workspaceId: postInfo.workspaceId,
-          userId,
-          action: ACTIVITY_ACTIONS.COMMENT_DELETED,
-          actionType: "delete",
-          entity: "comment",
-          entityId: String(commentId),
-          title: postInfo.postTitle,
-          metadata: {
-            postId: existingComment.postId,
-            postTitle: postInfo.postTitle,
-            roadmapStatus: postInfo.roadmapStatus,
+        const deleted = await deleteCommentAtomically(ctx.db, {
+          commentId, postId: existingComment.postId, parentId: existingComment.parentId,
+          activity: {
+            workspaceId: postInfo.workspaceId, userId,
+            action: ACTIVITY_ACTIONS.COMMENT_DELETED, actionType: "delete",
+            entity: "comment", title: postInfo.postTitle,
+            metadata: {
+              postId: existingComment.postId, postTitle: postInfo.postTitle,
+              roadmapStatus: postInfo.roadmapStatus,
+            },
           },
         });
+        if (!deleted) throw new HTTPException(404, { message: "Comment not found" });
+        // Object cleanup cannot roll back content; the daily GC retries leftovers.
+        await deleteUnreferencedImageUrls(ctx.db, listCommentImageUrls(existingComment.metadata));
 
         return c.superjson({ success: true });
       }),
