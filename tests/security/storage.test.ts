@@ -4,7 +4,6 @@ import {
   protectedImageKey,
   protectedImageUrl,
 } from "../../packages/api/src/storage/protected";
-import { consentTarget } from "../../apps/web/src/lib/consent";
 import { assertWorkspaceAssetUrl } from "../../packages/api/src/storage/urls";
 
 test("content writes reject legacy public URLs after private storage cutover", () => {
@@ -36,22 +35,4 @@ test("protected image URLs use canonical, origin-bound content keys", () => {
     protectedImageUrl("workspaces/test/comments/../secret"),
   ])
     expect(protectedImageKey(value)).toBeNull();
-});
-
-test("decoded Next catch-all URL cannot switch the consent origin", async () => {
-  const { getRouteMatcher } =
-    await import("next/dist/shared/lib/router/utils/route-matcher");
-  const { getRouteRegex } =
-    await import("next/dist/shared/lib/router/utils/route-regex");
-  const match = getRouteMatcher(getRouteRegex("/api/c15t/[...path]"))(
-    "/api/c15t/https:%2F%2Fattacker.invalid%2Fcollect",
-  );
-  expect(match).toBeTruthy();
-  expect(() =>
-    consentTarget(
-      "https://consent.example",
-      (match as { path: string[] }).path,
-      "",
-    ),
-  ).toThrow();
 });

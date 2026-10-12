@@ -11,11 +11,11 @@
     "validate-seo": "bun run scripts/validate-seo.ts"
   },
   "dependencies": {
-    "@c15t/nextjs": "^2.3.0",
     "@featul/ui": "workspace:*",
     "@tabler/icons-react": "^3.49.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@tanstack/react-query": "^5.104.1",
+    "c15t": "3.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.43.0",
@@ -32,8 +32,8 @@
     "sanitize-html": "^2.18.0",
     "superjson": "^2.2.6",
     "tailwind-merge": "^3.7.0",
-    "zod": "^3.25.76",
-    "yaml": "^2.8.1"
+    "yaml": "^2.8.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260702.1",
