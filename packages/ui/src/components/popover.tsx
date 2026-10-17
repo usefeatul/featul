@@ -92,22 +92,20 @@ function PopoverListItem({
   accent?: string;
   as?: "button" | "div";
 }) {
-  const style = accent
-    ? { background: accent }
-    : { background: "var(--primary)" };
+  const accentStyle = { borderColor: accent ?? "var(--primary)" };
   return (
     <Component
       data-slot="popover-list-item"
       className={cn(
-        "relative group flex cursor-pointer items-center gap-2 rounded-none px-3 py-2 text-left whitespace-nowrap hover:bg-muted/40 dark:hover:bg-muted/30",
+        "relative group group/popover-item flex cursor-pointer items-center gap-2 rounded-none first:rounded-t-md last:rounded-b-md px-3 py-2 text-left whitespace-nowrap hover:bg-muted/40 dark:hover:bg-muted/30",
         className,
       )}
       {...(props as any)}
     >
       <span
         aria-hidden
-        className="absolute bottom-0 left-0 top-0 w-[2px] opacity-0 group-hover:opacity-100"
-        style={style}
+        className="pointer-events-none absolute inset-y-0 left-0 w-[var(--radius)] border-l-2 opacity-0 group-first/popover-item:rounded-tl-md group-first/popover-item:border-t-2 group-last/popover-item:rounded-bl-md group-last/popover-item:border-b-2 group-hover/popover-item:opacity-100 group-focus-visible/popover-item:opacity-100"
+        style={accentStyle}
       />
       {children}
     </Component>
