@@ -88,7 +88,7 @@ export function AlternativesRoundup() {
           </div>
 
           <p className="mt-4 text-xs leading-6 text-accent/80">
-            As of {ROUNDUP_UPDATED_LABEL}. Featul Starter is $24 per workspace per
+            As of {ROUNDUP_UPDATED_LABEL}. Featul Starter is £18 per workspace per
             month. Check live vendor pages before you buy.
           </p>
 

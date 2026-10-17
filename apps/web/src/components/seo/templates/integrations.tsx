@@ -54,7 +54,7 @@ export function IntegrationsTemplate({ data, relatedLinks }: Props) {
     offers: {
       "@type": "Offer",
       price: "0",
-      priceCurrency: "USD",
+      priceCurrency: "GBP",
     },
   };
 

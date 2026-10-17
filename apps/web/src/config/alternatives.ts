@@ -103,7 +103,7 @@ export const alternatives: Alternative[] = [
       {
         label: 'Pricing model',
         competitor: 'Per seat as more teammates join',
-        featul: 'Flat workspace; Starter $24/month, Professional $47/month',
+        featul: 'Flat workspace; Starter £18/month, Professional £35/month',
       },
       {
         label: 'Open source',
@@ -156,7 +156,7 @@ export const alternatives: Alternative[] = [
       {
         title: 'How much does a Featurebase alternative cost for a five-person team?',
         answer:
-          'Featul Starter is $24 per month for the workspace, with a five-member cap on that plan. Professional is $47 per month. Featurebase mostly charges per seat, so a PM, a CSM, and two engineers can push the invoice up fast. Check both live pricing pages before you treat either number as a quote.',
+          'Featul Starter is £18 per month for the workspace, with a five-member cap on that plan. Professional is £35 per month. Featurebase mostly charges per seat, so a PM, a CSM, and two engineers can push the invoice up fast. Check both live pricing pages before you treat either number as a quote.',
         body: 'The useful comparison is the pattern, not a screenshot of today’s list price. If five people need access, per-seat tools get expensive faster than a workspace cap. If one person will run the portal forever, seat cost may not be why you switch.',
       },
       {
@@ -239,7 +239,7 @@ export const alternatives: Alternative[] = [
       {
         label: 'Pricing model',
         competitor: 'Tracked users and plan tiers',
-        featul: 'Flat workspace; Starter $24/month, Professional $47/month',
+        featul: 'Flat workspace; Starter £18/month, Professional £35/month',
       },
       {
         label: 'Default hosting',

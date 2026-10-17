@@ -21,7 +21,7 @@ RESEND_FROM=Your App <billing@your-domain.example>
 
 Use separate test/live prices, API keys and webhook secrets. Keep old prices mapped until subscriptions using them have been migrated. An unrecognized price on an unfinished subscription causes synchronization to fail instead of silently granting or removing access.
 
-The billing settings display GBP: Starter is £29/month or £200/year, and Professional is £47/month or £470/year. Configure all four checkout prices in GBP and allow them in the customer portal. The release check verifies these amounts for live-mode prices; test-mode setup does not configure live billing.
+The billing settings display GBP: Starter is £18/month or £180/year, and Professional is £35/month or £350/year. These owner-approved fixed GBP prices approximate the original USD 24/240 Starter and USD 47/470 Professional amounts, rounded to simple price points. They do not update automatically with exchange rates. Configure all four checkout prices in GBP and allow them in the customer portal. The release check verifies these amounts for live-mode prices; test-mode setup does not configure live billing.
 
 The optional `STRIPE_LEGACY_PRICE_IDS_STARTER` and `STRIPE_LEGACY_PRICE_IDS_PROFESSIONAL` variables accept comma-separated price IDs for existing subscriptions. They do not change the prices offered by checkout. Verify each old price's plan in Stripe before mapping it. Locally, `.env.local` overrides `.env`; if it replaces the current prices, keep the older prices in these legacy mappings and restart the development server.
 

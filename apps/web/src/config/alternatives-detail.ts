@@ -12,7 +12,7 @@ export type CompetitorKind =
   | "linear"
 
 const FEATUL = {
-  pricing: "Flat workspace; Starter $24/month, Professional $47/month",
+  pricing: "Flat workspace; Starter £18/month, Professional £35/month",
   openSource: "Yes, MIT License",
   selfHost: "Yes, or a hosted EU workspace",
   hosting: "EU by default",
@@ -87,7 +87,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         {
           title: `Can Featul replace ${name} plus a separate feedback tool?`,
           answer: `That is the usual stack Featul replaces: ${name} for release notes, something else for feature voting. Featul keeps boards, a public roadmap, and a changelog together so SaaS teams are not paying two vendors to close the loop.`,
-          body: `Workspace pricing starts at $24/month. Open source (MIT) and self-hosting are available if the changelog is customer-facing data you may need to move.`,
+          body: `Workspace pricing starts at £18/month. Open source (MIT) and self-hosting are available if the changelog is customer-facing data you may need to move.`,
         },
         {
           title: `Does Featul include a public roadmap unlike ${name}?`,
@@ -119,7 +119,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         },
         {
           title: `When is Featul the better ${name} alternative for customer-facing feedback?`,
-          answer: `When the pain is a public portal customers will actually use, not a private research database. Featul is EU-hosted, open source, and billed per workspace from $24/month so a five-person product team does not buy seats they will not fill.`,
+          answer: `When the pain is a public portal customers will actually use, not a private research database. Featul is EU-hosted, open source, and billed per workspace from £18/month so a five-person product team does not buy seats they will not fill.`,
           body: `Featul is a better fit for ${d.bestForFeatul}. ${name} is a better fit for ${d.bestForThem}. Match the tool to the job, not the other way around.`,
         },
         {
@@ -134,7 +134,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         },
         {
           title: `Is Featul cheaper than ${name} for a small SaaS team?`,
-          answer: `Usually, if you only needed ${name} for a public roadmap and feedback. Featul Starter is $24 per workspace per month. ${d.pricing}. Compare live ${name} quotes before you treat this as a bid.`,
+          answer: `Usually, if you only needed ${name} for a public roadmap and feedback. Featul Starter is £18 per workspace per month. ${d.pricing}. Compare live ${name} quotes before you treat this as a bid.`,
           body: `If your org lives in ${name} for strategy, stay. If you bought it as a Featurebase-style portal, Featul is the lighter ${alt}.`,
         },
         {
@@ -157,7 +157,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         },
         {
           title: `How does Featul pricing compare to ${name}?`,
-          answer: `Featul uses flat workspace plans from $24/month, MIT-licensed, EU-hosted. ${d.pricing}. A five-person product team usually pays less on a workspace cap than on tools that scale with seats or sessions.`,
+          answer: `Featul uses flat workspace plans from £18/month, MIT-licensed, EU-hosted. ${d.pricing}. A five-person product team usually pays less on a workspace cap than on tools that scale with seats or sessions.`,
           body: `Always check live ${name} pricing. Featul’s number is the published Starter plan.`,
         },
         {
@@ -190,8 +190,8 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         },
         {
           title: `Is Featul cheaper than running ${name} yourself?`,
-          answer: `Hosted Featul Starter is $24/month. Self-hosting either tool trades vendor cost for engineering time. If you already run ${name} happily, do not switch for novelty. Switch when you want roadmap, changelog, and a supported EU workspace.`,
-          body: `${name} pricing: ${d.pricing}. Featul Starter is $24 per workspace per month. Professional is $47. A PM, a CSM, and engineers share one bill.`,
+          answer: `Hosted Featul Starter is £18/month. Self-hosting either tool trades vendor cost for engineering time. If you already run ${name} happily, do not switch for novelty. Switch when you want roadmap, changelog, and a supported EU workspace.`,
+          body: `${name} pricing: ${d.pricing}. Featul Starter is £18 per workspace per month. Professional is £35. A PM, a CSM, and engineers share one bill.`,
         },
         {
           title: `How do I migrate from ${name} to Featul?`,
@@ -223,7 +223,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         },
         {
           title: `How does Featul pricing compare to ${name}?`,
-          answer: `Featul Starter is $24 per workspace per month. ${d.pricing}. Workspace pricing is the Featul bet: product, success, and engineering can all see the board without a seat tax.`,
+          answer: `Featul Starter is £18 per workspace per month. ${d.pricing}. Workspace pricing is the Featul bet: product, success, and engineering can all see the board without a seat tax.`,
           body: `Confirm live ${name} plans. Featul is MIT-licensed and self-hostable if Linear-adjacent data residency is the issue.`,
         },
         {
@@ -251,7 +251,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         },
         {
           title: `Does Featul include a public roadmap and changelog?`,
-          answer: `Yes. Featul is built as a product feedback platform for SaaS teams: boards, votes, public roadmap, changelog, EU hosting, workspace pricing from $24/month.`,
+          answer: `Yes. Featul is built as a product feedback platform for SaaS teams: boards, votes, public roadmap, changelog, EU hosting, workspace pricing from £18/month.`,
           body: `Featul is a better fit for ${d.bestForFeatul}. ${name} is a better fit for ${d.bestForThem}. Match the tool to the job, not the other way around.`,
         },
         {
@@ -279,7 +279,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
       return [
         {
           title: `Is Featul a good ${name} alternative?`,
-          answer: `Yes if you want product feedback boards, a public roadmap, and a changelog without buying a broader suite. Featul is EU-hosted, open source, and billed per workspace from $24/month.`,
+          answer: `Yes if you want product feedback boards, a public roadmap, and a changelog without buying a broader suite. Featul is EU-hosted, open source, and billed per workspace from £18/month.`,
           body: d.unique,
         },
         {
@@ -289,7 +289,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         },
         {
           title: `How does Featul pricing compare to ${name}?`,
-          answer: `${d.pricing}. Featul Starter is $24/month for the workspace. A PM, CSM, and two engineers do not multiply the invoice the same way as per-seat tools.`,
+          answer: `${d.pricing}. Featul Starter is £18/month for the workspace. A PM, CSM, and two engineers do not multiply the invoice the same way as per-seat tools.`,
           body: `Check live ${name} pricing. Featul’s published plans are Free, Starter, and Professional.`,
         },
         {
@@ -312,7 +312,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
       return [
         {
           title: `Is Featul a good ${name} alternative?`,
-          answer: `Yes if you want a product feedback platform with voting boards, a public roadmap, and a changelog. Featul is EU-hosted, open source (MIT), self-hostable, and billed per workspace from $24/month.`,
+          answer: `Yes if you want a product feedback platform with voting boards, a public roadmap, and a changelog. Featul is EU-hosted, open source (MIT), self-hostable, and billed per workspace from £18/month.`,
           body: d.unique,
         },
         {
@@ -322,7 +322,7 @@ function guide(name: string, d: CompetitorDetail): NonNullable<Alternative["guid
         },
         {
           title: `How does Featul pricing compare to ${name}?`,
-          answer: `${d.pricing}. Featul uses flat workspace plans: Starter $24/month, Professional $47/month. Adding teammates does not multiply the bill the same way as per-seat products.`,
+          answer: `${d.pricing}. Featul uses flat workspace plans: Starter £18/month, Professional £35/month. Adding teammates does not multiply the bill the same way as per-seat products.`,
           body: `Always compare live ${name} pages. Featul’s prices are the published workspace plans.`,
         },
         {
@@ -366,17 +366,17 @@ function faqs(name: string, slug: string, d: CompetitorDetail): { description: s
       {
         id: `${slug}-1`,
         question: `What are the best ${name} alternatives in 2026?`,
-        answer: `Most teams comparing ${name} alternatives want votes, a public roadmap, and a changelog in one place. Featul does that in an EU-hosted, open source workspace from $24/month. ${kindExtra}`,
+        answer: `Most teams comparing ${name} alternatives want votes, a public roadmap, and a changelog in one place. Featul does that in an EU-hosted, open source workspace from £18/month. ${kindExtra}`,
       },
       {
         id: `${slug}-2`,
         question: `Is Featul a good ${name} alternative?`,
-        answer: `Yes if you want boards, a public roadmap, and a changelog, with EU hosting and workspace pricing from $24/month. Featul is MIT licensed and you can self-host it.`,
+        answer: `Yes if you want boards, a public roadmap, and a changelog, with EU hosting and workspace pricing from £18/month. Featul is MIT licensed and you can self-host it.`,
       },
       {
         id: `${slug}-3`,
         question: `How does Featul vs ${name} pricing compare?`,
-        answer: `${name}: ${d.pricing}. Featul bills the workspace. Starter is $24/month and Professional is $47/month. Adding a PM, a CSM, and engineers does not multiply the invoice the same way as per-seat tools.`,
+        answer: `${name}: ${d.pricing}. Featul bills the workspace. Starter is £18/month and Professional is £35/month. Adding a PM, a CSM, and engineers does not multiply the invoice the same way as per-seat tools.`,
       },
       {
         id: `${slug}-4`,
@@ -551,7 +551,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     migrate:
       "Export feature requests, recreate statuses, invite the team to a Featul workspace, connect Slack, changelog the first migrated ship.",
     unique:
-      "UserVoice has the longer enterprise story. Featul has the shorter product: privacy-first product feedback, public roadmap, changelog, $24 workspace Starter.",
+      "UserVoice has the longer enterprise story. Featul has the shorter product: privacy-first product feedback, public roadmap, changelog, £18 workspace Starter.",
   },
   aha: {
     kind: "product-management",
@@ -617,7 +617,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     heroTitle: "Frill alternatives",
     heroKicker: "Featul vs Frill",
     description:
-      "Frill alternatives for SaaS: Featul is an open source product feedback platform with EU hosting, public roadmap, changelog, and workspace pricing from $24/month.",
+      "Frill alternatives for SaaS: Featul is an open source product feedback platform with EU hosting, public roadmap, changelog, and workspace pricing from £18/month.",
     summary:
       "Frill combines feedback, roadmaps, and announcements. Featul is a Frill alternative with EU-first hosting, MIT self-hosting, and flat workspace plans.",
     snapshotLead:
@@ -638,7 +638,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     migrate:
       "Recreate boards and statuses, move posts, connect Slack, keep the public roadmap URL stable as you cut over.",
     unique:
-      "Frill and Featul both sell boards plus roadmap plus changelog. The Featul difference is privacy-first EU hosting, open source, and $24 workspace Starter.",
+      "Frill and Featul both sell boards plus roadmap plus changelog. The Featul difference is privacy-first EU hosting, open source, and £18 workspace Starter.",
   },
   sleekplan: {
     kind: "voting-board",
@@ -646,7 +646,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     heroTitle: "Sleekplan alternatives",
     heroKicker: "Featul vs Sleekplan",
     description:
-      "Sleekplan alternatives: Featul is an EU-hosted product feedback platform with voting, public roadmap, changelog, and open source self-hosting. Workspace plans from $24/month.",
+      "Sleekplan alternatives: Featul is an EU-hosted product feedback platform with voting, public roadmap, changelog, and open source self-hosting. Workspace plans from £18/month.",
     summary:
       "Sleekplan is an all-in-one feedback tool with a strong widget. Featul is a Sleekplan alternative with EU residency by default and a MIT-licensed codebase.",
     snapshotLead:
@@ -704,7 +704,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     heroTitle: "Beamer alternatives",
     heroKicker: "Changelog with a feedback board",
     description:
-      "Beamer alternatives that include product feedback: Featul is an EU-hosted changelog plus voting board and public roadmap, open source, workspace pricing from $24/month.",
+      "Beamer alternatives that include product feedback: Featul is an EU-hosted changelog plus voting board and public roadmap, open source, workspace pricing from £18/month.",
     summary:
       "Beamer is a changelog and announcement tool. Featul is a Beamer alternative when you also need feature voting and a public roadmap.",
     snapshotLead:
@@ -783,7 +783,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     migrate:
       "Recreate boards, import posts, map statuses, connect Slack, changelog the first ship.",
     unique:
-      "HelloNext and Featul both sell the public board. Featul’s difference is EU hosting, open source, a public roadmap, a changelog, and a $24 workspace.",
+      "HelloNext and Featul both sell the public board. Featul’s difference is EU hosting, open source, a public roadmap, a changelog, and a £18 workspace.",
   },
   feedbear: {
     kind: "voting-board",
@@ -936,7 +936,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     heroTitle: "SuggestKit alternatives",
     heroKicker: "Featul vs SuggestKit",
     description:
-      "SuggestKit alternatives with Slack and a changelog: Featul is an EU-hosted, open source product feedback platform. Boards, public roadmap, changelog, $24/month Starter.",
+      "SuggestKit alternatives with Slack and a changelog: Featul is an EU-hosted, open source product feedback platform. Boards, public roadmap, changelog, £18/month Starter.",
     summary:
       "SuggestKit is a fast feedback board. Featul is a SuggestKit alternative with a fuller changelog, EU hosting, and Discord as well as Slack.",
     snapshotLead:
@@ -1052,7 +1052,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     heroTitle: "Supahub alternatives",
     heroKicker: "Featul vs Supahub",
     description:
-      "Supahub alternatives: Featul is an EU-hosted, open source product feedback platform with Slack, Discord, public roadmap, and changelog. Workspace from $24/month.",
+      "Supahub alternatives: Featul is an EU-hosted, open source product feedback platform with Slack, Discord, public roadmap, and changelog. Workspace from £18/month.",
     summary:
       "Supahub is a modern feedback portal. Featul is a Supahub alternative with MIT self-hosting and EU defaults.",
     snapshotLead:
@@ -1081,7 +1081,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     heroTitle: "Headway alternatives",
     heroKicker: "Updates plus a voting board",
     description:
-      "Headway alternatives that include product feedback: Featul pairs a changelog with voting and a public roadmap. EU-hosted, open source, $24/month Starter.",
+      "Headway alternatives that include product feedback: Featul pairs a changelog with voting and a public roadmap. EU-hosted, open source, £18/month Starter.",
     summary:
       "Headway is a changelog widget. Featul is a Headway alternative when you also need a product feedback board.",
     snapshotLead:
@@ -1143,7 +1143,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     summary:
       "LaunchNotes is a release-management platform. Featul is a LaunchNotes alternative if you needed notes plus a feedback board, not an enterprise launch suite.",
     snapshotLead:
-      "Featul will not replace LaunchNotes enterprise launch ops. It will replace a changelog-plus-board stack at $24/month.",
+      "Featul will not replace LaunchNotes enterprise launch ops. It will replace a changelog-plus-board stack at £18/month.",
     pricing: "Release-management / enterprise features",
     hosting: "Commercial SaaS",
     openSource: "No",
@@ -1168,7 +1168,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     heroTitle: "Fider alternatives",
     heroKicker: "Open source with a full loop",
     description:
-      "Fider alternatives: Featul is also open source, plus a hosted EU product feedback platform with public roadmap and changelog. MIT License, workspace plans from $24/month.",
+      "Fider alternatives: Featul is also open source, plus a hosted EU product feedback platform with public roadmap and changelog. MIT License, workspace plans from £18/month.",
     summary:
       "Fider is open-source feature voting. Featul is a Fider alternative when you want OSS plus roadmap, changelog, and a supported EU workspace.",
     snapshotLead:
@@ -1197,7 +1197,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     heroTitle: "Airfocus alternatives",
     heroKicker: "Portal, not a modular PM suite",
     description:
-      "Airfocus alternatives for a customer portal: Featul is an EU-hosted product feedback platform with voting, public roadmap, and changelog. Open source, $24/month Starter.",
+      "Airfocus alternatives for a customer portal: Featul is an EU-hosted product feedback platform with voting, public roadmap, and changelog. Open source, £18/month Starter.",
     summary:
       "Airfocus is a modular product management platform. Featul is an Airfocus alternative only for the public feedback and roadmap slice.",
     snapshotLead:
@@ -1313,7 +1313,7 @@ export const COMPETITOR_DETAILS: Record<string, CompetitorDetail> = {
     heroTitle: "ReleaseNotes alternatives",
     heroKicker: "Changelog with product feedback",
     description:
-      "ReleaseNotes.io alternatives: Featul is an EU-hosted changelog plus product feedback board and public roadmap. Open source, from $24/month.",
+      "ReleaseNotes.io alternatives: Featul is an EU-hosted changelog plus product feedback board and public roadmap. Open source, from £18/month.",
     summary:
       "ReleaseNotes.io publishes release notes. Featul is a ReleaseNotes alternative when you also need customers to vote.",
     snapshotLead:
@@ -1411,7 +1411,7 @@ function fallbackDetail(name: string): CompetitorDetail {
     metaTitle: `${name} alternatives | Product feedback + roadmap`,
     heroTitle: `${name} alternatives`,
     heroKicker: `Featul vs ${name}`,
-    description: `${name} alternatives: Featul is an EU-hosted, open source product feedback platform with feature voting, a public roadmap, and a changelog. Workspace plans from $24/month.`,
+    description: `${name} alternatives: Featul is an EU-hosted, open source product feedback platform with feature voting, a public roadmap, and a changelog. Workspace plans from £18/month.`,
     summary: `${name} collects product feedback. Featul is a ${name} alternative with a public roadmap, changelog, EU hosting, and MIT-licensed self-hosting.`,
     snapshotLead: `Featul is a ${name} alternative when you want the full product feedback loop: votes, public roadmap, and changelog, with EU hosting and workspace pricing.`,
     pricing: "Hosted SaaS; check live pricing",

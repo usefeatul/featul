@@ -54,8 +54,8 @@ await Promise.all([
     if (!account.charges_enabled || !account.payouts_enabled) throw new ReadinessError("Stripe charges or payouts are disabled");
     const priceIds: string[] = [];
     for (const [name, interval, amount] of [
-      ["STARTER_MONTHLY", "month", 2900], ["STARTER_YEARLY", "year", 20000],
-      ["PROFESSIONAL_MONTHLY", "month", 4700], ["PROFESSIONAL_YEARLY", "year", 47000],
+      ["STARTER_MONTHLY", "month", 1800], ["STARTER_YEARLY", "year", 18000],
+      ["PROFESSIONAL_MONTHLY", "month", 3500], ["PROFESSIONAL_YEARLY", "year", 35000],
     ] as const) {
       const price = await stripe.prices.retrieve(process.env[`STRIPE_PRICE_ID_${name}`]!);
       priceIds.push(price.id);

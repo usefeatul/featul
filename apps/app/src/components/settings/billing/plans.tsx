@@ -74,9 +74,11 @@ export default function Plans(props: Props) {
               billingCycle={billingCycle}
               onChange={setBillingCycle}
             />
-            <span className="text-xs text-muted-foreground">
-              Save with yearly billing
-            </span>
+            {billingCycle === "yearly" ? (
+              <span className="text-xs text-muted-foreground">
+                2 months free with yearly billing
+              </span>
+            ) : null}
           </div>
           <div className="mx-4 overflow-hidden rounded-xl border border-border/40 bg-background/30 sm:mx-6">
             <Comparison
@@ -106,7 +108,7 @@ export default function Plans(props: Props) {
                 {selected === "free"
                   ? "No subscription required."
                   : billingCycle === "yearly"
-                    ? `Billed annually. Save £${plan.monthlyPrice * 12 - plan.yearlyPrice} a year.`
+                    ? `Billed annually with 2 months free. Save £${plan.monthlyPrice * 12 - plan.yearlyPrice} a year.`
                     : "Billed monthly. Cancel anytime."}
               </p>
             </div>
