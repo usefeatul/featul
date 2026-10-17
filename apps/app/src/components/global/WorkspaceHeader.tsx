@@ -6,10 +6,7 @@ import { Button } from "@featul/ui/components/button";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 
 import { Switch } from "@featul/ui/components/switch";
-import {
-  ChevronLeftIcon,
-  Plus,
-} from "@/components/global/icons";
+import { ChevronLeftIcon, Plus } from "@/components/global/icons";
 import { SECTIONS, WORKSPACE_TITLES, getSectionMeta } from "@/config/sections";
 import { getAccountSectionMeta } from "@/config/account/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
@@ -205,6 +202,7 @@ export default function WorkspaceHeader({
 
   const isCompactListHeader =
     isRequestList ||
+    rest[0] === "share" ||
     showRoadmapActions ||
     showChangelogActions ||
     showChangelogEditActions ||
@@ -293,7 +291,8 @@ export default function WorkspaceHeader({
             className={cn(
               "flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2",
               !showPageHeading && "mb-5",
-              (isSettingsSection || isAccountSection) && "mx-auto w-full max-w-4xl",
+              (isSettingsSection || isAccountSection) &&
+                "mx-auto w-full max-w-4xl",
             )}
           >
             {showFilterSummary ? (

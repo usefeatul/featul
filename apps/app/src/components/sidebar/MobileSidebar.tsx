@@ -5,7 +5,14 @@ import { usePathname } from "next/navigation";
 import { cn } from "@featul/ui/lib/utils";
 import { Drawer } from "@featul/ui/components/drawer";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
-import { buildAccountNav, buildBottomNav, buildSettingsNav, getSlugFromPath, isWorkspaceAccountPath, isWorkspaceSettingsPath } from "../../config/nav";
+import {
+  buildAccountNav,
+  buildBottomNav,
+  buildSettingsNav,
+  getSlugFromPath,
+  isWorkspaceAccountPath,
+  isWorkspaceSettingsPath,
+} from "../../config/nav";
 import MobileBottomBar from "./MobileBottomBar";
 import MobileDrawerContent from "./MobileDrawerContent";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
@@ -36,8 +43,7 @@ export default function MobileSidebar({
       }
     | undefined;
   initialDomainInfo?:
-    | { domain: { status: string; host?: string } | null }
-    | undefined;
+    { domain: { status: string; host?: string } | null } | undefined;
   initialWorkspaces:
     | {
         id: string;
@@ -58,7 +64,10 @@ export default function MobileSidebar({
     initialCounts,
     initialDomainInfo || null,
   );
-  const secondaryNav = buildBottomNav();
+  const secondaryNav = [
+    ...middleNav.filter((item) => item.label !== "My Board").slice(4),
+    ...buildBottomNav(),
+  ];
   const settingsNav = React.useMemo(() => buildSettingsNav(slug), [slug]);
   const accountNav = React.useMemo(() => buildAccountNav(slug), [slug]);
   const isSettings = isWorkspaceSettingsPath(pathname);
@@ -68,7 +77,15 @@ export default function MobileSidebar({
   return (
     <div className={cn("lg:hidden", className)}>
       <Drawer direction="right" open={open} onOpenChange={setOpen}>
-        <MobileBottomBar items={isSettings ? settingsNav : isAccount ? accountNav : middleNav.filter((item) => item.label !== "My Board")} />
+        <MobileBottomBar
+          items={
+            isSettings
+              ? settingsNav
+              : isAccount
+                ? accountNav
+                : middleNav.filter((item) => item.label !== "My Board")
+          }
+        />
         <MobileDrawerContent
           boardItem={middleNav.find((item) => item.label === "My Board")}
           pathname={pathname}

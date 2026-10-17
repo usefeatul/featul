@@ -15,6 +15,7 @@ import {
   RoadmapIcon as WorkspaceRoadmapIcon,
   ShieldIcon as WorkspaceSecurityIcon,
   SettingIcon as WorkspaceSettingsIcon,
+  ShareIcon,
   PlannedIcon,
   ProgressIcon,
   ReviewIcon,
@@ -33,7 +34,7 @@ function w(slug: string, p: string) {
 }
 
 /** Public board origin: custom domain if set, else `{slug}.featul.com`. */
-function publicBoardUrlForWorkspace(
+export function publicBoardUrlForWorkspace(
   slug: string,
   customDomain?: string | null,
 ) {
@@ -96,6 +97,7 @@ export function buildMiddleNav(
       icon: WorkspaceChangelogIcon,
     },
     { label: "Members", href: w(slug, "/members"), icon: WorkspaceMembersIcon },
+    { label: "Share", href: w(slug, "/share"), icon: ShareIcon },
     {
       label: "My Board",
       href: publicBoardUrlForWorkspace(slug, customDomain),

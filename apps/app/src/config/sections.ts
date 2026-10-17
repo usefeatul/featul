@@ -89,4 +89,5 @@ export const WORKSPACE_TITLES: Record<string, string> = {
   requests: "Requests",
   account: "Account",
   members: "Members",
+  share: "Share",
 };

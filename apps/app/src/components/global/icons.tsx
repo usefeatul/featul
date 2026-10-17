@@ -40,12 +40,7 @@ import {
   type Icon as TablerIcon,
   type IconProps as TablerIconProps,
 } from "@tabler/icons-react";
-import {
-  LogoutIcon,
-  ShareIcon,
-  LowTractionIcon,
-  FilterIcon,
-} from "./artwork";
+import { LogoutIcon, ShareIcon, LowTractionIcon, FilterIcon } from "./artwork";
 export {
   LogoutIcon,
   RoadmapIcon,
@@ -323,3 +318,11 @@ export { SelectBoxIcon } from "@featul/ui/icons/select-box";
 
 export const EmojiIcon = solid(IconMoodSmileFilled);
 export const LikeIcon = solid(IconThumbUpFilled);
+
+/** Brand marks used by workspace sharing actions. */
+export {
+  IconBrandX as XBrandIcon,
+  IconBrandLinkedin as LinkedInBrandIcon,
+  IconBrandFacebook as FacebookBrandIcon,
+  IconBrandReddit as RedditBrandIcon,
+} from "@tabler/icons-react";
