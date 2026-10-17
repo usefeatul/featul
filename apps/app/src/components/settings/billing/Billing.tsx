@@ -1,36 +1,38 @@
-"use client"
+"use client";
 
-import React from "react"
-import SectionCard, { settingsTableShellClass } from "../global/SectionCard"
-import { authClient, useSession } from "@featul/auth/client"
-import { toast } from "sonner"
-import { cn } from "@featul/ui/lib/utils"
-import { LoadingButton } from "@/components/global/LoadingButton"
-import { normalizePlan } from "@/lib/plan"
-import BillingCycleSegment from "./BillingCycleSegment"
-import PlanOptionCard from "./PlanOptionCard"
-import { type BillingCycle, PLAN_ORDER, getPlan } from "./data"
-import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
+import React from "react";
+import SectionCard from "../global/SectionCard";
+import { authClient, useSession } from "@featul/auth/client";
+import { toast } from "sonner";
+import { LoadingButton } from "@/components/global/LoadingButton";
+import { normalizePlan } from "@/lib/plan";
+import Plans from "./plans";
+import Usage from "./usage";
+import { BillingIcon } from "@/components/global/icons";
+import type { BillingUsage } from "@/types/billing";
+import { type BillingCycle, getPlan } from "./data";
+import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 
 type BillingSubscription = {
-  id: string
-  plan: string
-  status: string
-  stripeSubscriptionId?: string | null
-  billingInterval?: string | null
-  periodEnd?: string | Date | null
-  cancelAtPeriodEnd?: boolean | null
-  trialEnd?: string | Date | null
-}
+  id: string;
+  plan: string;
+  status: string;
+  stripeSubscriptionId?: string | null;
+  billingInterval?: string | null;
+  periodEnd?: string | Date | null;
+  cancelAtPeriodEnd?: boolean | null;
+  trialEnd?: string | Date | null;
+};
 
 type BillingSectionProps = {
-  slug: string
-  currentPlan?: string
-  workspaceId?: string
-  workspaceOwnerId?: string
-  initialSubscription?: BillingSubscription | null
-  trialEligible?: boolean
-}
+  slug: string;
+  currentPlan?: string;
+  workspaceId?: string;
+  workspaceOwnerId?: string;
+  initialSubscription?: BillingSubscription | null;
+  usage?: BillingUsage;
+  trialEligible?: boolean;
+};
 
 export default function BillingSection({
   slug,
@@ -39,54 +41,59 @@ export default function BillingSection({
   workspaceOwnerId,
   initialSubscription = null,
   trialEligible = false,
+  usage,
 }: BillingSectionProps) {
-  const normalizedPlan = normalizePlan(String(currentPlan || "free"))
-  const activePlan = getPlan(normalizedPlan)
+  const normalizedPlan = normalizePlan(String(currentPlan || "free"));
+  const activePlan = getPlan(normalizedPlan);
   const initialBillingCycle: BillingCycle =
-    initialSubscription?.billingInterval === "year" ? "yearly" : "monthly"
-  const [billingCycle, setBillingCycle] = React.useState<BillingCycle>(initialBillingCycle)
-  const subscription = initialSubscription
-  const [isOpeningPortal, setIsOpeningPortal] = React.useState(false)
-  const { data: session } = useSession()
+    initialSubscription?.billingInterval === "year" ? "yearly" : "monthly";
+  const subscription = initialSubscription;
+  const [isOpeningPortal, setIsOpeningPortal] = React.useState(false);
+  const { data: session } = useSession();
 
   const isOwner = Boolean(
-    workspaceOwnerId && session?.user?.id && workspaceOwnerId === session.user.id,
-  )
+    workspaceOwnerId &&
+    session?.user?.id &&
+    workspaceOwnerId === session.user.id,
+  );
 
   const handleOpenPortal = async () => {
-    if (!workspaceId || !isOwner || isOpeningPortal) return
+    if (!workspaceId || !isOwner || isOpeningPortal) return;
 
     try {
-      setIsOpeningPortal(true)
-      const returnUrl = `${window.location.origin}/api/billing/success?workspaceId=${encodeURIComponent(workspaceId)}`
+      setIsOpeningPortal(true);
+      const returnUrl = `${window.location.origin}/api/billing/success?workspaceId=${encodeURIComponent(workspaceId)}`;
       const { data, error } = await authClient.subscription.billingPortal({
         referenceId: workspaceId,
         returnUrl,
         disableRedirect: true,
-      })
+      });
 
       if (error) {
-        toast.error(error.message || "Failed to open billing portal")
-        return
+        toast.error(error.message || "Failed to open billing portal");
+        return;
       }
 
       if (!data?.url) {
-        toast.error("Billing portal URL missing")
-        return
+        toast.error("Billing portal URL missing");
+        return;
       }
 
       captureAnalyticsEvent(analyticsEvents.billingPortalOpened, {
         workspace_id: workspaceId,
         workspace_slug: slug,
-      })
-      window.location.href = data.url
+      });
+      window.location.href = data.url;
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to open billing portal"
-      toast.error(message)
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to open billing portal";
+      toast.error(message);
     } finally {
-      setIsOpeningPortal(false)
+      setIsOpeningPortal(false);
     }
-  }
+  };
 
   const billingAction = subscription ? (
     <LoadingButton
@@ -98,89 +105,100 @@ export default function BillingSection({
     >
       Manage billing
     </LoadingButton>
-  ) : null
+  ) : null;
   const currentBillingCycle: BillingCycle =
     subscription?.billingInterval === "year"
       ? "yearly"
       : subscription?.billingInterval === "month"
         ? "monthly"
-        : billingCycle
+        : initialBillingCycle;
   const currentAmount =
-    currentBillingCycle === "yearly" ? activePlan.yearlyPrice : activePlan.monthlyPrice
-  const currentSuffix = currentBillingCycle === "yearly" ? "/year" : "/mo"
+    currentBillingCycle === "yearly"
+      ? activePlan.yearlyPrice
+      : activePlan.monthlyPrice;
+  const currentSuffix = currentBillingCycle === "yearly" ? "/year" : "/mo";
   const trialEndLabel = React.useMemo(() => {
-    if (!subscription?.trialEnd || subscription.status !== "trialing") return null
+    if (!subscription?.trialEnd || subscription.status !== "trialing")
+      return null;
 
-    const trialEndDate = new Date(subscription.trialEnd)
-    if (Number.isNaN(trialEndDate.getTime())) return null
+    const trialEndDate = new Date(subscription.trialEnd);
+    if (Number.isNaN(trialEndDate.getTime())) return null;
 
     return new Intl.DateTimeFormat(undefined, {
       month: "short",
       day: "numeric",
       year: "numeric",
-    }).format(trialEndDate)
-  }, [subscription?.status, subscription?.trialEnd])
+    }).format(trialEndDate);
+  }, [subscription?.status, subscription?.trialEnd]);
 
   return (
-    <SectionCard
-      title="Subscription"
-      description="Choose the plan that fits your workspace."
-      action={billingAction}
-    >
-      <div className="space-y-4">
-        <div
-          className={cn(
-            settingsTableShellClass,
-            "flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-3",
-          )}
-        >
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-foreground">
-              <span className="text-accent">Current:</span>
-              <span className="font-heading font-medium">{activePlan.label}</span>
-              <span className="font-heading">${currentAmount}</span>
-              <span className="font-heading text-accent">{currentSuffix}</span>
-              {trialEndLabel ? (
-                <>
-                  <span className="text-accent">•</span>
-                  <span className="text-accent">Trial until {trialEndLabel}</span>
-                </>
-              ) : null}
+    <div className="space-y-8">
+      <SectionCard title="Your subscription" contentClassName="py-0">
+        <div className="flex flex-wrap items-center justify-between gap-5 py-6">
+          <div className="flex items-center gap-4">
+            <span className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <BillingIcon className="size-6" />
+            </span>
+            <div>
+              <h3 className="text-lg font-semibold tracking-tight">
+                {activePlan.label} plan
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {trialEndLabel
+                  ? `Trial until ${trialEndLabel}`
+                  : activePlan.tagline}
+              </p>
             </div>
           </div>
-          <div className="shrink-0">
-            <BillingCycleSegment billingCycle={billingCycle} onChange={setBillingCycle} />
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-semibold tracking-tight tabular-nums">
+              £{currentAmount}
+            </span>
+            <span className="text-sm text-muted-foreground">
+              {normalizedPlan === "free" ? "forever" : currentSuffix}
+            </span>
           </div>
         </div>
-
-        {subscription?.status === "past_due" || subscription?.status === "unpaid" ? (
-          <p role="alert" className="text-sm text-destructive">
-            Your payment failed. Open Manage billing to update your payment method and pay the outstanding invoice.
+        <div className="-mx-5 flex flex-wrap items-center justify-between gap-4 border-t border-border/50 px-5 py-4">
+          <p className="min-w-0 flex-1 text-sm text-muted-foreground">
+            {normalizedPlan === "free"
+              ? "More room for your team, whenever you need it."
+              : `Billed ${currentBillingCycle === "yearly" ? "annually" : "monthly"}. Review your plan or manage payment details.`}
           </p>
-        ) : null}
-        {subscription?.cancelAtPeriodEnd && subscription.periodEnd ? (
-          <p className="text-sm text-muted-foreground">
-            Your subscription ends on {new Date(subscription.periodEnd).toLocaleDateString()}. You can restore it in Manage billing before then.
-          </p>
-        ) : null}
-
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-          {PLAN_ORDER.map((planKey) => (
-            <PlanOptionCard
-              key={planKey}
-              planKey={planKey}
+          <div className="flex flex-wrap items-center gap-2">
+            {billingAction}
+            <Plans
               currentPlan={normalizedPlan}
-              billingCycle={billingCycle}
               currentBillingCycle={currentBillingCycle}
               workspaceId={workspaceId}
               workspaceSlug={slug}
               canManageBilling={isOwner}
               trialEligible={trialEligible}
-              currentSubscriptionId={subscription?.stripeSubscriptionId || undefined}
+              currentSubscriptionId={
+                subscription?.stripeSubscriptionId || undefined
+              }
             />
-          ))}
+          </div>
         </div>
-      </div>
-    </SectionCard>
-  )
+        {subscription?.status === "past_due" ||
+        subscription?.status === "unpaid" ? (
+          <p
+            role="alert"
+            className="border-t border-border/50 -mx-5 px-5 py-4 text-sm text-destructive"
+          >
+            Your payment failed. Open Manage billing to update your payment
+            method and pay the outstanding invoice.
+          </p>
+        ) : null}
+        {subscription?.cancelAtPeriodEnd && subscription.periodEnd ? (
+          <p className="border-t border-border/50 -mx-5 px-5 py-4 text-sm text-muted-foreground">
+            Your subscription ends on{" "}
+            {new Date(subscription.periodEnd).toLocaleDateString()}. You can
+            restore it in Manage billing before then.
+          </p>
+        ) : null}
+      </SectionCard>
+      {usage ? <Usage plan={normalizedPlan} usage={usage} /> : null}
+    </div>
+  );
 }

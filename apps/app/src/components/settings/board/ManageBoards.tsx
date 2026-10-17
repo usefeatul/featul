@@ -107,7 +107,7 @@ export default function ManageBoards({
       }
     >
       <div className="space-y-4">
-        <Table variant="settings">
+        <Table variant="settings" containerClassName="-mx-5 w-[calc(100%+2.5rem)]">
           <TableHeader>
             <TableRow>
               <TableHead className="px-4">Board</TableHead>

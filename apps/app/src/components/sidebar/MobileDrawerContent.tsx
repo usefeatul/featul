@@ -159,7 +159,7 @@ export default function MobileDrawerContent({
               />
             </SidebarSection>
             <SidebarSection
-              title={isSettings ? "SETTINGS" : "ACCOUNT"}
+              title={isSettings ? undefined : "Account"}
               className="mt-4"
             >
               {isSettings ? (

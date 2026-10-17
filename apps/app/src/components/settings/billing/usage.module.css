@@ -1,0 +1,40 @@
+.track {
+  height: 0.625rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--muted);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.06);
+}
+
+.fill {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+  background-image: radial-gradient(rgb(255 255 255 / 0.36) 0.7px, transparent 0.8px);
+  background-size: 4px 4px;
+}
+
+.fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgb(255 255 255 / 0.85) 0.8px, transparent 0.9px);
+  background-size: 4px 4px;
+  mask-image: linear-gradient(90deg, transparent 10%, black 50%, transparent 90%);
+  animation: sweep 1.6s ease-out both;
+}
+
+@keyframes sweep {
+  from { transform: translateX(-100%); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill::after {
+    animation: none;
+    opacity: 0;
+  }
+}

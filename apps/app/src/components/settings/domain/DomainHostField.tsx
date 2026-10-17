@@ -8,7 +8,7 @@ import { XMarkIcon } from "@/components/global/icons";
 
 const fieldInputClass = cn(
   toolbarItemClass,
-  "h-8 min-w-0 flex-1 px-2.5 text-xs font-medium placeholder:text-accent hover:bg-transparent md:text-sm",
+  "h-full min-w-0 flex-1 px-3 text-sm font-medium placeholder:text-muted-foreground hover:bg-transparent",
 );
 
 export default function DomainHostField({
@@ -33,8 +33,18 @@ export default function DomainHostField({
   onSubmit?: () => void;
 }) {
   return (
-    <Toolbar size="sm" className="w-full">
-      <span className="inline-flex h-full shrink-0 items-center self-stretch rounded-l-lg border-r border-border bg-card px-3 text-xs font-medium tracking-wide text-accent dark:bg-black dark:text-accent">
+    <Toolbar
+      variant="plain"
+      size="sm"
+      className={cn(
+        "h-10 w-full min-w-0 rounded-xl border-border/50 bg-background/50 shadow-none transition-[border-color,box-shadow] dark:border-white/[0.07]",
+        !readOnly &&
+          "focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20",
+        invalid &&
+          "border-destructive focus-within:border-destructive focus-within:ring-destructive/20 dark:border-destructive",
+      )}
+    >
+      <span className="inline-flex h-full shrink-0 items-center self-stretch rounded-l-xl border-r border-border/50 bg-muted/40 px-3 text-xs font-medium tracking-wide text-muted-foreground dark:border-white/[0.07]">
         HTTPS
       </span>
       {readOnly ? (
@@ -52,6 +62,7 @@ export default function DomainHostField({
           variant="plain"
           type="text"
           value={value}
+          aria-invalid={invalid || undefined}
           onChange={(event) => onChange?.(event.target.value)}
           placeholder={placeholder}
           className={fieldInputClass}

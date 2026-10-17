@@ -37,7 +37,8 @@ export function getSubscriptionProjection(live: Stripe.Subscription) {
   const item = matchedItem || (!isUnfinishedSubscription(live.status) ? live.items.data[0] : undefined)
   const plan = matchedItem ? getStripePlanNameFromPriceId(matchedItem.price.id) : "free" as const
   if (!item || !plan) {
-    throw new Error(`Stripe subscription ${live.id} has no configured billing price`)
+    const priceIds = live.items.data.map((item) => item.price.id).join(", ") || "none"
+    throw new Error(`Stripe subscription ${live.id} has no configured billing price (${priceIds}). Configure the matching STRIPE_PRICE_ID_* or STRIPE_LEGACY_PRICE_IDS_* mapping.`)
   }
   const date = (value: number | null | undefined) => value ? new Date(value * 1000) : null
   return {

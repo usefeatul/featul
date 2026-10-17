@@ -44,8 +44,8 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
     id: "starter",
     label: "Starter",
     tagline: "For early teams",
-    monthlyPrice: 24,
-    yearlyPrice: 240,
+    monthlyPrice: 29,
+    yearlyPrice: 200,
     trialDays: 7,
     features: [
       { title: "Everything in Free", description: "Everything in Free" },
@@ -102,8 +102,8 @@ export function getPlan(plan: PlanKey) {
 /** Price label for the selected billing cycle. */
 export function formatPrice(plan: PlanOption, cycle: BillingCycle) {
   const amount = cycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
-  if (cycle === "yearly") return `$${amount} / year`;
-  return `$${amount} / month`;
+  if (cycle === "yearly") return `£${amount} / year`;
+  return `£${amount} / month`;
 }
 
 /** Stripe checkout slug for paid plans. Free returns null. */

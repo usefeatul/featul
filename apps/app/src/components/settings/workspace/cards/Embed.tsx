@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import SettingsCard from "../../../global/SettingsCard";
+import { WidgetRow } from "./widget";
 import { ClipboardIcon as Clipboard } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 import { toast } from "sonner";
@@ -47,7 +47,7 @@ export default function EmbedCard({ workspaceId }: Props) {
 
   return (
     <div className="h-full">
-      <SettingsCard
+      <WidgetRow
         icon={<Clipboard className="size-5 text-primary" />}
         title="Embed widget"
         description={
@@ -65,7 +65,6 @@ export default function EmbedCard({ workspaceId }: Props) {
             </p>
           </div>
         }
-        disabled={!workspaceId}
       >
         <Button variant="card" onClick={handleCopyId} disabled={!workspaceId}>
           Copy ID
@@ -73,7 +72,7 @@ export default function EmbedCard({ workspaceId }: Props) {
         <Button onClick={handleCopySnippet} disabled={!workspaceId}>
           Copy snippet
         </Button>
-      </SettingsCard>
+      </WidgetRow>
     </div>
   );
 }

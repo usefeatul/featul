@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import SettingsCard from "../../../global/SettingsCard";
+import { WidgetRow } from "./widget";
 import { KeyIcon } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
@@ -83,7 +83,7 @@ export default function SigningSecretCard({ slug }: Props) {
 
   return (
     <div className="h-full">
-      <SettingsCard
+      <WidgetRow
         icon={<KeyIcon className="size-5 text-primary" />}
         title="Signing secret"
         description={
@@ -119,7 +119,6 @@ export default function SigningSecretCard({ slug }: Props) {
             </div>
           </div>
         }
-        disabled={!slug}
       >
         <Button variant="card" onClick={handleCopySecret} disabled={!secret}>
           Copy secret
@@ -131,7 +130,7 @@ export default function SigningSecretCard({ slug }: Props) {
         >
           Rotate secret
         </Button>
-      </SettingsCard>
+      </WidgetRow>
 
       <DestructiveConfirmDialog
         open={rotateDialogOpen}

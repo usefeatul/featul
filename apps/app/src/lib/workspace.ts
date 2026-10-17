@@ -1,3 +1,5 @@
+import { getBillingUsage } from "@/lib/billing";
+import type { BillingUsage } from "@/types/billing";
 import {
   db,
   workspace,
@@ -780,6 +782,7 @@ export async function getSettingsInitialData(
   initialWorkspaceId?: string;
   initialWorkspaceOwnerId?: string;
   initialTrialEligible?: boolean;
+  initialBillingUsage?: BillingUsage;
   initialBillingSubscription?: {
     id: string;
     plan: string;
@@ -835,6 +838,7 @@ export async function getSettingsInitialData(
     feedbackTagsRows,
     integrationsRows,
     billingSubscriptions,
+    billingUsage,
     effectivePlan,
     branding,
   ] = await Promise.all([
@@ -953,6 +957,7 @@ export async function getSettingsInitialData(
       .where(eq(subscription.referenceId, ws.id))
       .orderBy(sql`case when ${subscription.plan} = ${verifiedPlan} then 0 else 1 end`, desc(subscription.createdAt))
       : Promise.resolve([]),
+    needs("billing") ? getBillingUsage(ws.id) : Promise.resolve(undefined),
     Promise.resolve(verifiedPlan),
     needs("branding") ? getBrandingBySlug(slug) : Promise.resolve(null),
   ]);
@@ -967,6 +972,7 @@ export async function getSettingsInitialData(
 
   return {
     initialPlan: effectivePlan,
+    initialBillingUsage: billingUsage,
     initialWorkspaceId: ws.id,
     initialWorkspaceOwnerId: ws.ownerId,
     initialTrialEligible: needs("billing") && isWorkspaceTrialEligible(billingSubscriptions)

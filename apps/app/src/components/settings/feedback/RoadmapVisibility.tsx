@@ -64,10 +64,12 @@ export default function RoadmapVisibility({
   return (
     <SectionCard
       title="Roadmap visibility"
-      description="Show or hide your roadmap on the public site and widget."
     >
-      <div className="flex items-center justify-between">
-        <div className="text-sm">Enable Roadmap</div>
+      <div className="flex items-center justify-between gap-6">
+        <div>
+          <div className="text-sm font-medium">Public roadmap</div>
+          <p className="mt-1 text-sm text-muted-foreground">Show or hide your roadmap on the public site and widget.</p>
+        </div>
         <Switch
           checked={Boolean(roadmap?.isVisible)}
           onCheckedChange={(v) => updateRoadmap(v)}

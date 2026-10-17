@@ -54,12 +54,12 @@ await Promise.all([
     if (!account.charges_enabled || !account.payouts_enabled) throw new ReadinessError("Stripe charges or payouts are disabled");
     const priceIds: string[] = [];
     for (const [name, interval, amount] of [
-      ["STARTER_MONTHLY", "month", 2400], ["STARTER_YEARLY", "year", 24000],
+      ["STARTER_MONTHLY", "month", 2900], ["STARTER_YEARLY", "year", 20000],
       ["PROFESSIONAL_MONTHLY", "month", 4700], ["PROFESSIONAL_YEARLY", "year", 47000],
     ] as const) {
       const price = await stripe.prices.retrieve(process.env[`STRIPE_PRICE_ID_${name}`]!);
       priceIds.push(price.id);
-      if (!price.active || !price.livemode || price.currency !== "usd" || price.unit_amount !== amount || price.recurring?.interval !== interval || price.recurring.interval_count !== 1) throw new ReadinessError(`${name}: expected active live USD ${amount / 100}/${interval}; received ${price.active ? "active" : "inactive"} ${price.livemode ? "live" : "test"} ${price.currency.toUpperCase()} ${(price.unit_amount ?? 0) / 100}/${price.recurring?.interval || "one-time"}`);
+      if (!price.active || !price.livemode || price.currency !== "gbp" || price.unit_amount !== amount || price.recurring?.interval !== interval || price.recurring.interval_count !== 1) throw new ReadinessError(`${name}: expected active live GBP ${amount / 100}/${interval}; received ${price.active ? "active" : "inactive"} ${price.livemode ? "live" : "test"} ${price.currency.toUpperCase()} ${(price.unit_amount ?? 0) / 100}/${price.recurring?.interval || "one-time"}`);
     }
     const portals = await stripe.billingPortal.configurations.list({ limit: 100, expand: ["data.features.subscription_update.products"] });
     const portal = portals.data.find(config => config.active && config.is_default && config.livemode);

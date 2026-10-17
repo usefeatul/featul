@@ -5,6 +5,7 @@ import TimezoneCard from "./cards/TimezoneCard";
 import EmbedCard from "./cards/Embed";
 import SigningSecretCard from "./cards/SigningSecretCard";
 import DangerZoneCard from "./cards/DangerZoneCard";
+import { WidgetSection } from "./cards/widget";
 
 type Props = {
   slug: string;
@@ -20,11 +21,13 @@ export default function WorkspaceSection({
   timezone,
 }: Props) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:auto-rows-fr md:items-stretch">
+    <div className="flex flex-col gap-8">
       <TimezoneCard slug={slug} initialTimezone={timezone} />
-      <EmbedCard workspaceId={workspaceId} />
+      <WidgetSection>
+        <EmbedCard workspaceId={workspaceId} />
+        <SigningSecretCard slug={slug} />
+      </WidgetSection>
       <DangerZoneCard slug={slug} workspaceName={workspaceName} />
-      <SigningSecretCard slug={slug} />
     </div>
   );
 }

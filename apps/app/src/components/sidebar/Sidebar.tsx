@@ -215,7 +215,7 @@ export default function Sidebar({
                         />
                       </SidebarSection>
                       <SidebarSection
-                        title={isSettings ? "Settings" : "Account"}
+                        title={isSettings ? undefined : "Account"}
                       >
                         {isSettings ? <SettingsNav /> : <AccountNav />}
                       </SidebarSection>
