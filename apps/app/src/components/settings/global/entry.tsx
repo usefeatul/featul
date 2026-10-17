@@ -47,7 +47,7 @@ export default function SettingsEntry({
         disabled={disabled}
         className={cn(
           rowClass,
-          "group relative transition-colors enabled:cursor-pointer enabled:hover:bg-muted/50 focus-visible:rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed",
+          "group relative transition-colors enabled:cursor-pointer enabled:hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring disabled:cursor-not-allowed",
         )}
       >
         {content}

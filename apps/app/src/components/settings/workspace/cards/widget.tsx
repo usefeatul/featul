@@ -1,13 +1,11 @@
 import type { ReactNode } from "react";
+import SectionCard from "../../global/SectionCard";
 
 export function WidgetSection({ children }: { children: ReactNode }) {
   return (
-    <section className="flex min-w-0 flex-col gap-3 text-foreground">
-      <h2 className="px-1 text-sm font-medium leading-6">Widget</h2>
-      <div className="min-w-0 divide-y divide-border/50 rounded-[calc(var(--radius)*2)] border border-border/50 bg-card px-5 shadow-xs dark:border-transparent dark:shadow-none">
-        {children}
-      </div>
-    </section>
+    <SectionCard title="Widget" contentClassName="divide-y divide-border/50 py-0">
+      {children}
+    </SectionCard>
   );
 }
 

@@ -53,7 +53,7 @@ export const settingsSectionClass =
   "flex min-w-0 flex-col gap-3 text-foreground";
 
 export const settingsSurfaceClass =
-  "min-w-0 rounded-[calc(var(--radius)*2)] border border-border/50 bg-card px-5 py-4 shadow-xs dark:border-transparent dark:shadow-none";
+  "min-w-0 overflow-hidden rounded-[calc(var(--radius)*2)] border border-border/50 bg-card px-5 py-4 shadow-xs dark:border-transparent dark:shadow-none";
 
 export const settingsCardShellClass =
   "flex flex-col overflow-hidden rounded-lg border border-border/70 bg-card px-2 pt-2 pb-2 text-foreground dark:border-white/[0.07] dark:bg-black";
