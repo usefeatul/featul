@@ -27,7 +27,7 @@ export async function requirePostAccess(database: typeof db, postId: string, use
     id: post.id, title: post.title, roadmapStatus: post.roadmapStatus,
     status: post.status, workspaceId: workspace.id, ownerId: workspace.ownerId,
     isActive: board.isActive, isPublic: board.isPublic, isVisible: board.isVisible,
-    isSystem: board.isSystem, isLocked: post.isLocked,
+    isSystem: board.isSystem, isLocked: post.isLocked, allowComments: board.allowComments,
   }).from(post).innerJoin(board, eq(post.boardId, board.id))
     .innerJoin(workspace, eq(board.workspaceId, workspace.id))
     .where(and(eq(post.id, postId), eq(workspace.isActive, true))).limit(1)

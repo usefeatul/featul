@@ -1,5 +1,8 @@
 "use client";
 
+import type { InitialActivity } from "@/types/activity";
+
+
 import { useEffect, useState } from "react";
 import { PostImageGallery } from "@/components/post/PostImageGallery";
 import Header from "./header";
@@ -38,6 +41,7 @@ type RequestDetailProps = {
   initialNavigatorPage?: RequestNavigatorPage;
   readonly?: boolean;
   initialComments?: CommentData[];
+  initialActivity?: InitialActivity;
   initialCollapsedIds?: string[];
   navigation?: {
     prev: { slug: string; title: string } | null;
@@ -53,6 +57,7 @@ export default function RequestDetail({
   initialPanelWidth,
   initialNavigatorPage,
   initialComments,
+  initialActivity,
   initialCollapsedIds,
   navigation,
 }: RequestDetailProps) {
@@ -220,6 +225,7 @@ export default function RequestDetail({
                 surface="workspace"
                 allowComments={post.allowComments}
                 initialComments={initialComments}
+          initialActivity={initialActivity}
                 initialCollapsedIds={initialCollapsedIds}
               />
             </div>

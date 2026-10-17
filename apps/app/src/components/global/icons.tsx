@@ -20,6 +20,7 @@ import {
   IconTrashFilled,
   IconPhotoFilled,
   IconMoodSmileFilled,
+  IconThumbUpFilled,
   IconLockFilled,
   IconFlagFilled,
   IconSquareRoundedPlusFilled,
@@ -321,3 +322,4 @@ export { WorkspaceSwitcherIcon } from "@featul/ui/icons/workspace";
 export { SelectBoxIcon } from "@featul/ui/icons/select-box";
 
 export const EmojiIcon = solid(IconMoodSmileFilled);
+export const LikeIcon = solid(IconThumbUpFilled);

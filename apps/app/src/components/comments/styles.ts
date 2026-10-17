@@ -7,3 +7,5 @@ export const commentComposerBackgroundClass: Record<CommentSurface, string> = {
   workspace: "bg-black/[0.02] dark:bg-white/[0.025]",
   public: "bg-muted/60 dark:bg-background",
 };
+export const commentActionIconClass =
+  "border-0 bg-transparent p-0 text-foreground shadow-none hover:bg-transparent hover:text-gray-400 dark:bg-transparent dark:text-foreground dark:hover:bg-transparent dark:hover:text-gray-400";

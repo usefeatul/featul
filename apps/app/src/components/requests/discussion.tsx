@@ -10,14 +10,22 @@ import {
 import CommentList from "@/components/comments/CommentList";
 import Activity from "./activity";
 import { usePostActivity } from "@/hooks/usePostActivity";
+import type { InitialActivity } from "@/types/activity";
 
 type DiscussionProps = Omit<
   ComponentProps<typeof CommentList>,
   "renderDiscussion" | "hideHeading"
->;
+> & { initialActivity?: InitialActivity };
 
-export default function Discussion(props: DiscussionProps) {
-  const activity = usePostActivity(props.postId, props.surface ?? "workspace");
+export default function Discussion({
+  initialActivity,
+  ...props
+}: DiscussionProps) {
+  const activity = usePostActivity(
+    props.postId,
+    props.surface ?? "workspace",
+    initialActivity,
+  );
   const activityCount = activity.data?.pages[0]?.totalCount;
   const [tab, setTab] = useState("comments");
   return (
@@ -50,7 +58,7 @@ export default function Discussion(props: DiscussionProps) {
               >
                 Activity{" "}
                 <span className="text-xs tabular-nums text-muted-foreground">
-                  {activityCount ?? (activity.isPending ? "…" : "—")}
+                  {activityCount}
                 </span>
               </TabsTrigger>
             </TabsList>
@@ -66,7 +74,11 @@ export default function Discussion(props: DiscussionProps) {
                   </p>
                 ))}
             </TabsContent>
-            <TabsContent value="activity">
+            <TabsContent
+              value="activity"
+              keepMounted
+              className="data-[hidden]:hidden"
+            >
               <Activity activity={activity} />
             </TabsContent>
           </div>

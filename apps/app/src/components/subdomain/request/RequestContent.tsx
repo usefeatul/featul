@@ -1,3 +1,4 @@
+import type { InitialActivity } from "@/types/activity";
 import React from "react";
 import { UpvoteButton } from "../../upvote/UpvoteButton";
 import Discussion from "@/components/requests/discussion";
@@ -25,6 +26,7 @@ interface RequestContentProps {
   post: SubdomainRequestDetailData;
   workspaceSlug: string;
   initialComments?: CommentData[];
+  initialActivity?: InitialActivity;
   initialCollapsedIds?: string[];
 }
 
@@ -32,6 +34,7 @@ export function RequestContent({
   post,
   workspaceSlug,
   initialComments,
+  initialActivity,
   initialCollapsedIds,
 }: RequestContentProps) {
   const visibleCommentCount = initialComments?.length ?? post.commentCount
@@ -135,6 +138,7 @@ export function RequestContent({
           surface="public"
           allowComments={post.allowComments}
           initialComments={initialComments}
+          initialActivity={initialActivity}
           initialCollapsedIds={initialCollapsedIds}
           hidePublicMemberIdentity={showHiddenIdentity}
         />

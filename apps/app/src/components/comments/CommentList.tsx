@@ -80,6 +80,8 @@ export default function CommentList({
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     initialData: initialComments ? { comments: initialComments } : undefined,
+    // Refresh viewer-specific reactions using the browser request after hydration.
+    initialDataUpdatedAt: 0,
     enabled: allowComments,
   });
 

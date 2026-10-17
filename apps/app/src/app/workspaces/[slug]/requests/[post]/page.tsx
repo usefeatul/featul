@@ -53,6 +53,7 @@ export default async function RequestDetailPage({ params, searchParams }: Props)
       } : undefined}
       workspaceSlug={data.workspaceSlug}
       initialComments={data.initialComments}
+      initialActivity={data.initialActivity}
       initialCollapsedIds={data.initialCollapsedIds}
       navigation={data.navigation}
     />

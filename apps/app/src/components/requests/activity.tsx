@@ -39,15 +39,7 @@ export default function Activity({
   } = activity;
   const items = data?.pages.flatMap((page) => page.items) ?? [];
 
-  if (isPending)
-    return (
-      <p
-        role="status"
-        className="py-8 text-center text-sm text-muted-foreground"
-      >
-        Loading activity…
-      </p>
-    );
+  if (isPending) return null;
   if (isError && !items.length)
     return (
       <div
@@ -130,7 +122,7 @@ export default function Activity({
           disabled={isFetchingNextPage}
           onClick={() => fetchNextPage()}
         >
-          {isFetchingNextPage ? "Loading…" : "Load more activity"}
+          Load more activity
         </Button>
       )}
     </div>

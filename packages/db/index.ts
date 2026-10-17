@@ -31,6 +31,7 @@ export const {
   postMerge,
   comment,
   commentReaction,
+  commentEmojiReaction,
   commentMention,
   commentReport,
   vote,

@@ -106,6 +106,7 @@ export function createPostRouter() {
     activity: publicProcedure
       .input(postActivitySchema)
       .get(async ({ ctx, input, c }) => {
+        c.header("Cache-Control", "private, no-store")
         const userId = await getOptionalSessionUserId(c)
         return c.superjson(await listPostActivity(ctx.db, input, userId))
       }),

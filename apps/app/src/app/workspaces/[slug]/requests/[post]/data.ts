@@ -1,3 +1,4 @@
+import type { InitialActivity } from "@/types/activity";
 import {
   db,
   board,
@@ -39,6 +40,7 @@ export type RequestDetailPageData = {
   workspaceSlug: string;
   post: RequestDetailData;
   initialComments: CommentData[];
+  initialActivity?: InitialActivity;
   initialCollapsedIds: string[];
   navigation: RequestDetailNavigation;
 };
@@ -82,7 +84,7 @@ export async function loadRequestDetailPageData({
     { role, isOwner },
     tags,
     hasVoted,
-    { initialComments, initialCollapsedIds },
+    { initialComments, initialCollapsedIds, initialActivity },
     navigation,
   ] = await Promise.all([
     loadAuthorRoleAndOwnership({
@@ -125,6 +127,7 @@ export async function loadRequestDetailPageData({
     workspaceSlug,
     post,
     initialComments,
+    initialActivity,
     initialCollapsedIds,
     navigation,
   };
