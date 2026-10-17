@@ -8,7 +8,7 @@ import { useRequestPanel } from "@/hooks/useRequestPanel";
 import { useRequestNavigation } from "@/hooks/useRequestNavigation";
 import { buildRequestsUrl } from "@/utils/request";
 import { UpvoteButton } from "../upvote/UpvoteButton";
-import CommentList from "../comments/CommentList";
+import Discussion from "./discussion";
 import Properties from "./properties";
 import type { CommentData } from "../../types/comment";
 import { Button } from "@featul/ui/components/button";
@@ -211,7 +211,8 @@ export default function RequestDetail({
                   </div>
                 </div>
               </article>
-              <CommentList
+              <Discussion
+                key={post.id}
                 plain
                 postId={post.id}
                 initialCount={post.commentCount}

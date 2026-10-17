@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState, useRef } from "react"
+import Emoji from "./emoji"
 import MentionList from "./MentionList"
 import { MentionTextarea } from "./MentionTextarea"
 import { Button } from "@featul/ui/components/button"
@@ -159,76 +160,79 @@ export default function CommentForm({
       )}
 
       <div className="flex items-center justify-between gap-2">
-        <Toolbar variant="soft" size="sm" className="w-fit">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept={ALLOWED_IMAGE_TYPES.join(",")}
-            onChange={handleFileSelect}
-            className="hidden"
-            disabled={isPending || uploadingImage}
-          />
-          <Button
-            type="button"
-            size="xs"
-            variant="plain"
-            className={cn(
-              toolbarItemClass,
-              "w-8 px-0 text-foreground hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/15",
-            )}
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isPending || uploadingImage || !!uploadedImage}
-            aria-label="Add image"
-          >
-            {uploadingImage ? (
-              <LoaderIcon className="h-4 w-4" />
-            ) : (
-              <ImageIcon className="size-4" />
-            )}
-          </Button>
+        <div className="flex items-center gap-2">
+          <Toolbar variant="soft" size="sm" className="w-fit">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ALLOWED_IMAGE_TYPES.join(",")}
+              onChange={handleFileSelect}
+              className="hidden"
+              disabled={isPending || uploadingImage}
+            />
+            <Button
+              type="button"
+              size="xs"
+              variant="plain"
+              className={cn(
+                toolbarItemClass,
+                "w-8 px-0 text-foreground hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/15",
+              )}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isPending || uploadingImage || !!uploadedImage}
+              aria-label="Add image"
+            >
+              {uploadingImage ? (
+                <LoaderIcon className="h-4 w-4" />
+              ) : (
+                <ImageIcon className="size-4" />
+              )}
+            </Button>
 
-          {canMarkInternal && (
-            <>
-              <ToolbarSeparator className="self-stretch bg-border/40 dark:bg-white/10" />
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    size="xs"
-                    variant="plain"
-                    onClick={() => setIsInternal((prev) => !prev)}
-                    className={cn(
-                      toolbarItemClass,
-                      "w-8 px-0",
-                      isInternal && "bg-primary/10 text-primary dark:bg-primary/10",
-                    )}
-                    disabled={isPending || uploadingImage || internalForced}
-                    aria-label={
-                      isInternal
-                        ? "Disable internal comment"
-                        : "Enable internal comment"
-                    }
-                    aria-pressed={isInternal}
-                  >
-                    <LockIcon
+            {canMarkInternal && (
+              <>
+                <ToolbarSeparator className="self-stretch bg-border/40 dark:bg-white/10" />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      size="xs"
+                      variant="plain"
+                      onClick={() => setIsInternal((prev) => !prev)}
                       className={cn(
-                        "size-4",
-                        isInternal && "text-primary"
+                        toolbarItemClass,
+                        "w-8 px-0",
+                        isInternal && "bg-primary/10 text-primary dark:bg-primary/10",
                       )}
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
-                  {internalForced
-                    ? "Internal reply"
-                    : isInternal
-                      ? "Internal only"
-                      : "Make internal"}
-                </TooltipContent>
-              </Tooltip>
-            </>
-          )}
-        </Toolbar>
+                      disabled={isPending || uploadingImage || internalForced}
+                      aria-label={
+                        isInternal
+                          ? "Disable internal comment"
+                          : "Enable internal comment"
+                      }
+                      aria-pressed={isInternal}
+                    >
+                      <LockIcon
+                        className={cn(
+                          "size-4",
+                          isInternal && "text-primary"
+                        )}
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
+                    {internalForced
+                      ? "Internal reply"
+                      : isInternal
+                        ? "Internal only"
+                        : "Make internal"}
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
+          </Toolbar>
+          <Emoji value={content} onChange={setContent} textareaRef={textareaRef} disabled={isBusy} />
+        </div>
 
         <div className="flex items-center gap-2">
           <Button

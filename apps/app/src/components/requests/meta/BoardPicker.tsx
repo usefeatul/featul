@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@featul/ui/components/button";
 import {
   Popover,
@@ -27,6 +28,7 @@ export default function BoardPicker({
   onChange: (v: { name: string; slug: string }) => void;
   className?: string;
 }) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
   const [boards, setBoards] = React.useState<Board[]>([]);
@@ -60,6 +62,7 @@ export default function BoardPicker({
     setSaving(true);
     try {
       await client.board.updatePostBoard.$post({ postId, boardSlug: slug });
+      void queryClient.invalidateQueries({ queryKey: ["post-activity", postId] });
       onChange({ name, slug });
       setOpen(false);
     } finally {

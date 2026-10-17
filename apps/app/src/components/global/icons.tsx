@@ -19,6 +19,7 @@ import {
   IconTagFilled,
   IconTrashFilled,
   IconPhotoFilled,
+  IconMoodSmileFilled,
   IconLockFilled,
   IconFlagFilled,
   IconSquareRoundedPlusFilled,
@@ -318,3 +319,5 @@ export const MoreIcon = MenuIcon;
 export const ArrowBackIcon = ArrowLeft;
 export { WorkspaceSwitcherIcon } from "@featul/ui/icons/workspace";
 export { SelectBoxIcon } from "@featul/ui/icons/select-box";
+
+export const EmojiIcon = solid(IconMoodSmileFilled);

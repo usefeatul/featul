@@ -1,4 +1,6 @@
 import { requireImageReferenceAccess } from "../storage/delivery"
+import { listPostActivity } from "../post/activity"
+import { postActivitySchema } from "../validators/post"
 import { togglePostVote } from "../post/voting"
 import { requirePostAccess, findSimilarVisiblePosts } from "../post/access"
 import { eq, and, sql, isNull, ilike, or, inArray, type SQL } from "drizzle-orm"
@@ -101,6 +103,12 @@ function buildTitleSearchCondition(title: string): SQL {
 
 export function createPostRouter() {
   return j.router({
+    activity: publicProcedure
+      .input(postActivitySchema)
+      .get(async ({ ctx, input, c }) => {
+        const userId = await getOptionalSessionUserId(c)
+        return c.superjson(await listPostActivity(ctx.db, input, userId))
+      }),
     create: publicProcedure
       .input(createPostSchema)
       .post(async ({ ctx, input, c }) => {
@@ -237,6 +245,7 @@ export function createPostRouter() {
             workspaceId: workspace.id,
             ownerId: workspace.ownerId,
             slug: workspace.slug,
+            boardName: board.name,
           })
           .from(board)
           .innerJoin(workspace, eq(workspace.id, board.workspaceId))
@@ -265,6 +274,7 @@ export function createPostRouter() {
         }
 
         // Authors may change title/content/images only. Moderators may also move board, status, and tags.
+        let boardName = boardWorkspace.boardName
         let boardId = existingPost.boardId
         let nextStatus = existingPost.roadmapStatus
         let applyTags = false
@@ -273,14 +283,17 @@ export function createPostRouter() {
         if (isModerator) {
           if (boardSlug) {
             const [nextBoard] = await ctx.db
-              .select({ id: board.id })
+              .select({ id: board.id, name: board.name })
               .from(board)
               .where(and(
                 eq(board.workspaceId, boardWorkspace.workspaceId),
                 eq(board.slug, boardSlug)
               ))
               .limit(1)
-            if (nextBoard) boardId = nextBoard.id
+            if (nextBoard) {
+              boardId = nextBoard.id
+              boardName = nextBoard.name
+            }
           }
           if (roadmapStatus !== undefined) {
             nextStatus = roadmapStatus
@@ -403,6 +416,14 @@ export function createPostRouter() {
             roadmapStatus: toStatus,
             fromStatus,
             toStatus,
+            previousTitle: title !== undefined && title !== existingPost.title ? existingPost.title : undefined,
+            nextTitle: title !== undefined && title !== existingPost.title ? title : undefined,
+            previousContent: content !== undefined && content !== existingPost.content ? existingPost.content : undefined,
+            nextContent: content !== undefined && content !== existingPost.content ? content : undefined,
+            fromBoardName: boardId !== existingPost.boardId ? boardWorkspace.boardName : undefined,
+            toBoardName: boardId !== existingPost.boardId ? boardName : undefined,
+            imagesAdded: nextImageUrls.filter(url => !previousImageUrls.includes(url)).length,
+            imagesRemoved: removedImageUrls.length,
             hasTitleChange: title !== undefined && title !== existingPost.title,
             hasContentChange: content !== undefined && content !== existingPost.content,
             hasTagsChange: applyTags,
@@ -857,6 +878,7 @@ export function createPostRouter() {
           title: targetPost.title,
           metadata: {
             sourcePostId: sourcePost.id,
+            sourcePostTitle: sourcePost.title,
             mergeType,
             reason: reason || null,
             roadmapStatus: targetPost.roadmapStatus,
@@ -1007,6 +1029,7 @@ export function createPostRouter() {
             title: targetPost.title,
             metadata: {
               sourcePostId: sourcePost.id,
+              sourcePostTitle: sourcePost.title,
               mergeType: "merge_here",
               reason: reason || null,
             },

@@ -1,6 +1,6 @@
 import React from "react";
 import { UpvoteButton } from "../../upvote/UpvoteButton";
-import CommentList from "../../comments/CommentList";
+import Discussion from "@/components/requests/discussion";
 import CommentCounter from "../../comments/CommentCounter";
 import type { CommentData } from "../../../types/comment";
 import StatusIcon from "@/components/requests/StatusIcon";
@@ -127,7 +127,8 @@ export function RequestContent({
         </div>
       </article>
 
-      <CommentList
+      <Discussion
+          key={post.id}
           postId={post.id}
           initialCount={visibleCommentCount}
           workspaceSlug={workspaceSlug}

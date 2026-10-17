@@ -78,6 +78,7 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
     },
     onError: () => toast.error("Could not update tags. Please try again."),
     onSuccess: async (nextIds) => {
+      void queryClient.invalidateQueries({ queryKey: ["post-activity", postId] })
       setSelectedIds(nextIds)
       const available = new Map<string, Tag>([...value.map((tag) => [tag.id, { ...tag, slug: "" }] as const), ...items.map((tag) => [tag.id, tag] as const)])
       const nextTags = nextIds.flatMap((id) => { const tag = available.get(id); return tag ? [tag] : [] })

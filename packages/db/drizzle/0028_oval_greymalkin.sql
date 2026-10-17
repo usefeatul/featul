@@ -1,0 +1,1 @@
+CREATE INDEX "activity_post_timeline_idx" ON "activity_log" USING btree ("workspace_id","entity","entity_id","created_at" DESC NULLS LAST,"id" DESC NULLS LAST);

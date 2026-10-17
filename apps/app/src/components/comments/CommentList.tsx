@@ -1,41 +1,48 @@
-import React from "react"
-import { useQuery } from "@tanstack/react-query"
-import { client } from "@featul/api/client"
-import CommentForm from "./CommentForm"
-import CommentThread from "./CommentThread"
-import { useSession } from "@featul/auth/client"
-import type { CommentData } from "../../types/comment"
-import { getBrowserFingerprint } from "@/utils/fingerprint"
-import { useEffect, useState } from "react"
-import CommentsDisabledState from "./CommentsDisabledState"
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { client } from "@featul/api/client";
+import CommentForm from "./CommentForm";
+import CommentThread from "./CommentThread";
+import { useSession } from "@featul/auth/client";
+import type { CommentData } from "../../types/comment";
+import { getBrowserFingerprint } from "@/utils/fingerprint";
+import { useEffect, useState } from "react";
+import CommentsDisabledState from "./CommentsDisabledState";
 import {
   getCommentsQueryKey,
   toCommentListResponse,
   type CommentListResponse,
   type CommentSurface,
-} from "@/lib/comment/shared"
+} from "@/lib/comment/shared";
 import {
   settingsCardInnerClass,
   settingsCardShellClass,
-} from "@/components/settings/global/SectionCard"
-import { cn } from "@featul/ui/lib/utils"
-import { commentComposerBackgroundClass } from "./styles"
+} from "@/components/settings/global/SectionCard";
+import { cn } from "@featul/ui/lib/utils";
+import { commentComposerBackgroundClass } from "./styles";
 
 interface CommentListProps {
-  postId: string
-  plain?: boolean
-  initialCount?: number
-  workspaceSlug?: string
-  surface?: CommentSurface
-  allowComments?: boolean
-  initialComments?: CommentData[]
-  initialCollapsedIds?: string[]
-  hidePublicMemberIdentity?: boolean
+  postId: string;
+  renderDiscussion?: (
+    thread: React.ReactNode,
+    count: number,
+  ) => React.ReactNode;
+  hideHeading?: boolean;
+  plain?: boolean;
+  initialCount?: number;
+  workspaceSlug?: string;
+  surface?: CommentSurface;
+  allowComments?: boolean;
+  initialComments?: CommentData[];
+  initialCollapsedIds?: string[];
+  hidePublicMemberIdentity?: boolean;
 }
 
 export default function CommentList({
   postId,
   plain = false,
+  hideHeading = false,
+  renderDiscussion,
   initialCount: _initialCount = 0,
   workspaceSlug,
   surface = "workspace",
@@ -44,15 +51,15 @@ export default function CommentList({
   initialCollapsedIds,
   hidePublicMemberIdentity,
 }: CommentListProps) {
-  const { data: session } = useSession()
-  const currentUserId = session?.user?.id || null
-  const [fingerprint, setFingerprint] = useState<string | null>(null)
+  const { data: session } = useSession();
+  const currentUserId = session?.user?.id || null;
+  const [fingerprint, setFingerprint] = useState<string | null>(null);
 
   useEffect(() => {
-    getBrowserFingerprint().then(setFingerprint)
-  }, [])
+    getBrowserFingerprint().then(setFingerprint);
+  }, []);
 
-  const queryKey = getCommentsQueryKey(postId, surface)
+  const queryKey = getCommentsQueryKey(postId, surface);
 
   const { data: commentsData, refetch } = useQuery<CommentListResponse>({
     queryKey,
@@ -61,11 +68,11 @@ export default function CommentList({
         postId,
         fingerprint: fingerprint || undefined,
         surface,
-      })
+      });
       if (!res.ok) {
-        throw new Error("Failed to fetch comments")
+        throw new Error("Failed to fetch comments");
       }
-      return toCommentListResponse(await res.json())
+      return toCommentListResponse(await res.json());
     },
     staleTime: 30_000,
     gcTime: 300_000,
@@ -74,35 +81,72 @@ export default function CommentList({
     refetchOnWindowFocus: true,
     initialData: initialComments ? { comments: initialComments } : undefined,
     enabled: allowComments,
-  })
+  });
 
-  const comments = commentsData?.comments || []
-  const commentCount = comments.length
+  const comments = commentsData?.comments || [];
+  const commentCount = comments.length;
 
   const handleCommentSuccess = () => {
-    refetch()
-  }
+    refetch();
+  };
 
   if (!allowComments) {
-    return <CommentsDisabledState />
+    return (
+      <div className="space-y-4">
+        <CommentsDisabledState />
+        {renderDiscussion?.(null, 0)}
+      </div>
+    );
   }
+
+  const thread =
+    commentCount > 0 ? (
+      <div className={cn(!plain && settingsCardShellClass, "pt-2")}>
+        <div
+          className={cn(
+            !plain && settingsCardInnerClass,
+            "overflow-hidden p-0",
+          )}
+        >
+          <CommentThread
+            postId={postId}
+            comments={comments}
+            currentUserId={currentUserId}
+            onUpdate={handleCommentSuccess}
+            workspaceSlug={workspaceSlug}
+            surface={surface}
+            initialCollapsedIds={initialCollapsedIds}
+            hidePublicMemberIdentity={hidePublicMemberIdentity}
+          />
+        </div>
+      </div>
+    ) : null;
 
   return (
     <div className="space-y-4">
       <div className={plain ? "pt-2" : settingsCardShellClass}>
-        <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
-            <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
-              Comments
-            </h2>
-          </div>
-          <div className="flex w-full shrink-0 items-center justify-end sm:w-auto sm:pl-4">
-            <span className="text-xs tabular-nums text-accent">
-              {commentCount} {commentCount === 1 ? "comment" : "comments"}
-            </span>
-          </div>
-        </header>
-        <div className={cn(plain ? "mt-3 rounded-md border border-border/40 p-3" : settingsCardInnerClass, commentComposerBackgroundClass[surface])}>
+        {!hideHeading && (
+          <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
+              <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
+                Comments
+              </h2>
+            </div>
+            <div className="flex w-full shrink-0 items-center justify-end sm:w-auto sm:pl-4">
+              <span className="text-xs tabular-nums text-accent">
+                {commentCount} {commentCount === 1 ? "comment" : "comments"}
+              </span>
+            </div>
+          </header>
+        )}
+        <div
+          className={cn(
+            plain
+              ? "mt-3 rounded-md border border-border/40 p-3"
+              : settingsCardInnerClass,
+            commentComposerBackgroundClass[surface],
+          )}
+        >
           <CommentForm
             postId={postId}
             onSuccess={handleCommentSuccess}
@@ -111,22 +155,7 @@ export default function CommentList({
           />
         </div>
       </div>
-      {commentCount > 0 ? (
-        <div className={cn(!plain && settingsCardShellClass, "pt-2")}>
-          <div className={cn(!plain && settingsCardInnerClass, "overflow-hidden p-0")}>
-            <CommentThread
-              postId={postId}
-              comments={comments}
-              currentUserId={currentUserId}
-              onUpdate={handleCommentSuccess}
-              workspaceSlug={workspaceSlug}
-              surface={surface}
-              initialCollapsedIds={initialCollapsedIds}
-              hidePublicMemberIdentity={hidePublicMemberIdentity}
-            />
-          </div>
-        </div>
-      ) : null}
+      {renderDiscussion ? renderDiscussion(thread, commentCount) : thread}
     </div>
-  )
+  );
 }

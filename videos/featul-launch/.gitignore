@@ -1,0 +1,5 @@
+node_modules/
+.hyperframes/
+.media/
+renders/
+*.log

@@ -41,6 +41,7 @@ export default function StatusPicker({ postId, value, onChange, className }: { p
         })
       }
       await client.board.updatePostMeta.$post({ postId, roadmapStatus: v })
+      void queryClient.invalidateQueries({ queryKey: ["post-activity", postId] })
       if (slug) queryClient.invalidateQueries({ queryKey: ["status-counts", slug] })
     } finally {
       setSaving(false)

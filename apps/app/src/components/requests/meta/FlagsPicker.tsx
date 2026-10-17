@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@featul/ui/components/button";
 import {
   Popover,
@@ -33,6 +34,7 @@ export default function FlagsPicker({
   onChange: (v: RequestFlags) => void;
   className?: string;
 }) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const [saving, setSaving] = React.useState(false);
 
@@ -42,6 +44,7 @@ export default function FlagsPicker({
     try {
       const patch: RequestFlags = { [key]: !value[key] };
       await client.board.updatePostMeta.$post({ postId, ...patch });
+      void queryClient.invalidateQueries({ queryKey: ["post-activity", postId] });
       onChange({ ...value, ...patch });
     } finally {
       setSaving(false);
