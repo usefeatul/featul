@@ -78,7 +78,7 @@ export default function SettingsServer({
       ? selectedSection
       : "branding";
   return (
-    <section data-settings-page className="mx-auto w-full max-w-4xl">
+    <section className="mx-auto w-full max-w-4xl">
       <SectionRenderer
         slug={slug}
         initialWorkspaceId={initialWorkspaceId}

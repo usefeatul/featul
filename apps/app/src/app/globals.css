@@ -44,16 +44,17 @@ body .drag-handle::after {
   border-radius: var(--radius-lg);
 }
 
-/* Hide scrollbar while keeping scroll functionality */
-.scrollbar-hide,
-[data-workspace-scroll]:has([data-settings-page]),
-[data-widget-scroll] {
+/* Hide native scrollbars app-wide without changing scroll behavior. */
+* {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
 
-.scrollbar-hide::-webkit-scrollbar,
-[data-workspace-scroll]:has([data-settings-page])::-webkit-scrollbar,
-[data-widget-scroll]::-webkit-scrollbar {
+*::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
+}
+
+/* Shared scroll areas render their own scrollbar in addition to the viewport. */
+[data-slot="scroll-area-scrollbar"] {
+  display: none;
 }
