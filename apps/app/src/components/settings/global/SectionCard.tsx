@@ -15,28 +15,28 @@ export type SectionCardStatus = {
 
 const statusStyles = {
   neutral: {
-    shell: "border-border bg-muted/60 dark:border-white/10 dark:bg-white/5",
+    footer: "bg-linear-to-r from-muted/50 to-muted/20",
     text: "text-muted-foreground",
     badge: "bg-muted text-muted-foreground",
     icon: LockIcon,
   },
   warning: {
-    shell:
-      "border-orange-200 bg-orange-50 dark:border-orange-500/25 dark:bg-orange-500/10",
+    footer:
+      "bg-linear-to-r from-orange-500/[0.12] to-orange-500/[0.05] dark:from-orange-400/[0.16] dark:to-orange-400/[0.06]",
     text: "text-orange-700 dark:text-orange-300",
     badge: "bg-orange-500/10 text-orange-700 dark:text-orange-300",
     icon: AlertCircle,
   },
   info: {
-    shell:
-      "border-blue-200 bg-blue-50 dark:border-blue-500/25 dark:bg-blue-500/10",
+    footer:
+      "bg-linear-to-r from-blue-500/[0.12] to-blue-500/[0.05] dark:from-blue-400/[0.16] dark:to-blue-400/[0.06]",
     text: "text-blue-700 dark:text-blue-300",
     badge: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
     icon: InfoIcon,
   },
   success: {
-    shell:
-      "border-emerald-200 bg-emerald-50 dark:border-emerald-500/25 dark:bg-emerald-500/10",
+    footer:
+      "bg-linear-to-r from-emerald-500/[0.12] to-emerald-500/[0.05] dark:from-emerald-400/[0.16] dark:to-emerald-400/[0.06]",
     text: "text-emerald-700 dark:text-emerald-300",
     badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
     icon: CheckCircle,
@@ -114,14 +114,13 @@ export default function SectionCard({
         <div
           className={cn(
             status?.message &&
-              "overflow-hidden rounded-[calc(var(--radius)*2)] border p-px",
-            status?.message && statusStyle?.shell,
+              "overflow-hidden rounded-[calc(var(--radius)*2)] border border-border/50 bg-card shadow-xs dark:border-transparent dark:shadow-none",
           )}
         >
           <div
             className={cn(
               settingsSurfaceClass,
-              status?.message && "border-0 shadow-none",
+              status?.message && "rounded-none border-0 shadow-none",
               contentClassName,
             )}
           >
@@ -141,11 +140,14 @@ export default function SectionCard({
             <div
               role="status"
               className={cn(
-                "flex items-start gap-2 px-4 py-2.5 text-xs leading-5",
-                statusStyle?.text,
+                "flex items-start gap-2 border-t border-border/30 px-5 py-3 text-xs leading-5 text-muted-foreground",
+                statusStyle?.footer,
               )}
             >
-              <StatusIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
+              <StatusIcon
+                className={cn("mt-0.5 size-4 shrink-0", statusStyle?.text)}
+                aria-hidden
+              />
               <div className="min-w-0 wrap-break-word">{status.message}</div>
             </div>
           ) : null}
