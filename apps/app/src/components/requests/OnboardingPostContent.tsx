@@ -37,7 +37,7 @@ export function OnboardingPostContent({
                 <li key={item} className="flex gap-2.5">
                   <span
                     aria-hidden
-                    className="mt-2.5 size-1 shrink-0 rounded-full bg-foreground/35"
+                    className="mt-2.5 size-1 shrink-0 rounded-lg bg-foreground/35"
                   />
                   <span>{item}</span>
                 </li>

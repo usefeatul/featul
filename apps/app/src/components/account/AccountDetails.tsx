@@ -1,129 +1,163 @@
-"use client"
+"use client";
 
-import React from "react"
-import SettingsCard from "@/components/global/SettingsCard"
-import Passkeys, { type PasskeyItem } from "./Passkeys"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { getDisplayUser } from "@/utils/user"
-import { Input } from "@featul/ui/components/input"
-import { toast } from "sonner"
-import { authClient } from "@featul/auth/client"
-import { UserFocusIcon } from "@/components/global/icons"
-import { updateAccountUserInCache } from "./cache"
-import { accountQueryKeys } from "./keys"
+import React from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getDisplayUser } from "@/utils/user";
+import { Input } from "@featul/ui/components/input";
+import { toast } from "sonner";
+import { authClient } from "@featul/auth/client";
+import SettingRow from "@/components/settings/global/row";
+import { updateAccountUserInCache } from "./cache";
+import { accountQueryKeys } from "./keys";
 
 type AccountDetailsProps = {
-    initialUser?: { name?: string; email?: string; image?: string | null } | null
-    initialPasskeys?: PasskeyItem[]
-}
+  initialUser?: { name?: string; email?: string; image?: string | null } | null;
+};
 
-export default function AccountDetails({ initialUser, initialPasskeys }: AccountDetailsProps) {
-    const queryClient = useQueryClient()
-    const [name, setName] = React.useState(() => String(initialUser?.name || "").trim())
-    const [saving, setSaving] = React.useState(false)
+export default function AccountDetails({ initialUser }: AccountDetailsProps) {
+  const queryClient = useQueryClient();
+  const [name, setName] = React.useState(() =>
+    String(initialUser?.name || "").trim(),
+  );
+  const [saving, setSaving] = React.useState(false);
 
-    const syncUser = React.useCallback((nextUser: { name?: string; email?: string; image?: string | null } | null) => {
-        if (!nextUser) return
-        try {
-            updateAccountUserInCache(queryClient, nextUser)
-        } catch (e: unknown) {
-            console.error(e)
-        }
-    }, [queryClient])
+  const syncUser = React.useCallback(
+    (
+      nextUser: { name?: string; email?: string; image?: string | null } | null,
+    ) => {
+      if (!nextUser) return;
+      try {
+        updateAccountUserInCache(queryClient, nextUser);
+      } catch (e: unknown) {
+        console.error(e);
+      }
+    },
+    [queryClient],
+  );
 
-    const { data } = useQuery<{ user: { name?: string; email?: string; image?: string | null } | null }>({
-        queryKey: accountQueryKeys.me,
-        queryFn: async () => {
-            const s = await authClient.getSession()
-            const sessionData = s && typeof s === "object" && "data" in s ? s.data : s
-            const u = sessionData && typeof sessionData === "object" && "user" in sessionData ? sessionData.user : null
-            return { user: u as { name?: string; email?: string; image?: string | null } | null }
-        },
-        initialData: () => ({ user: initialUser || null }),
-        placeholderData: (prev) => prev,
-        staleTime: 300_000,
-        gcTime: 900_000,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        enabled: !initialUser,
-    })
+  const { data } = useQuery<{
+    user: { name?: string; email?: string; image?: string | null } | null;
+  }>({
+    queryKey: accountQueryKeys.me,
+    queryFn: async () => {
+      const s = await authClient.getSession();
+      const sessionData =
+        s && typeof s === "object" && "data" in s ? s.data : s;
+      const u =
+        sessionData && typeof sessionData === "object" && "user" in sessionData
+          ? sessionData.user
+          : null;
+      return {
+        user: u as {
+          name?: string;
+          email?: string;
+          image?: string | null;
+        } | null,
+      };
+    },
+    initialData: () => ({ user: initialUser || null }),
+    placeholderData: (prev) => prev,
+    staleTime: 300_000,
+    gcTime: 900_000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: !initialUser,
+  });
 
-    const user = data?.user || null
+  const user = data?.user || null;
 
-    React.useEffect(() => {
-        if (user) {
-            setName((user?.name || "").trim())
-        }
-    }, [user])
+  React.useEffect(() => {
+    if (user) {
+      setName((user?.name || "").trim());
+    }
+  }, [user]);
 
-    const d = getDisplayUser(user || undefined)
+  const d = getDisplayUser(user || undefined);
 
-    const onSave = React.useCallback(async () => {
-        if (saving) return
-        const nextName = name.trim()
-        const previousName = (user?.name || "").trim()
+  const onSave = React.useCallback(async () => {
+    if (saving) return;
+    const nextName = name.trim();
+    const previousName = (user?.name || "").trim();
 
-        // Skip if no change
-        if (nextName === previousName) return
+    // Skip if no change
+    if (nextName === previousName) return;
 
-        if (!nextName && !previousName) {
-            toast.error("Please enter a name")
-            return
-        }
+    if (!nextName && !previousName) {
+      toast.error("Please enter a name");
+      return;
+    }
 
-        setSaving(true)
+    setSaving(true);
 
-        // Optimistic update - instant UI feedback
-        const optimisticUser = { ...(user || {}), name: nextName || previousName }
-        syncUser(optimisticUser)
-        toast.success("Saved")
+    // Optimistic update - instant UI feedback
+    const optimisticUser = { ...(user || {}), name: nextName || previousName };
+    syncUser(optimisticUser);
+    toast.success("Saved");
 
-        try {
-            const { error, data: saveData } = await authClient.updateUser({ name: nextName || undefined })
-            if (error) {
-                // Revert on error
-                if (user) syncUser(user)
-                setName(previousName)
-                toast.error(error.message || "Failed to save")
-                return
-            }
-            // Update with server response if available
-            const updatedUser = (saveData && typeof saveData === "object" && "user" in saveData)
-                ? saveData.user as { name?: string; email?: string; image?: string | null }
-                : optimisticUser
-            syncUser(updatedUser)
-        } catch (err: unknown) {
-            // Revert on error
-            if (user) syncUser(user)
-            setName(previousName)
-            const msg = err instanceof Error ? err.message : "Failed to save"
-            toast.error(msg)
-        } finally {
-            setSaving(false)
-        }
-    }, [saving, name, user, syncUser])
+    try {
+      const { error, data: saveData } = await authClient.updateUser({
+        name: nextName || undefined,
+      });
+      if (error) {
+        // Revert on error
+        if (user) syncUser(user);
+        setName(previousName);
+        toast.error(error.message || "Failed to save");
+        return;
+      }
+      // Update with server response if available
+      const updatedUser =
+        saveData && typeof saveData === "object" && "user" in saveData
+          ? (saveData.user as {
+              name?: string;
+              email?: string;
+              image?: string | null;
+            })
+          : optimisticUser;
+      syncUser(updatedUser);
+    } catch (err: unknown) {
+      // Revert on error
+      if (user) syncUser(user);
+      setName(previousName);
+      const msg = err instanceof Error ? err.message : "Failed to save";
+      toast.error(msg);
+    } finally {
+      setSaving(false);
+    }
+  }, [saving, name, user, syncUser]);
 
-    return (
-        <>
-            <SettingsCard
-                title="Account"
-                description="Your name and email address."
-                icon={<UserFocusIcon className="size-5 text-primary" />}
-            >
-                <div className="flex items-center gap-3">
-                    <Input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        onBlur={() => { if (name.trim() !== (user?.name || "").trim()) void onSave() }}
-                        onKeyDown={(e) => { if (e.key === "Enter") { e.currentTarget.blur() } }}
-                        className="h-8 w-[100px] placeholder:text-accent"
-                        placeholder="Your name"
-                    />
-                    <Input value={d.email || ""} disabled className="hidden lg:block h-8 w-[170px] text-center" />
-                </div>
-            </SettingsCard>
-            <Passkeys initialPasskeys={initialPasskeys} />
-        </>
-    )
+  return (
+    <>
+      <SettingRow
+        label="Display name"
+        description="The name people see on your posts and comments."
+      >
+        <Input
+          aria-label="Display name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onBlur={() => {
+            if (name.trim() !== (user?.name || "").trim()) void onSave();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.currentTarget.blur();
+          }}
+          className="h-9 w-full sm:w-60 placeholder:text-accent"
+          placeholder="Your name"
+        />
+      </SettingRow>
+      <SettingRow
+        label="Email address"
+        description="The email associated with your account."
+      >
+        <Input
+          aria-label="Email address"
+          value={d.email || ""}
+          readOnly
+          className="h-9 w-full sm:w-60 text-muted-foreground"
+        />
+      </SettingRow>
+    </>
+  );
 }

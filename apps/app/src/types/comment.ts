@@ -1,3 +1,5 @@
+import type { EmojiReaction } from "@featul/api/shared/reactions"
+
 /** Threaded comment including votes, internal-only flag, and optional edit history. */
 export type CommentData = {
   id: string
@@ -21,6 +23,7 @@ export type CommentData = {
   updatedAt: string
   editedAt: string | null
   userVote?: "upvote" | "downvote" | null
+  reactions?: EmojiReaction[]
   role?: "admin" | "member" | "viewer" | null
   isOwner?: boolean
   metadata?: {

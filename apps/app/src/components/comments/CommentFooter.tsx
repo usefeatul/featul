@@ -1,5 +1,6 @@
 import React from "react"
-import CommentVote from "./CommentVote"
+import Reactions from "./reactions"
+import type { EmojiReaction } from "@featul/api/shared/reactions"
 import CommentReplyButton from "./actions/CommentReplyAction"
 import type { CommentSurface } from "@/lib/comment/shared"
 
@@ -7,9 +8,7 @@ interface CommentFooterProps {
   commentId: string
   postId: string
   surface?: CommentSurface
-  upvotes: number
-  downvotes: number
-  userVote?: "upvote" | "downvote" | null
+  reactions?: EmojiReaction[]
   canReply: boolean
   showReplyForm: boolean
   onToggleReply: () => void
@@ -20,9 +19,7 @@ export default function CommentFooter({
   commentId,
   postId,
   surface = "workspace",
-  upvotes,
-  downvotes,
-  userVote,
+  reactions,
   canReply,
   showReplyForm,
   onToggleReply,
@@ -31,13 +28,11 @@ export default function CommentFooter({
   return (
     <div className="mt-2 flex items-center justify-between gap-2">
       <div style={{ paddingLeft: indentPx }}>
-        <CommentVote
+        <Reactions
           commentId={commentId}
           postId={postId}
           surface={surface}
-          initialUpvotes={upvotes}
-          initialDownvotes={downvotes}
-          initialUserVote={userVote}
+          reactions={reactions}
         />
       </div>
 

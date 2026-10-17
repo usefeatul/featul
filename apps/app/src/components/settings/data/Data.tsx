@@ -12,7 +12,7 @@ type Props = {
 
 export default function DataSection({ slug, plan }: Props) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <DataImportSection slug={slug} plan={plan} />
       <DataExportSection slug={slug} />
       <PlanNotice slug={slug} feature="data_imports" plan={plan} />

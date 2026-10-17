@@ -41,6 +41,7 @@ export default function StatusPicker({ postId, value, onChange, className }: { p
         })
       }
       await client.board.updatePostMeta.$post({ postId, roadmapStatus: v })
+      void queryClient.invalidateQueries({ queryKey: ["post-activity", postId] })
       if (slug) queryClient.invalidateQueries({ queryKey: ["status-counts", slug] })
     } finally {
       setSaving(false)
@@ -48,7 +49,7 @@ export default function StatusPicker({ postId, value, onChange, className }: { p
   }
 
   return (
-    <Toolbar variant="plain" size="sm" className="w-fit rounded-md border-0 bg-black/5 dark:bg-white/5">
+    <Toolbar variant="plain" size="sm" className="w-fit rounded-lg border-0 bg-black/5 dark:bg-white/5">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

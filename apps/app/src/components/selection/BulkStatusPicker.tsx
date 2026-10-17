@@ -36,7 +36,7 @@ export function BulkStatusPicker({
           variant="card"
           size="sm"
           className={cn(
-            "h-8 gap-1.5 rounded-sm px-3 py-0",
+            "h-8 gap-1.5 rounded-lg px-3 py-0",
             disabled && "pointer-events-none opacity-40",
           )}
           disabled={disabled || isPending}

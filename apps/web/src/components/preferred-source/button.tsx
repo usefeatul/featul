@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+import { useConsent, useExplicitChoice, useSetActiveUI } from "c15t/next";
 import { Button } from "@featul/ui/components/button";
 import { GoogleIcon } from "@featul/ui/icons/google";
 import { cn } from "@featul/ui/lib/utils";
 
 import {
   addPreferredSource,
-  ensurePreferredSourceScript,
   getPreferredSourceLang,
   getPreferredSourceTheme,
   initPreferredSource,
@@ -22,8 +22,14 @@ type PreferredSourceButtonProps = {
 export function PreferredSourceButton({
   className,
 }: PreferredSourceButtonProps) {
+  const permission = useConsent("functionality");
+  const choice = useExplicitChoice();
+  const allowed =
+    permission && choice?.categories.functionality?.value === true;
+  const setActiveUI = useSetActiveUI();
+
   useEffect(() => {
-    ensurePreferredSourceScript();
+    if (!allowed) return;
 
     let lastTheme: string | null = null;
     let lastLang: string | null = null;
@@ -46,7 +52,7 @@ export function PreferredSourceButton({
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [allowed]);
 
   return (
     <Button
@@ -54,7 +60,7 @@ export function PreferredSourceButton({
       variant="card"
       size="sm"
       className={cn("font-heading text-xs", className)}
-      onClick={() => addPreferredSource()}
+      onClick={() => (allowed ? addPreferredSource() : setActiveUI("dialog"))}
     >
       <GoogleIcon className="size-3.5 grayscale" />
       {PREFERRED_SOURCE_BUTTON_LABEL}

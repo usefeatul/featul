@@ -86,16 +86,16 @@ export default function ReserveConfirm() {
           <div className="mb-3 text-sm text-destructive">{error}</div>
         ) : null}
         {loading ? (
-          <div className="h-5 w-64 bg-muted rounded animate-pulse" />
+          <div className="h-5 w-64 bg-muted rounded-lg animate-pulse" />
         ) : !error ? (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Link2 className="size-4 text-accent" />
-              <div className="rounded-md  bg-muted px-2 py-1 text-sm font-mono">{slug}.featul.com</div>
+              <div className="rounded-lg  bg-muted px-2 py-1 text-sm font-mono">{slug}.featul.com</div>
             </div>
             <div className="flex items-center gap-2">
               <Mail className="size-4 text-accent" />
-              <div className="rounded-md  bg-muted px-2 py-1 text-sm font-mono">{email}</div>
+              <div className="rounded-lg  bg-muted px-2 py-1 text-sm font-mono">{email}</div>
             </div>
           </div>
         ) : (

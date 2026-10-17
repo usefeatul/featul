@@ -1,4 +1,6 @@
 /** Shared loaders for request detail pages. */
+import { loadInitialActivity } from "./activity";
+import type { InitialActivity } from "@/types/activity";
 import { db, board, post, user, postMerge, widgetUser } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
 import { client } from "@featul/api/client";
@@ -21,10 +23,7 @@ type AuthorRecord = {
 } | null;
 
 type MetadataWithFingerprint =
-  | { fingerprint?: string | null }
-  | Record<string, unknown>
-  | null
-  | undefined;
+  { fingerprint?: string | null } | Record<string, unknown> | null | undefined;
 
 export async function loadWorkspaceBySlug(
   slug: string,
@@ -96,23 +95,30 @@ export function ensureAuthorAvatar<
   return postRecord;
 }
 
-/** Comments plus collapsed-thread ids from cookies. */
+/** Initial discussion data plus collapsed-thread ids from cookies. */
 export async function loadPostComments(
   postId: string,
   surface: CommentSurface = "workspace",
-): Promise<{ initialComments: CommentData[]; initialCollapsedIds: string[] }> {
+): Promise<{
+  initialComments: CommentData[];
+  initialCollapsedIds: string[];
+  initialActivity?: InitialActivity;
+}> {
   const incomingHeaders = await headers();
   const cookieHeader = incomingHeaders.get("cookie");
-  const commentsRes = await client.comment.list.$get(
-    { postId, surface },
-    cookieHeader
-      ? {
-          headers: {
-            cookie: cookieHeader,
-          },
-        }
-      : undefined,
-  );
+  const [initialActivity, commentsRes] = await Promise.all([
+    loadInitialActivity(postId, surface),
+    client.comment.list.$get(
+      { postId, surface },
+      cookieHeader
+        ? {
+            headers: {
+              cookie: cookieHeader,
+            },
+          }
+        : undefined,
+    ),
+  ]);
   const commentsJson = (await commentsRes
     .json()
     .catch(() => ({ comments: [] }))) as { comments?: CommentData[] };
@@ -121,7 +127,7 @@ export async function loadPostComments(
     : [];
   const initialCollapsedIds = await readInitialCollapsedCommentIds(postId);
 
-  return { initialComments, initialCollapsedIds };
+  return { initialComments, initialCollapsedIds, initialActivity };
 }
 
 export type MergedPostSummary = {

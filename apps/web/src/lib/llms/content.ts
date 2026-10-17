@@ -49,7 +49,7 @@ SaaS and product teams that want one place for feedback boards, voting, roadmaps
 
 ## Links
 
-- [Pricing](${pricing}): Free, Starter ($24/month), Professional ($47/month); flat workspace plans, not per-seat.
+- [Pricing](${pricing}): Free, Starter (£18/month), Professional (£35/month); flat workspace plans, not per-seat.
 - [Documentation](${docs}): Boards, roadmap, changelog, widget, and custom domains.
 - [Sign up](${signup})
 `
@@ -81,7 +81,7 @@ ${features}
 
   return `# Featul Pricing
 
-Featul uses flat workspace plans (not per-seat billing). Prices are in USD and exclude applicable taxes. Start on Free, then move to Starter or Professional as the team grows.
+Featul uses flat workspace plans (not per-seat billing). Prices are in GBP and exclude applicable taxes. Start on Free, then move to Starter or Professional as the team grows.
 
 | Plan | Monthly | Yearly | Notes |
 | --- | --- | --- | --- |
@@ -102,7 +102,7 @@ Featul is customer feedback, public or private roadmaps, and changelogs in one E
 
 ## Product
 - [What Featul is](${mdUrl("/")}): Feedback boards, voting, roadmaps, changelogs, branding, and custom domains.
-- [Pricing](${mdUrl("/pricing")}): ${free.name} ($${free.monthlyPrice}/month), ${starter.name} ($${starter.monthlyPrice}/month), ${professional.name} ($${professional.monthlyPrice}/month).
+- [Pricing](${mdUrl("/pricing")}): ${free.name} (£${free.monthlyPrice}/month), ${starter.name} (£${starter.monthlyPrice}/month), ${professional.name} (£${professional.monthlyPrice}/month).
 - [What is Featul?](${mdUrl("/docs/getting-started/overview")}): Product overview for agents and humans.
 - [Getting Started](${mdUrl("/docs/getting-started")}): Create a workspace, boards, and first roadmap.
 - [Docs index](${absoluteUrl("/docs/llms.txt")}): Curated documentation for coding agents.

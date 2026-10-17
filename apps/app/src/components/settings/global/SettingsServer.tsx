@@ -1,3 +1,4 @@
+import type { BillingUsage } from "@/types/billing";
 import React from "react";
 import BrandingSection from "../branding/Branding";
 import TeamSection from "../team/Team";
@@ -23,6 +24,7 @@ type Props = {
   initialWorkspaceId?: string;
   initialWorkspaceOwnerId?: string;
   initialTrialEligible?: boolean;
+  initialBillingUsage?: BillingUsage;
   initialBillingSubscription?: {
     id: string;
     plan: string;
@@ -54,6 +56,7 @@ export default function SettingsServer({
   initialWorkspaceId,
   initialWorkspaceOwnerId,
   initialTrialEligible,
+  initialBillingUsage,
   initialBillingSubscription,
   selectedSection,
   initialTimezone,
@@ -75,12 +78,13 @@ export default function SettingsServer({
       ? selectedSection
       : "branding";
   return (
-    <section className="mx-auto w-full max-w-5xl">
+    <section className="mx-auto w-full max-w-4xl">
       <SectionRenderer
         slug={slug}
         initialWorkspaceId={initialWorkspaceId}
         initialWorkspaceOwnerId={initialWorkspaceOwnerId}
         initialTrialEligible={initialTrialEligible}
+        initialBillingUsage={initialBillingUsage}
         initialBillingSubscription={initialBillingSubscription}
         section={selected}
         initialTimezone={initialTimezone}
@@ -106,6 +110,7 @@ function SectionRenderer({
   initialWorkspaceId,
   initialWorkspaceOwnerId,
   initialTrialEligible,
+  initialBillingUsage,
   initialBillingSubscription,
   section,
   initialTimezone,
@@ -126,6 +131,7 @@ function SectionRenderer({
   initialWorkspaceId?: string;
   initialWorkspaceOwnerId?: string;
   initialTrialEligible?: boolean;
+  initialBillingUsage?: BillingUsage;
   initialBillingSubscription?: {
     id: string;
     plan: string;
@@ -213,6 +219,7 @@ function SectionRenderer({
           workspaceOwnerId={initialWorkspaceOwnerId}
           initialSubscription={initialBillingSubscription}
           trialEligible={initialTrialEligible}
+          usage={initialBillingUsage}
         />
       );
     case "domain":
@@ -245,7 +252,7 @@ function SectionRenderer({
       );
     default:
       return (
-        <div className="bg-card rounded-md  border p-4">Unknown section</div>
+        <div className="bg-card rounded-lg  border p-4">Unknown section</div>
       );
   }
 }

@@ -265,7 +265,7 @@ export function buildSoftwareApplicationSchema(siteUrl: string) {
       "@type": "AggregateOffer",
       lowPrice: String(lowPrice),
       highPrice: String(highPrice),
-      priceCurrency: "USD",
+      priceCurrency: "GBP",
       offerCount: String(PRICING_PLAN_ORDER.length),
       url: pricingUrl,
       offers: PRICING_PLAN_ORDER.map((key) => {
@@ -274,7 +274,7 @@ export function buildSoftwareApplicationSchema(siteUrl: string) {
           "@type": "Offer",
           name: plan.name,
           price: String(plan.monthlyPrice),
-          priceCurrency: "USD",
+          priceCurrency: "GBP",
           url: pricingUrl,
         };
       }),

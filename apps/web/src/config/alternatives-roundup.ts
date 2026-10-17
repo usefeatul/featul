@@ -22,7 +22,7 @@ export const ROUNDUP_TOOLS: RoundupTool[] = [
     name: "Featul",
     href: "/",
     bestFor: "SaaS teams that want boards, a public roadmap, and a changelog without per-seat billing",
-    pricing: "Workspace from $24/month; free plan available",
+    pricing: "Workspace from £18/month; free plan available",
     openSource: "Yes, MIT",
     selfHost: "Yes",
     euHosting: "Default",
@@ -157,7 +157,7 @@ export const ROUNDUP_FAQS: { description: string; items: FaqItem[] } = {
       id: "roundup-4",
       question: "Which feedback tool is cheapest for a five-person product team?",
       answer:
-        "Workspace or flat plans usually beat per-seat tools once five people need access. Featul Starter is $24 per month for the workspace. Always compare live vendor pages, because Featurebase, Canny, and Productboard change seat and tracked-user prices.",
+        "Workspace or flat plans usually beat per-seat tools once five people need access. Featul Starter is £18 per month for the workspace. Always compare live vendor pages, because Featurebase, Canny, and Productboard change seat and tracked-user prices.",
     },
     {
       id: "roundup-5",

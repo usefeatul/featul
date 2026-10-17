@@ -5,6 +5,7 @@ import { Geist_Mono, Inter_Tight } from "next/font/google";
 import { Providers } from "../components/providers/providers";
 import ConditionalThemeProvider from "@/components/global/ConditionalThemeProvider";
 import WidgetTestEmbed from "@/components/widget/embed";
+import AnalyticsConsent from "@/components/global/consent";
 import "./globals.css";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 import {
@@ -78,8 +79,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f5f5f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#202020" },
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+    { media: "(prefers-color-scheme: dark)", color: "#161616" },
   ],
 };
 
@@ -112,6 +113,7 @@ export default async function RootLayout({
         <Providers>
           <ConditionalThemeProvider publicWorkspace={isPublicWorkspace}>
             {children}
+            <AnalyticsConsent />
           </ConditionalThemeProvider>
         </Providers>
         {process.env.NEXT_PUBLIC_WIDGET_TEST_PROJECT_ID ||

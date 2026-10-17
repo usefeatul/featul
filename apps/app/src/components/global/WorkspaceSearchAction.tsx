@@ -106,7 +106,7 @@ function SearchResultItem({
             title={result.boardName}
           >
             <span
-              className="size-1.5 shrink-0 rounded-full bg-primary"
+              className="size-1.5 shrink-0 rounded-lg bg-primary"
               aria-hidden
             />
             <span className="truncate uppercase tracking-wide">
@@ -132,7 +132,7 @@ function useIsMac() {
 function KeyboardHint({ keys, label }: { keys: string; label: string }) {
   return (
     <span className="flex items-center gap-1.5">
-      <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-border bg-muted px-2 py-1 font-heading text-[11px] leading-none text-foreground">
+      <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded-lg border border-border bg-muted px-2 py-1 font-heading text-[11px] leading-none text-foreground">
         {keys}
       </kbd>
       <span>{label}</span>
@@ -152,7 +152,7 @@ function HighlightMatch({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, index)}
-      <mark className="rounded-sm bg-primary/15 px-0.5 text-inherit">
+      <mark className="rounded-lg bg-primary/15 px-0.5 text-inherit">
         {text.slice(index, index + trimmed.length)}
       </mark>
       {text.slice(index + trimmed.length)}

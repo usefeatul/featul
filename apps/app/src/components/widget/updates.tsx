@@ -221,7 +221,7 @@ function UpdateDetail({
         {content ? (
           <ChangelogRenderer
             content={content}
-            className="prose-headings:scroll-mt-4 prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[rgb(var(--widget-fg))] prose-p:text-[rgb(var(--widget-fg)/0.72)] prose-p:leading-7 prose-strong:text-[rgb(var(--widget-fg))] prose-li:text-[rgb(var(--widget-fg)/0.72)] prose-a:text-[rgb(var(--widget-fg))] prose-a:underline prose-a:decoration-[rgb(var(--widget-fg)/0.35)] hover:prose-a:decoration-[rgb(var(--widget-fg)/0.7)] prose-code:rounded-md prose-code:border prose-code:border-[rgb(var(--widget-fg)/0.12)] prose-code:bg-[rgb(var(--widget-fg)/0.06)] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[rgb(var(--widget-fg)/0.85)] prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-md prose-pre:border prose-pre:border-[rgb(var(--widget-fg)/0.12)] prose-pre:bg-[rgb(var(--widget-fg)/0.05)]"
+            className="prose-headings:scroll-mt-4 prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-[rgb(var(--widget-fg))] prose-p:text-[rgb(var(--widget-fg)/0.72)] prose-p:leading-7 prose-strong:text-[rgb(var(--widget-fg))] prose-li:text-[rgb(var(--widget-fg)/0.72)] prose-a:text-[rgb(var(--widget-fg))] prose-a:underline prose-a:decoration-[rgb(var(--widget-fg)/0.35)] hover:prose-a:decoration-[rgb(var(--widget-fg)/0.7)] prose-code:rounded-lg prose-code:border prose-code:border-[rgb(var(--widget-fg)/0.12)] prose-code:bg-[rgb(var(--widget-fg)/0.06)] prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[rgb(var(--widget-fg)/0.85)] prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-lg prose-pre:border prose-pre:border-[rgb(var(--widget-fg)/0.12)] prose-pre:bg-[rgb(var(--widget-fg)/0.05)]"
           />
         ) : entry.preview ? (
           <p className="whitespace-pre-wrap text-[15px] leading-7 text-[rgb(var(--widget-fg)/0.72)]">
@@ -251,7 +251,7 @@ function UpdateDetail({
       {shipped.length ? (
         <section className="mt-2 border-t border-dashed border-[rgb(var(--widget-fg)/0.14)] pb-6">
           <div className="flex items-center gap-2 px-5 py-4">
-            <span className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white" aria-hidden="true">
+            <span className="inline-flex size-4 shrink-0 items-center justify-center rounded-lg bg-emerald-500 text-white" aria-hidden="true">
               <CheckIcon className="size-2.5" />
             </span>
             <h2 className="text-sm font-semibold text-[rgb(var(--widget-fg))]">Latest updates</h2>
@@ -275,7 +275,7 @@ function UpdateDetail({
                   <p className="min-w-0 flex-1 truncate text-sm text-[rgb(var(--widget-fg)/0.9)]">
                     {item.title}
                   </p>
-                  <span className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white" role="img" aria-label="Done">
+                  <span className="inline-flex size-4 shrink-0 items-center justify-center rounded-lg bg-emerald-500 text-white" role="img" aria-label="Done">
                     <CheckIcon className="size-2.5" />
                   </span>
                 </button>

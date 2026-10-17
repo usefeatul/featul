@@ -6,6 +6,7 @@ import type { Integration } from "@/hooks/useIntegrations";
 import WebhookIntegrationCard from "./WebhookIntegrationCard";
 
 interface SlackCardProps {
+  upgradeHref?: string;
   integration?: Integration;
   onConnect?: (webhookUrl: string) => Promise<boolean>;
   onDisconnect?: () => Promise<boolean>;
@@ -18,6 +19,7 @@ interface SlackCardProps {
  * Slack integration card with connect/disconnect functionality
  */
 export default function SlackCard({
+  upgradeHref,
   integration,
   onConnect,
   onDisconnect,
@@ -27,6 +29,7 @@ export default function SlackCard({
 }: SlackCardProps) {
   return (
     <WebhookIntegrationCard
+      upgradeHref={upgradeHref}
       type="slack"
       title="Slack"
       icon={<SlackIcon className="w-5 h-5" />}

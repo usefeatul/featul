@@ -22,7 +22,7 @@ export default function ColorPicker({ valueHex, onSelect, disabled }: { valueHex
             className={cn(toolbarItemClass, "h-8 gap-1.5 px-2.5 text-xs font-medium")}
             disabled={disabled}
           >
-            <span className="size-4 rounded-md border" style={{ background: valueHex }} />
+            <span className="size-4 rounded-lg border" style={{ background: valueHex }} />
             <DropdownIcon className="size-3" />
           </Button>
         </PopoverTrigger>
@@ -36,7 +36,7 @@ export default function ColorPicker({ valueHex, onSelect, disabled }: { valueHex
                 aria-checked={selected?.key === c.key}
                 onClick={() => !disabled && onSelect(c)}
               >
-                <span className="size-4 rounded-md border" style={{ background: c.primary }} />
+                <span className="size-4 rounded-lg border" style={{ background: c.primary }} />
                 <span className="text-sm">{c.name}</span>
                 {selected?.key === c.key ? <span className="ml-auto text-xs">✓</span> : null}
               </PopoverListItem>

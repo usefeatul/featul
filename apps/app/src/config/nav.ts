@@ -146,6 +146,30 @@ export function buildSettingsNav(slug: string): NavItem[] {
   }));
 }
 
+/** Named groups for the settings sidebar, keeping the flat navigation API available. */
+export function buildSettingsNavGroups(
+  slug: string,
+): { title: string; items: NavItem[] }[] {
+  const items = buildSettingsNav(slug);
+  return [
+    {
+      title: "Personal",
+      items: [
+        {
+          label: "Account",
+          href: w(slug, "/account/profile"),
+          icon: WorkspaceAccountIcon,
+          match: w(slug, "/account"),
+        },
+      ],
+    },
+    ...(["Workspace", "Product", "Connections"] as const).map((title) => ({
+      title,
+      items: items.filter((_, index) => SECTIONS[index]?.group === title),
+    })),
+  ];
+}
+
 const ACCOUNT_ICONS: Record<string, NavItem["icon"]> = {
   profile: WorkspaceAccountIcon,
   security: WorkspaceSecurityIcon,

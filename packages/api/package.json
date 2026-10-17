@@ -31,6 +31,7 @@
     "./ai/*": "./src/ai/*.ts",
     "./elysia": "./src/elysia.ts",
     "./widget-config": "./src/router/widget/public.ts",
+    "./services/delivery": "./src/services/delivery.ts",
     "./services/github-webhook": "./src/services/github-webhook.ts",
     "./services/github-sync": "./src/services/github-sync.ts",
     "./services/github-app": "./src/services/github-app.ts",

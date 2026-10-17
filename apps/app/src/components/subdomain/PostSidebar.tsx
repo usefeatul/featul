@@ -148,7 +148,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                   <RequestFlagReadout
                     flags={meta}
                     className="flex w-full flex-wrap items-center gap-1.5"
-                    itemClassName="h-6 rounded-md bg-muted/70 px-2 text-[11px] font-medium text-foreground/85 ring-1 ring-border/50 dark:bg-white/[0.055] dark:ring-white/[0.08]"
+                    itemClassName="h-6 rounded-lg bg-muted/70 px-2 text-[11px] font-medium text-foreground/85 ring-1 ring-border/50 dark:bg-white/[0.055] dark:ring-white/[0.08]"
                   />
                 )}
               </div>

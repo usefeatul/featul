@@ -4,15 +4,18 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@featul/ui/lib/utils";
 
 const buttonVariants = cva(
-  "relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium outline-none transition-[color,background-color,border-color,box-shadow,filter] duration-150 disabled:pointer-events-none disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:text-white [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "relative inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium outline-none transition-[color,background-color,border-color,box-shadow,filter,translate] duration-150 motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:text-white [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "overflow-hidden border border-primary/45 bg-primary bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0)_62%,rgba(0,0,0,0.12)_82%,rgba(0,0,0,0.18)_100%)] text-primary-foreground after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-black/15 after:content-[''] hover:brightness-[1.05] active:brightness-[0.96] active:after:bg-black/10 dark:hover:border-white/20 dark:hover:bg-[color-mix(in_oklab,var(--primary)_88%,white)] dark:hover:brightness-100",
-        destructive: "border border-destructive/20 bg-destructive text-white hover:bg-destructive/90 dark:bg-destructive/60",
-        outline: "border border-border/40 bg-background hover:bg-muted/50 hover:text-accent-foreground dark:border-white/8",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 dark:bg-black/40",
+          "border-primary/60 bg-primary from-[color-mix(in_oklab,var(--primary),black_8%)] to-[color-mix(in_oklab,var(--primary),black_20%)] text-primary-foreground hover:brightness-110",
+        destructive:
+          "border-destructive/60 bg-destructive from-destructive to-[color-mix(in_oklab,var(--destructive),black_12%)] text-white hover:brightness-110 focus-visible:ring-destructive/20 dark:from-[color-mix(in_oklab,var(--destructive),black_20%)] dark:to-[color-mix(in_oklab,var(--destructive),black_30%)] dark:focus-visible:ring-destructive/40",
+        outline:
+          "border-border bg-background from-background to-muted text-foreground hover:brightness-[0.97] aria-expanded:from-secondary aria-expanded:to-secondary shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_1px_2px_rgba(0,0,0,0.06)] dark:from-input dark:to-muted dark:text-foreground dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.4)] dark:hover:brightness-125",
+        secondary:
+          "border-foreground/60 bg-foreground from-foreground/85 to-foreground text-background hover:from-foreground/70 hover:to-foreground/85 dark:text-background",
         ghost: "hover:bg-muted/50 hover:text-accent-foreground dark:hover:bg-muted/50 dark:bg-black/40",
         link: "text-primary dark:text-primary underline-offset-4 hover:underline bg-transparent",
         quiet: "bg-primary text-primary-foreground hover:bg-primary/70",
@@ -30,6 +33,18 @@ const buttonVariants = cva(
         "icon-sm": "size-8",
       },
     },
+    compoundVariants: [
+      {
+        variant: ["default", "secondary", "outline", "destructive"],
+        className:
+          "border bg-linear-to-b [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*1.5)] enabled:active:not-aria-[haspopup]:translate-y-px disabled:bg-none disabled:shadow-none",
+      },
+      {
+        variant: ["default", "secondary", "destructive"],
+        className:
+          "shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_1px_2px_rgba(0,0,0,0.18)]",
+      },
+    ],
     defaultVariants: {
       variant: "default",
       size: "default",

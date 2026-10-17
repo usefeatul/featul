@@ -1,6 +1,4 @@
 import type { IntegrationType } from "../validators/integration"
-import { isIntegrationsAllowed } from "../shared/plan"
-import { getEffectiveWorkspacePlan } from "@featul/auth/billing"
 
 /**
  * Post data structure for webhook notifications
@@ -82,6 +80,8 @@ export async function sendDiscordNotification(
 
     const response = await fetch(webhookUrl, {
       method: "POST",
+      signal: AbortSignal.timeout(8000),
+      redirect: "error",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         embeds: [embed],
@@ -89,14 +89,15 @@ export async function sendDiscordNotification(
     })
 
     if (!response.ok) {
-      const errorText = await response.text()
-      return { success: false, error: `Discord API error: ${errorText}` }
+      await response.body?.cancel()
+      return { success: false, error: `Discord returned HTTP ${response.status}` }
     }
 
+    await response.body?.cancel()
     return { success: true }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error"
-    return { success: false, error: message }
+  } catch {
+    // Fetch errors can contain the credential-bearing webhook URL.
+    return { success: false, error: "Webhook request failed or timed out" }
   }
 }
 
@@ -183,19 +184,22 @@ export async function sendSlackNotification(
 
     const response = await fetch(webhookUrl, {
       method: "POST",
+      signal: AbortSignal.timeout(8000),
+      redirect: "error",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     })
 
     if (!response.ok) {
-      const errorText = await response.text()
-      return { success: false, error: `Slack API error: ${errorText}` }
+      await response.body?.cancel()
+      return { success: false, error: `Slack returned HTTP ${response.status}` }
     }
 
+    await response.body?.cancel()
     return { success: true }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error"
-    return { success: false, error: message }
+  } catch {
+    // Fetch errors can contain the credential-bearing webhook URL.
+    return { success: false, error: "Webhook request failed or timed out" }
   }
 }
 
@@ -239,70 +243,6 @@ export async function sendTestNotification(
   }
 
   return sendWebhookNotification(type, webhookUrl, testPost)
-}
-
-/**
- * Trigger webhooks for a new post submission
- * This is called from the post creation endpoint
- */
-export async function triggerPostWebhooks(
-  db: any,
-  workspaceId: string,
-  post: PostNotificationData
-): Promise<void> {
-  try {
-    // Import here to avoid circular dependency issues
-    const { workspace, workspaceIntegration } = await import("@featul/db")
-    const { eq } = await import("drizzle-orm")
-
-    const [ws] = await db
-      .select({ plan: workspace.plan })
-      .from(workspace)
-      .where(eq(workspace.id, workspaceId))
-      .limit(1)
-
-    if (!ws) {
-      return
-    }
-
-    const plan = await getEffectiveWorkspacePlan(workspaceId)
-    if (!isIntegrationsAllowed(plan)) {
-      return
-    }
-
-    // Get all active integrations for the workspace
-    const integrations = await db
-      .select({
-        id: workspaceIntegration.id,
-        type: workspaceIntegration.type,
-        webhookUrl: workspaceIntegration.webhookUrl,
-      })
-      .from(workspaceIntegration)
-      .where(eq(workspaceIntegration.workspaceId, workspaceId))
-
-    // Send notifications to all active integrations (fire and forget)
-    for (const integration of integrations) {
-      sendWebhookNotification(
-        integration.type as IntegrationType,
-        integration.webhookUrl,
-        post
-      ).then(async (result) => {
-        // Update last triggered timestamp
-        await db
-          .update(workspaceIntegration)
-          .set({ lastTriggeredAt: new Date() })
-          .where(eq(workspaceIntegration.id, integration.id))
-
-        if (!result.success) {
-          console.error(`Webhook notification failed for ${integration.type}:`, result.error)
-        }
-      }).catch((error) => {
-        console.error(`Webhook notification error for ${integration.type}:`, error)
-      })
-    }
-  } catch (error) {
-    console.error("Error triggering webhooks:", error)
-  }
 }
 
 export type { PostNotificationData }

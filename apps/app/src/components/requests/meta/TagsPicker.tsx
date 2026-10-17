@@ -78,6 +78,7 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
     },
     onError: () => toast.error("Could not update tags. Please try again."),
     onSuccess: async (nextIds) => {
+      void queryClient.invalidateQueries({ queryKey: ["post-activity", postId] })
       setSelectedIds(nextIds)
       const available = new Map<string, Tag>([...value.map((tag) => [tag.id, { ...tag, slug: "" }] as const), ...items.map((tag) => [tag.id, tag] as const)])
       const nextTags = nextIds.flatMap((id) => { const tag = available.get(id); return tag ? [tag] : [] })
@@ -95,7 +96,7 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
 
   return (
     <div className={cn(showTags ? "contents" : "flex min-w-0 flex-wrap items-center gap-2", className)}>
-      <Toolbar variant="plain" size="sm" className="w-fit rounded-md border-0 bg-black/5 dark:bg-white/5">
+      <Toolbar variant="plain" size="sm" className="w-fit rounded-lg border-0 bg-black/5 dark:bg-white/5">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -145,10 +146,10 @@ export default function TagsPicker({ workspaceSlug, postId, value = [], classNam
         </Popover>
       </Toolbar>
       {showTags ? value.map((tag) => (
-        <span key={tag.id} className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-md bg-black/5 pl-2.5 pr-1.5 text-xs font-medium dark:bg-white/5">
+        <span key={tag.id} className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-lg bg-black/5 pl-2.5 pr-1.5 text-xs font-medium dark:bg-white/5">
           <TagDot />
           <span className="truncate">{tag.name}</span>
-          <button type="button" aria-label={`Remove ${tag.name} tag`} title={`Remove ${tag.name}`} disabled={mutation.isPending} onClick={() => toggleTag(tag.id)} className="flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-md text-accent hover:bg-black/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:cursor-wait disabled:opacity-50 dark:hover:bg-white/10">
+          <button type="button" aria-label={`Remove ${tag.name} tag`} title={`Remove ${tag.name}`} disabled={mutation.isPending} onClick={() => toggleTag(tag.id)} className="flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-lg text-accent hover:bg-black/5 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:cursor-wait disabled:opacity-50 dark:hover:bg-white/10">
             <XMarkIcon className="size-3" />
           </button>
         </span>

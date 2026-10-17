@@ -33,7 +33,7 @@ export default function InviteErrorPanel({
       transition={transition}
       className="space-y-6"
     >
-      <div className="flex size-12 items-center justify-center rounded-md border border-destructive/20 bg-destructive/6 text-destructive">
+      <div className="flex size-12 items-center justify-center rounded-lg border border-destructive/20 bg-destructive/6 text-destructive">
         <AlertCircle className="size-5" />
       </div>
       <div>
@@ -48,7 +48,7 @@ export default function InviteErrorPanel({
       <Button
         type="button"
         size="lg"
-        className="w-full rounded-md"
+        className="w-full rounded-lg"
         onClick={onAction}
       >
         {buttonLabel}

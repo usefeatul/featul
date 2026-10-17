@@ -1,0 +1,30 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/hyperframes.json",
+  "registry": "https://raw.githubusercontent.com/heygen-com/hyperframes/main/registry",
+  "paths": {
+    "blocks": "compositions",
+    "components": "compositions/components",
+    "assets": "assets"
+  },
+  "media": {
+    "autoProxy": true
+  },
+  "authoringSkill": "product-launch-video",
+  "registryItems": [
+    {
+      "name": "kinetic-center-build",
+      "type": "hyperframes:component",
+      "target": "compositions/components/kinetic-center-build.html"
+    },
+    {
+      "name": "ui-focus-zoom",
+      "type": "hyperframes:component",
+      "target": "compositions/components/ui-focus-zoom.html"
+    },
+    {
+      "name": "cursor-zoom-follow",
+      "type": "hyperframes:component",
+      "target": "compositions/components/cursor-zoom-follow.html"
+    }
+  ]
+}

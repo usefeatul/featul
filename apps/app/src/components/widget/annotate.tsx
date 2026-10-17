@@ -603,7 +603,7 @@ export function ScreenshotAnnotator({
           type="button"
           onClick={onCancel}
           disabled={busy}
-          className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:opacity-40"
+          className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-transparent text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))] disabled:opacity-40"
           aria-label="Cancel screenshot"
         >
           <XMarkIcon className="size-4" size={16} />
@@ -737,7 +737,7 @@ export function ScreenshotAnnotator({
                           }`}
                         >
                           <span
-                            className="rounded-full bg-current"
+                            className="rounded-lg bg-current"
                             style={{
                               width: 4 + value * 3,
                               height: 4 + value * 3,

@@ -1,0 +1,5 @@
+Build what your customers actually want.
+Turn customer feedback into your next great feature. Gather ideas, decide what’s next, and bring your customers along as you ship.
+Feedback boards. Public roadmap. Changelog.
+featul.com
+Source: repository README and apps/web/src/components/home/content.tsx.

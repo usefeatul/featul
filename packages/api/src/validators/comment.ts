@@ -53,6 +53,12 @@ export const voteCommentInputSchema = z.object({
   fingerprint: fingerprintSchema,
 })
 
+export const reactCommentInputSchema = z.object({
+  commentId: z.string().min(1),
+  emoji: z.literal("👍"),
+  active: z.boolean(),
+})
+
 export const reportCommentInputSchema = z.object({
   commentId: z.string().min(1),
   reason: z.enum(["spam", "harassment", "inappropriate", "off_topic", "other"]),

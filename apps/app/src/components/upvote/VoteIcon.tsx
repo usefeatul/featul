@@ -33,7 +33,7 @@ export function VoteIcon({ hasVoted, direction = "up" }: VoteIconProps) {
           <>
             <motion.span
               key="burst"
-              className="absolute -top-1 -left-1 h-5 w-5 rounded-full bg-current/25"
+              className="absolute -top-1 -left-1 h-5 w-5 rounded-lg bg-current/25"
               initial={{ scale: 0, opacity: 0.9 }}
               animate={{ scale: 1.8, opacity: 0 }}
               exit={{ opacity: 0 }}
@@ -42,7 +42,7 @@ export function VoteIcon({ hasVoted, direction = "up" }: VoteIconProps) {
             />
             <motion.span
               key="burst-2"
-              className="absolute -top-0.5 -left-0.5 h-7 w-7 rounded-full bg-current/15"
+              className="absolute -top-0.5 -left-0.5 h-7 w-7 rounded-lg bg-current/15"
               initial={{ scale: 0, opacity: 0.8 }}
               animate={{ scale: 2.3, opacity: 0 }}
               exit={{ opacity: 0 }}

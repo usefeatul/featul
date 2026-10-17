@@ -82,7 +82,7 @@ export default function ActiveSessions({ initialSessions }: { initialSessions?: 
                             Loading sessions...
                         </div>
                     ) : (
-                        <div className="flex flex-col gap-2">
+                        <div className="-mx-5 flex flex-col divide-y divide-border/50 [&>div]:px-5">
                             {(sessions || []).slice(0, expanded ? undefined : 8).map((s) => {
                                 const isCurrent = Boolean(s.isCurrent)
                                 const deviceName = parseUserAgent(s.userAgent)
@@ -95,14 +95,14 @@ export default function ActiveSessions({ initialSessions }: { initialSessions?: 
                                 return (
                                     <div
                                         key={s.id}
-                                        className="flex flex-col sm:flex-row sm:items-center justify-between p-2 gap-2"
+                                        className="flex flex-col sm:flex-row sm:items-center justify-between py-4 gap-3"
                                     >
                                         <div className="flex items-center gap-3 overflow-hidden">
                                             <div className="min-w-0 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-sm font-medium truncate">{deviceName}</span>
                                                     {isCurrent && (
-                                                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 font-medium shrink-0">
+                                                        <span className="text-xs px-1.5 py-0.5 rounded-lg bg-primary/10 text-primary border border-primary/20 font-medium shrink-0">
                                                             Current
                                                         </span>
                                                     )}

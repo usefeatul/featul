@@ -63,7 +63,8 @@ export function PricingPlans() {
 function PricingTitle() {
   return (
     <>
-      Pricing that grows <HeadingHighlight>with your team.</HeadingHighlight>
+      <span className="inline-block">Pricing that grows</span>{" "}
+      <HeadingHighlight>with your team.</HeadingHighlight>
     </>
   )
 }
@@ -134,8 +135,8 @@ function PricingPlanCard({
     planKey === "free"
       ? "Free"
       : billingCycle === "yearly"
-        ? `$${plan.yearlyPrice} / yr`
-        : `$${plan.monthlyPrice} / mo`
+        ? `£${plan.yearlyPrice} / yr`
+        : `£${plan.monthlyPrice} / mo`
 
   return (
     <OverlayCard className="relative">
@@ -210,7 +211,16 @@ function PricingPlanCard({
           <Button asChild variant={buttonVariant} className={buttonClassName}>
             <Link href={plan.href}>{ctaLabel}</Link>
           </Button>
-          <p className="mt-2 text-center text-xs font-extralight text-foreground/65">{plan.finePrint}</p>
+          <p className="mt-2 text-center text-xs font-extralight text-foreground/65">
+            {planKey !== "free" && billingCycle === "yearly"
+              ? "2 months free. Billed annually. Cancel anytime."
+              : plan.finePrint}
+          </p>
+          {plan.trialDays ? (
+            <p className="mt-2 text-center text-xs font-extralight text-foreground/65">
+              One trial per account. No credit card required.
+            </p>
+          ) : null}
         </div>
       </OverlayCardPanel>
     </OverlayCard>
@@ -239,7 +249,7 @@ function AnimatedPrice({ value }: { value: number }) {
     return () => controls.stop()
   }, [value])
 
-  return <span>${displayValue}</span>
+  return <span>£{displayValue}</span>
 }
 
 function BillingCycleTabs({
@@ -276,6 +286,11 @@ function BillingCycleTabs({
           )}
         >
           Yearly
+          {billingCycle === "yearly" ? (
+            <span className="ml-1 rounded-sm bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+              2 months free
+            </span>
+          ) : null}
         </TabsTrigger>
       </TabsList>
     </Tabs>
@@ -313,6 +328,8 @@ function getPlanRibbon(planKey: PricingPlanKey): { label: string; tone: "popular
 }
 
 function getPlanCtaLabel(planKey: PricingPlanKey): string {
+  const plan = getPricingPlan(planKey)
+  if (plan.trialDays) return `Start ${plan.trialDays}-day free trial`
   if (planKey === "free") return "Get Free"
   if (planKey === "starter") return "Get Starter"
   return "Get Professional"

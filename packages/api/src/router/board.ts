@@ -1163,7 +1163,7 @@ export function createBoardRouter() {
         if (!p) throw new HTTPException(404, { message: "Post not found" });
 
         const [currentBoard] = await ctx.db
-          .select({ id: board.id, workspaceId: board.workspaceId })
+          .select({ id: board.id, name: board.name, workspaceId: board.workspaceId })
           .from(board)
           .where(eq(board.id, p.boardId))
           .limit(1);
@@ -1171,7 +1171,7 @@ export function createBoardRouter() {
           throw new HTTPException(404, { message: "Board not found" });
 
         const [targetBoard] = await ctx.db
-          .select({ id: board.id })
+          .select({ id: board.id, name: board.name })
           .from(board)
           .where(
             and(
@@ -1231,6 +1231,8 @@ export function createBoardRouter() {
           title: p.title,
           metadata: {
             roadmapStatus: p.roadmapStatus,
+            fromBoardName: currentBoard.name,
+            toBoardName: targetBoard.name,
             fromBoardId: p.boardId,
             toBoardId: targetBoard.id,
             slug: p.slug,

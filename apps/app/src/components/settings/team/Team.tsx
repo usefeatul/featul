@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@featul/ui/components/table";
-import { Label } from "@featul/ui/components/label";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -164,81 +163,59 @@ export default function TeamSection({
   };
 
   return (
-    <div className="space-y-4">
-    <SectionCard
-      title="Members"
-      description="People with access to this workspace."
-      action={
-        <Button
-          type="button"
-          onClick={() => setInviteOpen(true)}
-          disabled={isLoading || inviteAccessLoading || !canInvite}
-        >
-          Invite member
-        </Button>
-      }
-    >
-      <div className="space-y-2">
-        <div className="space-y-2">
-          <Label>Members</Label>
-          <Table variant="settings">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="px-4">Name</TableHead>
-                  <TableHead className="px-4 w-48 text-center">Role</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(data.members || []).length === 0 && !isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={2} className="px-4 py-6 text-accent">
-                      No members
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  (data.members || []).map((m: Member) => (
-                    <MemberRow
-                      key={m.userId}
-                      m={m}
-                      menuFor={menuFor}
-                      setMenuFor={setMenuFor}
-                      onRoleChange={handleRoleChange}
-                      onRemoveMember={handleRemoveMember}
-                    />
-                  ))
-                )}
-              </TableBody>
-            </Table>
-        </div>
-
-        <div className="space-y-2 mt-3">
-          <Label>Pending Invites</Label>
-          <InvitesList
-            slug={slug}
-            invites={data.invites || []}
-            loading={isLoading}
-            onChanged={refresh}
-          />
-        </div>
-
-        <InviteMemberModal
-            slug={slug}
-            open={inviteOpen}
-            onOpenChange={setInviteOpen}
-            plan={initialPlan}
-            currentMemberCount={(data.members || []).length}
-            onInvited={async () => {
-              await refresh();
-            }}
-          />
-      </div>
-    </SectionCard>
-    <PlanNotice
-      slug={slug}
-      feature="team"
-      plan={initialPlan}
-      membersCount={(data.members || []).length}
-    />
+    <div className="space-y-8">
+      <SectionCard
+        title="Members"
+        contentClassName="py-1"
+        action={
+          <Button
+            type="button"
+            onClick={() => setInviteOpen(true)}
+            disabled={isLoading || inviteAccessLoading || !canInvite}
+          >
+            Invite member
+          </Button>
+        }
+      >
+        <Table variant="settings" containerClassName="-mx-5 w-[calc(100%+2.5rem)]">
+          <TableHeader className="sr-only">
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Role and actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(data.members || []).length === 0 && !isLoading ? (
+              <TableRow>
+                <TableCell colSpan={2} className="py-6 text-muted-foreground">No members</TableCell>
+              </TableRow>
+            ) : (
+              (data.members || []).map((m: Member) => (
+                <MemberRow
+                  key={m.userId}
+                  m={m}
+                  menuFor={menuFor}
+                  setMenuFor={setMenuFor}
+                  onRoleChange={handleRoleChange}
+                  onRemoveMember={handleRemoveMember}
+                />
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </SectionCard>
+      <SectionCard title="Pending invites" contentClassName="py-1">
+        <InvitesList slug={slug} invites={data.invites || []} loading={isLoading} onChanged={refresh} />
+      </SectionCard>
+      <InviteMemberModal
+        slug={slug}
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
+        plan={initialPlan}
+        currentMemberCount={(data.members || []).length}
+        onInvited={async () => { await refresh(); }}
+      />
+      <PlanNotice slug={slug} feature="team" plan={initialPlan} membersCount={(data.members || []).length} />
     </div>
   );
 }

@@ -64,14 +64,14 @@ export default function InviteReadyPanel({
 
       <motion.div layout className="p-0">
         <div className="flex items-center gap-3">
-          <Avatar className="size-12 rounded-md">
+          <Avatar className="size-12 rounded-lg">
             {workspaceLogo ? (
               <AvatarImage
                 src={workspaceLogo}
                 alt={workspaceName || "workspace"}
               />
             ) : null}
-            <AvatarFallback className="rounded-md bg-muted text-sm font-semibold">
+            <AvatarFallback className="rounded-lg bg-muted text-sm font-semibold">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -88,8 +88,8 @@ export default function InviteReadyPanel({
           ) : null}
         </div>
 
-        <div className="mt-4 flex items-center gap-3 rounded-md bg-muted/35 px-3 py-3">
-          <div className="flex size-9 items-center justify-center rounded-md bg-muted text-accent">
+        <div className="mt-4 flex items-center gap-3 rounded-lg bg-muted/35 px-3 py-3">
+          <div className="flex size-9 items-center justify-center rounded-lg bg-muted text-accent">
             <Mail className="size-4" />
           </div>
           <div className="min-w-0">
@@ -107,7 +107,7 @@ export default function InviteReadyPanel({
         <Button
           type="button"
           size="lg"
-          className="w-full rounded-md"
+          className="w-full rounded-lg"
           disabled={isBusy}
           onClick={onAccept}
         >
@@ -119,7 +119,7 @@ export default function InviteReadyPanel({
           type="button"
           variant="outline"
           size="lg"
-          className="w-full rounded-md"
+          className="w-full rounded-lg"
           disabled={isBusy}
           onClick={onDecline}
         >

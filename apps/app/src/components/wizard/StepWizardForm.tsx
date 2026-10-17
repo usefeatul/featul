@@ -188,7 +188,7 @@ export default function StepWizardForm({
               {steps.map((item, i) => (
                 <div
                   key={item.id}
-                  className={`h-1 rounded-full ${i <= step ? "bg-primary" : "bg-primary/20"}`}
+                  className={`h-1 rounded-lg ${i <= step ? "bg-primary" : "bg-primary/20"}`}
                   style={{ width: i === step ? 32 : 18 }}
                 />
               ))}
@@ -202,7 +202,7 @@ export default function StepWizardForm({
               <div className="space-y-2">
                 <Label htmlFor="domain">Domain</Label>
                 <Toolbar size="sm" className="w-full">
-                  <span className="inline-flex h-full shrink-0 items-center self-stretch rounded-l-md border-r border-border bg-card px-3 text-xs font-medium tracking-wide text-accent dark:bg-black dark:text-accent">
+                  <span className="inline-flex h-full shrink-0 items-center self-stretch rounded-l-lg border-r border-border bg-card px-3 text-xs font-medium tracking-wide text-accent dark:bg-black dark:text-accent">
                     HTTPS
                   </span>
                   <Input
@@ -319,12 +319,12 @@ export default function StepWizardForm({
                     {!slugLocked && slugChecking ? (
                       <LoaderIcon className="size-3.5 text-accent" />
                     ) : !slugLocked && slug && slugAvailable === true ? (
-                      <span className="inline-flex size-3.5 items-center justify-center rounded-full bg-emerald-500 text-white">
+                      <span className="inline-flex size-3.5 items-center justify-center rounded-lg bg-emerald-500 text-white">
                         <CheckIcon className="size-2" />
                       </span>
                     ) : !slugLocked &&
                       (slugAvailable === false || (slug && !isSlugValid(slug, reservedAllowed))) ? (
-                      <span className="inline-flex size-4 items-center justify-center rounded-full bg-destructive text-white">
+                      <span className="inline-flex size-4 items-center justify-center rounded-lg bg-destructive text-white">
                         <XMarkIcon className="size-2.5" />
                       </span>
                     ) : null}

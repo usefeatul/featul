@@ -105,7 +105,7 @@ export function WidgetRoadmap({
                 aria-expanded={!isCollapsed}
                 aria-controls={`${roadmapId}-${section.key}-items`}
                 onClick={() => setCollapsed((previous) => ({ ...previous, [section.key]: !previous[section.key] }))}
-                className="flex w-full cursor-pointer items-center gap-3 rounded py-2 text-left focus-visible:outline-2 focus-visible:outline-primary"
+                className="flex w-full cursor-pointer items-center gap-3 rounded-lg py-2 text-left focus-visible:outline-2 focus-visible:outline-primary"
               >
                 <StatusIcon status={section.status} className="size-[18px] shrink-0" />
                 <span className="flex-1 text-sm font-semibold text-[rgb(var(--widget-fg))]">{section.label}</span>
@@ -133,7 +133,7 @@ export function WidgetRoadmap({
                 <button
                   type="button"
                   onClick={() => setExpandedByKey((prev) => ({ ...prev, [section.key]: true }))}
-                  className="ml-8 flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-2 text-xs text-[rgb(var(--widget-fg)/0.55)] hover:bg-[rgb(var(--widget-fg)/0.05)]"
+                  className="ml-8 flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-2 text-xs text-[rgb(var(--widget-fg)/0.55)] hover:bg-[rgb(var(--widget-fg)/0.05)]"
                 >
                   Show {sectionItems.length - visible.length} more
                   <ChevronDown className="size-3.5" />
@@ -224,7 +224,7 @@ function RoadmapItem({
       <button
         type="button"
         onClick={() => onOpen?.(item)}
-        className="group/post block w-full min-w-0 cursor-pointer rounded-md py-3 pl-8 pr-2 text-left focus-visible:outline-2 focus-visible:outline-primary"
+        className="group/post block w-full min-w-0 cursor-pointer rounded-lg py-3 pl-8 pr-2 text-left focus-visible:outline-2 focus-visible:outline-primary"
         aria-label={item.title}
       >
         <p className={`line-clamp-2 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))] ${compact ? "" : "pr-14"}`}>

@@ -31,6 +31,7 @@ export const {
   postMerge,
   comment,
   commentReaction,
+  commentEmojiReaction,
   commentMention,
   commentReport,
   vote,
@@ -47,4 +48,5 @@ export const {
   activityLog,
   workspaceIntegration,
   workspaceNotraConnection,
+  webhookDelivery,
 } = schema;

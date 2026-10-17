@@ -25,7 +25,7 @@ export default function InvitesList({
 }: InvitesListProps) {
   if (invites.length === 0 && !loading) {
     return (
-      <Table variant="settings">
+      <Table variant="settings" containerClassName="-mx-5 w-[calc(100%+2.5rem)]">
         <TableHeader>
           <TableRow>
             <TableHead className="px-4">Email</TableHead>
@@ -44,7 +44,7 @@ export default function InvitesList({
   }
 
   return (
-    <Table variant="settings">
+    <Table variant="settings" containerClassName="-mx-5 w-[calc(100%+2.5rem)]">
       <TableHeader>
         <TableRow>
           <TableHead className="px-4">Email</TableHead>

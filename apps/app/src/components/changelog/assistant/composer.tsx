@@ -38,7 +38,7 @@ export function Composer({
   onStop: () => void;
 }) {
   return (
-    <div className="relative z-30 rounded-xl bg-card p-2 ring-1 ring-inset ring-black/[0.07] dark:ring-white/[0.08]">
+    <div className="relative z-30 rounded-lg bg-card p-2 ring-1 ring-inset ring-black/[0.07] dark:ring-white/[0.08]">
       {selectionText ? (
         <div className="mb-1.5 rounded-lg bg-black/[0.04] px-2.5 py-2 dark:bg-white/[0.05]">
           <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground/60">
@@ -80,7 +80,7 @@ export function Composer({
           variant="plain"
           size="icon-sm"
           className={cn(
-            "size-8 rounded-md border-0 text-muted-foreground shadow-none before:hidden hover:bg-muted hover:text-foreground dark:hover:bg-white/[0.08]",
+            "size-8 rounded-lg border-0 text-muted-foreground shadow-none before:hidden hover:bg-muted hover:text-foreground dark:hover:bg-white/[0.08]",
             attachmentOpen
               ? "bg-primary/10 text-primary dark:bg-primary/15"
               : "bg-muted/70 dark:bg-white/[0.055]",
@@ -98,7 +98,7 @@ export function Composer({
             type="button"
             variant="plain"
             size="icon-sm"
-            className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.06]"
+            className="size-8 rounded-lg border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.06]"
             onClick={onUndo}
             aria-label="Undo last AI edit"
             title="Undo last AI edit"
@@ -110,7 +110,7 @@ export function Composer({
           type="button"
           variant="default"
           size="icon-sm"
-          className="ml-auto size-8 rounded-md"
+          className="ml-auto size-8 rounded-lg"
           aria-label={isLoading ? "Stop" : "Send"}
           disabled={!isLoading && !value.trim()}
           onClick={isLoading ? onStop : onSend}

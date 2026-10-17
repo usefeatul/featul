@@ -1,3 +1,4 @@
+import type { PostActivityPage } from "@featul/api/activity/post";
 import type { ActivityAction } from "@featul/api/activity/actions";
 
 export interface TagSummary {
@@ -40,3 +41,9 @@ export interface PaginatedActivity {
     items: ActivityItem[];
     nextCursor: string | null;
 }
+
+export type InitialActivity = {
+  page: PostActivityPage;
+  userId: string | null;
+  updatedAt: number;
+};

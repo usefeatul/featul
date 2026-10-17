@@ -17,7 +17,7 @@ export default function FeedbackSection({
   initialTags?: FeedbackTag[]
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <RoadmapVisibility slug={slug} initialBoards={initialBoards} />
       <ManageTags slug={slug} plan={plan} initialTags={initialTags} />
     </div>

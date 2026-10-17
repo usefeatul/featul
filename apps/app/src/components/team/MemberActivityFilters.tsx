@@ -19,7 +19,7 @@ interface MemberActivityFiltersProps {
 
 function chipClass(active: boolean) {
   return cn(
-    "h-7 rounded-md border-0 bg-muted/55 px-3 text-xs shadow-none ring-0 dark:bg-white/[0.045]",
+    "h-7 rounded-lg border-0 bg-muted/55 px-3 text-xs shadow-none ring-0 dark:bg-white/[0.045]",
     active
       ? "text-foreground ring-1 ring-primary/35"
       : "text-accent hover:bg-muted hover:text-foreground dark:hover:bg-white/[0.075]",

@@ -452,7 +452,7 @@ export default function FiltersAction({
                   id: item.id,
                   label: item.name,
                   value: item.slug,
-                  icon: <span className="size-1.5 rounded-full bg-primary" />,
+                  icon: <span className="size-1.5 rounded-lg bg-primary" />,
                 }))}
                 selected={boardFilter.selected}
                 isAllSelected={boardFilter.isAllSelected}

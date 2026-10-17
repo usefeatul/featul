@@ -97,7 +97,7 @@ const NotificationsPanel = React.forwardRef<
               <li key={n.id} className="px-1.5 py-1">
                 <Link
                   href={resolveNotificationHref(n, linkMode)}
-                  className="px-2 py-1.5 flex items-center gap-2 rounded-md hover:bg-muted/40"
+                  className="px-2 py-1.5 flex items-center gap-2 rounded-lg hover:bg-muted/40"
                   onClick={() => markRead(n.id)}
                 >
                   <div className="relative">
@@ -108,7 +108,7 @@ const NotificationsPanel = React.forwardRef<
                       </AvatarFallback>
                     </Avatar>
                     {!n.isRead && (
-                      <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-orange-500" />
+                      <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-lg bg-orange-500" />
                     )}
                   </div>
                   <div className="flex-1">

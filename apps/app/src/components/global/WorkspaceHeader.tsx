@@ -39,7 +39,7 @@ function resolveTitle(segment: string): string {
 }
 
 const compactActionButtonClass =
-  "size-8 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground data-[state=open]:bg-black/[0.06] dark:bg-[#292929] dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
+  "size-8 rounded-lg border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground data-[state=open]:bg-black/[0.06] dark:bg-secondary dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
 
 function EditorActionButton({ action }: { action: EditorAction }) {
   const label = action.label || "Back to changelog";
@@ -58,7 +58,7 @@ function EditorActionButton({ action }: { action: EditorAction }) {
       title={action.shortcut ? undefined : label}
       className={cn(
         compactActionButtonClass,
-        action.active && "bg-black/[0.08] text-foreground dark:bg-[#303030]",
+        action.active && "bg-black/[0.08] text-foreground dark:bg-muted",
       )}
     >
       {action.icon}
@@ -179,7 +179,7 @@ export default function WorkspaceHeader({
         action.type === "switch" ? (
           <div
             key={action.key}
-            className="flex h-8 items-center gap-2 rounded-md bg-black/5 px-2.5 text-xs font-medium text-muted-foreground dark:bg-[#292929]"
+            className="flex h-8 items-center gap-2 rounded-lg bg-black/5 px-2.5 text-xs font-medium text-muted-foreground dark:bg-secondary"
           >
             <span>{action.label}</span>
             <Switch checked={action.checked} onCheckedChange={action.onClick} />
@@ -224,7 +224,7 @@ export default function WorkspaceHeader({
                   <Link
                     href={`/workspaces/${workspaceSlug}/changelog`}
                     aria-label="Back to changelog"
-                    className="flex items-center rounded-md py-1 text-accent transition-colors hover:text-foreground"
+                    className="flex items-center rounded-lg py-1 text-accent transition-colors hover:text-foreground"
                   >
                     Changelog
                   </Link>
@@ -260,7 +260,7 @@ export default function WorkspaceHeader({
       <div className="flex min-h-12 items-center gap-2 px-4 text-sm sm:px-6">
         <Link
           href={`/workspaces/${workspaceSlug}`}
-          className="max-w-48 truncate rounded-md px-1.5 py-1 text-accent transition-colors hover:bg-muted dark:hover:bg-white/5"
+          className="max-w-48 truncate rounded-lg px-1.5 py-1 text-accent transition-colors hover:bg-muted dark:hover:bg-white/5"
         >
           {workspaceName}
         </Link>
@@ -293,7 +293,7 @@ export default function WorkspaceHeader({
             className={cn(
               "flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2",
               !showPageHeading && "mb-5",
-              (isSettingsSection || isAccountSection) && "mx-auto w-full max-w-5xl",
+              (isSettingsSection || isAccountSection) && "mx-auto w-full max-w-4xl",
             )}
           >
             {showFilterSummary ? (

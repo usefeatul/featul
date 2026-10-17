@@ -76,7 +76,7 @@ export function ChangelogContent({ entry }: ChangelogContentProps) {
                 <li key={post.id}>
                   <Link
                     href={`/board/p/${encodeURIComponent(post.slug)}`}
-                    className="group flex items-center gap-2.5 rounded-md px-2 py-3 text-sm transition-colors hover:bg-muted/40 dark:hover:bg-muted/30 focus-visible:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+                    className="group flex items-center gap-2.5 rounded-lg px-2 py-3 text-sm transition-colors hover:bg-muted/40 dark:hover:bg-muted/30 focus-visible:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
                   >
                     <StatusIcon
                       status={post.roadmapStatus ?? undefined}
@@ -98,7 +98,7 @@ export function ChangelogContent({ entry }: ChangelogContentProps) {
               {entry.tags.map((tag) => (
                 <span
                   key={tag.id}
-                  className="text-xs rounded-md bg-muted px-2 py-1 text-muted-foreground font-medium"
+                  className="text-xs rounded-lg bg-muted px-2 py-1 text-muted-foreground font-medium"
                 >
                   {tag.name}
                 </span>

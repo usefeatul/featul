@@ -1,11 +1,12 @@
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
-import { db, workspace, workspaceDomain } from "@featul/db"
 import { and, eq } from "drizzle-orm"
 import { reroute } from "./reroute"
+import type { getHostInfo } from "./host"
 
 /** Resolve a custom host only via a DNS-verified workspaceDomain row. */
 async function findWorkspaceSlugForFeedbackHost(hostNoPort: string) {
+  const { db, workspace, workspaceDomain } = await import("@featul/db")
   const host = hostNoPort.toLowerCase()
   const [row] = await db
     .select({ slug: workspace.slug })
@@ -22,9 +23,9 @@ async function findWorkspaceSlugForFeedbackHost(hostNoPort: string) {
 }
 
 /** A verified custom host (not featul.com): rewrite public paths onto the matched workspace. */
-export async function rewriteFeedback(req: NextRequest, ctx: { pathname: string; hostNoPort: string; isMainDomain: boolean }) {
-  const { pathname, hostNoPort, isMainDomain } = ctx
-  if (!isMainDomain) {
+export async function rewriteFeedback(req: NextRequest, ctx: ReturnType<typeof getHostInfo>) {
+  const { pathname, hostNoPort, isMainDomain, isLocal } = ctx
+  if (!isMainDomain && !isLocal) {
     try {
       const targetSlug = await findWorkspaceSlugForFeedbackHost(hostNoPort)
       if (targetSlug) {

@@ -1,0 +1,11 @@
+{
+  "name": "featul-launch",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes --package=node@22 --package=hyperframes@0.8.166 hyperframes preview",
+    "check": "npx --yes --package=node@22 --package=hyperframes@0.8.166 hyperframes check",
+    "render": "npx --yes --package=node@22 --package=hyperframes@0.8.166 hyperframes render",
+    "publish": "npx --yes --package=node@22 --package=hyperframes@0.8.166 hyperframes publish"
+  }
+}

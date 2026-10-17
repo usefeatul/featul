@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import SettingsCard from "../../../global/SettingsCard";
+import { WidgetRow } from "./widget";
 import { KeyIcon } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
@@ -58,7 +58,9 @@ export default function SigningSecretCard({ slug }: Props) {
     if (!slug) return;
     setRotating(true);
     try {
-      const response = await client.workspace.rotateWidgetSecret.$post({ slug });
+      const response = await client.workspace.rotateWidgetSecret.$post({
+        slug,
+      });
       const data = await response.json();
       const nextSecret = readSecret(data);
       if (!nextSecret) throw new Error("Missing secret");
@@ -83,43 +85,47 @@ export default function SigningSecretCard({ slug }: Props) {
 
   return (
     <div className="h-full">
-      <SettingsCard
+      <WidgetRow
         icon={<KeyIcon className="size-5 text-primary" />}
         title="Signing secret"
         description={
-          <div className="space-y-3">
-            <p className="break-words">
-              Use this on your backend to sign user identities for{" "}
-              <code className="rounded bg-muted px-1 py-0.5">
-                featul.identify()
-              </code>
-              . Never expose it in browser code.
-            </p>
-            <div className="flex w-full items-center gap-2">
-              <Input
-                readOnly
-                value={maskedSecret}
-                spellCheck={false}
-                autoComplete="off"
-                className="min-w-0 flex-1 font-mono"
-                onFocus={(event) => {
-                  if (revealed) event.currentTarget.select();
-                }}
-              />
-              {secret ? (
-                <Button
-                  type="button"
-                  variant="card"
-                  className="shrink-0"
-                  onClick={() => setRevealed((value) => !value)}
-                >
-                  {revealed ? "Hide" : "Show"}
-                </Button>
-              ) : null}
-            </div>
+          <p className="break-words">
+            Use this on your backend to sign user identities for{" "}
+            <code className="rounded-lg bg-muted px-1 py-0.5">
+              featul.identify()
+            </code>
+            . Never expose it in browser code.
+          </p>
+        }
+        content={
+          <div className="relative w-full">
+            <Input
+              readOnly
+              aria-label="Widget signing secret"
+              value={maskedSecret}
+              spellCheck={false}
+              autoComplete="off"
+              className="h-9 w-full pr-16 font-mono"
+              onFocus={(event) => {
+                if (revealed) event.currentTarget.select();
+              }}
+            />
+            {secret ? (
+              <Button
+                type="button"
+                variant="plain"
+                aria-label={
+                  revealed ? "Hide signing secret" : "Show signing secret"
+                }
+                aria-pressed={revealed}
+                className="absolute inset-y-1 right-1 h-auto w-12 px-2 text-xs"
+                onClick={() => setRevealed((value) => !value)}
+              >
+                {revealed ? "Hide" : "Show"}
+              </Button>
+            ) : null}
           </div>
         }
-        disabled={!slug}
       >
         <Button variant="card" onClick={handleCopySecret} disabled={!secret}>
           Copy secret
@@ -131,7 +137,7 @@ export default function SigningSecretCard({ slug }: Props) {
         >
           Rotate secret
         </Button>
-      </SettingsCard>
+      </WidgetRow>
 
       <DestructiveConfirmDialog
         open={rotateDialogOpen}

@@ -154,6 +154,7 @@ export default function AvatarUpload({ initialUser }: AvatarUploadProps) {
 
   return (
     <SettingsCard
+      layout="row"
       title="Avatar"
       description="This is your public display avatar."
       icon={<AvatarIcon className="size-5 text-primary" />}

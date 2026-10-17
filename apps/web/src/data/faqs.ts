@@ -6,6 +6,12 @@ export type FaqItem = {
 
 export const faqItems: FaqItem[] = [
   {
+    id: "free-trial",
+    question: "Do Starter and Professional include a free trial?",
+    answer:
+      "Yes. Both Starter and Professional offer a 14-day free trial with no credit card required. Each account can use one trial across all workspaces and both plans. Trials are available with monthly or yearly billing.",
+  },
+  {
     id: "item-1",
     question: "How quickly can I start collecting feedback?",
     answer:

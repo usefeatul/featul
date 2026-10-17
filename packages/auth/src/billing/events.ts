@@ -9,7 +9,6 @@ import {
   getInvoiceSubscriptionId, sendFailedPaymentNotificationForInvoice,
   sendUpcomingPaymentNotificationForInvoice, sendWorkspaceUpgradeNotification,
 } from "./notifications"
-import { captureServerAnalyticsEvent } from "../posthog"
 
 export const billingEvents = new Set<Stripe.Event.Type>([
   "checkout.session.completed", "checkout.session.async_payment_succeeded", "checkout.session.async_payment_failed",
@@ -66,12 +65,6 @@ async function applyBillingEvent(event: Stripe.Event) {
         // Subsequent changes use the event ID so returning to a plan sends again.
         stripeEventId: initial ? `activation:${subscriptionId}` : event.id,
       })
-      if (event.type === "checkout.session.completed") {
-        await captureServerAnalyticsEvent("subscription_upgraded", `workspace:${referenceId}`, {
-          workspace_id: referenceId, plan: current.plan, status: current.status, source: "stripe_complete",
-          $insert_id: event.id,
-        })
-      }
     }
   }
 }
