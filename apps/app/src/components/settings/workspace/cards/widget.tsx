@@ -3,7 +3,7 @@ import SectionCard from "../../global/SectionCard";
 
 export function WidgetSection({ children }: { children: ReactNode }) {
   return (
-    <SectionCard title="Widget" contentClassName="divide-y divide-border/50 py-0">
+    <SectionCard title="Widget" contentClassName="divide-y divide-border/50 p-0">
       {children}
     </SectionCard>
   );
@@ -21,7 +21,7 @@ export function WidgetRow({
   children: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+    <div className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <div className="flex size-5 shrink-0 items-center justify-center">
           {icon}
