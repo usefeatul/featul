@@ -54,15 +54,13 @@ export function QueueItem({
             <p className="min-w-0 flex-1 line-clamp-2 text-[13px] font-semibold leading-[18px] text-foreground/90">
               {item.title}
             </p>
-            {!active ? (
-              <time
-                dateTime={publishedAt}
-                aria-label={`Submitted ${publishedLabel}`}
-                className="shrink-0 pl-1 text-[10px] font-medium leading-[18px] tabular-nums text-muted-foreground/70 transition-colors group-hover/queue:text-muted-foreground"
-              >
-                {publishedLabel}
-              </time>
-            ) : null}
+            <time
+              dateTime={publishedAt}
+              aria-label={`Submitted ${publishedLabel}`}
+              className="shrink-0 pl-1 text-[10px] font-medium leading-[18px] tabular-nums text-muted-foreground/70 transition-colors group-hover/queue:text-muted-foreground"
+            >
+              {publishedLabel}
+            </time>
           </div>
 
           <Attributes item={item} />
