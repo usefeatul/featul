@@ -46,12 +46,14 @@ body .drag-handle::after {
 
 /* Hide scrollbar while keeping scroll functionality */
 .scrollbar-hide,
+[data-workspace-scroll]:has([data-settings-page]),
 [data-widget-scroll] {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar,
+[data-workspace-scroll]:has([data-settings-page])::-webkit-scrollbar,
 [data-widget-scroll]::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
