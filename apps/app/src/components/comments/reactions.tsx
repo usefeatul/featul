@@ -101,7 +101,7 @@ export default function Reactions({
       className={cn(
         "h-7 gap-1.5 rounded-md border px-2 text-xs tabular-nums shadow-none",
         reacted
-          ? "border-primary/30 bg-primary/10 text-primary hover:bg-primary/15 dark:bg-primary/10 dark:text-primary"
+          ? "border-primary bg-primary text-white hover:bg-primary/90 hover:text-white dark:bg-primary dark:text-white dark:hover:bg-primary/90 dark:hover:text-white"
           : "border-border/50 bg-transparent text-muted-foreground hover:bg-muted/50 dark:bg-transparent",
       )}
     >
