@@ -195,10 +195,10 @@ export function Home({
               className={`flex flex-col gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] ${px} py-3.5 last:border-b-0`}
             >
               <div className="flex items-center gap-2">
-                <Bone className="h-2.5 w-14 rounded-full" />
-                <Bone className="h-2.5 w-16 rounded-full" />
+                <Bone className="h-2.5 w-14 rounded-lg" />
+                <Bone className="h-2.5 w-16 rounded-lg" />
               </div>
-              <Bone className="mt-1 h-3.5 w-[82%] rounded-full" />
+              <Bone className="mt-1 h-3.5 w-[82%] rounded-lg" />
             </div>
           ))}
         </div>

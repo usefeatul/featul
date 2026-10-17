@@ -87,25 +87,20 @@ function TooltipContent({
 }: TooltipContentProps) {
 	return (
 		<BaseTooltip.Portal>
-			<BaseTooltip.Positioner className="z-50" sideOffset={sideOffset} side={side} align={align}>
+			<BaseTooltip.Positioner className="isolate z-50" sideOffset={sideOffset} side={side} align={align}>
 				<BaseTooltip.Popup
 					data-slot="tooltip-content"
 					className={cn(
-						"overflow-hidden rounded-lg border border-[#444444] border-t-[#666666] border-b-[#181818] bg-[#3a3a3a] text-zinc-100 dark:border-[#d4d4d4] dark:border-t-white dark:border-b-[#bcbcbc] dark:bg-[#f5f5f5] dark:text-zinc-900",
-						"w-fit max-w-[min(20rem,calc(100vw-1rem))] p-px outline-hidden origin-[var(--transform-origin)] transition-[opacity,transform] duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 motion-reduce:transition-none",
+						"relative w-fit max-w-[min(20rem,calc(100vw-1rem))] rounded-lg border border-foreground/60 bg-foreground bg-linear-to-b from-background/10 to-transparent px-2.5 py-1 text-xs font-normal leading-5 text-background whitespace-normal wrap-break-word outline-hidden [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*1.25)]",
+						"shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_1px_2px_rgba(0,0,0,0.16),0_6px_16px_-4px_rgba(0,0,0,0.24)]",
+						"origin-[var(--transform-origin)] transition-[opacity,scale,translate] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] data-ending-style:opacity-0 data-ending-style:duration-100 data-starting-style:opacity-0 motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97] motion-safe:data-[side=bottom]:data-starting-style:-translate-y-0.5 motion-safe:data-[side=left]:data-starting-style:translate-x-0.5 motion-safe:data-[side=right]:data-starting-style:-translate-x-0.5 motion-safe:data-[side=top]:data-starting-style:translate-y-0.5 motion-reduce:transition-opacity",
+						"[&_kbd]:border-background/15 [&_kbd]:bg-background/10 [&_kbd]:text-background/80",
+						className,
 					)}
 					{...props}
 				>
-					<div
-						className={cn(
-							"rounded-[6px] bg-[#292929] px-2.5 py-1 text-xs font-normal leading-5 text-inherit whitespace-normal wrap-break-word dark:bg-[#eeeeee]",
-							"bg-[linear-gradient(180deg,#363636_0%,#252525_100%)] dark:bg-[linear-gradient(180deg,#dedede_0%,#f4f4f4_100%)]",
-                            "[&_kbd]:border-white/15 [&_kbd]:bg-white/10 [&_kbd]:text-zinc-200 dark:[&_kbd]:border-black/10 dark:[&_kbd]:bg-black/[0.06] dark:[&_kbd]:text-zinc-600",
-							className,
-						)}
-					>
-						{children}
-					</div>
+					{children}
+					<BaseTooltip.Arrow className="-z-10 size-2.5 rotate-45 rounded-[1px] bg-inherit data-[side=top]:-bottom-1 data-[side=bottom]:-top-1 data-[side=left]:-right-1 data-[side=right]:-left-1 data-[side=inline-start]:-right-1 data-[side=inline-end]:-left-1" />
 				</BaseTooltip.Popup>
 			</BaseTooltip.Positioner>
 		</BaseTooltip.Portal>

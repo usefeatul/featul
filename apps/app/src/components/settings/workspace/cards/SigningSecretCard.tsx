@@ -90,7 +90,7 @@ export default function SigningSecretCard({ slug }: Props) {
           <div className="space-y-3">
             <p className="break-words">
               Use this on your backend to sign user identities for{" "}
-              <code className="rounded bg-muted px-1 py-0.5">
+              <code className="rounded-lg bg-muted px-1 py-0.5">
                 featul.identify()
               </code>
               . Never expose it in browser code.

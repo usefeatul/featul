@@ -6,7 +6,7 @@ function Bone({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "animate-pulse rounded-md bg-[rgb(var(--widget-fg)/0.08)]",
+        "animate-pulse rounded-lg bg-[rgb(var(--widget-fg)/0.08)]",
         className,
       )}
       aria-hidden
@@ -44,8 +44,8 @@ export function WidgetNavSkeleton({
           key={index}
           className="flex flex-col items-center gap-1 px-2 py-1.5"
         >
-          <Bone className="size-4 rounded-md" />
-          <Bone className="h-2.5 w-10 rounded-full" />
+          <Bone className="size-4 rounded-lg" />
+          <Bone className="h-2.5 w-10 rounded-lg" />
         </div>
       ))}
     </nav>
@@ -56,18 +56,18 @@ export function WidgetPostRowSkeleton() {
   return (
     <div className="border-b border-[rgb(var(--widget-fg)/0.1)] px-4 py-3.5 last:border-b-0">
       <div className="flex items-start gap-3">
-        <Bone className="mt-0.5 size-9 shrink-0 rounded-full" />
+        <Bone className="mt-0.5 size-9 shrink-0 rounded-lg" />
         <div className="min-w-0 flex-1">
-          <Bone className="h-4 w-[78%] rounded-full" />
-          <Bone className="mt-2 h-3 w-full rounded-full" />
-          <Bone className="mt-1.5 h-3 w-[62%] rounded-full" />
+          <Bone className="h-4 w-[78%] rounded-lg" />
+          <Bone className="mt-2 h-3 w-full rounded-lg" />
+          <Bone className="mt-1.5 h-3 w-[62%] rounded-lg" />
           <div className="mt-2.5 flex items-center gap-2">
-            <Bone className="h-2.5 w-14 rounded-full" />
-            <Bone className="h-2.5 w-10 rounded-full" />
-            <Bone className="h-2.5 w-16 rounded-full" />
+            <Bone className="h-2.5 w-14 rounded-lg" />
+            <Bone className="h-2.5 w-10 rounded-lg" />
+            <Bone className="h-2.5 w-16 rounded-lg" />
           </div>
         </div>
-        <Bone className="h-8 w-8 shrink-0 rounded-md" />
+        <Bone className="h-8 w-8 shrink-0 rounded-lg" />
       </div>
     </div>
   );
@@ -84,9 +84,9 @@ export function WidgetFeedbackListSkeleton({
     <div aria-busy="true" aria-label="Loading feedback">
       {withToolbar ? (
         <div className="flex items-center gap-2 px-4 pb-3 pt-1">
-          <Bone className="h-9 min-w-0 flex-1 rounded-md" />
-          <Bone className="size-9 shrink-0 rounded-md" />
-          <Bone className="size-9 shrink-0 rounded-md" />
+          <Bone className="h-9 min-w-0 flex-1 rounded-lg" />
+          <Bone className="size-9 shrink-0 rounded-lg" />
+          <Bone className="size-9 shrink-0 rounded-lg" />
         </div>
       ) : null}
       {range(rows).map((index) => (
@@ -100,12 +100,12 @@ export function WidgetRoadmapRowSkeleton() {
   return (
     <div className="border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 last:border-b-0">
       <div className="flex items-center gap-3">
-        <Bone className="size-8 shrink-0 rounded-full" />
+        <Bone className="size-8 shrink-0 rounded-lg" />
         <div className="min-w-0 flex-1">
-          <Bone className="h-3.5 w-[70%] rounded-full" />
-          <Bone className="mt-2 h-2.5 w-20 rounded-full" />
+          <Bone className="h-3.5 w-[70%] rounded-lg" />
+          <Bone className="mt-2 h-2.5 w-20 rounded-lg" />
         </div>
-        <Bone className="h-8 w-8 shrink-0 rounded-md" />
+        <Bone className="h-8 w-8 shrink-0 rounded-lg" />
       </div>
     </div>
   );
@@ -117,22 +117,22 @@ export function WidgetRoadmapSkeleton() {
       {(["w-24", "w-20", "w-14"] as const).map((width, section) => (
         <section key={section}>
           <div className="flex h-11 items-center gap-2 border-b border-[rgb(var(--widget-fg)/0.1)] px-5">
-            <Bone className="size-4 shrink-0 rounded-full" />
-            <Bone className={cn("h-3.5 rounded-full", width)} />
-            <Bone className="ml-auto h-3 w-6 rounded-full" />
+            <Bone className="size-4 shrink-0 rounded-lg" />
+            <Bone className={cn("h-3.5 rounded-lg", width)} />
+            <Bone className="ml-auto h-3 w-6 rounded-lg" />
           </div>
           {range(3).map((index) => (
             <div key={index} className="flex items-start gap-3 px-5 py-3.5">
-              <Bone className="mt-0.5 size-4 shrink-0 rounded-full" />
+              <Bone className="mt-0.5 size-4 shrink-0 rounded-lg" />
               <div className="min-w-0 flex-1">
-                <Bone className="h-3.5 w-[70%] rounded-full" />
-                <Bone className="mt-2 h-2.5 w-full rounded-full" />
+                <Bone className="h-3.5 w-[70%] rounded-lg" />
+                <Bone className="mt-2 h-2.5 w-full rounded-lg" />
                 <div className="mt-2.5 flex items-center gap-1.5">
-                  <Bone className="size-4 shrink-0 rounded-full" />
-                  <Bone className="h-2.5 w-16 rounded-full" />
+                  <Bone className="size-4 shrink-0 rounded-lg" />
+                  <Bone className="h-2.5 w-16 rounded-lg" />
                 </div>
               </div>
-              <Bone className="h-7 w-10 shrink-0 rounded-md" />
+              <Bone className="h-7 w-10 shrink-0 rounded-lg" />
             </div>
           ))}
         </section>
@@ -145,17 +145,17 @@ export function WidgetUpdateRowSkeleton() {
   return (
     <div className="border-t border-dashed border-[rgb(var(--widget-fg)/0.12)] px-5 py-5 first:border-t-0">
       <div className="flex items-center gap-2">
-        <Bone className="h-2.5 w-16 rounded-full" />
-        <Bone className="h-2.5 w-20 rounded-full" />
+        <Bone className="h-2.5 w-16 rounded-lg" />
+        <Bone className="h-2.5 w-20 rounded-lg" />
       </div>
-      <Bone className="mt-3 h-5 w-[88%] rounded-full" />
-      <Bone className="mt-3 h-3 w-full rounded-full" />
-      <Bone className="mt-1.5 h-3 w-[74%] rounded-full" />
+      <Bone className="mt-3 h-5 w-[88%] rounded-lg" />
+      <Bone className="mt-3 h-3 w-full rounded-lg" />
+      <Bone className="mt-1.5 h-3 w-[74%] rounded-lg" />
       <div className="mt-4 flex items-center gap-2.5">
-        <Bone className="size-7 shrink-0 rounded-full" />
+        <Bone className="size-7 shrink-0 rounded-lg" />
         <div className="min-w-0 flex-1">
-          <Bone className="h-3 w-24 rounded-full" />
-          <Bone className="mt-1.5 h-2.5 w-14 rounded-full" />
+          <Bone className="h-3 w-24 rounded-lg" />
+          <Bone className="mt-1.5 h-2.5 w-14 rounded-lg" />
         </div>
       </div>
     </div>
@@ -188,34 +188,34 @@ export function WidgetHomeSkeleton({
       {featured ? (
         <div className="border-b border-[rgb(var(--widget-fg)/0.1)] px-5 pb-6">
           <div className="flex items-center gap-2">
-            <Bone className="h-2.5 w-16 rounded-full" />
-            <Bone className="h-2.5 w-24 rounded-full" />
+            <Bone className="h-2.5 w-16 rounded-lg" />
+            <Bone className="h-2.5 w-24 rounded-lg" />
           </div>
-          <Bone className="mt-3 h-6 w-[92%] rounded-full" />
-          <Bone className="mt-2 h-6 w-[64%] rounded-full" />
-          <Bone className="mt-3 h-3.5 w-full rounded-full" />
-          <Bone className="mt-1.5 h-3.5 w-[80%] rounded-full" />
+          <Bone className="mt-3 h-6 w-[92%] rounded-lg" />
+          <Bone className="mt-2 h-6 w-[64%] rounded-lg" />
+          <Bone className="mt-3 h-3.5 w-full rounded-lg" />
+          <Bone className="mt-1.5 h-3.5 w-[80%] rounded-lg" />
           <div className="mt-5 flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2.5">
-              <Bone className="size-7 shrink-0 rounded-full" />
+              <Bone className="size-7 shrink-0 rounded-lg" />
               <div>
-                <Bone className="h-3 w-24 rounded-full" />
-                <Bone className="mt-1.5 h-2.5 w-12 rounded-full" />
+                <Bone className="h-3 w-24 rounded-lg" />
+                <Bone className="mt-1.5 h-2.5 w-12 rounded-lg" />
               </div>
             </div>
-            <Bone className="h-3 w-20 rounded-full" />
+            <Bone className="h-3 w-20 rounded-lg" />
           </div>
         </div>
       ) : null}
 
       <div className="border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-5">
-        <div className="flex items-center gap-3 rounded-md bg-[rgb(var(--widget-fg)/0.03)] px-3.5 py-3.5">
-          <Bone className="size-9 shrink-0 rounded-md" />
+        <div className="flex items-center gap-3 rounded-lg bg-[rgb(var(--widget-fg)/0.03)] px-3.5 py-3.5">
+          <Bone className="size-9 shrink-0 rounded-lg" />
           <div className="min-w-0 flex-1">
-            <Bone className="h-3.5 w-28 rounded-full" />
-            <Bone className="mt-2 h-2.5 w-40 rounded-full" />
+            <Bone className="h-3.5 w-28 rounded-lg" />
+            <Bone className="mt-2 h-2.5 w-40 rounded-lg" />
           </div>
-          <Bone className="size-4 shrink-0 rounded-full" />
+          <Bone className="size-4 shrink-0 rounded-lg" />
         </div>
       </div>
 
@@ -223,10 +223,10 @@ export function WidgetHomeSkeleton({
         <section className="border-b border-[rgb(var(--widget-fg)/0.1)] py-5">
           <div className="mb-3 flex items-center justify-between gap-3 px-5">
             <div className="flex items-center gap-2">
-              <Bone className="size-3.5 rounded-full" />
-              <Bone className="h-2.5 w-20 rounded-full" />
+              <Bone className="size-3.5 rounded-lg" />
+              <Bone className="h-2.5 w-20 rounded-lg" />
             </div>
-            <Bone className="h-2.5 w-24 rounded-full" />
+            <Bone className="h-2.5 w-24 rounded-lg" />
           </div>
           {range(4).map((index) => (
             <WidgetRoadmapRowSkeleton key={index} />
@@ -237,8 +237,8 @@ export function WidgetHomeSkeleton({
       {updates ? (
         <section className="py-5">
           <div className="mb-3 flex items-center justify-between gap-3 px-5">
-            <Bone className="h-2.5 w-16 rounded-full" />
-            <Bone className="h-2.5 w-24 rounded-full" />
+            <Bone className="h-2.5 w-16 rounded-lg" />
+            <Bone className="h-2.5 w-24 rounded-lg" />
           </div>
           {range(3).map((index) => (
             <div
@@ -246,10 +246,10 @@ export function WidgetHomeSkeleton({
               className="flex flex-col gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] px-5 py-3.5 last:border-b-0"
             >
               <div className="flex items-center gap-2">
-                <Bone className="h-2.5 w-14 rounded-full" />
-                <Bone className="h-2.5 w-16 rounded-full" />
+                <Bone className="h-2.5 w-14 rounded-lg" />
+                <Bone className="h-2.5 w-16 rounded-lg" />
               </div>
-              <Bone className="mt-1 h-3.5 w-[82%] rounded-full" />
+              <Bone className="mt-1 h-3.5 w-[82%] rounded-lg" />
             </div>
           ))}
         </section>
@@ -258,8 +258,8 @@ export function WidgetHomeSkeleton({
       {recent ? (
         <section className="py-5">
           <div className="mb-3 flex items-center justify-between gap-3 px-5">
-            <Bone className="h-2.5 w-24 rounded-full" />
-            <Bone className="h-2.5 w-20 rounded-full" />
+            <Bone className="h-2.5 w-24 rounded-lg" />
+            <Bone className="h-2.5 w-20 rounded-lg" />
           </div>
           {range(4).map((index) => (
             <WidgetPostRowSkeleton key={index} />
@@ -275,20 +275,20 @@ export function WidgetDetailSkeleton() {
     <div className="flex min-h-0 flex-1 flex-col" aria-busy="true" aria-label="Loading request">
       <div className="px-5 pb-5 pt-1">
         <div className="flex items-center gap-2.5">
-          <Bone className="size-8 shrink-0 rounded-full" />
+          <Bone className="size-8 shrink-0 rounded-lg" />
           <div>
-            <Bone className="h-3.5 w-24 rounded-full" />
-            <Bone className="mt-1.5 h-2.5 w-14 rounded-full" />
+            <Bone className="h-3.5 w-24 rounded-lg" />
+            <Bone className="mt-1.5 h-2.5 w-14 rounded-lg" />
           </div>
         </div>
-        <Bone className="mt-4 h-6 w-[90%] rounded-full" />
-        <Bone className="mt-2 h-6 w-[58%] rounded-full" />
-        <Bone className="mt-4 h-3.5 w-full rounded-full" />
-        <Bone className="mt-2 h-3.5 w-full rounded-full" />
-        <Bone className="mt-2 h-3.5 w-[70%] rounded-full" />
+        <Bone className="mt-4 h-6 w-[90%] rounded-lg" />
+        <Bone className="mt-2 h-6 w-[58%] rounded-lg" />
+        <Bone className="mt-4 h-3.5 w-full rounded-lg" />
+        <Bone className="mt-2 h-3.5 w-full rounded-lg" />
+        <Bone className="mt-2 h-3.5 w-[70%] rounded-lg" />
         <div className="mt-5 flex items-center justify-between">
-          <Bone className="h-3.5 w-20 rounded-full" />
-          <Bone className="h-8 w-8 rounded-md" />
+          <Bone className="h-3.5 w-20 rounded-lg" />
+          <Bone className="h-8 w-8 rounded-lg" />
         </div>
       </div>
       <div className="border-t border-dashed border-[rgb(var(--widget-fg)/0.14)]" />
@@ -302,14 +302,14 @@ export function WidgetCommentThreadSkeleton({ rows = 3 }: { rows?: number }) {
     <div aria-busy="true" aria-label="Loading comments">
       {range(rows).map((index) => (
         <div key={index} className="flex gap-3 py-4">
-          <Bone className="size-7 shrink-0 rounded-full" />
+          <Bone className="size-7 shrink-0 rounded-lg" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <Bone className="h-3 w-24 rounded-full" />
-              <Bone className="h-2.5 w-12 rounded-full" />
+              <Bone className="h-3 w-24 rounded-lg" />
+              <Bone className="h-2.5 w-12 rounded-lg" />
             </div>
-            <Bone className="mt-2 h-3 w-full rounded-full" />
-            <Bone className="mt-1.5 h-3 w-[68%] rounded-full" />
+            <Bone className="mt-2 h-3 w-full rounded-lg" />
+            <Bone className="mt-1.5 h-3 w-[68%] rounded-lg" />
           </div>
         </div>
       ))}
@@ -320,8 +320,8 @@ export function WidgetCommentThreadSkeleton({ rows = 3 }: { rows?: number }) {
 export function WidgetCommentsSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="px-5 py-5" aria-busy="true" aria-label="Loading comments">
-      <Bone className="h-2.5 w-28 rounded-full" />
-      <Bone className="mt-3 h-[6.5rem] w-full rounded-xl" />
+      <Bone className="h-2.5 w-28 rounded-lg" />
+      <Bone className="mt-3 h-[6.5rem] w-full rounded-lg" />
       <div className="mt-2">
         <WidgetCommentThreadSkeleton rows={rows} />
       </div>
@@ -332,10 +332,10 @@ export function WidgetCommentsSkeleton({ rows = 3 }: { rows?: number }) {
 export function WidgetHeaderSkeleton() {
   return (
     <>
-      <Bone className="size-8 shrink-0 rounded-md" />
-      <Bone className="h-4 w-28 rounded-full" />
+      <Bone className="size-8 shrink-0 rounded-lg" />
+      <Bone className="h-4 w-28 rounded-lg" />
       <div className="min-w-0 flex-1" />
-      <Bone className="h-8 w-[7.25rem] rounded-md" />
+      <Bone className="h-8 w-[7.25rem] rounded-lg" />
     </>
   );
 }

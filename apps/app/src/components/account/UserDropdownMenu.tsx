@@ -72,7 +72,7 @@ export default function UserDropdownMenu({
       <DropdownMenuItem
         onSelect={onAccount}
         className={cn(
-          "h-9 rounded-md px-2.5 flex items-center gap-2 group",
+          "h-9 rounded-lg px-2.5 flex items-center gap-2 group",
           SIDEBAR_HOVER_ITEM_CLASS,
         )}
       >
@@ -84,7 +84,7 @@ export default function UserDropdownMenu({
       {showAccounts ? (
         <>
           <DropdownMenuSeparator />
-          <div className="mx-0.5 my-1 rounded-md bg-muted/25 p-1">
+          <div className="mx-0.5 my-1 rounded-lg bg-muted/25 p-1">
             <div className="max-h-44 space-y-0.5 overflow-y-auto">
               {accounts.length === 0 ? (
                 <div className="px-2 py-2 text-xs text-accent">
@@ -103,7 +103,7 @@ export default function UserDropdownMenu({
                     }}
                     disabled={disabled}
                     className={cn(
-                      "h-8 rounded-md px-2.5 flex items-center gap-2 group",
+                      "h-8 rounded-lg px-2.5 flex items-center gap-2 group",
                       SIDEBAR_HOVER_ITEM_CLASS,
                     )}
                   >
@@ -154,7 +154,7 @@ export default function UserDropdownMenu({
               }}
               disabled={isAddAccountDisabled}
               className={cn(
-                "mt-1 h-8 rounded-md px-2.5 flex items-center gap-2 whitespace-nowrap group",
+                "mt-1 h-8 rounded-lg px-2.5 flex items-center gap-2 whitespace-nowrap group",
                 SIDEBAR_HOVER_ITEM_CLASS,
               )}
             >
@@ -170,7 +170,7 @@ export default function UserDropdownMenu({
       <DropdownMenuItem
         onSelect={onSignOut}
         className={cn(
-          "h-9 rounded-md px-2.5 flex items-center gap-2 group",
+          "h-9 rounded-lg px-2.5 flex items-center gap-2 group",
           SIDEBAR_HOVER_ITEM_CLASS,
         )}
         aria-disabled={loading || isBusy}

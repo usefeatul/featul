@@ -9,7 +9,7 @@ import { TagIcon, XMarkIcon } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 
 const controlClass =
-    "h-7 rounded-md border-0 bg-black/5 px-2 text-xs text-muted-foreground shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-[#292929] dark:hover:bg-[#303030]";
+    "h-7 rounded-lg border-0 bg-black/5 px-2 text-xs text-muted-foreground shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-[#292929] dark:hover:bg-[#303030]";
 
 export interface WorkspaceTag {
     id: string;

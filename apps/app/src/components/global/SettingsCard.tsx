@@ -44,7 +44,7 @@ export default function SettingsCard({
           </div>
           <span className="mt-0.5 text-sm font-medium leading-none text-foreground">{title}</span>
           {isConnected && (
-            <span className="text-xs px-2 py-0.5  rounded-md border border-border/80  bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+            <span className="text-xs px-2 py-0.5  rounded-lg border border-border/80  bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
               Connected
             </span>
           )}
@@ -68,7 +68,7 @@ export default function SettingsCard({
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center h-7 px-3 text-xs font-medium rounded-md bg-card border border-border hover:bg-muted transition-colors"
+                  className="inline-flex items-center justify-center h-7 px-3 text-xs font-medium rounded-lg bg-card border border-border hover:bg-muted transition-colors"
                 >
                   {buttonLabel}
                 </a>

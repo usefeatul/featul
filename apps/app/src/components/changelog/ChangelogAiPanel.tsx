@@ -1249,7 +1249,7 @@ export function ChangelogAiPanel({
               type="button"
               variant="plain"
               size="icon-sm"
-              className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+              className="size-8 rounded-lg border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
               onClick={() => setHistoryOpen(false)}
               aria-label="Back to conversation"
               title="Back to conversation"
@@ -1261,7 +1261,7 @@ export function ChangelogAiPanel({
             {historyOpen ? "History" : "Assistant"}
           </h2>
           {historyOpen ? (
-            <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
+            <span className="shrink-0 rounded-lg bg-muted px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
               {conversations.length}
             </span>
           ) : null}
@@ -1272,7 +1272,7 @@ export function ChangelogAiPanel({
                 variant="plain"
                 size="icon-sm"
                 disabled={isLoading}
-                className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+                className="size-8 rounded-lg border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
                 onClick={() => setHistoryOpen(true)}
                 aria-label="Conversation history"
                 title="Conversation history"
@@ -1285,7 +1285,7 @@ export function ChangelogAiPanel({
               variant="plain"
               size="icon-sm"
               disabled={isLoading}
-              className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+              className="size-8 rounded-lg border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
               onClick={() => void clearConversation()}
               aria-label="New conversation"
               title="New conversation"
@@ -1298,7 +1298,7 @@ export function ChangelogAiPanel({
                   type="button"
                   variant="plain"
                   size="icon-sm"
-                  className="size-8 rounded-md border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
+                  className="size-8 rounded-lg border-0 bg-transparent text-muted-foreground shadow-none before:hidden hover:bg-black/5 hover:text-foreground dark:hover:bg-white/[0.03]"
                   onClick={() => onOpenChange(false)}
                   aria-label="Hide AI assistant"
                   aria-keyshortcuts={PANEL_ARIA_SHORTCUTS}
@@ -1339,12 +1339,12 @@ export function ChangelogAiPanel({
                   <span className="sr-only">Loading conversation</span>
                   <div
                     aria-hidden="true"
-                    className="ml-auto h-16 w-4/5 rounded-xl bg-muted/50"
+                    className="ml-auto h-16 w-4/5 rounded-lg bg-muted/50"
                   />
                   <div aria-hidden="true" className="space-y-2">
-                    <div className="h-3 w-2/3 rounded bg-muted/50" />
-                    <div className="h-3 w-full rounded bg-muted/50" />
-                    <div className="h-3 w-3/4 rounded bg-muted/50" />
+                    <div className="h-3 w-2/3 rounded-lg bg-muted/50" />
+                    <div className="h-3 w-full rounded-lg bg-muted/50" />
+                    <div className="h-3 w-3/4 rounded-lg bg-muted/50" />
                   </div>
                 </div>
               ) : messages.length === 0 ? (

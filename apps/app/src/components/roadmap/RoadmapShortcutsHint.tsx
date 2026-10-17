@@ -46,7 +46,7 @@ export default function RoadmapShortcutsHint({
               className="flex items-start justify-between gap-3 text-xs"
             >
               <span className="text-accent">{shortcut.label}</span>
-              <kbd className="shrink-0 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
+              <kbd className="shrink-0 rounded-lg border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
                 {shortcut.keys}
               </kbd>
             </li>

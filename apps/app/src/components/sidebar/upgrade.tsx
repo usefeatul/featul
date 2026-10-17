@@ -84,7 +84,7 @@ export default function Upgrade({ slug, collapsed, initialPlan, userKey }: {
           onClick={dismiss}
           aria-label="Hide upgrade card for three days"
           title="Hide for three days"
-          className="absolute right-1.5 top-1.5 flex size-6 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="absolute right-1.5 top-1.5 flex size-6 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <X className="size-3.5" aria-hidden />
         </button>
@@ -94,7 +94,7 @@ export default function Upgrade({ slug, collapsed, initialPlan, userKey }: {
         </p>
         <Link
           href={href}
-          className="mt-1 inline-flex min-h-6 items-center rounded-sm text-xs font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="mt-1 inline-flex min-h-6 items-center rounded-lg text-xs font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           View plans
         </Link>

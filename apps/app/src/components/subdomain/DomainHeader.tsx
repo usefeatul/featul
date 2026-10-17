@@ -112,13 +112,13 @@ export function DomainHeader({
               alt={workspace.name}
               width={imageSize}
               height={imageSize}
-              className="rounded-md object-cover"
+              className="rounded-lg object-cover"
             />
           ) : (
             <span
               className={cn(
                 fallbackSize,
-                "rounded-md bg-muted flex items-center justify-center text-md font-semibold"
+                "rounded-lg bg-muted flex items-center justify-center text-md font-semibold"
               )}
               aria-hidden
             >
@@ -175,7 +175,7 @@ export function DomainHeader({
                 >
                   <HomeIcon
                     className={cn(
-                      "opacity-90 text-accent rounded-md size-5.5 p-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
+                      "opacity-90 text-accent rounded-lg size-5.5 p-0.5 group-hover:bg-primary group-hover:text-primary-foreground"
                     )}
                   />
                 </Link>

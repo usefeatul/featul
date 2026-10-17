@@ -177,7 +177,7 @@ export default function DangerZoneCard({ slug, workspaceName }: Props) {
                                     size="icon-sm"
                                     onClick={handleCopyName}
                                     disabled={isPending}
-                                    className="size-6 rounded-md"
+                                    className="size-6 rounded-lg"
                                     aria-label="Copy workspace name"
                                     title="Copy workspace name"
                                 >

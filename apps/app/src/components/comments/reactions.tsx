@@ -99,7 +99,7 @@ export default function Reactions({
       title={reacted ? "Remove thumbs-up" : "Give thumbs-up"}
       onClick={() => void toggle()}
       className={cn(
-        "h-7 gap-1.5 rounded-md border px-2 text-xs tabular-nums shadow-none",
+        "h-7 gap-1.5 rounded-lg border px-2 text-xs tabular-nums shadow-none",
         reacted
           ? "border-primary bg-primary text-white hover:bg-primary/90 hover:text-white dark:bg-primary dark:text-white dark:hover:bg-primary/90 dark:hover:text-white"
           : "border-border/50 bg-transparent text-muted-foreground hover:bg-muted/50 dark:bg-transparent",

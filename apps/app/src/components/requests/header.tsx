@@ -20,7 +20,7 @@ import { PanelShortcutKeys, ShortcutKey } from "@/components/global/keys";
 import { sidebarHeaderActionClassName } from "@/components/sidebar/styles";
 
 const actionClass =
-  "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
+  "size-8 rounded-lg border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
 
 type HeaderProps = {
   title: string;
@@ -76,7 +76,7 @@ export default function Header({
           <li className="shrink-0">
             <Link
               href={backHref}
-              className="flex items-center gap-1 rounded-md py-1 text-accent transition-colors hover:text-foreground"
+              className="flex items-center gap-1 rounded-lg py-1 text-accent transition-colors hover:text-foreground"
               aria-label="Back to requests"
             >
               <span className="sr-only sm:not-sr-only">Requests</span>

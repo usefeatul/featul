@@ -12,7 +12,7 @@ export default function AnalyticsConsent() {
   if (!process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN || pathname.startsWith("/widget")) return null
   if (consent !== null) return null
   return (
-    <section aria-label="Analytics preferences" className="fixed bottom-3 left-3 right-3 z-50 max-w-md rounded-xl border bg-background p-4 text-foreground shadow-lg">
+    <section aria-label="Analytics preferences" className="fixed bottom-3 left-3 right-3 z-50 max-w-md rounded-lg border bg-background p-4 text-foreground shadow-lg">
       <h2 className="text-sm font-semibold">Optional product analytics</h2>
       <p className="mt-2 text-sm text-muted-foreground">Allow usage analytics to help improve Featul? Your choice won’t affect access.</p>
       <a href="https://featul.com/privacy" className="mt-2 inline-block text-sm underline">Privacy notice</a>

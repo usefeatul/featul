@@ -31,7 +31,7 @@ export function ChangelogCard({ item, linkPrefix = "/p" }: ChangelogCardProps) {
 
             {/* Cover image at top if available */}
             {item.coverImage ? (
-                <div className="aspect-video w-full overflow-hidden rounded-xl bg-muted mb-4">
+                <div className="aspect-video w-full overflow-hidden rounded-lg bg-muted mb-4">
                     <img
                         src={item.coverImage}
                         alt={item.title}
@@ -84,7 +84,7 @@ export function ChangelogCard({ item, linkPrefix = "/p" }: ChangelogCardProps) {
                 {item.tags && item.tags.length > 0 ? (
                     <div className="flex items-center gap-1 flex-wrap justify-end">
                         {item.tags.slice(0, 3).map((tag) => (
-                            <span key={tag.id} className="text-xs rounded-md bg-muted px-2 py-0.5 text-accent">
+                            <span key={tag.id} className="text-xs rounded-lg bg-muted px-2 py-0.5 text-accent">
                                 {tag.name}
                             </span>
                         ))}

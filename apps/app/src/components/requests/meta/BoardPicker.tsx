@@ -71,7 +71,7 @@ export default function BoardPicker({
   };
 
   return (
-    <Toolbar variant="plain" size="sm" className="w-fit rounded-md border-0 bg-black/5 dark:bg-white/5">
+    <Toolbar variant="plain" size="sm" className="w-fit rounded-lg border-0 bg-black/5 dark:bg-white/5">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -84,7 +84,7 @@ export default function BoardPicker({
               className,
             )}
           >
-            <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+            <span className="size-1.5 shrink-0 rounded-lg bg-primary" aria-hidden />
             <span>{value?.name || "Board"}</span>
           </Button>
         </PopoverTrigger>
@@ -97,7 +97,7 @@ export default function BoardPicker({
               aria-checked={value?.slug === b.slug}
               onClick={() => select(b.slug, b.name)}
             >
-              <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+              <span className="size-1.5 shrink-0 rounded-lg bg-primary" aria-hidden />
               <span className="text-sm">{b.name}</span>
               {value?.slug === b.slug ? (
                 <span className="ml-auto text-xs">✓</span>

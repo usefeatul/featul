@@ -118,7 +118,7 @@ function TextChange({
   );
   return (
     <details className="group/change">
-      <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-sm text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+      <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-lg text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
         <ChevronDownIcon className="size-3.5 -rotate-90 transition-transform group-open/change:rotate-0" />
         View {change.kind === "title" ? "title" : "description"} changes
       </summary>
@@ -159,7 +159,7 @@ export default function Changes({
                       key={`${operation}-${i}`}
                       className={cn(
                         chip,
-                        "rounded bg-muted/50 px-1.5 leading-5",
+                        "rounded-lg bg-muted/50 px-1.5 leading-5",
                       )}
                     >
                       <span
@@ -170,7 +170,7 @@ export default function Changes({
                       </span>
                       <span
                         aria-hidden
-                        className="size-1.5 shrink-0 rounded-full bg-muted-foreground"
+                        className="size-1.5 shrink-0 rounded-lg bg-muted-foreground"
                         style={
                           tag.color ? { backgroundColor: tag.color } : undefined
                         }

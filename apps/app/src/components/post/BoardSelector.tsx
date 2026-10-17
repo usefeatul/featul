@@ -37,7 +37,7 @@ export function BoardSelector({
             open && "bg-black/5 dark:bg-white/5",
           )}
         >
-          <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+          <span className="size-1.5 shrink-0 rounded-lg bg-primary" aria-hidden />
           {selectedBoard ? selectedBoard.name : "Select Board"}
         </Button>
       </PopoverTrigger>
@@ -52,7 +52,7 @@ export function BoardSelector({
               }}
               className={cn(selectedBoard?.slug === b.slug && "bg-muted")}
             >
-              <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+              <span className="size-1.5 shrink-0 rounded-lg bg-primary" aria-hidden />
               <span className="font-medium text-sm">{b.name}</span>
             </PopoverListItem>
           ))}

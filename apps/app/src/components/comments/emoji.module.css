@@ -13,7 +13,7 @@
   --epr-text-color: var(--muted-foreground);
   --epr-highlight-color: var(--primary);
   --epr-picker-border-color: var(--border);
-  --epr-picker-border-radius: 0;
+  --epr-picker-border-radius: var(--radius-lg);
   --epr-hover-bg-color: var(--muted);
   --epr-hover-bg-color-reduced-opacity: color-mix(
     in oklab,
@@ -35,7 +35,7 @@
     transparent
   );
   --epr-search-border-color-active: var(--ring);
-  --epr-search-input-border-radius: 6px;
+  --epr-search-input-border-radius: var(--radius-lg);
   --epr-search-input-height: 32px;
   --epr-header-padding: 10px var(--epr-horizontal-padding);
   --epr-category-icon-active-color: var(--foreground);
@@ -78,7 +78,7 @@
 
 .picker [data-epr-part="category-tab"],
 .picker [data-epr-part="emoji"] {
-  border-radius: 4px;
+  border-radius: var(--radius-lg);
 }
 
 .picker [data-epr-part="category-tab"][aria-selected="true"] {

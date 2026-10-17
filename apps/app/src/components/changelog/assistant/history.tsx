@@ -38,7 +38,7 @@ export function ConversationHistory({
     >
       <div className="shrink-0 px-3 pb-2 pt-1">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="flex size-6 items-center justify-center rounded-md bg-muted text-foreground/70 dark:bg-[#242424]">
+          <span className="flex size-6 items-center justify-center rounded-lg bg-muted text-foreground/70 dark:bg-[#242424]">
             <MessageSquareText className="size-3.5" />
           </span>
           <span>Synced to your account</span>
@@ -58,7 +58,7 @@ export function ConversationHistory({
       <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4">
         {!loading && conversations.length === 0 ? (
           <div className="flex h-full min-h-52 flex-col items-center justify-center px-6 text-center">
-            <span className="mb-3 flex size-10 items-center justify-center rounded-full bg-muted/60 text-muted-foreground">
+            <span className="mb-3 flex size-10 items-center justify-center rounded-lg bg-muted/60 text-muted-foreground">
               <History className="size-[18px]" />
             </span>
             <h3 className="text-sm font-medium">No conversations yet</h3>
@@ -104,7 +104,7 @@ export function ConversationHistory({
                     </div>
 
                     <div className="mt-1 flex min-h-6 items-center gap-2 pr-8 text-[10px] text-muted-foreground">
-                      <span className="inline-flex h-5 items-center rounded-md bg-muted px-2 font-medium dark:bg-[#242424]">
+                      <span className="inline-flex h-5 items-center rounded-lg bg-muted px-2 font-medium dark:bg-[#242424]">
                         {conversation.messageCount}{" "}
                         {conversation.messageCount === 1 ? "message" : "messages"}
                       </span>
@@ -113,7 +113,7 @@ export function ConversationHistory({
 
                   <button
                     type="button"
-                    className="absolute bottom-2 right-3 z-10 flex size-7 items-center justify-center rounded-md text-muted-foreground opacity-100 transition hover:bg-black/5 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 sm:opacity-0 sm:group-hover/history:opacity-100 sm:focus-visible:opacity-100 dark:hover:bg-white/5"
+                    className="absolute bottom-2 right-3 z-10 flex size-7 items-center justify-center rounded-lg text-muted-foreground opacity-100 transition hover:bg-black/5 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 sm:opacity-0 sm:group-hover/history:opacity-100 sm:focus-visible:opacity-100 dark:hover:bg-white/5"
                     onClick={() => onDelete(conversation.id)}
                     aria-label={`Delete ${conversation.title}`}
                     title="Delete conversation"

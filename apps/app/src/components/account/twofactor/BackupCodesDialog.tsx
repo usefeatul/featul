@@ -35,7 +35,7 @@ export function BackupCodesDialog({
                     {backupCodes.map((code, index) => (
                         <div
                             key={index}
-                            className="bg-muted p-2 rounded text-center font-mono text-sm"
+                            className="bg-muted p-2 rounded-lg text-center font-mono text-sm"
                         >
                             {code}
                         </div>

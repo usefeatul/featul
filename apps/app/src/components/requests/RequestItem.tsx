@@ -74,7 +74,7 @@ function RequestMetaChip({
 function RequestBoardChip({ name }: { name: string }) {
   return (
     <RequestMetaChip title={name}>
-      <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+      <span className="size-1.5 shrink-0 rounded-lg bg-primary" aria-hidden />
       <span className="min-w-0 truncate uppercase tracking-wide">{name}</span>
     </RequestMetaChip>
   );
@@ -273,7 +273,7 @@ function RequestItemBase({
           {staleDays != null ? (
             <StaleMark
               days={staleDays}
-              className="hidden h-5 rounded-md bg-muted/70 px-1.5 text-[10px] font-medium tracking-normal text-amber-700 sm:inline-flex dark:bg-white/[0.055] dark:text-amber-400"
+              className="hidden h-5 rounded-lg bg-muted/70 px-1.5 text-[10px] font-medium tracking-normal text-amber-700 sm:inline-flex dark:bg-white/[0.055] dark:text-amber-400"
             />
           ) : null}
           <ReportIndicator count={item.reportCount || 0} />

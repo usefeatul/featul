@@ -102,7 +102,7 @@ export default function ActiveSessions({ initialSessions }: { initialSessions?: 
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-sm font-medium truncate">{deviceName}</span>
                                                     {isCurrent && (
-                                                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 font-medium shrink-0">
+                                                        <span className="text-xs px-1.5 py-0.5 rounded-lg bg-primary/10 text-primary border border-primary/20 font-medium shrink-0">
                                                             Current
                                                         </span>
                                                     )}

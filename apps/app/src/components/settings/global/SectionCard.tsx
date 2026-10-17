@@ -8,7 +8,7 @@ export const settingsTableShellClass =
   "overflow-hidden rounded-lg border border-border/80 bg-card dark:border-white/[0.08] dark:bg-black/30";
 
 export const settingsCardShellClass =
-  "flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card px-2 pt-2 pb-2 text-foreground dark:border-white/[0.07] dark:bg-black";
+  "flex flex-col overflow-hidden rounded-lg border border-border/70 bg-card px-2 pt-2 pb-2 text-foreground dark:border-white/[0.07] dark:bg-black";
 
 export const settingsCardInnerClass =
   "flex flex-1 flex-col rounded-lg bg-muted/60 px-4 py-3 ring-1 ring-border/45 dark:bg-background dark:ring-white/[0.055]";

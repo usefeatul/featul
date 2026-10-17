@@ -63,7 +63,7 @@ export default function RoleBadge({
             "absolute -bottom-1 -right-1 z-10 rounded-lg p-px pointer-events-auto",
             className,
           )}
-          innerClassName="h-3.5 min-h-3.5 min-w-3.5 rounded-md"
+          innerClassName="h-3.5 min-h-3.5 min-w-3.5 rounded-lg"
         >
           <StarIcon
             className={cn("size-2.5", getRoleColor(role, isOwner, isFeatul))}

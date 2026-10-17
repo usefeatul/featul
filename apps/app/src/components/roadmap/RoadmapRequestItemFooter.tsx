@@ -55,17 +55,17 @@ export default function RoadmapRequestItemFooter({
         onKeyDown={(event) => event.stopPropagation()}
       >
         <span
-          className="inline-flex h-5 min-w-0 max-w-20 items-center gap-1.5 rounded-md bg-background/60 px-1.5 dark:bg-black/20"
+          className="inline-flex h-5 min-w-0 max-w-20 items-center gap-1.5 rounded-lg bg-background/60 px-1.5 dark:bg-black/20"
           title={boardLabel}
         >
           <span
-            className="size-1.5 shrink-0 rounded-full bg-primary"
+            className="size-1.5 shrink-0 rounded-lg bg-primary"
             aria-hidden
           />
           <span className="truncate whitespace-nowrap">{boardLabel}</span>
         </span>
         <span
-          className="inline-flex h-5 shrink-0 items-center gap-1 rounded-md bg-background/60 px-1.5 dark:bg-black/20"
+          className="inline-flex h-5 shrink-0 items-center gap-1 rounded-lg bg-background/60 px-1.5 dark:bg-black/20"
           title={`${commentCount} comments`}
         >
           <CommentsIcon className="size-3" aria-hidden />
@@ -75,7 +75,7 @@ export default function RoadmapRequestItemFooter({
           postId={postId}
           upvotes={upvotes}
           hasVoted={hasVoted}
-          className="h-5 gap-1 rounded-md bg-background/60 px-1.5 text-[10px] hover:bg-background/80 dark:bg-black/20 dark:hover:bg-black/30"
+          className="h-5 gap-1 rounded-lg bg-background/60 px-1.5 text-[10px] hover:bg-background/80 dark:bg-black/20 dark:hover:bg-black/30"
         />
         <span className="shrink-0 whitespace-nowrap text-muted-foreground/80">
           {dateLabel}

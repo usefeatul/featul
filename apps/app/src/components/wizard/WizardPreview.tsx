@@ -10,7 +10,7 @@ const shade: Rgb = [0, 0, 0]
 
 export default function WizardPreview() {
   return (
-    <div className="relative hidden min-h-0 overflow-hidden rounded-xl bg-primary lg:block lg:h-full">
+    <div className="relative hidden min-h-0 overflow-hidden rounded-lg bg-primary lg:block lg:h-full">
       <DitherGradient
         from={highlight}
         direction="right"
@@ -23,7 +23,7 @@ export default function WizardPreview() {
         cell={3}
         opacity={0.16}
       />
-      <div className="absolute right-0 bottom-0 left-[12%] top-[8%] overflow-hidden rounded-tl-xl">
+      <div className="absolute right-0 bottom-0 left-[12%] top-[8%] overflow-hidden rounded-tl-lg">
         <Image
           src={WIZARD_PREVIEW_IMAGE}
           alt="Featul dashboard"

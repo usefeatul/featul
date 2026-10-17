@@ -98,7 +98,7 @@ export function SettingsDialogShell({
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="absolute top-3 right-9 inline-flex items-center justify-center rounded-md opacity-70 transition-opacity hover:opacity-100 cursor-pointer"
+          className="absolute top-3 right-9 inline-flex items-center justify-center rounded-lg opacity-70 transition-opacity hover:opacity-100 cursor-pointer"
           aria-label={expanded ? "Collapse dialog" : "Expand dialog"}
           title={expanded ? "Collapse" : "Expand"}
         >

@@ -253,7 +253,7 @@ export function WidgetFeedbackList({
                   setSearch("");
                   setQuery("");
                 }}
-                className="absolute right-1 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded text-[rgb(var(--widget-fg)/0.55)] hover:bg-[rgb(var(--widget-fg)/0.08)]"
+                className="absolute right-1 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-lg text-[rgb(var(--widget-fg)/0.55)] hover:bg-[rgb(var(--widget-fg)/0.08)]"
               >
                 <X className="size-3.5" />
               </button>
@@ -455,7 +455,7 @@ export function WidgetFeedbackList({
       {!loading && error ? (
         <div
           role="status"
-          className="mx-4 mb-3 flex items-center justify-between gap-3 rounded-md bg-[rgb(var(--widget-fg)/0.05)] px-3 py-2 text-xs"
+          className="mx-4 mb-3 flex items-center justify-between gap-3 rounded-lg bg-[rgb(var(--widget-fg)/0.05)] px-3 py-2 text-xs"
         >
           <span>{error}</span>
           <button
@@ -515,7 +515,7 @@ export function WidgetFeedbackList({
               <button
                 type="button"
                 onClick={() => void loadMore()}
-                className="mx-auto my-3 block rounded-md px-3 py-2 text-xs font-medium text-[rgb(var(--widget-fg)/0.65)] hover:bg-[rgb(var(--widget-fg)/0.06)]"
+                className="mx-auto my-3 block rounded-lg px-3 py-2 text-xs font-medium text-[rgb(var(--widget-fg)/0.65)] hover:bg-[rgb(var(--widget-fg)/0.06)]"
               >
                 Load more feedback
               </button>

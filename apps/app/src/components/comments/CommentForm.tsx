@@ -150,7 +150,7 @@ export default function CommentForm({
           <button
             type="button"
             onClick={() => handleRemoveImage()}
-            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md ring-1 ring-background hover:bg-destructive/90"
+            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-lg bg-destructive text-destructive-foreground shadow-md ring-1 ring-background hover:bg-destructive/90"
             disabled={isPending || uploadingImage}
             aria-label="Remove image"
           >

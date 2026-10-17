@@ -211,7 +211,7 @@ export default function WorkspaceShortcutsDrawer() {
         aria-labelledby="workspace-shortcuts-title"
         className={cn(
           overlayDialogClass,
-          "fixed z-50 flex flex-col rounded-xl",
+          "fixed z-50 flex flex-col rounded-lg",
           "top-4 right-4 bottom-4 left-4 sm:left-auto sm:w-[340px]",
           "transition-all duration-200 ease-out",
           open
@@ -236,7 +236,7 @@ export default function WorkspaceShortcutsDrawer() {
               aria-label="Close keyboard shortcuts"
               onClick={() => setOpen(false)}
               className={cn(
-                "size-7 cursor-pointer rounded-md bg-transparent p-0 text-muted-foreground shadow-none",
+                "size-7 cursor-pointer rounded-lg bg-transparent p-0 text-muted-foreground shadow-none",
                 "hover:bg-muted hover:text-foreground",
               )}
             >

@@ -4,7 +4,7 @@ export function TagDot({ className }: { className?: string }) {
   return (
     <span
       aria-hidden
-      className={cn("inline-block size-1.5 shrink-0 rounded-full bg-muted-foreground", className)}
+      className={cn("inline-block size-1.5 shrink-0 rounded-lg bg-muted-foreground", className)}
     />
   );
 }

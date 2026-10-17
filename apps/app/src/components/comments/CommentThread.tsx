@@ -115,7 +115,7 @@ function ThreadItem({
     <div className="relative">
       {depth > 0 ? <>
         {!isLast ? <span aria-hidden="true" className="pointer-events-none absolute bottom-0 left-1.5 top-0 border-l border-border/70 dark:border-white/15" /> : null}
-        <span aria-hidden="true" className="pointer-events-none absolute left-1.5 top-0 h-7 w-2.5 rounded-bl-md border-b border-l border-border/70 dark:border-white/15" />
+        <span aria-hidden="true" className="pointer-events-none absolute left-1.5 top-0 h-7 w-2.5 rounded-bl-lg border-b border-l border-border/70 dark:border-white/15" />
       </> : null}
       <div className="relative px-4 py-3">
         {hasReplies && !isCollapsed ? <span aria-hidden="true" className="pointer-events-none absolute bottom-0 left-[30px] top-[42px] border-l border-border/70 dark:border-white/15" /> : null}

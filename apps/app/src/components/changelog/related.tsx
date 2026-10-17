@@ -101,7 +101,7 @@ export function Related({
           type="button"
           variant="plain"
           size="sm"
-          className="h-7 gap-1.5 rounded-md border-0 bg-black/5 px-2 text-xs text-muted-foreground shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-[#292929] dark:hover:bg-[#303030]"
+          className="h-7 gap-1.5 rounded-lg border-0 bg-black/5 px-2 text-xs text-muted-foreground shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-[#292929] dark:hover:bg-[#303030]"
         >
           <Link2 className="size-3.5" />
           Related posts
@@ -118,7 +118,7 @@ export function Related({
         onOpenAutoFocus={(event) => event.preventDefault()}
         className="w-80 max-w-[calc(100vw-2rem)] [&>div]:w-full [&_[data-slot=popover-content-inner]]:w-full"
       >
-        <div className="m-2 flex h-9 items-center gap-2 rounded-md border border-border/60 bg-muted/70 px-3 transition-colors focus-within:border-border dark:border-white/10 dark:bg-white/[0.07] dark:focus-within:border-white/25">
+        <div className="m-2 flex h-9 items-center gap-2 rounded-lg border border-border/60 bg-muted/70 px-3 transition-colors focus-within:border-border dark:border-white/10 dark:bg-white/[0.07] dark:focus-within:border-white/25">
           <Search className="size-3.5 shrink-0 text-neutral-600 dark:text-neutral-300" />
           <input
             aria-label="Search related posts"
@@ -169,7 +169,7 @@ export function Related({
                   aria-hidden
                   className="flex h-9 items-center gap-2 px-3"
                 >
-                  <Skeleton className="size-3.5 shrink-0 rounded-full motion-reduce:animate-none" />
+                  <Skeleton className="size-3.5 shrink-0 rounded-lg motion-reduce:animate-none" />
                   <Skeleton
                     className={`h-3 ${width} motion-reduce:animate-none`}
                   />

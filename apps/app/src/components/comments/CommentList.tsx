@@ -144,7 +144,7 @@ export default function CommentList({
         <div
           className={cn(
             plain
-              ? "mt-3 rounded-md border border-border/40 p-3"
+              ? "mt-3 rounded-lg border border-border/40 p-3"
               : settingsCardInnerClass,
             commentComposerBackgroundClass[surface],
           )}
