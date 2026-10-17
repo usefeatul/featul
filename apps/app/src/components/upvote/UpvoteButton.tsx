@@ -34,8 +34,10 @@ export function UpvoteButton({
       onClick={handleVote}
       disabled={isPending}
       className={cn(
-        "inline-flex cursor-pointer items-center gap-1.5 text-xs text-muted-foreground/70 transition-colors group/vote hover:text-orange-500/80 aria-pressed:text-orange-500",
-        className
+        "inline-flex cursor-pointer items-center gap-1.5 rounded-md text-xs text-muted-foreground/70 transition-colors group/vote hover:text-primary",
+        className,
+        hasVoted &&
+          "border-primary bg-primary text-white hover:bg-primary/90 hover:text-white dark:border-primary dark:bg-primary dark:text-white dark:hover:bg-primary/90 dark:hover:text-white",
       )}
       whileTap={{ scale: 0.97 }}
       aria-pressed={hasVoted}
