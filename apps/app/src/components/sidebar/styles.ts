@@ -11,7 +11,7 @@ export const sidebarSectionLabelClassName =
   "flex min-h-5 items-center gap-2 px-2 text-xs font-medium text-accent";
 
 export const sidebarSearchBackgroundClassName =
-  "bg-sidebar-accent hover:bg-sidebar-accent dark:bg-neutral-900 dark:hover:bg-neutral-950";
+  "bg-sidebar-accent hover:bg-sidebar-accent dark:bg-input dark:hover:bg-muted";
 
 export const sidebarSearchClassName =
   "mt-3 h-9 w-full justify-start gap-2 rounded-lg border border-border/60 px-3 text-sm text-foreground shadow-none ring-0 before:hidden dark:border-white/10 [&>svg]:size-5 [&>svg]:shrink-0 [&_svg]:text-neutral-600 dark:[&_svg]:text-neutral-300 [&_kbd]:h-5 [&_kbd]:min-w-5 [&_kbd]:rounded-lg [&_kbd]:border-0 [&_kbd]:bg-muted [&_kbd]:px-1 [&_kbd]:text-muted-foreground [&_kbd]:shadow-none dark:[&_kbd]:bg-black/30 " + sidebarSearchBackgroundClassName;

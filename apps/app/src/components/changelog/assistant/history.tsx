@@ -38,7 +38,7 @@ export function ConversationHistory({
     >
       <div className="shrink-0 px-3 pb-2 pt-1">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="flex size-6 items-center justify-center rounded-lg bg-muted text-foreground/70 dark:bg-[#242424]">
+          <span className="flex size-6 items-center justify-center rounded-lg bg-muted text-foreground/70 dark:bg-secondary">
             <MessageSquareText className="size-3.5" />
           </span>
           <span>Synced to your account</span>
@@ -104,7 +104,7 @@ export function ConversationHistory({
                     </div>
 
                     <div className="mt-1 flex min-h-6 items-center gap-2 pr-8 text-[10px] text-muted-foreground">
-                      <span className="inline-flex h-5 items-center rounded-lg bg-muted px-2 font-medium dark:bg-[#242424]">
+                      <span className="inline-flex h-5 items-center rounded-lg bg-muted px-2 font-medium dark:bg-secondary">
                         {conversation.messageCount}{" "}
                         {conversation.messageCount === 1 ? "message" : "messages"}
                       </span>

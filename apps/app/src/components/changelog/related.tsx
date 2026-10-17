@@ -101,7 +101,7 @@ export function Related({
           type="button"
           variant="plain"
           size="sm"
-          className="h-7 gap-1.5 rounded-lg border-0 bg-black/5 px-2 text-xs text-muted-foreground shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-[#292929] dark:hover:bg-[#303030]"
+          className="h-7 gap-1.5 rounded-lg border-0 bg-black/5 px-2 text-xs text-muted-foreground shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-secondary dark:hover:bg-muted"
         >
           <Link2 className="size-3.5" />
           Related posts

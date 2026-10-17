@@ -148,7 +148,7 @@ export default function Sidebar({
           collapsed ? "w-0" : "w-[248px]",
         )}
       >
-        <div className="flex min-h-0 w-[248px] flex-1 flex-col border-l border-sidebar-border bg-background">
+        <div className="flex min-h-0 w-[248px] flex-1 flex-col border-l border-sidebar-border bg-sidebar">
           <div className="flex h-[52px] shrink-0 items-center gap-1 px-3">
             <WorkspaceSwitcher
               className="min-w-0 flex-1"

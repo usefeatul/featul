@@ -6,7 +6,7 @@ import RoadmapShortcutsHint from "./RoadmapShortcutsHint";
 import { cn } from "@featul/ui/lib/utils";
 
 const actionButtonClass =
-  "size-8 rounded-lg border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-[#292929] dark:hover:bg-[#303030]";
+  "size-8 rounded-lg border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-secondary dark:hover:bg-muted";
 
 export default function RoadmapHeaderActions({
   className = "",

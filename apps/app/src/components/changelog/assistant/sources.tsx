@@ -36,7 +36,7 @@ function SourceGroup({
 
   return (
     <>
-      <p className="sticky top-0 z-10 border-y border-border/40 bg-background/95 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground backdrop-blur-sm dark:border-white/[0.06] dark:bg-[#202020]/95">
+      <p className="sticky top-0 z-10 border-y border-border/40 bg-background/95 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground backdrop-blur-sm dark:border-white/[0.06] dark:bg-background/95">
         {label}
       </p>
       {posts.map((post) => {
@@ -131,7 +131,7 @@ export function Sources({
               <span className="min-w-0 flex-1 truncate">
                 All completed this week
               </span>
-              <span className="inline-flex h-5 shrink-0 items-center rounded-lg bg-muted px-2 text-[10px] font-medium tabular-nums text-muted-foreground dark:bg-[#2a2a2a]">
+              <span className="inline-flex h-5 shrink-0 items-center rounded-lg bg-muted px-2 text-[10px] font-medium tabular-nums text-muted-foreground dark:bg-muted">
                 {completedThisWeekCount}
               </span>
             </PopoverListItem>
@@ -174,7 +174,7 @@ export function Attachments({
           key={post.id}
           type="button"
           onClick={() => onRemove(post.id)}
-          className="inline-flex max-w-full cursor-pointer items-center gap-1 rounded-lg bg-muted/70 px-2 py-1 text-[11px] font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground dark:bg-[#242424] dark:hover:bg-[#2a2a2a]"
+          className="inline-flex max-w-full cursor-pointer items-center gap-1 rounded-lg bg-muted/70 px-2 py-1 text-[11px] font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground dark:bg-secondary dark:hover:bg-muted"
         >
           <StatusIcon
             status={post.roadmapStatus || undefined}
