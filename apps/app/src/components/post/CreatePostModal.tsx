@@ -166,6 +166,7 @@ export function CreatePostModal({
       onOpenChange={onOpenChange}
       title="Create post"
       width="widest"
+      innerClassName="p-0"
       offsetY="10%"
       icon={<DocumentTextIcon className="size-3.5" />}
       expandable
@@ -175,18 +176,6 @@ export function CreatePostModal({
         className="flex min-h-0 flex-1 flex-col"
         {...imageTransfer}
       >
-        <PostHeader
-          user={user || null}
-          initials={user?.name?.[0] || "?"}
-          boards={boards}
-          selectedBoard={selectedBoard}
-          onSelectBoard={setSelectedBoard}
-          status={status}
-          onStatusChange={setStatus}
-          availableTags={availableTags}
-          selectedTags={selectedTags}
-          onToggleTag={toggleTag}
-        />
         <PostContent
           title={title}
           setTitle={setTitle}
@@ -201,6 +190,19 @@ export function CreatePostModal({
           posts={similarPosts}
           linkPrefix={`/workspaces/${workspaceSlug}/requests`}
           onLinkClick={() => onOpenChange(false)}
+        />
+
+        <PostHeader
+          user={user || null}
+          initials={user?.name?.[0] || "?"}
+          boards={boards}
+          selectedBoard={selectedBoard}
+          onSelectBoard={setSelectedBoard}
+          status={status}
+          onStatusChange={setStatus}
+          availableTags={availableTags}
+          selectedTags={selectedTags}
+          onToggleTag={toggleTag}
         />
 
         <PostFooter

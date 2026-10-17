@@ -113,6 +113,7 @@ export default function EditPostModal({
       onOpenChange={onOpenChange}
       title="Edit post"
       width="widest"
+      innerClassName="p-0"
       offsetY="20%"
       icon={<DocumentTextIcon className="size-3.5" />}
     >
@@ -121,14 +122,6 @@ export default function EditPostModal({
         className="flex flex-col h-full"
         {...imageTransfer}
       >
-        <PostHeader
-          user={user}
-          initials={initials}
-          boards={boards}
-          selectedBoard={selectedBoard}
-          onSelectBoard={setSelectedBoard}
-        />
-
         <PostContent
           title={title}
           setTitle={setTitle}
@@ -137,6 +130,14 @@ export default function EditPostModal({
           uploadedImages={uploadedImages}
           uploadingImage={uploadingImage}
           handleRemoveImage={handleRemoveImage}
+        />
+
+        <PostHeader
+          user={user}
+          initials={initials}
+          boards={boards}
+          selectedBoard={selectedBoard}
+          onSelectBoard={setSelectedBoard}
         />
 
         <PostFooter

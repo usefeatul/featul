@@ -89,8 +89,8 @@ export function SettingsDialogShell({
   }
 
   const header = (
-    <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-      <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
+    <DialogHeader className="flex flex-row items-center justify-between space-y-0 pr-20">
+      <DialogTitle className="flex items-center gap-3 text-base font-medium">
         {icon}
         {title}
       </DialogTitle>
@@ -98,7 +98,7 @@ export function SettingsDialogShell({
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="absolute top-3 right-9 inline-flex items-center justify-center rounded-lg opacity-70 transition-opacity hover:opacity-100 cursor-pointer"
+          className="absolute top-[1.375rem] right-12 inline-flex size-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
           aria-label={expanded ? "Collapse dialog" : "Expand dialog"}
           title={expanded ? "Collapse" : "Expand"}
         >
@@ -145,7 +145,7 @@ export function SettingsDialogShell({
       >
         {expandable ? (
           <motion.div
-            className="flex min-h-0 min-w-0 flex-1 flex-col gap-2"
+            className="flex min-h-0 min-w-0 flex-1 flex-col gap-0"
             initial={false}
             animate={{
               width: expanded ? EXPANDED_WIDTH_PX[width] : BASE_WIDTH_PX[width],

@@ -129,23 +129,16 @@ export default function CreatePostModal({
         title="Create post"
         // description="Share an idea or request"
         width="widest"
+        innerClassName="p-0"
         offsetY="10%"
         icon={<DocumentTextIcon className="size-3.5" />}
         expandable
       >
         <form
           onSubmit={handleSubmit}
-          className="flex min-h-0 flex-1 flex-col pb-3"
+          className="flex min-h-0 flex-1 flex-col"
           {...imageTransfer}
         >
-          <PostHeader
-            user={user}
-            initials={initials}
-            boards={boards}
-            selectedBoard={selectedBoard}
-            onSelectBoard={setSelectedBoard}
-          />
-
           <PostContent
             title={title}
             setTitle={setTitle}
@@ -159,6 +152,14 @@ export default function CreatePostModal({
           <SimilarPosts
             posts={similarPosts}
             onLinkClick={() => onOpenChange(false)}
+          />
+
+          <PostHeader
+            user={user}
+            initials={initials}
+            boards={boards}
+            selectedBoard={selectedBoard}
+            onSelectBoard={setSelectedBoard}
           />
 
           <PostFooter

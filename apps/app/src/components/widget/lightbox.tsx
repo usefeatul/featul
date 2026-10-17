@@ -99,8 +99,8 @@ export function WidgetHostImageDialog() {
         }}
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
-        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-          <DialogTitle className="mt-0.5 flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+        <DialogHeader className="flex flex-row items-center justify-between space-y-0">
+          <DialogTitle className="flex items-center gap-3 text-base font-medium">
             <ImageIcon className="size-3.5" />
             {title}
           </DialogTitle>

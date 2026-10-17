@@ -10,6 +10,7 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@featul/ui/components/dialog";
+import { BoardIcon } from "@/components/global/icons";
 import type { PlanKey } from "@/lib/plan";
 import { cn } from "@featul/ui/lib/utils";
 import BillingCycleSegment from "./BillingCycleSegment";
@@ -52,17 +53,13 @@ export default function Plans(props: Props) {
       <DialogTrigger asChild>
         <Button>View plans</Button>
       </DialogTrigger>
-      <DialogContent
-        className={cn(
-          "flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-[45rem] flex-col gap-0 overflow-hidden p-0 sm:max-w-[45rem]",
-          styles.surface,
-        )}
-      >
-        <DialogHeader className="shrink-0 px-5 pb-5 pt-6 text-left sm:px-7">
-          <DialogTitle className="pr-6 text-xl font-semibold tracking-tight">
-            Find your plan
+      <DialogContent className="flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-[45rem] flex-col gap-0 overflow-hidden p-0 sm:max-w-[45rem]">
+        <DialogHeader className="shrink-0 px-6 pb-4 pt-5 text-left">
+          <DialogTitle className="flex items-center gap-3 pr-6 text-base font-medium">
+            <BoardIcon className="size-4" />
+            Plans for your workspace
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="sm:pl-11">
             The right amount of room for your team.
           </DialogDescription>
         </DialogHeader>
@@ -72,7 +69,7 @@ export default function Plans(props: Props) {
             styles.scroll,
           )}
         >
-          <div className="flex flex-wrap items-center justify-between gap-3 border-y border-border/60 bg-muted/20 px-5 py-3 sm:px-7">
+          <div className="flex flex-wrap items-center justify-between gap-3 px-6 pb-5 pt-1">
             <BillingCycleSegment
               billingCycle={billingCycle}
               onChange={setBillingCycle}
@@ -81,18 +78,20 @@ export default function Plans(props: Props) {
               Save with yearly billing
             </span>
           </div>
-          <Comparison
-            selected={selected}
-            onSelect={setSelected}
-            currentPlan={props.currentPlan}
-            billingCycle={billingCycle}
-          />
-          <p className="border-t border-border/60 px-5 py-4 text-xs leading-relaxed text-muted-foreground sm:px-7">
+          <div className="mx-4 overflow-hidden rounded-xl border border-border/40 bg-background/30 sm:mx-6">
+            <Comparison
+              selected={selected}
+              onSelect={setSelected}
+              currentPlan={props.currentPlan}
+              billingCycle={billingCycle}
+            />
+          </div>
+          <p className="px-6 py-4 text-xs leading-relaxed text-muted-foreground">
             Every plan includes a feedback portal, roadmap, changelog, voting,
             and an in-app widget.
           </p>
         </div>
-        <div className="shrink-0 border-t border-border/50 bg-muted/30 px-5 py-4 sm:px-7">
+        <div className="shrink-0 border-t border-border/40 px-6 py-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-medium">

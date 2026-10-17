@@ -50,8 +50,8 @@ export function AlertDialogShell({
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent showCloseButton style={{ ...styleWidth, ...positionStyle }} className="max-w-none sm:max-w-none">
-        <AlertDialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-          <AlertDialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
+        <AlertDialogHeader className="flex flex-row items-center justify-between space-y-0">
+          <AlertDialogTitle className="flex items-center gap-3 text-base font-medium">
             {icon ?? <TrashIcon className="size-3.5 opacity-80" />}
             {title}
           </AlertDialogTitle>

@@ -11,9 +11,9 @@ export const overlayShellClass =
 export const overlayInnerClass =
   "overflow-hidden rounded-lg bg-background ring-1 ring-border/35 dark:ring-white/[0.055]"
 
-/** Inner dialog surface with a restrained edge inside the `rounded-xl` shell. */
+/** Dialog body shares the card surface; no nested frame or ring. */
 export const overlayDialogInnerClass =
-  "overflow-hidden rounded-lg bg-background ring-1 ring-border/35 dark:ring-white/[0.055]"
+  "overflow-hidden bg-transparent"
 
 /** Outer chip shell — a compact version of the shared subtle frame. */
 export const overlayChipShellClass =
@@ -37,5 +37,6 @@ export const overlayRibbonShellClass =
 export const overlayRibbonInnerClass =
   "flex h-full w-full flex-1 items-end justify-center overflow-hidden rounded-[2px] pb-1 text-white"
 
-/** Same nested frame as settings/integration cards: `rounded-xl` shell, `p-2`, inner `rounded-lg`. */
-export const overlayDialogClass = `${overlayShellClass} p-1`
+/** Rounded settings-card surface with a soft elevation above the overlay. */
+export const overlayDialogClass =
+  "overflow-hidden rounded-[calc(var(--radius)*2.5)] border border-border/40 bg-card p-0 text-foreground shadow-[0_16px_64px_-16px_rgb(0_0_0/0.2)] dark:border-white/[0.06] dark:shadow-[0_20px_80px_-20px_rgb(0_0_0/0.6)]"
