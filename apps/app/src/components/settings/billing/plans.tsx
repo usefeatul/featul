@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "@featul/ui/components/button";
 import {
   Dialog,
@@ -10,13 +10,11 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@featul/ui/components/dialog";
-import { BoardIcon } from "@/components/global/icons";
 import type { PlanKey } from "@/lib/plan";
 import { cn } from "@featul/ui/lib/utils";
 import BillingCycleSegment from "./BillingCycleSegment";
 import PlanCheckoutButton from "./PlanCheckoutButton";
 import Comparison from "./comparison";
-import Counter from "./counter";
 import styles from "./plans.module.css";
 import { getPlan, type BillingCycle } from "./data";
 
@@ -28,39 +26,32 @@ type Props = {
   canManageBilling: boolean;
   trialEligible: boolean;
   currentSubscriptionId?: string;
+  trigger?: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export default function Plans(props: Props) {
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>(
-    props.currentBillingCycle,
-  );
-  const [selected, setSelected] = useState<PlanKey>(props.currentPlan);
-  const plan = getPlan(selected);
-  const amount =
-    billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
-  const period =
-    selected === "free"
-      ? "forever"
-      : billingCycle === "yearly"
-        ? "/ year"
-        : "/ month";
-  const isCurrent =
-    selected === props.currentPlan &&
-    (selected === "free" || billingCycle === props.currentBillingCycle);
+  const [selectedBillingCycle, setBillingCycle] = useState<BillingCycle | null>(null);
+  const billingCycle = selectedBillingCycle ?? props.currentBillingCycle;
 
   return (
-    <Dialog>
+    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
       <DialogTrigger asChild>
-        <Button>View plans</Button>
+        {props.trigger ?? <Button>View plans</Button>}
       </DialogTrigger>
-      <DialogContent className="flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-[45rem] flex-col gap-0 overflow-hidden p-0 sm:max-w-[45rem]">
-        <DialogHeader className="shrink-0 px-6 pb-4 pt-5 text-left">
-          <DialogTitle className="flex items-center gap-3 pr-6 text-base font-medium">
-            <BoardIcon className="size-4" />
-            Plans for your workspace
+      <DialogContent
+        className={cn(
+          "flex max-h-[82dvh] w-[calc(100%-2rem)] max-w-[56rem] flex-col gap-0 overflow-hidden bg-background p-0 sm:max-w-[56rem] dark:bg-background",
+          styles.surface,
+        )}
+      >
+        <DialogHeader className="shrink-0 px-5 pb-5 pt-6 text-left sm:px-7 sm:pt-7">
+          <DialogTitle className="pr-6 text-xl font-semibold tracking-tight">
+            A little more room to grow
           </DialogTitle>
-          <DialogDescription className="sm:pl-11">
-            The right amount of room for your team.
+          <DialogDescription>
+            Compare plans and find the right fit for your workspace.
           </DialogDescription>
         </DialogHeader>
         <div
@@ -69,67 +60,53 @@ export default function Plans(props: Props) {
             styles.scroll,
           )}
         >
-          <div className="flex flex-wrap items-center justify-between gap-3 px-6 pb-5 pt-1">
-            <BillingCycleSegment
-              billingCycle={billingCycle}
-              onChange={setBillingCycle}
-            />
-            {billingCycle === "yearly" ? (
-              <span className="text-xs text-muted-foreground">
-                2 months free with yearly billing
-              </span>
-            ) : null}
-          </div>
-          <div className="mx-4 overflow-hidden rounded-xl border border-border/40 bg-background/30 sm:mx-6">
-            <Comparison
-              selected={selected}
-              onSelect={setSelected}
-              currentPlan={props.currentPlan}
-              billingCycle={billingCycle}
-            />
-          </div>
-          <p className="px-6 py-4 text-xs leading-relaxed text-muted-foreground">
+          <Comparison
+            currentPlan={props.currentPlan}
+            billingCycle={billingCycle}
+            renderAction={(key) => (
+              <PlanCheckoutButton
+                {...props}
+                plan={getPlan(key)}
+                billingCycle={billingCycle}
+                isCurrent={
+                  key === props.currentPlan &&
+                  (key === "free" || billingCycle === props.currentBillingCycle)
+                }
+                className="w-full text-xs"
+              />
+            )}
+          />
+          <p className="px-5 pb-5 text-xs leading-relaxed text-muted-foreground sm:px-7">
             Every plan includes a feedback portal, roadmap, changelog, voting,
             and an in-app widget.
           </p>
         </div>
-        <div className="shrink-0 border-t border-border/40 px-6 py-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-medium">
-                {plan.label}{" "}
-                <span className="px-1 text-muted-foreground">·</span> £
-                <Counter value={amount} />{" "}
-                <span className="text-xs font-normal text-muted-foreground">
-                  {period}
-                </span>
+        <div className="flex shrink-0 flex-wrap items-end justify-between gap-3 border-t border-border/50 bg-muted/20 px-5 py-4 text-xs leading-relaxed text-muted-foreground sm:px-7">
+          <div className="min-w-0 flex-1 basis-52">
+            <p>
+              {billingCycle === "monthly" ? "Switch to yearly for " : null}
+              <strong className="font-semibold text-foreground">
+                2 months free
+              </strong>
+              {billingCycle === "yearly" ? " with yearly billing" : null}
+            </p>
+            {!props.canManageBilling ? (
+              <p className="mt-2">
+                Only the workspace owner can change the subscription.
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {selected === "free"
-                  ? "No subscription required."
-                  : billingCycle === "yearly"
-                    ? `Billed annually with 2 months free. Save £${plan.monthlyPrice * 12 - plan.yearlyPrice} a year.`
-                    : "Billed monthly. Cancel anytime."}
+            ) : null}
+            {props.currentPlan !== "free" ? (
+              <p className="mt-2">
+                To move to Free, cancel your subscription in Manage billing.
               </p>
-            </div>
-            <PlanCheckoutButton
-              {...props}
-              plan={plan}
+            ) : null}
+          </div>
+          <div className="ml-auto shrink-0">
+            <BillingCycleSegment
               billingCycle={billingCycle}
-              isCurrent={isCurrent}
-              className="w-full sm:w-auto sm:min-w-36"
+              onChange={setBillingCycle}
             />
           </div>
-          {!props.canManageBilling ? (
-            <p className="mt-3 text-xs text-muted-foreground">
-              Only the workspace owner can change the subscription.
-            </p>
-          ) : null}
-          {selected === "free" && props.currentPlan !== "free" ? (
-            <p className="mt-3 text-xs text-muted-foreground">
-              To move to Free, cancel your subscription in Manage billing.
-            </p>
-          ) : null}
         </div>
       </DialogContent>
     </Dialog>

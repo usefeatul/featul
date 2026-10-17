@@ -124,7 +124,7 @@ export function PostContent({
   }
 
   return (
-    <div className="px-6 pt-1 pb-6 flex min-h-0 flex-1 flex-col gap-2">
+    <div className="px-3 md:px-4 flex min-h-0 flex-1 flex-col gap-2">
       <input
         placeholder="Post title"
         value={title}
@@ -132,7 +132,7 @@ export function PostContent({
         onKeyDown={handleTitleKeyDown}
         required
         maxLength={100}
-        className="h-auto w-full bg-transparent py-2 text-xl font-medium tracking-tight text-foreground outline-none placeholder:text-muted-foreground md:text-2xl"
+        className="h-auto w-full bg-transparent py-2 text-lg font-semibold text-foreground outline-none placeholder:text-accent md:text-xl"
       />
       <div
         className="flex min-h-0 flex-1 cursor-text flex-col"
@@ -144,7 +144,7 @@ export function PostContent({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleContentKeyDown}
-          minRows={3}
+          minRows={2}
           maxRows={expanded ? 22 : 10}
           className={`w-full min-h-[72px] resize-none overflow-y-auto border-none bg-transparent py-2 text-base text-foreground outline-none placeholder:text-accent wrap-break-word ${expanded ? "max-h-[52dvh]" : "max-h-[32dvh]"}`}
         />

@@ -50,7 +50,7 @@ function DialogInner({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-inner"
-      className={cn(overlayDialogInnerClass, "px-6 pt-1 pb-6", className)}
+      className={cn(overlayDialogInnerClass, "rounded-lg px-4 py-3", className)}
       {...props}
     />
   )
@@ -75,7 +75,7 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           overlayDialogClass,
-          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-0 duration-200 outline-none",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl duration-200 outline-none",
           fluid
             ? "w-auto max-w-none sm:max-w-none"
             : "w-full max-w-[calc(100%-2rem)] sm:max-w-md",
@@ -87,7 +87,7 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute top-[1.375rem] right-5 inline-flex size-7 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
+            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-3 right-3 rounded-md opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer"
           >
             <XMarkIcon size={14} />
             <span className="sr-only">Close</span>
@@ -102,7 +102,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex shrink-0 flex-col gap-2 px-6 py-5 pr-16 text-left", className)}
+      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
       {...props}
     />
   )
@@ -128,7 +128,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-base leading-6 font-medium tracking-tight [&>svg]:box-content [&>svg]:rounded-lg [&>svg]:bg-muted/60 [&>svg]:p-2 [&>svg]:text-muted-foreground", className)}
+      className={cn("text-lg leading-none font-semibold", className)}
       {...props}
     />
   )

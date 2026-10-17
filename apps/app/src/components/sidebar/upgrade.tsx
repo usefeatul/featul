@@ -1,13 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@featul/ui/components/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
-import { Sparkles, X } from "@/components/global/icons";
+import { X } from "@/components/global/icons";
 import { fetchWorkspaceBySlug, workspaceQueryKeys } from "@/lib/workspace/client";
+import Pricing from "./pricing";
 
 const DISMISS_DURATION = 3 * 24 * 60 * 60 * 1000;
 
@@ -64,17 +62,10 @@ export default function Upgrade({ slug, collapsed, initialPlan, userKey }: {
   const plan = workspace?.plan ?? initialPlan;
   const visible = Boolean(slug && plan && plan !== "professional" && dismissal?.key === storageKey && dismissal.until === 0);
 
-  const href = `/workspaces/${slug}/settings/billing`;
+  const pricing = <Pricing key={slug} slug={slug} collapsed={collapsed} plan={plan ?? "free"} />;
   const content = collapsed ? (
     <div className="flex shrink-0 justify-center px-1.5 py-3">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button asChild size="icon-sm" variant="ghost" aria-label="View upgrade plans" className="text-muted-foreground dark:bg-transparent dark:text-muted-foreground">
-            <Link href={href}><Sparkles className="size-4" /></Link>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="right" sideOffset={10}>View plans</TooltipContent>
-      </Tooltip>
+      {pricing}
     </div>
   ) : (
     <div className="shrink-0 px-3 pt-3">
@@ -92,12 +83,7 @@ export default function Upgrade({ slug, collapsed, initialPlan, userKey }: {
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
           Higher limits as your team grows.
         </p>
-        <Link
-          href={href}
-          className="mt-1 inline-flex min-h-6 items-center rounded-lg text-xs font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          View plans
-        </Link>
+        {pricing}
       </section>
     </div>
   );

@@ -32,7 +32,7 @@ export function PostFooter({
   const atLimit = uploadedImages.length >= maxImages
 
   return (
-    <div className="mt-auto flex shrink-0 items-center justify-between px-6 pt-2 pb-5">
+    <div className="mt-auto flex items-center justify-between p-3 md:p-4">
       <div className="flex items-center gap-2">
         <input
           ref={fileInputRef}

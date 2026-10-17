@@ -39,9 +39,9 @@ export function PostHeader({
   onToggleTag,
 }: PostHeaderProps) {
   return (
-    <div className="mx-6 flex shrink-0 flex-wrap items-center gap-2 border-t border-border/40 pt-4 pb-2">
+    <div className="flex items-center gap-2 p-3 md:p-4 pb-1">
       {/* User Avatar */}
-      <Avatar className="size-6">
+      <Avatar className="size-8">
         {user?.image ? (
           <AvatarImage src={user.image} alt={user.name} />
         ) : (

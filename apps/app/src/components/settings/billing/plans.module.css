@@ -1,3 +1,61 @@
+.surface {
+  border: 1px solid color-mix(in oklab, var(--border), transparent 20%);
+  border-radius: 1rem;
+  background-color: var(--background);
+  background-image: linear-gradient(
+    to bottom,
+    var(--background),
+    color-mix(in oklab, var(--background), var(--muted) 25%)
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 1px 2px rgb(0 0 0 / 0.06),
+    0 24px 80px -24px rgb(0 0 0 / 0.35);
+}
+
+.surface::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 1px;
+  z-index: 1;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    inset 0 -1px 0 rgb(0 0 0 / 0.04);
+}
+
+:global(.dark) .surface {
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--background), var(--muted) 30%),
+    var(--background)
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 24px 80px -24px rgb(0 0 0 / 0.5);
+}
+
+:global(.dark) .surface::after {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.04),
+    inset 0 -1px 0 rgb(0 0 0 / 0.2);
+}
+
+@supports (corner-shape: squircle) {
+  .surface,
+  .surface::after {
+    corner-shape: squircle;
+    border-radius: 1.5rem;
+  }
+}
+
+.surface > [data-slot="dialog-close"] {
+  top: 1.25rem;
+  right: 1.25rem;
+}
+
 .scroll {
   scrollbar-width: none;
 }
@@ -6,8 +64,32 @@
   display: none;
 }
 
+.plan {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid color-mix(in oklab, var(--border), transparent 35%);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: var(--sidebar);
+  box-shadow: inset 0 1px 0
+    color-mix(in oklab, var(--foreground), transparent 97%);
+}
+
+.pattern {
+  opacity: 0.65;
+  mask-image: linear-gradient(to bottom, black 0%, black 40%, transparent 100%);
+}
+
+:global(.dark) .pattern {
+  opacity: 0.9;
+}
+
 .comparison {
   width: 100%;
+  min-width: 28rem;
   table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.75rem;
@@ -15,65 +97,47 @@
 
 .comparison th,
 .comparison td {
-  padding: 0.8rem 0.5rem;
+  padding: 0.75rem 0.5rem;
 }
 
 .comparison tr > :first-child {
-  padding-left: 1rem;
+  padding-left: 1.75rem;
+}
+
+.comparison tr > :last-child {
+  padding-right: 1.75rem;
+}
+
+.comparison thead th {
+  padding-top: 0;
+  padding-bottom: 1rem;
 }
 
 .comparison tbody tr {
   border-top: 1px solid color-mix(in oklab, var(--border), transparent 40%);
 }
 
-.comparison [data-selected="true"] {
-  background: color-mix(in oklab, var(--primary), transparent 95%);
-}
-
-.option {
-  display: block;
-  height: 100%;
-  cursor: pointer;
-  padding: 1.25rem 0.5rem 1rem;
-}
-
-.option:hover {
-  background: color-mix(in oklab, var(--foreground), transparent 97%);
-}
-
-.option:focus-within {
-  outline: 2px solid var(--ring);
-  outline-offset: -3px;
-}
-
-.selection {
-  display: flex;
-  width: 1rem;
-  height: 1rem;
-  margin: 0 auto;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-}
-
-[data-selected="true"] .selection {
-  color: var(--primary-foreground);
-  background: var(--primary);
-  border-color: var(--primary);
+.comparison tbody tr:last-child > * {
+  padding-bottom: 0;
 }
 
 @media (max-width: 639px) {
   .comparison {
-    font-size: 0.6875rem;
-  }
-
-  .comparison tr > :first-child {
-    padding-left: 1rem;
+    min-width: 0;
+    font-size: 0.625rem;
   }
 
   .comparison th,
   .comparison td {
-    padding: 0.75rem 0.25rem;
+    padding-inline: 0.25rem;
+    overflow-wrap: anywhere;
+  }
+
+  .comparison tr > :first-child {
+    padding-left: 1.25rem;
+  }
+
+  .comparison tr > :last-child {
+    padding-right: 1.25rem;
   }
 }

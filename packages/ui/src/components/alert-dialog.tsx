@@ -53,7 +53,7 @@ function AlertDialogInner({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       data-slot="alert-dialog-inner"
-      className={cn(overlayDialogInnerClass, "px-6 pt-1 pb-6", className)}
+      className={cn(overlayDialogInnerClass, "px-4 py-3", className)}
       {...props}
     />
   )
@@ -74,7 +74,7 @@ function AlertDialogContent({
         data-slot="alert-dialog-content"
         className={cn(
           overlayDialogClass,
-          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-0 duration-200 outline-none sm:max-w-sm",
+          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl duration-200 outline-none sm:max-w-sm",
           className
         )}
         {...props}
@@ -83,7 +83,7 @@ function AlertDialogContent({
         {showCloseButton && (
           <BaseAlertDialog.Close
             data-slot="alert-dialog-close"
-            className="absolute top-[1.375rem] right-5 inline-flex size-7 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
+            className="ring-offset-background focus:ring-ring absolute top-3 right-3 rounded-md opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer"
           >
             <XMarkIcon size={14} />
             <span className="sr-only">Close</span>
@@ -101,7 +101,7 @@ function AlertDialogHeader({
   return (
     <div
       data-slot="alert-dialog-header"
-      className={cn("flex shrink-0 flex-col gap-2 px-6 py-5 pr-16 text-left", className)}
+      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
       {...props}
     />
   )
@@ -130,7 +130,7 @@ function AlertDialogTitle({
   return (
     <BaseAlertDialog.Title
       data-slot="alert-dialog-title"
-      className={cn("text-base leading-6 font-medium tracking-tight [&>svg]:box-content [&>svg]:rounded-lg [&>svg]:bg-muted/60 [&>svg]:p-2 [&>svg]:text-muted-foreground", className)}
+      className={cn("text-lg font-semibold", className)}
       {...props}
     />
   )

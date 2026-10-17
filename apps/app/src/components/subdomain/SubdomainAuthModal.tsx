@@ -31,8 +31,8 @@ export default function SubdomainAuthModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent fluid className="w-[min(90vw,400px)]">
-        <DialogHeader className="flex flex-row items-center justify-between space-y-0">
-          <DialogTitle className="flex items-center gap-3 text-base font-medium">
+        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+          <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
             <AccountIcon className="size-3.5 text-primary" />
             {title}
           </DialogTitle>
