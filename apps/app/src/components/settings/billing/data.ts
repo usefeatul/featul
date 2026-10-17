@@ -46,7 +46,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
     tagline: "For early teams",
     monthlyPrice: 18,
     yearlyPrice: 180,
-    trialDays: 7,
+    trialDays: 14,
     features: [
       { title: "Everything in Free", description: "Everything in Free" },
       { title: "Custom domain", description: "Custom domain" },
@@ -71,7 +71,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
     tagline: "For growing product teams",
     monthlyPrice: 35,
     yearlyPrice: 350,
-    trialDays: 3,
+    trialDays: 14,
     features: [
       { title: "Everything in Starter", description: "Everything in Starter" },
       { title: "Custom domain", description: "Custom domain" },

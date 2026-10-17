@@ -18,6 +18,7 @@ export type PricingPlan = {
   note: string;
   monthlyPrice: number;
   yearlyPrice: number;
+  trialDays?: number;
   href: string;
   finePrint: string;
   highlights: PricingPlanHighlight[];
@@ -54,6 +55,7 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     note: "For early teams",
     monthlyPrice: 18,
     yearlyPrice: 180,
+    trialDays: 14,
     href: APP_URL,
     finePrint: "Flat workspace pricing. Cancel anytime.",
     highlights: [
@@ -77,6 +79,7 @@ export const PRICING_PLANS: Record<PricingPlanKey, PricingPlan> = {
     note: "For growing product teams",
     monthlyPrice: 35,
     yearlyPrice: 350,
+    trialDays: 14,
     href: APP_URL,
     finePrint: "Flat workspace pricing. Cancel anytime.",
     highlights: [

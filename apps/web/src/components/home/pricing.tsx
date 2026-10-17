@@ -216,6 +216,11 @@ function PricingPlanCard({
               ? "2 months free. Billed annually. Cancel anytime."
               : plan.finePrint}
           </p>
+          {plan.trialDays ? (
+            <p className="mt-2 text-center text-xs font-extralight text-foreground/65">
+              One trial per account. No credit card required.
+            </p>
+          ) : null}
         </div>
       </OverlayCardPanel>
     </OverlayCard>
@@ -323,6 +328,8 @@ function getPlanRibbon(planKey: PricingPlanKey): { label: string; tone: "popular
 }
 
 function getPlanCtaLabel(planKey: PricingPlanKey): string {
+  const plan = getPricingPlan(planKey)
+  if (plan.trialDays) return `Start ${plan.trialDays}-day free trial`
   if (planKey === "free") return "Get Free"
   if (planKey === "starter") return "Get Starter"
   return "Get Professional"

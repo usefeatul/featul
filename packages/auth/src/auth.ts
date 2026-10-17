@@ -137,13 +137,13 @@ const stripePlugin = (() => {
     subscription: {
       enabled: true,
       plans: stripePlans,
-      getCheckoutSessionParams: async ({ user, plan, subscription }) => {
+      getCheckoutSessionParams: async ({ user, subscription }) => {
         return {
           // Configure trials here only: the plugin's per-workspace freeTrial
           // default would grant another trial on a second workspace.
           params: await getAccountTrialCheckoutParams(
             user.id, subscription.referenceId, subscription.id,
-            plan.name === "starter" ? 7 : 3,
+            14,
           ),
         };
       },
