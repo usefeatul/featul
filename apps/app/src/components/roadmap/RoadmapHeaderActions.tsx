@@ -1,5 +1,6 @@
 "use client";
 
+import RoadmapSearchAction from "./actions/RoadmapSearchAction";
 import RoadmapFiltersAction from "./actions/RoadmapFiltersAction";
 import RoadmapSortAction from "./actions/RoadmapSortAction";
 import RoadmapShortcutsHint from "./RoadmapShortcutsHint";
@@ -15,6 +16,7 @@ export default function RoadmapHeaderActions({
 }) {
   return (
     <div className={cn("ml-auto flex shrink-0 items-center gap-1", className)}>
+      <RoadmapSearchAction compact className={actionButtonClass} />
       <RoadmapFiltersAction className={actionButtonClass} />
       <RoadmapSortAction className={actionButtonClass} />
       <RoadmapShortcutsHint className={actionButtonClass} />
