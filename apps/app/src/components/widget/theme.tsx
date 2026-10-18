@@ -4,11 +4,9 @@ import * as React from "react";
 import { ThemeProvider, useTheme } from "next-themes";
 import { postToParent, useParentOrigin } from "./messaging";
 
-/** Mirrors the app palette: shell = --sidebar, surface = --card, ink = --foreground. */
+/** Mirrors the app palette: surface = --card, ink = --foreground. */
 export const WIDGET_SURFACE_DARK = "#1c1c1c";
 export const WIDGET_SURFACE_LIGHT = "#ffffff";
-export const WIDGET_SHELL_DARK = "#111111";
-export const WIDGET_SHELL_LIGHT = "#f3f3f3";
 export const WIDGET_INK_DARK = "#ededed";
 export const WIDGET_INK_LIGHT = "#202020";
 export const WIDGET_ACCENT_FALLBACK = "#4d96e8";
@@ -91,10 +89,6 @@ export function widgetSurfaceHex(theme: WidgetResolvedTheme) {
   return theme === "light" ? WIDGET_SURFACE_LIGHT : WIDGET_SURFACE_DARK;
 }
 
-export function widgetShellHex(theme: WidgetResolvedTheme) {
-  return theme === "light" ? WIDGET_SHELL_LIGHT : WIDGET_SHELL_DARK;
-}
-
 export function widgetInkHex(theme: WidgetResolvedTheme) {
   return theme === "light" ? WIDGET_INK_LIGHT : WIDGET_INK_DARK;
 }
@@ -128,7 +122,7 @@ function ThemeSync({
       root.style.setProperty(key, value);
     }
     document.body.style.background =
-      resolved === "light" ? WIDGET_SHELL_LIGHT : WIDGET_SHELL_DARK;
+      resolved === "light" ? WIDGET_SURFACE_LIGHT : WIDGET_SURFACE_DARK;
     postToParent(parentOrigin, "theme", { theme: resolved, mode });
   }, [resolvedTheme, mode, parentOrigin]);
 

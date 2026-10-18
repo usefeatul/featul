@@ -36,7 +36,7 @@ export function WidgetPostRow({
   ].filter(Boolean);
 
   return (
-    <article className="relative border-b border-[rgb(var(--widget-fg)/0.1)] px-4 py-3.5 last:border-b-0">
+    <article className="relative border-b border-[rgb(var(--widget-fg)/0.1)] px-4 py-3.5 transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]">
       <button
         type="button"
         onClick={() => onOpen(post)}

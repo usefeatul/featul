@@ -24,11 +24,11 @@ const LAUNCHER_SIZE = 40;
 const LAUNCHER_PAD = 3;
 const LAUNCHER_INNER_RADIUS = "9px";
 const PANEL_WIDTH = 420;
-const PANEL_WIDTH_EXPANDED = 500;
-const PANEL_HEIGHT = 800;
-const PANEL_HEIGHT_EXPANDED = 880;
-const PANEL_HEIGHT_RATIO = 0.74;
-const PANEL_HEIGHT_EXPANDED_RATIO = 0.75;
+const PANEL_WIDTH_EXPANDED = 640;
+const PANEL_HEIGHT = 820;
+const PANEL_HEIGHT_EXPANDED = 960;
+const PANEL_HEIGHT_RATIO = 0.8;
+const PANEL_HEIGHT_EXPANDED_RATIO = 0.9;
 const PANEL_EXPAND_MS = 520;
 const PANEL_EXPAND_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const FULLSCREEN_MAX_WIDTH = 768;
@@ -194,11 +194,12 @@ function boot() {
     if (mode !== "auto" || !state.themeReady) state.theme = resolveTheme(mode);
     if (mode !== "auto") state.themeReady = true;
     if (state.iframe) {
-      state.iframe.style.background = shellBackground();
+      state.iframe.style.background = panelBackground();
+      state.iframe.style.boxShadow = panelShadow();
       state.iframe.style.colorScheme = state.theme;
     }
     if (state.shell && state.open)
-      state.shell.style.background = shellBackground();
+      state.shell.style.background = panelBackground();
     syncLauncherTheme();
   }
 
@@ -251,7 +252,10 @@ function boot() {
   }
 
   function panelShadow() {
-    return "none";
+    if (state.overlay || isFullscreenPanel()) return "none";
+    return state.theme === "light"
+      ? "0 0 0 1px rgba(0, 0, 0, 0.14), 0 16px 40px -16px rgba(0, 0, 0, 0.16), 0 4px 10px -6px rgba(0, 0, 0, 0.08)"
+      : "0 0 0 1px rgba(255, 255, 255, 0.14), 0 16px 40px -16px rgba(0, 0, 0, 0.55), 0 4px 10px -6px rgba(0, 0, 0, 0.35)";
   }
 
   function syncFrameLayout() {
@@ -301,11 +305,8 @@ function boot() {
     const heightRatio = state.expanded
       ? PANEL_HEIGHT_EXPANDED_RATIO
       : PANEL_HEIGHT_RATIO;
-    const viewportCap = Math.round(view.height * heightRatio);
-    const height = Math.min(
-      preferredHeight,
-      Math.max(360, viewportCap - heightPad),
-    );
+    const viewportCap = Math.round(view.height * heightRatio) - heightPad;
+    const height = Math.min(preferredHeight, Math.max(360, viewportCap));
     const gutter = PANEL_GUTTER;
     return {
       left:
@@ -512,7 +513,7 @@ function boot() {
     applyRect(state.shell, getPanelRect(state.position));
     if (!state.shell) return;
     state.shell.style.borderRadius = panelCornerRadius();
-    state.shell.style.background = shellBackground();
+    state.shell.style.background = panelBackground();
     state.shell.style.boxShadow = panelShadow();
   }
 
@@ -867,7 +868,7 @@ function boot() {
     iframe.style.zIndex = "2147483647";
     iframe.style.display = "none";
     iframe.style.opacity = "0";
-    iframe.style.background = shellBackground();
+    iframe.style.background = panelBackground();
     iframe.style.colorScheme = state.theme;
     document.body.appendChild(iframe);
     state.iframe = iframe;
@@ -1097,9 +1098,13 @@ function boot() {
       if (theme !== "light" && theme !== "dark") return;
       state.theme = theme;
       state.themeReady = true;
-      if (state.iframe) state.iframe.style.colorScheme = state.theme;
+      if (state.iframe) {
+        state.iframe.style.colorScheme = state.theme;
+        state.iframe.style.background = panelBackground();
+        state.iframe.style.boxShadow = panelShadow();
+      }
       if (state.shell && state.open)
-        state.shell.style.background = shellBackground();
+        state.shell.style.background = panelBackground();
       syncLauncherTheme();
       syncButtonVisibility();
     }

@@ -33,7 +33,7 @@ export function WidgetNavSkeleton({
         : "px-3 py-2";
   return (
     <nav
-      className={`grid shrink-0 ${navPad} ${fullscreen ? "pb-2.5" : ""}`}
+      className={`grid shrink-0 border-t border-[rgb(var(--widget-fg)/0.07)] ${navPad} ${fullscreen ? "pb-2.5" : ""}`}
       style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}
       aria-hidden
       aria-busy="true"

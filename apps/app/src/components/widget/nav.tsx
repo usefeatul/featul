@@ -37,10 +37,10 @@ export function Nav({
   return (
     <nav
       aria-label="Widget navigation"
-      className={`grid shrink-0 gap-1.5 ${navPad} transition-[box-shadow] duration-200 ${
+      className={`grid shrink-0 gap-1.5 border-t ${navPad} transition-colors duration-200 ${
         navBorderVisible
-          ? "shadow-[inset_0_1px_0_0_rgb(var(--widget-fg)/0.08)]"
-          : "shadow-[inset_0_1px_0_0_transparent]"
+          ? "border-[rgb(var(--widget-fg)/0.12)]"
+          : "border-[rgb(var(--widget-fg)/0.07)]"
       } ${fullscreen ? "pb-2.5" : ""}`}
       style={{
         gridTemplateColumns: `repeat(${Math.max(tabs.length, 1)}, minmax(0, 1fr))`,

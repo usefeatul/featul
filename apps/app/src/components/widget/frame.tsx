@@ -11,7 +11,7 @@ import { WidgetFeedbackDetail } from "./detail";
 import { Header } from "./header";
 import { Home } from "./home";
 import { WidgetEmpty } from "./empty";
-import { widgetCardInnerClass, widgetCardShellClass } from "./chrome";
+import { widgetCardShellClass } from "./chrome";
 import { cn } from "@featul/ui/lib/utils";
 import {
   mapChangelogEntries,
@@ -44,7 +44,6 @@ import {
   widgetAccentVars,
   widgetInkHex,
   widgetLayoutClass,
-  widgetShellHex,
   widgetSurfaceHex,
   widgetThemeVars,
 } from "./theme";
@@ -197,7 +196,7 @@ export default function WidgetFrame({
     const applyTheme = (next: "light" | "dark") => {
       setTheme(next);
       document.documentElement.style.colorScheme = next;
-      document.body.style.background = widgetShellHex(next);
+      document.body.style.background = widgetSurfaceHex(next);
     };
 
     applyTheme(resolveWidgetTheme(themeMode));
@@ -602,16 +601,12 @@ export default function WidgetFrame({
           initial={false}
           className={cn(
             widgetLayoutClass(layoutStyle),
-            screenshotUrl
-              ? "flex h-full min-h-0 w-full flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))]"
-              : cn(widgetCardShellClass, "h-full min-h-0 w-full"),
-            fullscreen ? "rounded-none border-0" : "",
+            widgetCardShellClass,
+            "h-full min-h-0 w-full",
           )}
           style={
             {
-              backgroundColor: screenshotUrl
-                ? widgetSurfaceHex(theme)
-                : widgetShellHex(theme),
+              backgroundColor: widgetSurfaceHex(theme),
               color: widgetInkHex(theme),
               paddingTop: fullscreen
                 ? "max(0.25rem, env(safe-area-inset-top, 0px))"
@@ -630,13 +625,7 @@ export default function WidgetFrame({
             } as React.CSSProperties
           }
         >
-          <div
-            className={
-              screenshotUrl
-                ? "flex min-h-0 flex-1 flex-col"
-                : cn(widgetCardInnerClass, "flex min-h-0 flex-1 flex-col overflow-hidden")
-            }
-          >
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {!screenshotUrl ? (
           <Header
             workspaceName={workspaceName}

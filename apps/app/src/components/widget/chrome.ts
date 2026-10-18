@@ -1,9 +1,6 @@
-/** Widget surfaces use the app's lg radius, with a 6px frame. */
+/** Single-layer widget surface; the host iframe supplies the radius, ring, and shadow. */
 export const widgetCardShellClass =
-  "flex flex-col overflow-hidden rounded-lg border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-shell))] p-1.5 text-[rgb(var(--widget-fg))]";
-
-export const widgetCardInnerClass =
-  "flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg bg-[rgb(var(--widget-surface))] ring-1 ring-[rgb(var(--widget-fg)/0.1)]";
+  "flex flex-col overflow-hidden bg-[rgb(var(--widget-surface))] text-[rgb(var(--widget-fg))]";
 
 export const widgetToolbarShellClass =
   "flex items-stretch overflow-hidden rounded-lg border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-shell))] p-0.5";
