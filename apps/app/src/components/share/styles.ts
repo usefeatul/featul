@@ -1,5 +1,5 @@
 export const shareCardClass =
-  "min-w-0 overflow-hidden rounded-xl border border-border/50 bg-card";
+  "overflow-hidden rounded-2xl border border-border/50 bg-card dark:border-white/8 dark:bg-black/30";
 
-export const shareFooterClass =
-  "flex flex-wrap items-center justify-between gap-2 border-t border-border/35 bg-background/20 px-5 py-3";
+export const shareSectionLabelClass =
+  "text-[11px] font-medium tracking-[0.08em] text-muted-foreground uppercase";

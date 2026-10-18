@@ -46,6 +46,7 @@ export default function Upgrade({ slug, collapsed, initialPlan, userKey }: {
     title: "Need more room?",
     description: "Higher limits as your team grows.",
     action: pricing,
+    pattern: "orange",
     dismiss: upgrade.dismiss,
   });
   if (canInvite && invite.visible) cards.push({
@@ -53,6 +54,7 @@ export default function Upgrade({ slug, collapsed, initialPlan, userKey }: {
     title: "Better feedback, together",
     description: "Invite your team to review and prioritize requests.",
     action: <Link className={actionClass} href={`/workspaces/${slug}/settings/team`}>Invite teammates</Link>,
+    pattern: "purple",
     dismiss: invite.dismiss,
   });
   if (share.visible) cards.push({
@@ -60,6 +62,7 @@ export default function Upgrade({ slug, collapsed, initialPlan, userKey }: {
     title: "Let your users weigh in",
     description: "Share your board and discover what matters most.",
     action: <Link className={actionClass} href={`/workspaces/${slug}/share`}>Share board</Link>,
+    pattern: "blue",
     dismiss: share.dismiss,
   });
 

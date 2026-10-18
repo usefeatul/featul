@@ -2,6 +2,7 @@
 
 import { useId, useRef, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { DitherGradient, type DitherGradientProps } from "@featul/ui/components/gradient";
 import { X } from "@/components/global/icons";
 
 export type StackCard = {
@@ -9,6 +10,7 @@ export type StackCard = {
   title: string;
   description: string;
   action: ReactNode;
+  pattern: DitherGradientProps["from"];
   dismiss: () => void;
 };
 
@@ -61,6 +63,9 @@ export default function Stack({ cards, total }: { cards: StackCard[]; total: num
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.16, ease: "easeOut" }}
           >
+            <div aria-hidden="true" className="relative mb-2.5 h-14 overflow-hidden rounded-md bg-muted ring-1 ring-inset ring-black/5 dark:ring-white/10">
+              <DitherGradient from={card.pattern} direction="up" cell={3} opacity={0.6} />
+            </div>
             <p id={titleId} className="text-xs font-medium text-foreground">{card.title}</p>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{card.description}</p>
             <div className="mt-1">{card.action}</div>

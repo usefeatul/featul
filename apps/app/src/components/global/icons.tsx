@@ -83,6 +83,7 @@ import {
   Fingerprint as LucideFingerprint,
   GitMerge as LucideGitMerge,
   GripVertical as LucideGripVertical,
+  Headset as LucideHeadset,
   History as LucideHistory,
   KeyRound as LucideKeyRound,
   Lightbulb as LucideLightbulb,
@@ -105,6 +106,7 @@ import {
   Undo2 as LucideUndo2,
   Upload as LucideUpload,
   UserRoundPlus as LucideUserRoundPlus,
+  UsersRound as LucideUsersRound,
   Wand2 as LucideWand2,
   X as LucideX,
 } from "lucide-react";
@@ -219,6 +221,7 @@ export const Code2 = outline(LucideCode2);
 export const EllipsisVertical = outline(LucideEllipsisVertical);
 export const FileText = outline(LucideFileText);
 export const FingerprintIcon = outline(LucideFingerprint);
+export const Headset = outline(LucideHeadset);
 export const History = outline(LucideHistory);
 export const Link2 = outline(LucideLink2);
 export const ListChecks = outline(LucideListChecks);
@@ -238,6 +241,7 @@ export const Square = outline(LucideSquare);
 export const Undo2 = outline(LucideUndo2);
 export const Upload = outline(LucideUpload);
 export const UserRoundPlus = outline(LucideUserRoundPlus);
+export const UsersRound = outline(LucideUsersRound);
 export const Wand2 = outline(LucideWand2);
 export const X = outline(LucideX);
 

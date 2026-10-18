@@ -1,51 +1,68 @@
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@featul/ui/components/avatar";
 import { buildSignature } from "@/lib/share";
 import CopyButton from "./copy";
-import ShareCard from "./card";
+import ShareSection from "./section";
+import { shareCardClass } from "./styles";
 
 export default function Signature({
   name,
   userName,
+  userImage,
   boardUrl,
 }: {
   name: string;
   userName: string;
+  userImage?: string | null;
   boardUrl: string;
 }) {
   const signature = buildSignature(userName, name, boardUrl);
   return (
-    <ShareCard
-      title="In your email signature"
-      description="A small invitation at the end of every conversation."
-      footer={
-        <>
-          <CopyButton text={signature.html} label="Copy HTML" />
-          <CopyButton
-            text={signature.text}
-            html={signature.html}
-            label="Copy signature"
-          />
-        </>
-      }
+    <ShareSection
+      title="Email signature"
+      description="A quiet invite at the bottom of every email you send."
     >
-      <div className="space-y-5">
-        <p className="text-[11px] text-accent">Signature preview</p>
-        <div className="break-words font-[Arial,sans-serif] text-sm leading-[1.6]">
-          <strong>
-            {userName} · {name}
-          </strong>
-          <br />
-          Help shape what we build next.
-          <br />
-          <a
-            href={boardUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline"
-          >
-            Share an idea →
-          </a>
+      <div className={shareCardClass}>
+        <div className="flex items-center justify-between gap-3 border-b border-border/50 px-5 py-3">
+          <span className="text-xs text-accent">Preview</span>
+          <div className="flex items-center gap-2">
+            <CopyButton text={signature.html} label="Copy HTML" />
+            <CopyButton
+              text={signature.text}
+              html={signature.html}
+              label="Copy signature"
+              primary
+            />
+          </div>
+        </div>
+        <div className="px-5 py-6">
+          <p className="text-sm text-accent">Thanks, talk soon.</p>
+          <div className="mt-5 flex items-center gap-3">
+            <Avatar className="size-10">
+              {userImage ? <AvatarImage src={userImage} alt="" /> : null}
+              <AvatarFallback className="text-xs font-medium">
+                {userName.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 border-l border-border/60 pl-3 text-sm leading-6">
+              <p className="font-medium">
+                {userName} · {name}
+              </p>
+              <a
+                href={boardUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline-offset-4 hover:underline"
+              >
+                Help shape what we build next →
+              </a>
+            </div>
+          </div>
         </div>
       </div>
-    </ShareCard>
+    </ShareSection>
   );
 }

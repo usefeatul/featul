@@ -2,112 +2,156 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ExternalLink } from "@/components/global/icons";
-import { shareCardClass, shareFooterClass } from "./styles";
-import { buildWidgetSnippet } from "@/lib/share";
+import { cn } from "@featul/ui/lib/utils";
+import { buildWidgetSnippet, buildWidgetSteps } from "@/lib/share";
+import CodeBlock from "./code";
 import CopyButton from "./copy";
+import ShareSection from "./section";
+import { shareCardClass } from "./styles";
+
+type Theme = "auto" | "light" | "dark";
+type Position = "left" | "right";
+
+function Segmented<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: { value: T; label: string }[];
+  onChange: (value: T) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-accent">{label}</span>
+      <div
+        role="radiogroup"
+        aria-label={label}
+        className="flex rounded-lg border border-border/50 bg-muted/20 p-0.5 dark:border-white/8 dark:bg-black/30"
+      >
+        {options.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            role="radio"
+            aria-checked={value === option.value}
+            onClick={() => onChange(option.value)}
+            className={cn(
+              "rounded-md px-2.5 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              value === option.value
+                ? "bg-background font-medium text-foreground shadow-xs dark:bg-white/10"
+                : "text-accent hover:text-foreground",
+            )}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Step({
+  number,
+  title,
+  hint,
+}: {
+  number: number | string;
+  title: string;
+  hint: string;
+}) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted/60 text-[10px] font-medium text-accent dark:bg-white/8">
+        {number}
+      </span>
+      <span className="text-sm font-medium">{title}</span>
+      <span className="text-xs text-accent">{hint}</span>
+    </div>
+  );
+}
 
 export default function Embed({
+  name,
   workspaceId,
   slug,
 }: {
+  name: string;
   workspaceId: string;
   slug: string;
 }) {
-  const [theme, setTheme] = useState<"auto" | "light" | "dark">("auto");
-  const [position, setPosition] = useState<"left" | "right">("right");
+  const [theme, setTheme] = useState<Theme>("auto");
+  const [position, setPosition] = useState<Position>("right");
+  const steps = buildWidgetSteps(workspaceId, theme, position);
   const snippet = buildWidgetSnippet(workspaceId, theme, position);
-  const selectClass =
-    "mt-2 h-9 w-full rounded-md border border-border/40 bg-card px-2 text-xs text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/50";
+  const handoff = `Please add the ${name} feedback widget to our app. Paste this before the closing </body> tag:\n\n${snippet}\n\nTo link feedback to signed-in users, follow: https://www.featul.com/docs/getting-started/widget`;
 
   return (
-    <section className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 className="text-sm font-medium">
-            Feedback, right inside your app
-          </h3>
-          <p className="mt-1 text-xs text-accent">
-            Add the widget to let users share ideas without leaving your
-            website.
-          </p>
+    <ShareSection
+      title="In-app widget"
+      description="Let users send feedback without leaving your product."
+    >
+      <div className={shareCardClass}>
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-border/50 px-5 py-3">
+          <Segmented<Theme>
+            label="Theme"
+            value={theme}
+            onChange={setTheme}
+            options={[
+              { value: "auto", label: "Auto" },
+              { value: "light", label: "Light" },
+              { value: "dark", label: "Dark" },
+            ]}
+          />
+          <Segmented<Position>
+            label="Position"
+            value={position}
+            onChange={setPosition}
+            options={[
+              { value: "left", label: "Left" },
+              { value: "right", label: "Right" },
+            ]}
+          />
         </div>
-        <a
-          href="https://www.featul.com/docs/getting-started/widget"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs text-accent hover:text-foreground"
-        >
-          Setup guide <ExternalLink className="size-3" />
-        </a>
-      </div>
-      <div className="grid items-start gap-6 md:grid-cols-[200px_minmax(0,1fr)]">
-        <div className="grid grid-cols-2 gap-5 md:grid-cols-1">
-          <div>
-            <label htmlFor="widget-theme" className="text-xs font-medium">
-              Appearance
-            </label>
-            <select
-              id="widget-theme"
-              value={theme}
-              onChange={(event) => setTheme(event.target.value as typeof theme)}
-              className={selectClass}
-            >
-              <option value="auto">Follow workspace</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-            </select>
+        <div className="space-y-5 p-5">
+          <div className="space-y-2.5">
+            <Step number={1} title="Load the SDK" hint="Once, in your layout" />
+            <CodeBlock code={steps.loader} label="SDK loader" />
           </div>
-          <div>
-            <label htmlFor="widget-position" className="text-xs font-medium">
-              Launcher position
-            </label>
-            <select
-              id="widget-position"
-              value={position}
-              onChange={(event) =>
-                setPosition(event.target.value as typeof position)
-              }
-              className={selectClass}
-            >
-              <option value="right">Bottom right</option>
-              <option value="left">Bottom left</option>
-            </select>
+          <div className="space-y-2.5">
+            <Step
+              number={2}
+              title="Start the widget"
+              hint="Uses the options above"
+            />
+            <CodeBlock code={steps.init} label="Initialize script" />
           </div>
-          <p className="col-span-2 text-xs leading-5 text-accent md:col-span-1">
-            These options update the snippet. Copy it into your website to apply
-            them.
-          </p>
-          <Link
-            href={`/workspaces/${slug}/settings/workspace`}
-            className="col-span-2 text-xs text-accent hover:text-foreground md:col-span-1"
+        </div>
+        <div className="flex flex-wrap items-center gap-2 border-t border-border/50 px-5 py-3">
+          <CopyButton text={snippet} label="Copy both" primary />
+          <CopyButton text={handoff} label="Copy for a teammate" />
+          <a
+            href="https://www.featul.com/docs/getting-started/widget"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-auto text-xs text-accent hover:text-foreground"
           >
-            Set up user identity →
-          </Link>
-        </div>
-        <div className={shareCardClass}>
-          <div className="border-b border-border/35 px-5 py-4">
-            <h4 className="text-sm font-medium">Install the widget</h4>
-            <p className="mt-1 text-xs leading-5 text-accent">
-              Paste this before the closing{" "}
-              <code className="text-foreground/80">&lt;/body&gt;</code> tag.
-            </p>
-          </div>
-          <div className="min-w-0">
-            <pre
-              tabIndex={0}
-              aria-label="Widget installation code"
-              className="max-h-96 overflow-auto bg-background/25 p-5 text-xs leading-6 text-accent outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
-              <code>{snippet}</code>
-            </pre>
-          </div>
-          <div className={shareFooterClass}>
-            <span className="text-xs text-accent">HTML · JavaScript</span>
-            <CopyButton text={snippet} label="Copy embed code" primary />
-          </div>
+            Docs →
+          </a>
         </div>
       </div>
-    </section>
+      <p className="text-xs leading-5 text-accent">
+        Want to know who sent what? Sign users on your server with your{" "}
+        <Link
+          href={`/workspaces/${slug}/settings/workspace`}
+          className="text-foreground underline-offset-4 hover:underline"
+        >
+          widget secret
+        </Link>{" "}
+        and call <code className="text-foreground/80">featul.identify()</code>.
+      </p>
+    </ShareSection>
   );
 }

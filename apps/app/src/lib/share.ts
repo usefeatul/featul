@@ -89,24 +89,34 @@ export function buildShareMessages(name: string, boardUrl: string) {
   ];
 }
 
-export function buildWidgetSnippet(
+export function buildWidgetSteps(
   workspaceId: string,
   theme: "auto" | "light" | "dark" = "auto",
   position: "left" | "right" = "right",
 ) {
   const id = JSON.stringify(workspaceId).replace(/</g, "\\u003c");
-  return `<script>
+  const loader = `<script>
   window.$featulq = window.$featulq || [];
   window.featul = window.featul || new Proxy({}, {
     get: (_, method) => (...args) => window.$featulq.push([method, ...args])
   });
 </script>
-<script async src="https://app.featul.com/widget/sdk/v1.js"></script>
-<script>
+<script async src="https://app.featul.com/widget/sdk/v1.js"></script>`;
+  const init = `<script>
   featul.init(${id}, {
     widget: true,
     theme: "${theme}",
     position: "${position}"
   });
 </script>`;
+  return { loader, init };
+}
+
+export function buildWidgetSnippet(
+  workspaceId: string,
+  theme: "auto" | "light" | "dark" = "auto",
+  position: "left" | "right" = "right",
+) {
+  const { loader, init } = buildWidgetSteps(workspaceId, theme, position);
+  return `${loader}\n${init}`;
 }
