@@ -17,18 +17,18 @@ export function useDialogExpanded() {
 type DialogWidth = "default" | "wide" | "widest" | "xl" | "xxl"
 
 const BASE_WIDTH_PX: Record<DialogWidth, number> = {
-  default: 420,
-  wide: 490,
-  widest: 650,
-  xl: 750,
+  default: 480,
+  wide: 560,
+  widest: 720,
+  xl: 820,
   xxl: 1400,
 }
 
 const EXPANDED_WIDTH_PX: Record<DialogWidth, number> = {
-  default: 560,
-  wide: 640,
-  widest: 800,
-  xl: 880,
+  default: 620,
+  wide: 700,
+  widest: 860,
+  xl: 940,
   xxl: 1600,
 }
 
@@ -90,7 +90,7 @@ export function SettingsDialogShell({
 
   const header = (
     <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-      <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
+      <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-1.5 text-sm font-normal">
         {icon}
         {title}
       </DialogTitle>
