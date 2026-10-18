@@ -136,10 +136,6 @@ function boot() {
     return state.theme === "light" ? "#ffffff" : "#1c1c1c";
   }
 
-  function launcherForeground() {
-    return state.theme === "light" ? "#202020" : "#ededed";
-  }
-
   function launcherBorder() {
     return state.theme === "light"
       ? "1px solid rgba(0, 0, 0, 0.14)"
@@ -156,7 +152,7 @@ function boot() {
     button.style.border = launcherBorder();
     button.style.borderRadius = BUTTON_RADIUS;
     button.style.background = panelBackground();
-    button.style.color = launcherForeground();
+    button.style.color = state.accent;
     const face = button.querySelector("[data-featul-widget='launcher-face']");
     if (face instanceof HTMLElement) {
       face.style.display = "flex";

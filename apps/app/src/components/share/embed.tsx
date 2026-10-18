@@ -59,20 +59,13 @@ function Launcher({ dark }: { dark: boolean }) {
   return (
     <span
       className={cn(
-        "flex size-10 items-center justify-center rounded-xl border p-[3px] shadow-lg",
+        "flex size-10 items-center justify-center rounded-xl border text-[#4d96e8]",
         dark
-          ? "border-white/10 bg-[#111111] text-[#ededed]"
-          : "border-black/10 bg-[#f3f3f3] text-[#202020]",
+          ? "border-white/[0.14] bg-[#1c1c1c]"
+          : "border-black/[0.14] bg-white",
       )}
     >
-      <span
-        className={cn(
-          "flex size-full items-center justify-center rounded-[9px] ring-1 ring-inset",
-          dark ? "bg-[#1c1c1c] ring-white/10" : "bg-white ring-black/10",
-        )}
-      >
-        <FeatulLogoIcon className="size-[18px] -rotate-90" />
-      </span>
+      <FeatulLogoIcon size={18} className="text-[#4d96e8]" />
     </span>
   );
 }
