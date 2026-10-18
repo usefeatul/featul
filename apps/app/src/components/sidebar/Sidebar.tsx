@@ -26,6 +26,7 @@ import AccountNav from "@/components/account/AccountNav";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
+import { usePinnedNav } from "@/hooks/usePinnedNav";
 import { useCreatePostHotkey } from "@/hooks/useCreatePostHotkey";
 import { useSidebarShortcut } from "@/hooks/shortcut";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
@@ -42,6 +43,7 @@ const SIDEBAR_COLLAPSED_COOKIE = "featul_sidebar_collapsed";
 export default function Sidebar({
   className = "",
   initialCollapsed = false,
+  initialPins,
   initialCounts,
   initialTimezone,
   initialServerNow,
@@ -53,6 +55,7 @@ export default function Sidebar({
 }: {
   className?: string;
   initialCollapsed?: boolean;
+  initialPins?: string[];
   initialCounts?: Record<string, number>;
   initialTimezone?: string | null;
   initialServerNow?: number;
@@ -96,7 +99,23 @@ export default function Sidebar({
   const openCreatePost = React.useCallback(() => setCreatePostOpen(true), []);
   useCreatePostHotkey({ onOpen: openCreatePost });
   const boardItem = middleNav.find((item) => item.label === "My Board");
-  const workspaceNav = middleNav.filter((item) => item.label !== "My Board");
+  const workspaceNav = React.useMemo(
+    () => middleNav.filter((item) => item.label !== "My Board"),
+    [middleNav],
+  );
+  const pinnableNav = React.useMemo(
+    () => [...primaryNav, ...workspaceNav],
+    [primaryNav, workspaceNav],
+  );
+  const { pinnedItems, isPinned, togglePin } = usePinnedNav(
+    slug,
+    pinnableNav,
+    initialPins,
+  );
+  const requestNav = primaryNav.filter((item) => !isPinned(item.label));
+  const unpinnedWorkspaceNav = workspaceNav.filter(
+    (item) => !isPinned(item.label),
+  );
 
   const setSidebarCollapsed = React.useCallback((next: boolean) => {
     setCollapsed(next);
@@ -231,27 +250,58 @@ export default function Sidebar({
                   </>
                 ) : (
                   <>
-                    <SidebarSection title="Requests" collapsed={collapsed}>
-                      {primaryNav.map((item) => (
-                        <SidebarItem
-                          key={item.label}
-                          item={item}
-                          pathname={pathname}
-                          collapsed={collapsed}
-                          onClick={revealNavigation}
-                          count={
-                            statusCounts?.[item.label.trim().toLowerCase()]
-                          }
-                        />
-                      ))}
-                    </SidebarSection>
+                    {pinnedItems.length > 0 ? (
+                      <SidebarSection title="Pinned" collapsed={collapsed}>
+                        {pinnedItems.map((item) => {
+                          const isRequest = primaryNav.includes(item);
+                          return (
+                            <SidebarItem
+                              key={item.label}
+                              item={item}
+                              pathname={pathname}
+                              collapsed={collapsed}
+                              mutedIcon={!isRequest}
+                              onClick={
+                                item.external ? undefined : revealNavigation
+                              }
+                              count={
+                                isRequest
+                                  ? statusCounts?.[
+                                      item.label.trim().toLowerCase()
+                                    ]
+                                  : undefined
+                              }
+                              pinned
+                              onTogglePin={togglePin}
+                            />
+                          );
+                        })}
+                      </SidebarSection>
+                    ) : null}
+                    {requestNav.length > 0 ? (
+                      <SidebarSection title="Requests" collapsed={collapsed}>
+                        {requestNav.map((item) => (
+                          <SidebarItem
+                            key={item.label}
+                            item={item}
+                            pathname={pathname}
+                            collapsed={collapsed}
+                            onClick={revealNavigation}
+                            count={
+                              statusCounts?.[item.label.trim().toLowerCase()]
+                            }
+                            onTogglePin={togglePin}
+                          />
+                        ))}
+                      </SidebarSection>
+                    ) : null}
                   </>
                 )}
               </motion.div>
             </AnimatePresence>
-            {!isSettings && !isAccount ? (
+            {!isSettings && !isAccount && unpinnedWorkspaceNav.length > 0 ? (
               <SidebarSection title="Workspace" collapsed={collapsed} className="shrink-0">
-                {workspaceNav.map((item) => (
+                {unpinnedWorkspaceNav.map((item) => (
                   <SidebarItem
                     key={item.label}
                     item={item}
@@ -259,6 +309,7 @@ export default function Sidebar({
                     collapsed={collapsed}
                     mutedIcon
                     onClick={item.external ? undefined : revealNavigation}
+                    onTogglePin={togglePin}
                   />
                 ))}
               </SidebarSection>

@@ -7,6 +7,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@featul/ui/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip";
 import type { NavItem } from "../../types/nav";
+import { PinIcon } from "@/components/global/icons";
 import { SidebarBadge } from "./badge";
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 
@@ -24,6 +25,8 @@ function SidebarItem({
   onClick,
   indicator = true,
   collapsed = false,
+  pinned = false,
+  onTogglePin,
 }: {
   item: NavItem;
   pathname: string;
@@ -33,6 +36,8 @@ function SidebarItem({
   onClick?: () => void;
   indicator?: boolean;
   collapsed?: boolean;
+  pinned?: boolean;
+  onTogglePin?: (label: string) => void;
 }) {
   const Icon = item.icon;
   const router = useRouter();
@@ -55,6 +60,7 @@ function SidebarItem({
       "mx-auto size-9 w-9 flex-none justify-center gap-0 px-0 py-0",
     className
   );
+  const pinnable = !!onTogglePin && !collapsed;
   const content = (
     <>
       {hovered && !(collapsed && active) ? (
@@ -89,7 +95,7 @@ function SidebarItem({
         </span>
       ) : null}
       {!collapsed && typeof count === "number" && count > 0 ? (
-        <SidebarBadge className="relative z-[1] ml-auto shrink-0" innerClassName="font-medium text-muted-foreground/70" fixedWidth={count < 10}>
+        <SidebarBadge className={cn("relative z-[1] ml-auto shrink-0", pinnable && "transition-opacity group-hover/pin:opacity-0 group-focus-within/pin:opacity-0")} innerClassName="font-medium text-muted-foreground/70" fixedWidth={count < 10}>
           {count}
         </SidebarBadge>
       ) : null}
@@ -132,6 +138,27 @@ function SidebarItem({
       {content}
     </Link>
   );
+
+  if (pinnable) {
+    const pinLabel = `${pinned ? "Unpin" : "Pin"} ${item.label}`;
+    return (
+      <div className="group/pin relative">
+        {link}
+        <button
+          type="button"
+          aria-label={pinLabel}
+          aria-pressed={pinned}
+          title={pinLabel}
+          onClick={() => onTogglePin(item.label)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className="absolute right-1 top-1/2 z-[2] flex size-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md opacity-0 transition-opacity focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover/pin:opacity-100"
+        >
+          <PinIcon aria-hidden className={cn("size-3.5", pinned ? "text-primary" : "text-muted-foreground hover:text-primary")} />
+        </button>
+      </div>
+    );
+  }
 
   if (!collapsed) return link;
 
