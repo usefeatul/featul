@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { cn } from "@featul/ui/lib/utils";
-import { FeatulLogoIcon } from "@/components/global/icons";
 import { buildWidgetNextSnippet, buildWidgetSnippet } from "@/lib/share";
 import CodeBlock from "./code";
 import CopyButton from "./copy";
@@ -55,21 +54,6 @@ function Segmented<T extends string>({
   );
 }
 
-function Launcher({ dark }: { dark: boolean }) {
-  return (
-    <span
-      className={cn(
-        "flex size-10 items-center justify-center rounded-xl border text-[#4d96e8]",
-        dark
-          ? "border-white/[0.14] bg-[#1c1c1c]"
-          : "border-black/[0.14] bg-white",
-      )}
-    >
-      <FeatulLogoIcon size={18} className="text-[#4d96e8]" />
-    </span>
-  );
-}
-
 const mockNavWidths = ["w-16", "w-14", "w-20", "w-12", "w-[4.5rem]", "w-14"];
 const mockBars = [38, 44, 41, 52, 49, 58, 55, 63, 60, 71, 68, 79];
 const mockRowWidths = ["w-24", "w-20", "w-28", "w-16", "w-24"];
@@ -85,7 +69,10 @@ function MockApp({ dark }: { dark: boolean }) {
   );
 
   return (
-    <div aria-hidden className="flex h-full select-none">
+    <div
+      aria-hidden
+      className="pointer-events-none flex h-full select-none opacity-80 blur-[2px]"
+    >
       <aside
         className={cn(
           "hidden w-52 shrink-0 flex-col border-r p-3 md:flex",
@@ -264,7 +251,6 @@ function Preview({
               />
             ) : null}
           </div>
-          <Launcher dark={dark} />
         </div>
       </div>
     </div>
