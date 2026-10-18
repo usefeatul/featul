@@ -125,7 +125,7 @@ export default function Sidebar({
         id="workspace-navigation"
         className={cn(
           "flex h-full min-h-0 flex-col overflow-hidden transition-[width] duration-200 ease-out motion-reduce:transition-none",
-          collapsed ? "w-[52px]" : "w-[248px]",
+          collapsed ? "w-[52px]" : "w-[264px]",
         )}
       >
         <div
