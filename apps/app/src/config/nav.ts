@@ -75,11 +75,11 @@ export function buildTopNav(slug: string): NavItem[] {
     );
   }
   return [
+    { label: "Pending", href: buildHref(["PENDING"]), icon: PendingIcon },
+    { label: "Review", href: buildHref(["REVIEW"]), icon: ReviewIcon },
     { label: "Planned", href: buildHref(["PLANNED"]), icon: PlannedIcon },
     { label: "Progress", href: buildHref(["PROGRESS"]), icon: ProgressIcon },
-    { label: "Review", href: buildHref(["REVIEW"]), icon: ReviewIcon },
     { label: "Completed", href: buildHref(["COMPLETED"]), icon: CompletedIcon },
-    { label: "Pending", href: buildHref(["PENDING"]), icon: PendingIcon },
     { label: "Closed", href: buildHref(["CLOSED"]), icon: ClosedIcon },
   ];
 }
