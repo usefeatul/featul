@@ -176,7 +176,7 @@ export default function NotificationsBell({
         unstyled
         side={side}
         align={align}
-        sideOffset={8}
+        sideOffset={linkMode === "workspace" ? 24 : 8}
         className="w-auto border-0 bg-transparent p-0 shadow-none"
       >
         <NotificationsPanel

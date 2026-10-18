@@ -66,6 +66,7 @@ const NotificationsPanel = React.forwardRef<
       className={cn(
         overlayShellClass,
         "z-50 w-80 max-h-[36rem] max-w-[90vw] overflow-y-auto p-1 text-popover-foreground",
+        linkMode === "workspace" && "flex h-80 max-h-[calc(100dvh-2rem)] flex-col overflow-hidden",
       )}
       role="dialog"
       aria-label="Notifications"
@@ -74,7 +75,7 @@ const NotificationsPanel = React.forwardRef<
       exit={{ opacity: 0, y: -6, scale: 0.98 }}
       transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.2 }}
     >
-      <header className="flex items-center justify-between gap-3 px-1 py-2">
+      <header className="flex shrink-0 items-center justify-between gap-3 px-1 py-2">
         <span className="text-sm font-medium">Notifications</span>
         {onMarkAllRead ? (
           <button
@@ -86,9 +87,9 @@ const NotificationsPanel = React.forwardRef<
           </button>
         ) : null}
       </header>
-      <div className={cn(overlayInnerClass, "p-0")}>
+      <div className={cn(overlayInnerClass, "p-0", linkMode === "workspace" && "flex min-h-0 flex-1 flex-col overflow-y-auto")}>
         {notifications.length === 0 ? (
-          <div className="px-5 py-5 text-sm text-muted-foreground flex justify-center">
+          <div className={cn("px-5 py-5 text-sm text-muted-foreground flex justify-center", linkMode === "workspace" && "flex-1 items-center")}>
             No notifications
           </div>
         ) : (
