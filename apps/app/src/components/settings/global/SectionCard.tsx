@@ -56,10 +56,10 @@ export const settingsSurfaceClass =
   "min-w-0 overflow-hidden rounded-[calc(var(--radius)*2)] border border-border/50 bg-card px-5 py-4 shadow-xs dark:border-transparent dark:shadow-none";
 
 export const settingsCardShellClass =
-  "flex flex-col overflow-hidden rounded-lg border border-border/70 bg-card px-2 pt-2 pb-2 text-foreground dark:border-white/[0.07] dark:bg-black";
+  "flex flex-col overflow-hidden rounded-lg border border-border/70 bg-sidebar px-2 pt-2 pb-2 text-foreground dark:border-white/[0.07]";
 
 export const settingsCardInnerClass =
-  "flex flex-1 flex-col rounded-lg bg-muted/60 px-4 py-3 ring-1 ring-border/45 dark:bg-background dark:ring-white/[0.055]";
+  "flex flex-1 flex-col rounded-lg bg-card px-4 py-3 ring-1 ring-border/45 dark:bg-background dark:ring-white/[0.055]";
 
 export default function SectionCard({
   title,
