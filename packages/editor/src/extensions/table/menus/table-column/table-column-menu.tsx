@@ -1,5 +1,5 @@
 import { Button } from "@featul/ui/components/button";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import type { Editor } from "@tiptap/react";
 import { BubbleMenu as TiptapBubbleMenu } from "@tiptap/react/menus";
@@ -53,7 +53,7 @@ function TableColumnMenuComponent({
   return (
     <TiptapBubbleMenu
       appendTo={() => appendTo?.current ?? document.body}
-      className={cn(overlayDialogClass, "flex flex-col gap-2")}
+      className={cn(overlayDialogClass, overlayRoundedClass, "flex flex-col gap-2")}
       editor={editor}
       options={{
         placement: "top",
@@ -66,7 +66,7 @@ function TableColumnMenuComponent({
       <div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
         Column
       </div>
-      <div className={cn(overlayInnerClass, "flex flex-col p-1")}>
+      <div className={cn(overlayInnerClass, overlayRoundedInnerClass, "flex flex-col p-1")}>
       <Button
         className="w-full justify-start gap-2"
         onClick={onAddColumnBefore}

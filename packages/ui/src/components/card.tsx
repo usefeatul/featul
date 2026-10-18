@@ -28,12 +28,12 @@ function Card({ className, variant = "default", children, ...props }: CardProps)
       data-slot="card"
       className={cn(
         overlayDialogClass,
-        "flex flex-col text-card-foreground outline-none",
+        "flex flex-col bg-card text-card-foreground outline-none dark:bg-black",
         className,
       )}
       {...props}
     >
-      <div className={cn(overlayInnerClass, "flex flex-1 flex-col gap-6 py-6")}>
+      <div className={cn(overlayInnerClass, "flex flex-1 flex-col gap-6 bg-background py-6")}>
         {children}
       </div>
     </div>

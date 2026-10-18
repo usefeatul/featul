@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import { getInitials } from "@/utils/user"
 import { relativeTime } from "@/lib/time"
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay"
+import { overlayInnerClass, overlayShellClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 import { motion, type HTMLMotionProps } from "framer-motion"
 
@@ -65,6 +65,7 @@ const NotificationsPanel = React.forwardRef<
       {...props}
       className={cn(
         overlayShellClass,
+        overlayRoundedClass,
         "z-50 w-80 max-h-[36rem] max-w-[90vw] overflow-y-auto p-1 text-popover-foreground",
         linkMode === "workspace" && "flex h-80 max-h-[calc(100dvh-2rem)] flex-col overflow-hidden",
       )}
@@ -87,7 +88,7 @@ const NotificationsPanel = React.forwardRef<
           </button>
         ) : null}
       </header>
-      <div className={cn(overlayInnerClass, "p-0", linkMode === "workspace" && "flex min-h-0 flex-1 flex-col overflow-y-auto")}>
+      <div className={cn(overlayInnerClass, overlayRoundedInnerClass, "p-0", linkMode === "workspace" && "flex min-h-0 flex-1 flex-col overflow-y-auto")}>
         {notifications.length === 0 ? (
           <div className={cn("px-5 py-5 text-sm text-muted-foreground flex justify-center", linkMode === "workspace" && "flex-1 items-center")}>
             No notifications

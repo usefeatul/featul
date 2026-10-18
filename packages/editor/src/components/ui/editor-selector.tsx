@@ -6,7 +6,7 @@ import {
 	PopoverListItem,
 	PopoverTrigger,
 } from "@featul/ui/components/popover";
-import { overlayInnerClass, overlayDialogClass } from "@featul/ui/lib/overlay";
+import { overlayInnerClass, overlayDialogClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor } from "@tiptap/react";
 import { ChevronDownIcon } from "lucide-react";
@@ -87,6 +87,7 @@ export const EditorSelector = ({
 				align="start"
 				className={cn(
 					overlayDialogClass,
+					overlayRoundedClass,
 					"z-[100] flex w-fit min-w-0 flex-col text-popover-foreground outline-hidden [&_[data-slot=button]]:!rounded-none",
 					"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
 					className,
@@ -103,7 +104,7 @@ export const EditorSelector = ({
 				}}
 				{...props}
 			>
-				<div className={cn(overlayInnerClass, "p-1")}>
+				<div className={cn(overlayInnerClass, overlayRoundedInnerClass, "p-1")}>
 				<PopoverList>
 					{Array.isArray(children)
 						? children.map((child, index) => (

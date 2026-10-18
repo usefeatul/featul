@@ -6,14 +6,14 @@ export const subtleOverlayInnerClass =
   "overflow-hidden rounded-md bg-transparent"
 
 export const overlayShellClass =
-  "overflow-hidden rounded-xl border border-border/60 bg-card text-foreground dark:border-white/[0.07] dark:bg-black"
+  "overflow-hidden rounded-xl border border-border/60 bg-sidebar text-foreground dark:border-white/[0.07]"
 
 export const overlayInnerClass =
-  "overflow-hidden rounded-lg bg-background ring-1 ring-border/35 dark:ring-white/[0.055]"
+  "overflow-hidden rounded-lg bg-card ring-1 ring-border/35 dark:bg-background dark:ring-white/[0.055]"
 
 /** Inner dialog surface with a restrained edge inside the `rounded-xl` shell. */
 export const overlayDialogInnerClass =
-  "overflow-hidden rounded-lg bg-background ring-1 ring-border/35 dark:ring-white/[0.055]"
+  "overflow-hidden rounded-lg bg-card ring-1 ring-border/35 dark:bg-background dark:ring-white/[0.055]"
 
 /** Outer chip shell — a compact version of the shared subtle frame. */
 export const overlayChipShellClass =
@@ -39,3 +39,11 @@ export const overlayRibbonInnerClass =
 
 /** Same nested frame as settings/integration cards: `rounded-xl` shell, `p-2`, inner `rounded-lg`. */
 export const overlayDialogClass = `${overlayShellClass} p-1`
+
+/** Squircle corners for floating panels (dialogs, popovers, editor menus) — matches the button corner shape. */
+export const overlayRoundedClass =
+  "rounded-2xl [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*4)]"
+
+/** Inner surface corners that stay concentric with `overlayRoundedClass` across the `p-1` inset. */
+export const overlayRoundedInnerClass =
+  "rounded-xl [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*3.5)]"

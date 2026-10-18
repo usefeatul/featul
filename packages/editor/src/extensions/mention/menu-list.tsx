@@ -10,7 +10,7 @@ import {
   PopoverList,
   PopoverListItem,
 } from "@featul/ui/components/popover";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { AtSign } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
@@ -114,6 +114,7 @@ export const EditorMentionMenu = ({
         onOpenAutoFocus={(event) => event.preventDefault()}
         className={cn(
           overlayDialogClass,
+          overlayRoundedClass,
           "z-50 flex w-max min-w-40 max-w-[min(20rem,calc(100vw-2rem))] flex-col gap-2 text-popover-foreground outline-hidden",
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2",
         )}
@@ -122,7 +123,7 @@ export const EditorMentionMenu = ({
           <AtSign className="size-3.5 text-primary" />
           Mention
         </div>
-        <div className={cn(overlayInnerClass, "p-1")}>
+        <div className={cn(overlayInnerClass, overlayRoundedInnerClass, "p-1")}>
           {items.length === 0 ? (
             <div className="flex w-full items-center justify-center px-3 py-4 text-sm text-accent">
               No people found

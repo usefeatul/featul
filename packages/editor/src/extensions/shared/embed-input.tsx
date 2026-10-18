@@ -1,6 +1,6 @@
 import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import type { ChangeEvent, KeyboardEvent, ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -75,13 +75,13 @@ export const EmbedInput = ({
   );
 
   return (
-    <div className={cn(overlayDialogClass, "flex flex-col gap-2")}>
+    <div className={cn(overlayDialogClass, overlayRoundedClass, "flex flex-col gap-2")}>
       <div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
         {icon}
         {title}
       </div>
 
-      <div className={cn(overlayInnerClass, "px-4 py-3")}>
+      <div className={cn(overlayInnerClass, overlayRoundedInnerClass, "px-4 py-3")}>
         <div className="flex flex-col gap-3">
           <Input
             autoFocus={autoFocus}

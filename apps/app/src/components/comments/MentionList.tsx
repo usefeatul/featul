@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay"
+import { overlayInnerClass, overlayShellClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 import { getInitials } from "@/utils/user"
 import { PopoverList, PopoverListItem } from "@featul/ui/components/popover"
@@ -43,6 +43,7 @@ export default function MentionList({ candidates, selectedIndex, onSelect, class
     <div
       className={cn(
         overlayShellClass,
+        overlayRoundedClass,
         "absolute z-50 min-w-40 text-popover-foreground outline-hidden animate-in fade-in-0 zoom-in-95",
         className,
       )}
@@ -50,7 +51,7 @@ export default function MentionList({ candidates, selectedIndex, onSelect, class
       <div className="p-1">
         <div
           ref={listRef}
-          className={cn(overlayInnerClass, "max-h-60 overflow-auto whitespace-nowrap")}
+          className={cn(overlayInnerClass, overlayRoundedInnerClass, "max-h-60 overflow-auto whitespace-nowrap")}
           role="listbox"
           tabIndex={-1}
           aria-activedescendant={selectedCandidate ? mentionOptionId(selectedCandidate.id) : undefined}
