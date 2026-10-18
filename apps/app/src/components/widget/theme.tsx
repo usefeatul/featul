@@ -101,12 +101,8 @@ function ThemeSync({
   mode: WidgetThemeMode;
   children: React.ReactNode;
 }) {
-  const { setTheme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const parentOrigin = useParentOrigin();
-
-  React.useEffect(() => {
-    setTheme(mode === "auto" ? "system" : mode);
-  }, [mode, setTheme]);
 
   React.useEffect(() => {
     const resolved = mode === "light" || mode === "dark"
@@ -139,10 +135,12 @@ export function Theme({
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme={mode === "auto" ? "system" : mode}
+      // Never call setTheme: it writes localStorage, and the storage event
+      // would flip every other same-origin widget frame to this theme.
+      defaultTheme="system"
       forcedTheme={mode === "auto" ? undefined : mode}
-      enableSystem={mode === "auto"}
-      storageKey="featul-widget-theme"
+      enableSystem
+      storageKey="featul-widget-theme-v2"
       disableTransitionOnChange
     >
       <ThemeSync mode={mode}>{children}</ThemeSync>
