@@ -21,10 +21,8 @@ import {
 const PANEL_RADIUS = "12px";
 const BUTTON_RADIUS = "12px";
 const LAUNCHER_SIZE = 40;
-const LAUNCHER_PAD = 3;
-const LAUNCHER_INNER_RADIUS = "9px";
 const PANEL_WIDTH = 420;
-const PANEL_WIDTH_EXPANDED = 640;
+const PANEL_WIDTH_EXPANDED = 540;
 const PANEL_HEIGHT = 820;
 const PANEL_HEIGHT_EXPANDED = 960;
 const PANEL_HEIGHT_RATIO = 0.8;
@@ -138,24 +136,14 @@ function boot() {
     return state.theme === "light" ? "#ffffff" : "#1c1c1c";
   }
 
-  function shellBackground() {
-    return state.theme === "light" ? "#f3f3f3" : "#111111";
-  }
-
   function launcherForeground() {
     return state.theme === "light" ? "#202020" : "#ededed";
   }
 
   function launcherBorder() {
     return state.theme === "light"
-      ? "1px solid rgba(32, 32, 32, 0.1)"
-      : "1px solid rgba(237, 237, 237, 0.1)";
-  }
-
-  function launcherInnerRing() {
-    return state.theme === "light"
-      ? "inset 0 0 0 1px rgba(32, 32, 32, 0.1)"
-      : "inset 0 0 0 1px rgba(237, 237, 237, 0.1)";
+      ? "1px solid rgba(0, 0, 0, 0.14)"
+      : "1px solid rgba(255, 255, 255, 0.14)";
   }
 
   function applyLauncherChrome() {
@@ -164,10 +152,10 @@ function boot() {
     button.style.boxSizing = "border-box";
     button.style.width = `${LAUNCHER_SIZE}px`;
     button.style.height = `${LAUNCHER_SIZE}px`;
-    button.style.padding = `${LAUNCHER_PAD}px`;
+    button.style.padding = "0";
     button.style.border = launcherBorder();
     button.style.borderRadius = BUTTON_RADIUS;
-    button.style.background = shellBackground();
+    button.style.background = panelBackground();
     button.style.color = launcherForeground();
     const face = button.querySelector("[data-featul-widget='launcher-face']");
     if (face instanceof HTMLElement) {
@@ -176,9 +164,9 @@ function boot() {
       face.style.justifyContent = "center";
       face.style.width = "100%";
       face.style.height = "100%";
-      face.style.borderRadius = LAUNCHER_INNER_RADIUS;
-      face.style.background = panelBackground();
-      face.style.boxShadow = launcherInnerRing();
+      face.style.borderRadius = "inherit";
+      face.style.background = "transparent";
+      face.style.boxShadow = "none";
       face.style.pointerEvents = "none";
     }
   }
@@ -186,7 +174,7 @@ function boot() {
   function syncLauncherTheme() {
     applyLauncherChrome();
     if (state.shell && !state.open)
-      state.shell.style.background = shellBackground();
+      state.shell.style.background = panelBackground();
   }
 
   function syncTheme() {
@@ -521,7 +509,7 @@ function boot() {
     applyRect(state.shell, getLauncherRect(state.position));
     if (!state.shell) return;
     state.shell.style.borderRadius = BUTTON_RADIUS;
-    state.shell.style.background = shellBackground();
+    state.shell.style.background = panelBackground();
     state.shell.style.boxShadow = "none";
   }
 

@@ -77,6 +77,128 @@ function Launcher({ dark }: { dark: boolean }) {
   );
 }
 
+const mockNavWidths = ["w-16", "w-14", "w-20", "w-12", "w-[4.5rem]", "w-14"];
+const mockBars = [38, 44, 41, 52, 49, 58, 55, 63, 60, 71, 68, 79];
+const mockRowWidths = ["w-24", "w-20", "w-28", "w-16", "w-24"];
+
+function MockApp({ dark }: { dark: boolean }) {
+  const line = dark ? "bg-white/[0.06]" : "bg-black/[0.06]";
+  const soft = dark ? "bg-white/[0.04]" : "bg-black/[0.04]";
+  const border = dark ? "border-white/[0.06]" : "border-black/[0.06]";
+  const card = cn(
+    "rounded-lg border",
+    border,
+    dark ? "bg-[#1c1c1c]" : "bg-white",
+  );
+
+  return (
+    <div aria-hidden className="flex h-full select-none">
+      <aside
+        className={cn(
+          "hidden w-52 shrink-0 flex-col border-r p-3 md:flex",
+          border,
+          dark ? "bg-[#121212]" : "bg-[#f3f3f3]",
+        )}
+      >
+        <div className="flex items-center gap-2 px-2 py-1.5">
+          <span className="size-5 rounded-md bg-gradient-to-br from-blue-500/70 to-violet-500/70" />
+          <span className={cn("h-2.5 w-14 rounded-full", line)} />
+        </div>
+        <div className={cn("mt-3 h-7", card)} />
+        <div className="mt-4 space-y-1">
+          {mockNavWidths.map((width, index) => (
+            <div
+              key={index}
+              className={cn(
+                "flex items-center gap-2 rounded-md px-2 py-2",
+                index === 0 && soft,
+              )}
+            >
+              <span className={cn("size-3.5 rounded", line)} />
+              <span className={cn("h-2 rounded-full", width, line)} />
+            </div>
+          ))}
+        </div>
+        <div className="mt-auto flex items-center gap-2 px-2 py-1.5">
+          <span className={cn("size-6 rounded-full", line)} />
+          <div className="space-y-1.5">
+            <div className={cn("h-2 w-16 rounded-full", line)} />
+            <div className={cn("h-1.5 w-20 rounded-full", soft)} />
+          </div>
+        </div>
+      </aside>
+
+      <main className="min-w-0 flex-1 space-y-4 p-5 sm:p-6">
+        <div className="flex items-center justify-between gap-3">
+          <div className="space-y-2">
+            <div className={cn("h-3.5 w-28 rounded", line)} />
+            <div className={cn("h-2 w-40 rounded-full", soft)} />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={cn("h-7 w-20", card)} />
+            <span className="h-7 w-20 rounded-md bg-blue-500/60" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          {[0, 1, 2].map((index) => (
+            <div key={index} className={cn("space-y-2.5 p-3", card)}>
+              <div className={cn("h-2 w-12 rounded-full", soft)} />
+              <div className="flex items-center gap-2">
+                <div className={cn("h-4 w-16 rounded", line)} />
+                <div className="h-2 w-8 rounded-full bg-emerald-500/30" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className={cn("p-4", card)}>
+          <div className="flex items-center justify-between">
+            <div className={cn("h-2.5 w-16 rounded-full", line)} />
+            <div className={cn("h-2 w-12 rounded-full", soft)} />
+          </div>
+          <div className="mt-4 flex h-36 items-end gap-2">
+            {mockBars.map((value, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "flex-1 rounded-t",
+                  index === mockBars.length - 1
+                    ? "bg-blue-500/60"
+                    : "bg-blue-500/20",
+                )}
+                style={{ height: `${value}%` }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className={cn("overflow-hidden", card)}>
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className={cn("h-2.5 w-24 rounded-full", line)} />
+            <div className={cn("h-2 w-10 rounded-full", soft)} />
+          </div>
+          {mockRowWidths.map((width, index) => (
+            <div
+              key={index}
+              className={cn(
+                "flex items-center gap-4 border-t px-4 py-3",
+                border,
+              )}
+            >
+              <span className={cn("size-5 rounded", line)} />
+              <span className={cn("h-2 rounded-full", width, line)} />
+              <span className={cn("ml-auto h-2 w-10 rounded-full", soft)} />
+              <span className={cn("h-4 w-12 rounded-full", soft)} />
+              <span className={cn("h-2 w-10 rounded-full", line)} />
+            </div>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
+
 function Preview({
   workspaceId,
   theme,
@@ -105,7 +227,6 @@ function Preview({
         position,
       })}`
     : null;
-  const line = dark ? "bg-white/[0.06]" : "bg-black/[0.05]";
 
   return (
     <div className={shareCardClass}>
@@ -124,16 +245,7 @@ function Preview({
           dark ? "bg-[#161616]" : "bg-[#fafafa]",
         )}
       >
-        <div aria-hidden className="space-y-3 p-6 sm:p-8">
-          <div className={cn("h-4 w-1/3 rounded", line)} />
-          <div className={cn("h-2.5 w-2/3 rounded-full", line)} />
-          <div className={cn("h-2.5 w-1/2 rounded-full", line)} />
-          <div className="grid grid-cols-3 gap-3 pt-3">
-            {[0, 1, 2, 3, 4, 5].map((index) => (
-              <div key={index} className={cn("h-24 rounded-lg", line)} />
-            ))}
-          </div>
-        </div>
+        <MockApp dark={dark} />
         <div
           className={cn(
             "absolute bottom-4 flex flex-col gap-3 transition-all duration-300",
