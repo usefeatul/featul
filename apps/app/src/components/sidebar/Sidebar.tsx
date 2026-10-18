@@ -183,12 +183,13 @@ export default function Sidebar({
                 ? "Account settings"
                 : "Workspace navigation"
           }
-          className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto scrollbar-hide"
+          className="relative flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto scrollbar-hide"
         >
           <LayoutGroup id="desktop-sidebar-nav">
             <AnimatePresence initial={false} mode="wait">
               <motion.div
                 key={navView}
+                className="shrink-0"
                 initial={{ opacity: 0, x: reduceMotion ? 0 : 6 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0 }}
@@ -249,7 +250,7 @@ export default function Sidebar({
               </motion.div>
             </AnimatePresence>
             {!isSettings && !isAccount ? (
-              <SidebarSection title="Workspace" collapsed={collapsed}>
+              <SidebarSection title="Workspace" collapsed={collapsed} className="shrink-0">
                 {workspaceNav.map((item) => (
                   <SidebarItem
                     key={item.label}
@@ -263,7 +264,7 @@ export default function Sidebar({
               </SidebarSection>
             ) : null}
           </LayoutGroup>
-          <div className="pb-3">
+          <div className="mt-auto shrink-0 pb-11">
             <Upgrade
               slug={slug}
               collapsed={collapsed}
