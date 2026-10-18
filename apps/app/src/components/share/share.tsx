@@ -31,7 +31,7 @@ export default function Share({
   const displayUrl = boardUrl.replace(/^https?:\/\//, "");
 
   return (
-    <div className="mx-auto max-w-3xl space-y-12 px-1 pb-12 pt-2 sm:pt-4">
+    <div className="mx-auto w-full max-w-4xl space-y-12 pb-12 pt-2 sm:pt-4">
       <header>
         <h2 className="text-lg font-semibold tracking-tight sm:text-xl">
           Share
