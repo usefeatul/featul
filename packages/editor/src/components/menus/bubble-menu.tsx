@@ -74,7 +74,7 @@ export const EditorBubbleMenu = ({
 			className={cn(
 				overlayDialogClass,
 				overlayRoundedClass,
-				"flex flex-col gap-2",
+				"z-50 flex flex-col gap-2",
 				className,
 			)}
 			editor={editor ?? undefined}

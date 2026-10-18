@@ -49,7 +49,7 @@ function TableRowMenuComponent({ editor, appendTo }: MenuProps): JSX.Element {
   return (
     <TiptapBubbleMenu
       appendTo={() => appendTo?.current ?? document.body}
-      className={cn(overlayDialogClass, overlayRoundedClass, "flex flex-col gap-2")}
+      className={cn(overlayDialogClass, overlayRoundedClass, "z-50 flex flex-col gap-2")}
       editor={editor}
       options={{
         placement: "left",

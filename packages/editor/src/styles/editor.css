@@ -230,7 +230,7 @@ mark[style] > strong {
 
 /* Ensure bg-sidebar works within prose context */
 .prose .bg-sidebar {
-	background-color: var(--color-sidebar);
+	background-color: var(--sidebar);
 }
 
 /* Mention chip styling to match github-link badge treatment */
