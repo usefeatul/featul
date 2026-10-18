@@ -54,19 +54,35 @@ function Segmented<T extends string>({
   );
 }
 
-const mockNavWidths = ["w-16", "w-14", "w-20", "w-12", "w-[4.5rem]", "w-14"];
-const mockBars = [38, 44, 41, 52, 49, 58, 55, 63, 60, 71, 68, 79];
-const mockRowWidths = ["w-24", "w-20", "w-28", "w-16", "w-24"];
+const mockNavGroups = [
+  ["w-16", "w-14", "w-20"],
+  ["w-12", "w-[4.5rem]", "w-14", "w-16"],
+];
+const mockSparks = [
+  "0,22 12,18 24,20 36,12 48,14 60,6",
+  "0,10 12,14 24,9 36,16 48,12 60,18",
+  "0,20 12,16 24,18 36,10 48,8 60,4",
+];
+const mockArea =
+  "0,78 25,70 50,74 75,58 100,62 125,46 150,52 175,38 200,42 225,28 250,32 275,18 300,22";
+const mockRows = [
+  { width: "w-40", status: "bg-emerald-500" },
+  { width: "w-32", status: "bg-amber-500" },
+  { width: "w-44", status: "bg-blue-500" },
+  { width: "w-28", status: "bg-emerald-500" },
+  { width: "w-36", status: "bg-rose-500" },
+];
 
 function MockApp({ dark }: { dark: boolean }) {
-  const line = dark ? "bg-white/[0.06]" : "bg-black/[0.06]";
+  const line = dark ? "bg-white/[0.07]" : "bg-black/[0.07]";
   const soft = dark ? "bg-white/[0.04]" : "bg-black/[0.04]";
   const border = dark ? "border-white/[0.06]" : "border-black/[0.06]";
   const card = cn(
-    "rounded-lg border",
+    "rounded-xl border",
     border,
-    dark ? "bg-[#1c1c1c]" : "bg-white",
+    dark ? "bg-white/[0.02]" : "bg-white",
   );
+  const stroke = dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
 
   return (
     <div
@@ -75,104 +91,183 @@ function MockApp({ dark }: { dark: boolean }) {
     >
       <aside
         className={cn(
-          "hidden w-52 shrink-0 flex-col border-r p-3 md:flex",
+          "hidden w-52 shrink-0 flex-col gap-5 border-r p-3 md:flex",
           border,
           dark ? "bg-[#121212]" : "bg-[#f3f3f3]",
         )}
       >
-        <div className="flex items-center gap-2 px-2 py-1.5">
-          <span className="size-5 rounded-md bg-gradient-to-br from-blue-500/70 to-violet-500/70" />
-          <span className={cn("h-2.5 w-14 rounded-full", line)} />
+        <div className="flex items-center gap-2 px-1.5 py-1">
+          <span className="size-6 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-500" />
+          <span className={cn("h-2.5 w-16 rounded-full", line)} />
+          <span className={cn("ml-auto size-3 rounded", soft)} />
         </div>
-        <div className={cn("mt-3 h-7", card)} />
-        <div className="mt-4 space-y-1">
-          {mockNavWidths.map((width, index) => (
-            <div
-              key={index}
-              className={cn(
-                "flex items-center gap-2 rounded-md px-2 py-2",
-                index === 0 && soft,
-              )}
-            >
-              <span className={cn("size-3.5 rounded", line)} />
-              <span className={cn("h-2 rounded-full", width, line)} />
-            </div>
-          ))}
+        <div
+          className={cn(
+            "flex h-7 items-center gap-2 rounded-lg border px-2",
+            border,
+            soft,
+          )}
+        >
+          <span className={cn("size-3 rounded-full", line)} />
+          <span className={cn("h-1.5 w-12 rounded-full", line)} />
+          <span className={cn("ml-auto h-3.5 w-6 rounded", line)} />
         </div>
-        <div className="mt-auto flex items-center gap-2 px-2 py-1.5">
-          <span className={cn("size-6 rounded-full", line)} />
-          <div className="space-y-1.5">
-            <div className={cn("h-2 w-16 rounded-full", line)} />
-            <div className={cn("h-1.5 w-20 rounded-full", soft)} />
+        {mockNavGroups.map((group, groupIndex) => (
+          <div key={groupIndex} className="space-y-1">
+            <div className={cn("mx-2 mb-2 h-1.5 w-10 rounded-full", soft)} />
+            {group.map((width, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "flex items-center gap-2.5 rounded-lg px-2 py-[7px]",
+                  groupIndex === 0 && index === 0 && line,
+                )}
+              >
+                <span className={cn("size-3.5 rounded-[4px]", line)} />
+                <span className={cn("h-2 rounded-full", width, line)} />
+                {groupIndex === 0 && index === 1 ? (
+                  <span className="ml-auto h-3.5 w-5 rounded-full bg-blue-500/30" />
+                ) : null}
+              </div>
+            ))}
+          </div>
+        ))}
+        <div className={cn("mt-auto space-y-2 p-3", card)}>
+          <div className={cn("h-2 w-20 rounded-full", line)} />
+          <div className={cn("h-1.5 w-full rounded-full", soft)}>
+            <div className="h-full w-2/3 rounded-full bg-blue-500/50" />
           </div>
         </div>
       </aside>
 
-      <main className="min-w-0 flex-1 space-y-4 p-5 sm:p-6">
-        <div className="flex items-center justify-between gap-3">
-          <div className="space-y-2">
-            <div className={cn("h-3.5 w-28 rounded", line)} />
-            <div className={cn("h-2 w-40 rounded-full", soft)} />
+      <main className="flex min-w-0 flex-1 flex-col">
+        <div
+          className={cn(
+            "flex h-12 shrink-0 items-center gap-2 border-b px-5",
+            border,
+          )}
+        >
+          <span className={cn("h-2 w-14 rounded-full", soft)} />
+          <span className={cn("h-2 w-1.5 rounded-full", soft)} />
+          <span className={cn("h-2 w-20 rounded-full", line)} />
+          <div className="ml-auto flex -space-x-1.5">
+            {["bg-amber-400/60", "bg-rose-400/60", "bg-sky-400/60"].map(
+              (color) => (
+                <span
+                  key={color}
+                  className={cn(
+                    "size-6 rounded-full ring-2",
+                    color,
+                    dark ? "ring-[#161616]" : "ring-[#fafafa]",
+                  )}
+                />
+              ),
+            )}
           </div>
-          <div className="flex items-center gap-2">
-            <span className={cn("h-7 w-20", card)} />
-            <span className="h-7 w-20 rounded-md bg-blue-500/60" />
-          </div>
+          <span className="h-7 w-20 rounded-lg bg-blue-500/70" />
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          {[0, 1, 2].map((index) => (
-            <div key={index} className={cn("space-y-2.5 p-3", card)}>
-              <div className={cn("h-2 w-12 rounded-full", soft)} />
-              <div className="flex items-center gap-2">
-                <div className={cn("h-4 w-16 rounded", line)} />
-                <div className="h-2 w-8 rounded-full bg-emerald-500/30" />
+        <div className="space-y-4 p-5">
+          <div className="grid grid-cols-3 gap-3">
+            {mockSparks.map((points, index) => (
+              <div key={index} className={cn("space-y-3 p-3.5", card)}>
+                <div className="flex items-center justify-between">
+                  <div className={cn("h-2 w-14 rounded-full", soft)} />
+                  <div className="h-3.5 w-9 rounded-full bg-emerald-500/20" />
+                </div>
+                <div className="flex items-end justify-between gap-2">
+                  <div className={cn("h-5 w-20 rounded-md", line)} />
+                  <svg viewBox="0 0 60 26" className="h-6 w-14">
+                    <polyline
+                      points={points}
+                      fill="none"
+                      stroke={index === 1 ? "#f43f5e" : "#10b981"}
+                      strokeOpacity={0.7}
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={cn("p-4", card)}>
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <div className={cn("h-2 w-16 rounded-full", soft)} />
+                <div className={cn("h-5 w-28 rounded-md", line)} />
+              </div>
+              <div className={cn("flex gap-1 rounded-lg p-0.5", soft)}>
+                {[0, 1, 2].map((index) => (
+                  <span
+                    key={index}
+                    className={cn("h-5 w-8 rounded-md", index === 1 && line)}
+                  />
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-
-        <div className={cn("p-4", card)}>
-          <div className="flex items-center justify-between">
-            <div className={cn("h-2.5 w-16 rounded-full", line)} />
-            <div className={cn("h-2 w-12 rounded-full", soft)} />
+            <svg
+              viewBox="0 0 300 90"
+              preserveAspectRatio="none"
+              className="mt-4 h-36 w-full"
+            >
+              <defs>
+                <linearGradient id="mock-area" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              {[22, 44, 66].map((y) => (
+                <line
+                  key={y}
+                  x1={0}
+                  x2={300}
+                  y1={y}
+                  y2={y}
+                  stroke={stroke}
+                  strokeDasharray="3 3"
+                  vectorEffect="non-scaling-stroke"
+                />
+              ))}
+              <polygon
+                points={`${mockArea} 300,90 0,90`}
+                fill="url(#mock-area)"
+              />
+              <polyline
+                points={mockArea}
+                fill="none"
+                stroke="#3b82f6"
+                strokeWidth={2}
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
           </div>
-          <div className="mt-4 flex h-36 items-end gap-2">
-            {mockBars.map((value, index) => (
+
+          <div className={cn("overflow-hidden", card)}>
+            <div className="flex items-center gap-2 px-4 py-3">
+              <div className={cn("h-2.5 w-24 rounded-full", line)} />
+              <div className={cn("ml-auto h-5 w-14 rounded-md", soft)} />
+              <div className={cn("h-5 w-14 rounded-md", soft)} />
+            </div>
+            {mockRows.map((row, index) => (
               <div
                 key={index}
                 className={cn(
-                  "flex-1 rounded-t",
-                  index === mockBars.length - 1
-                    ? "bg-blue-500/60"
-                    : "bg-blue-500/20",
+                  "flex items-center gap-3 border-t px-4 py-3",
+                  border,
                 )}
-                style={{ height: `${value}%` }}
-              />
+              >
+                <span className={cn("size-2 rounded-full", row.status)} />
+                <span className={cn("h-2 w-8 rounded-full", soft)} />
+                <span className={cn("h-2 rounded-full", row.width, line)} />
+                <span className={cn("ml-auto h-4 w-14 rounded-full", soft)} />
+                <span className={cn("size-5 rounded-full", line)} />
+              </div>
             ))}
           </div>
-        </div>
-
-        <div className={cn("overflow-hidden", card)}>
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className={cn("h-2.5 w-24 rounded-full", line)} />
-            <div className={cn("h-2 w-10 rounded-full", soft)} />
-          </div>
-          {mockRowWidths.map((width, index) => (
-            <div
-              key={index}
-              className={cn(
-                "flex items-center gap-4 border-t px-4 py-3",
-                border,
-              )}
-            >
-              <span className={cn("size-5 rounded", line)} />
-              <span className={cn("h-2 rounded-full", width, line)} />
-              <span className={cn("ml-auto h-2 w-10 rounded-full", soft)} />
-              <span className={cn("h-4 w-12 rounded-full", soft)} />
-              <span className={cn("h-2 w-10 rounded-full", line)} />
-            </div>
-          ))}
         </div>
       </main>
     </div>
@@ -221,7 +316,7 @@ function Preview({
       </div>
       <div
         className={cn(
-          "relative h-[50rem] overflow-hidden transition-colors duration-300",
+          "relative h-[44rem] overflow-hidden transition-colors duration-300",
           dark ? "bg-[#161616]" : "bg-[#fafafa]",
         )}
       >
@@ -234,7 +329,7 @@ function Preview({
         >
           <div
             className={cn(
-              "h-[42rem] w-[min(400px,calc(100vw-5rem))] overflow-hidden rounded-xl border shadow-2xl",
+              "h-[38rem] w-[min(370px,calc(100vw-5rem))] overflow-hidden rounded-xl border shadow-2xl",
               dark
                 ? "border-white/10 bg-[#111111]"
                 : "border-black/10 bg-[#f3f3f3]",
