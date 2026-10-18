@@ -2,7 +2,7 @@
 
 import { useId, useRef, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { DitherGradient, type DitherGradientProps } from "@featul/ui/components/gradient";
+import { DitherGradient } from "@featul/ui/components/gradient";
 import { X } from "@/components/global/icons";
 
 export type StackCard = {
@@ -10,7 +10,6 @@ export type StackCard = {
   title: string;
   description: string;
   action: ReactNode;
-  pattern: DitherGradientProps["from"];
   dismiss: () => void;
 };
 
@@ -41,8 +40,16 @@ export default function Stack({ cards, total }: { cards: StackCard[]; total: num
             style={{ top: index * 6, marginInline: (layers - index) * 6, opacity: 0.45 + index * 0.2 }}
           />
         ))}
-        <article aria-labelledby={titleId} className="relative rounded-lg border border-border/70 bg-sidebar p-3 shadow-sm">
-          <div className="mb-2 flex h-6 items-center justify-between">
+        <article aria-labelledby={titleId} className="relative overflow-hidden rounded-lg border border-border/70 bg-sidebar p-3 shadow-sm">
+          {/* Pattern sits in the top-left corner and fades out toward the copy. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 top-0 h-3/4 w-2/3"
+            style={{ maskImage: "radial-gradient(circle at top left, black, transparent 75%)" }}
+          >
+            <DitherGradient key={card.id} to="primary" direction="down" cell={3} opacity={0.45} />
+          </div>
+          <div className="relative mb-2 flex h-6 items-center justify-between">
             <span className="text-[10px] tabular-nums text-muted-foreground" aria-live="polite" aria-atomic="true">
               {total - cards.length + 1} of {total}
             </span>
@@ -59,13 +66,11 @@ export default function Stack({ cards, total }: { cards: StackCard[]; total: num
           </div>
           <motion.div
             key={card.id}
+            className="relative"
             initial={reduceMotion ? false : { opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.16, ease: "easeOut" }}
           >
-            <div aria-hidden="true" className="relative mb-2.5 h-14 overflow-hidden rounded-md bg-muted ring-1 ring-inset ring-black/5 dark:ring-white/10">
-              <DitherGradient from={card.pattern} direction="up" cell={3} opacity={0.6} />
-            </div>
             <p id={titleId} className="text-xs font-medium text-foreground">{card.title}</p>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{card.description}</p>
             <div className="mt-1">{card.action}</div>

@@ -42,6 +42,7 @@ import {
   resolveWidgetAccent,
   resolveWidgetTheme,
   widgetAccentVars,
+  widgetInkHex,
   widgetLayoutClass,
   widgetShellHex,
   widgetSurfaceHex,
@@ -611,7 +612,7 @@ export default function WidgetFrame({
               backgroundColor: screenshotUrl
                 ? widgetSurfaceHex(theme)
                 : widgetShellHex(theme),
-              color: theme === "light" ? "#171717" : "#fafafa",
+              color: widgetInkHex(theme),
               paddingTop: fullscreen
                 ? "max(0.25rem, env(safe-area-inset-top, 0px))"
                 : undefined,
@@ -814,7 +815,7 @@ export default function WidgetFrame({
                         userId={userId}
                         identity={identity}
                         accent={accent}
-                        ink={theme === "light" ? "#171717" : "#fafafa"}
+                        ink={widgetInkHex(theme)}
                         screenshotUrl={screenshotUrl}
                         capturing={capturingScreenshot}
                         captureHint={captureHint}

@@ -1,68 +1,60 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useState, type ReactNode } from "react";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@featul/ui/components/avatar";
 import { Button } from "@featul/ui/components/button";
+import { DitherClouds } from "@featul/ui/components/clouds";
 import { cn } from "@featul/ui/lib/utils";
 import { buildShareMessages } from "@/lib/share";
-import {
-  Check,
-  Code2,
-  Headset,
-  Mail,
-  Undo2,
-  UsersRound,
-} from "@/components/global/icons";
 import CopyButton from "./copy";
 import ShareSection from "./section";
 import { shareCardClass } from "./styles";
 
-const channels: Record<
-  string,
-  { icon: typeof Mail; hint: string; tone: string; ring: string }
-> = {
-  community: {
-    icon: UsersRound,
-    hint: "Slack · Discord",
-    tone: "bg-violet-500/12 text-violet-600 dark:text-violet-300",
-    ring: "ring-violet-500/40",
-  },
-  email: {
-    icon: Mail,
-    hint: "Customer inbox",
-    tone: "bg-sky-500/12 text-sky-600 dark:text-sky-300",
-    ring: "ring-sky-500/40",
-  },
-  support: {
-    icon: Headset,
-    hint: "Ticket reply",
-    tone: "bg-amber-500/12 text-amber-600 dark:text-amber-300",
-    ring: "ring-amber-500/40",
-  },
-  developer: {
-    icon: Code2,
-    hint: "Engineering",
-    tone: "bg-emerald-500/12 text-emerald-600 dark:text-emerald-300",
-    ring: "ring-emerald-500/40",
-  },
+const hints: Record<string, string> = {
+  community: "Slack, Discord, forums",
+  email: "Your customer list",
+  support: "Help desk replies",
+  developer: "Whoever ships it",
 };
 
 function Linkified({ text }: { text: string }) {
   return text.split(/(https?:\/\/\S+)/g).map((part, index) =>
     /^https?:\/\//.test(part) ? (
-      <span
-        key={index}
-        className="rounded bg-primary/10 px-1 py-0.5 text-primary"
-      >
+      <span key={index} className="text-primary underline underline-offset-2">
         {part.replace(/^https?:\/\//, "")}
       </span>
     ) : (
       <Fragment key={index}>{part}</Fragment>
     ),
+  );
+}
+
+function Surface({
+  label,
+  meta,
+  children,
+}: {
+  label: ReactNode;
+  meta?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-black/10 bg-card shadow-[0_2px_4px_rgba(0,0,0,0.06),0_24px_48px_-16px_rgba(0,0,0,0.35)] dark:border-white/10 dark:bg-[#151515]">
+      <div className="flex shrink-0 items-center gap-3 border-b border-border/50 px-4 py-2.5 text-[11px] text-accent dark:border-white/8">
+        <span aria-hidden className="flex gap-1.5">
+          <span className="size-2 rounded-full bg-muted-foreground/25" />
+          <span className="size-2 rounded-full bg-muted-foreground/25" />
+          <span className="size-2 rounded-full bg-muted-foreground/25" />
+        </span>
+        <span className="min-w-0 flex-1 truncate">{label}</span>
+        {meta ? <span className="shrink-0">{meta}</span> : null}
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+    </div>
   );
 }
 
@@ -83,78 +75,182 @@ export default function Messages({
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const current =
     templates.find((template) => template.id === selected) ?? templates[0]!;
-  const channel = channels[current.id] ?? channels.community!;
   const text = drafts[current.id] ?? current.text;
   const edited = text !== current.text;
 
   const subjectMatch = text.match(/^Subject:\s*(.*)\n+/);
   const subject = subjectMatch?.[1];
   const body = subjectMatch ? text.slice(subjectMatch[0].length) : text;
+  const [firstLine, ...restLines] = body.split("\n");
+
+  const avatar = (
+    <Avatar className="size-8 rounded-md">
+      {userImage ? <AvatarImage src={userImage} alt="" /> : null}
+      <AvatarFallback className="rounded-md text-xs font-medium">
+        {userName.charAt(0).toUpperCase()}
+      </AvatarFallback>
+    </Avatar>
+  );
+  const copy = (
+    <p className="whitespace-pre-wrap break-words text-sm leading-6 text-foreground/90">
+      <Linkified text={body} />
+    </p>
+  );
+
+  const preview = {
+    community: (
+      <Surface label="# product-feedback" meta="Today">
+        <div className="flex gap-3 px-4 py-4">
+          {avatar}
+          <div className="min-w-0 flex-1">
+            <p className="text-sm">
+              <span className="font-semibold">{userName}</span>
+              <span className="ml-2 text-[11px] text-accent">9:41 AM</span>
+            </p>
+            <div className="mt-0.5">{copy}</div>
+          </div>
+        </div>
+      </Surface>
+    ),
+    email: (
+      <Surface label="New message">
+        <dl className="divide-y divide-border/50 text-xs dark:divide-white/8">
+          {[
+            ["From", `${userName} · ${name}`],
+            ["To", "Your customers"],
+            ["Subject", subject ?? `Help shape ${name}`],
+          ].map(([term, value]) => (
+            <div key={term} className="flex gap-3 px-4 py-2">
+              <dt className="w-14 shrink-0 text-accent">{term}</dt>
+              <dd
+                className={cn(
+                  "min-w-0 truncate",
+                  term === "Subject" && "font-medium",
+                )}
+              >
+                {value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <div className="border-t border-border/50 px-4 py-4 dark:border-white/8">
+          {copy}
+        </div>
+      </Surface>
+    ),
+    support: (
+      <Surface label="Re: Feature request" meta="Ticket #1042">
+        <div className="space-y-3 px-4 py-4">
+          <p className="w-fit max-w-[85%] rounded-lg bg-muted/60 px-3 py-2 text-sm text-accent dark:bg-white/5">
+            It would be great if {name} could…
+          </p>
+          <div className="ml-auto max-w-[92%] rounded-lg border border-border/50 px-3 py-2 dark:border-white/8">
+            {copy}
+            <p className="mt-2 text-[11px] text-accent">{userName}</p>
+          </div>
+        </div>
+      </Surface>
+    ),
+    developer: (
+      <Surface label="Issue" meta="Open">
+        <div className="px-4 py-4">
+          <p className="text-sm font-semibold">{firstLine}</p>
+          <p className="mt-3 whitespace-pre-wrap break-words font-mono text-xs leading-6 text-foreground/80">
+            <Linkified text={restLines.join("\n").trim()} />
+          </p>
+        </div>
+      </Surface>
+    ),
+  }[current.id];
 
   return (
     <ShareSection
       title="Messages"
-      description="Pick where you're posting. We'll write the first draft."
+      description="A first draft for every place you talk to users."
     >
       <div
-        role="tablist"
-        aria-label="Message templates"
-        className="grid grid-cols-2 gap-2 sm:grid-cols-4"
+        className={cn(
+          shareCardClass,
+          "grid sm:grid-cols-[200px_minmax(0,1fr)]",
+        )}
       >
-        {templates.map((template) => {
-          const meta = channels[template.id] ?? channels.community!;
-          const Icon = meta.icon;
-          const active = template.id === current.id;
-          return (
-            <button
-              key={template.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              aria-controls="share-message-panel"
-              onClick={() => {
-                setSelected(template.id);
-                setEditing(false);
-              }}
-              className={cn(
-                shareCardClass,
-                "flex items-center gap-3 p-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                active
-                  ? cn("ring-2", meta.ring)
-                  : "opacity-70 hover:opacity-100",
-              )}
-            >
-              <span
+        <div
+          role="tablist"
+          aria-label="Message templates"
+          aria-orientation="vertical"
+          className="flex gap-1 overflow-x-auto border-b border-border/50 p-2 sm:flex-col sm:border-b-0 sm:border-r"
+        >
+          {templates.map((template, index) => {
+            const active = template.id === current.id;
+            return (
+              <button
+                key={template.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                aria-controls="share-message-panel"
+                onClick={() => {
+                  setSelected(template.id);
+                  setEditing(false);
+                }}
                 className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-lg",
-                  meta.tone,
+                  "flex shrink-0 items-baseline gap-3 rounded-md px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  active ? "bg-muted/60 dark:bg-white/6" : "hover:bg-muted/30",
                 )}
               >
-                <Icon className="size-4" />
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-medium">
-                  {template.label}
+                <span className="font-mono text-[10px] text-muted-foreground tabular-nums">
+                  0{index + 1}
                 </span>
-                <span className="block truncate text-[11px] text-accent">
-                  {meta.hint}
+                <span className="min-w-0">
+                  <span
+                    className={cn(
+                      "block text-sm",
+                      active ? "font-medium text-foreground" : "text-accent",
+                    )}
+                  >
+                    {template.label}
+                  </span>
+                  <span className="hidden text-[11px] text-muted-foreground sm:block">
+                    {hints[template.id]}
+                  </span>
                 </span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              </button>
+            );
+          })}
+        </div>
 
-      <div
-        id="share-message-panel"
-        role="tabpanel"
-        className={cn(shareCardClass, "bg-muted/20 dark:bg-black/20")}
-      >
-        <div className="flex items-center justify-between gap-3 border-b border-border/50 px-4 py-2.5">
-          <span className="truncate text-xs text-accent">
-            {current.description}
-          </span>
-          <div className="flex shrink-0 items-center gap-1.5">
+        <div id="share-message-panel" role="tabpanel" className="min-w-0">
+          <div className="relative isolate flex h-[26rem] overflow-hidden bg-primary p-5 sm:px-10 sm:py-8">
+            <div aria-hidden className="absolute inset-0 -z-10">
+              <DitherClouds primary fit="cover" />
+            </div>
+            {editing ? (
+              <Surface label={`Editing · ${current.label}`}>
+                <label htmlFor="share-message" className="sr-only">
+                  {current.label} message
+                </label>
+                <textarea
+                  id="share-message"
+                  autoFocus
+                  value={text}
+                  onChange={(event) =>
+                    setDrafts((previous) => ({
+                      ...previous,
+                      [current.id]: event.target.value,
+                    }))
+                  }
+                  className="block h-full w-full resize-none bg-transparent px-4 py-4 text-sm leading-6 outline-none"
+                  spellCheck
+                />
+              </Surface>
+            ) : (
+              preview
+            )}
+          </div>
+          <div className="flex items-center gap-2 border-t border-border/50 px-4 py-2.5">
+            <span className="mr-auto text-[11px] text-muted-foreground tabular-nums">
+              {text.length} characters{edited ? " · edited" : ""}
+            </span>
             {edited ? (
               <Button
                 type="button"
@@ -163,9 +259,8 @@ export default function Messages({
                 onClick={() =>
                   setDrafts(({ [current.id]: _, ...rest }) => rest)
                 }
-                className="gap-1.5 text-accent"
+                className="text-accent"
               >
-                <Undo2 className="size-3.5" />
                 Reset
               </Button>
             ) : null}
@@ -176,74 +271,10 @@ export default function Messages({
               aria-pressed={editing}
               onClick={() => setEditing((value) => !value)}
             >
-              {editing ? (
-                <>
-                  <Check className="size-3.5" /> Done
-                </>
-              ) : (
-                "Edit"
-              )}
+              {editing ? "Preview" : "Edit"}
             </Button>
             <CopyButton text={text} label="Copy" primary />
           </div>
-        </div>
-
-        <div className="p-4 sm:p-6">
-          {editing ? (
-            <>
-              <label htmlFor="share-message" className="sr-only">
-                {current.label} message
-              </label>
-              <textarea
-                id="share-message"
-                autoFocus
-                value={text}
-                onChange={(event) =>
-                  setDrafts((previous) => ({
-                    ...previous,
-                    [current.id]: event.target.value,
-                  }))
-                }
-                rows={Math.min(text.split("\n").length + 2, 16)}
-                className="block w-full resize-y rounded-xl border border-border/50 bg-card px-4 py-3 text-sm leading-6 outline-none focus-visible:ring-2 focus-visible:ring-ring/50 dark:border-white/8 dark:bg-black/30"
-                spellCheck
-              />
-            </>
-          ) : (
-            <div className="mx-auto max-w-xl rounded-xl border border-border/50 bg-card shadow-sm dark:border-white/8 dark:bg-black/40">
-              {subject ? (
-                <div className="space-y-1 border-b border-border/50 px-5 py-3 text-xs">
-                  <p>
-                    <span className="inline-block w-14 text-accent">To</span>
-                    Your customers
-                  </p>
-                  <p>
-                    <span className="inline-block w-14 text-accent">
-                      Subject
-                    </span>
-                    <span className="font-medium">{subject}</span>
-                  </p>
-                </div>
-              ) : null}
-              <div className="flex gap-3 px-5 py-4">
-                <Avatar className="size-8">
-                  {userImage ? <AvatarImage src={userImage} alt="" /> : null}
-                  <AvatarFallback className="text-xs font-medium">
-                    {userName.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-1">
-                  <p className="flex items-baseline gap-2 text-sm">
-                    <span className="font-medium">{userName}</span>
-                    <span className="text-[11px] text-accent">just now</span>
-                  </p>
-                  <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 text-foreground/90">
-                    <Linkified text={body} />
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </ShareSection>

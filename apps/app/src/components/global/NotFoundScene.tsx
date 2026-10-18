@@ -25,10 +25,10 @@ export default function NotFoundScene({ defaultHref }: NotFoundSceneProps) {
   return (
     <main className="fixed inset-0 overflow-hidden bg-background">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] [mask-image:linear-gradient(to_right,black,transparent)]">
-        <DitherGradient from="blue" direction="up" cell={4} opacity={0.4} />
+        <DitherGradient to="primary" direction="up" cell={4} opacity={0.4} />
       </div>
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[35%] [mask-image:linear-gradient(to_left,black,transparent)]">
-        <DitherGradient from="blue" direction="down" cell={4} opacity={0.28} />
+        <DitherGradient to="primary" direction="down" cell={4} opacity={0.28} />
       </div>
 
       <Link

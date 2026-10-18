@@ -120,3 +120,34 @@ export function buildWidgetSnippet(
   const { loader, init } = buildWidgetSteps(workspaceId, theme, position);
   return `${loader}\n${init}`;
 }
+
+export function buildWidgetNextSnippet(
+  workspaceId: string,
+  theme: "auto" | "light" | "dark" = "auto",
+  position: "left" | "right" = "right",
+) {
+  const id = JSON.stringify(workspaceId).replace(/</g, "\\u003c");
+  return `import Script from "next/script";
+
+export function FeatulWidget() {
+  return (
+    <>
+      <Script id="featul-widget" strategy="afterInteractive">{\`
+        window.$featulq = window.$featulq || [];
+        window.featul = window.featul || new Proxy({}, {
+          get: (_, method) => (...args) => window.$featulq.push([method, ...args])
+        });
+        featul.init(${id}, {
+          widget: true,
+          theme: "${theme}",
+          position: "${position}"
+        });
+      \`}</Script>
+      <Script
+        src="https://app.featul.com/widget/sdk/v1.js"
+        strategy="afterInteractive"
+      />
+    </>
+  );
+}`;
+}

@@ -135,27 +135,27 @@ function boot() {
   }
 
   function panelBackground() {
-    return state.theme === "light" ? "#ffffff" : "#202020";
+    return state.theme === "light" ? "#ffffff" : "#1c1c1c";
   }
 
   function shellBackground() {
-    return state.theme === "light" ? "#eeeeeb" : "#121212";
+    return state.theme === "light" ? "#f3f3f3" : "#111111";
   }
 
   function launcherForeground() {
-    return state.theme === "light" ? "#171717" : "#fafafa";
+    return state.theme === "light" ? "#202020" : "#ededed";
   }
 
   function launcherBorder() {
     return state.theme === "light"
-      ? "1px solid rgba(23, 23, 23, 0.1)"
-      : "1px solid rgba(250, 250, 250, 0.1)";
+      ? "1px solid rgba(32, 32, 32, 0.1)"
+      : "1px solid rgba(237, 237, 237, 0.1)";
   }
 
   function launcherInnerRing() {
     return state.theme === "light"
-      ? "inset 0 0 0 1px rgba(23, 23, 23, 0.1)"
-      : "inset 0 0 0 1px rgba(250, 250, 250, 0.1)";
+      ? "inset 0 0 0 1px rgba(32, 32, 32, 0.1)"
+      : "inset 0 0 0 1px rgba(237, 237, 237, 0.1)";
   }
 
   function applyLauncherChrome() {
@@ -715,12 +715,12 @@ function boot() {
       "display:flex;align-items:stretch;overflow:hidden;border-radius:10px;padding:2px;border:1px solid " +
       (dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)") +
       ";background:" +
-      (dark ? "#252525" : "#eeeeeb") +
+      (dark ? "#111111" : "#f3f3f3") +
       ";";
     const inner = document.createElement("span");
     inner.style.cssText =
       "display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;background:" +
-      (dark ? "#121212" : "#ffffff") +
+      (dark ? "#1c1c1c" : "#ffffff") +
       ";box-shadow:inset 0 0 0 1px " +
       (dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)") +
       ";";
@@ -782,12 +782,12 @@ function boot() {
     dialog.style.cssText =
       "position:relative;z-index:1;width:min(calc(100vw - 8rem),1400px);height:min(88dvh,860px);max-height:92dvh;box-sizing:border-box;padding:8px;border-radius:16px;display:flex;flex-direction:column;outline:none;flex:0 1 auto;" +
       (dark
-        ? "background:#252525;color:#f3f3f3;border:1px solid rgba(255,255,255,0.12);"
-        : "background:#eeeeeb;color:#202020;border:1px solid rgba(0,0,0,0.1);");
+        ? "background:#111111;color:#ededed;border:1px solid rgba(255,255,255,0.12);"
+        : "background:#f3f3f3;color:#202020;border:1px solid rgba(0,0,0,0.1);");
     const stage = document.createElement("div");
     stage.style.cssText =
       "flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:8px;" +
-      (dark ? "background:#121212;" : "background:#ffffff;");
+      (dark ? "background:#1c1c1c;" : "background:#ffffff;");
     const img = document.createElement("img");
     img.style.cssText =
       "max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain;display:block;";

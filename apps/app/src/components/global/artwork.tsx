@@ -50,20 +50,18 @@ export function LogoutIcon({ size = 20, ...props }: IconProps) {
 }
 
 
-export function ShareIcon(props: SVGProps<SVGSVGElement>) {
+export function ShareIcon({ size = 18, ...props }: IconProps) {
   return (
     <svg
-      width={24}
-      height={24}
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="currentColor"
-      aria-hidden="true"
+      aria-hidden={props["aria-label"] ? undefined : true}
       {...props}
     >
-      <path d="m6 11 12-6 .9 1.8-12 6L6 11Zm0 2 12 6 .9-1.8-12-6L6 13Z" />
-      <circle cx={6} cy={12} r={3.5} />
-      <circle cx={18} cy={6} r={3.5} />
-      <circle cx={18} cy={18} r={3.5} />
+      <path d="M11.3 2.7a1 1 0 0 1 1.4 0l3.6 3.6a1 1 0 0 1-.7 1.7H13v6a1 1 0 0 1-2 0V8H8.4a1 1 0 0 1-.7-1.7l3.6-3.6Z" />
+      <path d="M4 13a3 3 0 0 1 3-3h2.5v4a2.5 2.5 0 0 0 5 0v-4H17a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-5Z" />
     </svg>
   );
 }

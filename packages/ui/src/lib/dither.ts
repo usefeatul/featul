@@ -1,3 +1,5 @@
+import { LIGHT_PURPLE } from "./palette";
+
 /** Shared contour density in [0, 1], with soft edges for ordered dithering. */
 export function contourDensity(u: number, v: number) {
   const x = (u - 0.48) * 1.5;
@@ -52,6 +54,8 @@ const accents: { x: number; y: number; color: Color }[] = [
 ];
 
 // Warped concentric contours: clear looping shapes with ordered-dither edges.
+const violet: Color = LIGHT_PURPLE;
+
 export function contourColor(u: number, v: number, threshold: number): Color {
   const x = (u - 0.48) * 1.5;
   const y = v - 0.5;
@@ -62,11 +66,19 @@ export function contourColor(u: number, v: number, threshold: number): Color {
   if (density <= threshold) return base;
 
   const cyan: Color = [127, 214, 242];
-  const violet: Color = [169, 165, 242];
   const blend = (Math.sin(angle + radius * 2) + 1) / 2;
   return cyan.map(
     (channel, index) => channel + (violet[index]! - channel) * blend,
   ) as Color;
+}
+
+// Light purple contours on a transparent base, so the container's bg-primary shows through.
+export function primaryContourColor(
+  u: number,
+  v: number,
+  threshold: number,
+): [...Color, number] {
+  return contourDensity(u, v) > threshold ? [...violet, 255] : [0, 0, 0, 0];
 }
 
 export function cloudColor(u: number, v: number, threshold: number): Color {

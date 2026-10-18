@@ -3,7 +3,7 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 
 import { cn } from "@featul/ui/lib/utils";
-import { rgb } from "../lib/palette";
+import { LIGHT_PURPLE, rgb, type Rgb } from "../lib/palette";
 import { contourMasks } from "../lib/artwork";
 import { contourDensity } from "../lib/dither";
 import {
@@ -19,9 +19,12 @@ const MAX_ROWS = 600;
 
 export type GradientDirection = "up" | "down" | "left" | "right";
 
+/** "primary" follows the theme's --primary token, repainting on theme changes. */
+export type GradientColor = PixelColor | "primary";
+
 export type DitherGradientProps = {
-  from: PixelColor;
-  to?: PixelColor | "transparent";
+  from?: GradientColor;
+  to?: GradientColor | "transparent";
   direction?: GradientDirection;
   cell?: number;
   opacity?: number;
@@ -30,8 +33,8 @@ export type DitherGradientProps = {
 };
 
 type PaintSpec = {
-  from: PixelColor;
-  to: PixelColor | "transparent";
+  from: Rgb;
+  to: Rgb | "transparent";
   direction: GradientDirection;
   cell: number;
   opacity: number;
@@ -53,8 +56,8 @@ function paintGradient(
 
   ctx.clearRect(0, 0, cols, rows);
 
-  const fromFill = fillOf(spec.from);
-  const toFill = spec.to === "transparent" ? null : fillOf(spec.to);
+  const fromFill = spec.from;
+  const toFill = spec.to === "transparent" ? null : spec.to;
   const o = spec.opacity;
 
   for (let y = 0; y < rows; y++) {
@@ -105,6 +108,27 @@ function paintGradient(
   return true;
 }
 
+const PRIMARY_FALLBACK: Rgb = [40, 117, 197];
+
+// Normalise whatever --primary holds (hex, rgb, oklch) through the canvas parser.
+function readPrimary(el: Element): Rgb {
+  const value = getComputedStyle(el).getPropertyValue("--primary").trim();
+  const ctx = document.createElement("canvas").getContext("2d");
+  if (!value || !ctx) return PRIMARY_FALLBACK;
+  ctx.fillStyle = value;
+  ctx.fillRect(0, 0, 1, 1);
+  const [r = 0, g = 0, b = 0] = ctx.getImageData(0, 0, 1, 1).data;
+  return [r, g, b];
+}
+
+function resolveColor(color: GradientColor, el: Element): Rgb {
+  return color === "primary" ? readPrimary(el) : fillOf(color);
+}
+
+function cssColor(color: GradientColor) {
+  return color === "primary" ? "var(--primary)" : rgb(fillOf(color));
+}
+
 const canvasLayout: CSSProperties = {
   position: "absolute",
   inset: 0,
@@ -117,7 +141,7 @@ const canvasLayout: CSSProperties = {
 };
 
 export function DitherGradient({
-  from,
+  from = LIGHT_PURPLE,
   to = "transparent",
   direction = "up",
   cell = 3,
@@ -146,8 +170,8 @@ export function DitherGradient({
         box.width,
         box.height,
         {
-          from,
-          to,
+          from: resolveColor(from, wrap),
+          to: to === "transparent" ? to : resolveColor(to, wrap),
           direction,
           cell,
           opacity,
@@ -184,6 +208,15 @@ export function DitherGradient({
       event.preventDefault();
       if (fallbackRef.current) fallbackRef.current.hidden = false;
     };
+    const usesPrimary = from === "primary" || to === "primary";
+    const theme =
+      usesPrimary && typeof MutationObserver !== "undefined"
+        ? new MutationObserver(schedule)
+        : null;
+    theme?.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "style", "data-theme"],
+    });
     window.addEventListener("pageshow", restore);
     window.addEventListener("resize", schedule);
     document.addEventListener("visibilitychange", resume);
@@ -192,6 +225,7 @@ export function DitherGradient({
 
     return () => {
       ro?.disconnect();
+      theme?.disconnect();
       window.removeEventListener("pageshow", restore);
       window.removeEventListener("resize", schedule);
       document.removeEventListener("visibilitychange", resume);
@@ -216,14 +250,14 @@ export function DitherGradient({
         ref={fallbackRef}
         className="absolute inset-0"
         style={{
-          backgroundColor: to === "transparent" ? undefined : rgb(fillOf(to)),
+          backgroundColor: to === "transparent" ? undefined : cssColor(to),
           opacity,
         }}
       >
         <div
           className="absolute inset-0 [image-rendering:pixelated]"
           style={{
-            backgroundColor: rgb(fillOf(from)),
+            backgroundColor: cssColor(from),
             maskImage: `url("${contourMasks[direction]}")`,
             maskSize: "100% 100%",
             maskRepeat: "no-repeat",
