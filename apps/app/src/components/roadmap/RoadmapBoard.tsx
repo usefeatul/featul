@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { raisedCardClass } from "@featul/ui/lib/overlay";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 import RoadmapRequestItem from "@/components/roadmap/RoadmapRequestItem";
@@ -149,7 +150,10 @@ export default function RoadmapBoard({
         <DragOverlay dropAnimation={null}>
           {activeItem ? (
             <motion.div
-              className="pointer-events-none h-[108px] w-[min(300px,85vw)] overflow-hidden rounded-lg border border-border/70 bg-card shadow-lg dark:border-white/10"
+              className={cn(
+                raisedCardClass,
+                "pointer-events-none h-[108px] w-[min(300px,85vw)] overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,1),0_8px_20px_-6px_rgba(0,0,0,0.18)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_24px_-6px_rgba(0,0,0,0.55)]",
+              )}
               initial={{ scale: 0.995, opacity: 0.97 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 180, damping: 32 }}
