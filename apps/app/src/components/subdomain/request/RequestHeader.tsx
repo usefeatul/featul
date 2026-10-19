@@ -1,8 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import { ChevronLeft } from "@/components/global/icons";
-import { Button } from "@featul/ui/components/button";
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { cn } from "@featul/ui/lib/utils";
 import { subdomainColumns } from "../layout";
 
@@ -25,14 +23,13 @@ export function RequestHeader({ sidebarPosition, backLink = "/" }: RequestHeader
       <div
         className="flex min-h-10 min-w-0 items-center gap-3"
       >
-        <Toolbar size="sm" className="w-fit">
-          <Button variant="plain" size="icon" asChild className={cn(toolbarItemClass, "px-2.5")}>
-            <Link href={backLink} aria-label="Back to board">
-              <ChevronLeft className="size-4" />
-            </Link>
-          </Button>
-        </Toolbar>
-        <h1 className="text-xl font-semibold text-foreground">Feedback</h1>
+        <Link
+          href={backLink}
+          className="-ml-1 inline-flex items-center gap-1 rounded-md px-1 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ChevronLeft className="size-4" />
+          Back to feedback
+        </Link>
       </div>
 
       {/* Right Spacer for Sidebar */}

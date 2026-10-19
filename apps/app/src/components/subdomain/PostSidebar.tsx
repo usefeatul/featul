@@ -8,14 +8,9 @@ import { relativeTime } from "@/lib/time"
 import BoardPicker from "../requests/meta/BoardPicker"
 import StatusPicker from "../requests/meta/StatusPicker"
 import FlagsPicker from "../requests/meta/FlagsPicker"
-import StatusIcon from "../requests/StatusIcon"
+import { StatusChip } from "./StatusChip"
 import RoleBadge from "../global/RoleBadge"
-import {
-  settingsCardInnerClass,
-  settingsCardShellClass,
-} from "@/components/settings/global/SectionCard"
 import { cn } from "@featul/ui/lib/utils"
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
 import { RequestFlagReadout } from "@/components/global/flag-visuals"
 import type { SubdomainRequestDetailData } from "@/types/subdomain"
 
@@ -53,9 +48,9 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt)
 
   return (
-    <aside className="hidden min-w-0 flex-col gap-4 md:flex">
-      <section className={settingsCardShellClass}>
-        <header className="flex items-center gap-3 py-2">
+    <aside className="hidden min-w-0 flex-col md:flex md:pt-1">
+      <section className="md:sticky md:top-20">
+        <header className="flex items-center gap-3 pb-4">
           <div className="relative">
             <Avatar className="relative size-8 overflow-visible">
               {displayUser.image ? (
@@ -74,7 +69,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                   role={post.role}
                   isOwner={post.isOwner}
                   isFeatul={post.isFeatul}
-                  className="-bottom-1 -right-1 bg-card"
+                  className="-bottom-1 -right-1 bg-background"
                 />
               ) : null}
             </Avatar>
@@ -87,10 +82,10 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
           </div>
         </header>
 
-        <div className={settingsCardInnerClass}>
-          <div className="space-y-5">
+        <div className="border-t border-border/60 pt-3 dark:border-white/[0.07]">
+          <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-sm font-medium text-muted-foreground">Board</span>
+              <span className="text-sm text-muted-foreground">Board</span>
               {canEdit ? (
                 <BoardPicker
                   workspaceSlug={workspaceSlug}
@@ -99,16 +94,12 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                   onChange={setBoard}
                 />
               ) : (
-                <Toolbar size="sm" className="w-fit">
-                  <div className={cn(toolbarItemClass, "flex h-8 items-center px-2.5 text-xs font-medium")}>
-                    {board.name}
-                  </div>
-                </Toolbar>
+                <span className="text-sm font-medium text-foreground">{board.name}</span>
               )}
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-sm font-medium text-muted-foreground">Status</span>
+              <span className="text-sm text-muted-foreground">Status</span>
               {canEdit ? (
                 <StatusPicker
                   postId={post.id}
@@ -116,15 +107,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                   onChange={(v) => setMeta((m) => ({ ...m, roadmapStatus: v }))}
                 />
               ) : (
-                <Toolbar size="sm" className="w-fit">
-                  <div className={cn(toolbarItemClass, "flex h-8 items-center gap-1.5 px-2.5 text-xs font-medium capitalize")}>
-                    <StatusIcon
-                      status={meta.roadmapStatus || "pending"}
-                      className="size-4"
-                    />
-                    {meta.roadmapStatus || "Open"}
-                  </div>
-                </Toolbar>
+                <StatusChip status={meta.roadmapStatus} className="text-sm" />
               )}
             </div>
 
@@ -136,7 +119,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                     : "flex flex-col gap-2",
                 )}
               >
-                <span className="text-sm font-medium text-muted-foreground">Flags</span>
+                <span className="text-sm text-muted-foreground">Flags</span>
                 {canEdit ? (
                   <FlagsPicker
                     postId={post.id}
