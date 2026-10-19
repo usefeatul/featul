@@ -83,11 +83,14 @@ export default function FiltersAction({
   query,
   onQueryChange,
   showClear = false,
+  plain = false,
 }: {
   className?: string;
   query?: string;
   onQueryChange?: (query: string) => void;
   showClear?: boolean;
+  /** Flat icon trigger with no raised surface or active tint (request queue sidebar). */
+  plain?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname() || "/";
@@ -330,16 +333,17 @@ export default function FiltersAction({
       <PopoverTrigger asChild>
         <Button
           type="button"
-          variant="card"
+          variant={plain ? "plain" : "card"}
           size="icon-sm"
           aria-label={isActive ? "Filter and sort requests, filters active" : "Filter and sort requests"}
           title="Filter and sort requests"
           aria-pressed={isActive}
           className={filterToolbarButtonClass(
-            isActive,
+            isActive && !plain,
             cn(
+              !plain &&
+                "text-accent hover:text-foreground focus-visible:text-foreground dark:text-accent dark:hover:text-foreground dark:focus-visible:text-foreground",
               className,
-              "text-accent hover:text-foreground focus-visible:text-foreground dark:text-accent dark:hover:text-foreground dark:focus-visible:text-foreground",
             ),
           )}
         >
