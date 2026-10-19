@@ -31,7 +31,7 @@ import type { RequestItemData } from "@/types/request";
 
 // Search, filter, and hide-panel icons in the queue header share one flat look.
 const queueIconButtonClass =
-  "size-8 rounded-lg border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground focus-visible:text-foreground dark:bg-transparent dark:text-white dark:hover:bg-white/[0.03] dark:hover:text-white [&_svg]:size-5";
+  "size-8 rounded-lg border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground focus-visible:text-foreground dark:bg-transparent dark:text-accent dark:hover:bg-white/[0.03] dark:hover:text-foreground [&_svg]:size-5";
 
 export type RequestNavigatorPage = {
   items: RequestItemData[];
@@ -247,10 +247,7 @@ export default function Navigator({
                     aria-expanded={true}
                     aria-controls="request-navigator"
                     size="icon-sm"
-                    className={cn(
-                      sidebarHeaderActionClassName,
-                      queueIconButtonClass,
-                    )}
+                    className={sidebarHeaderActionClassName}
                   >
                     <SidebarPanelIcon className="size-5" />
                   </Button>
