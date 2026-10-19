@@ -94,7 +94,8 @@ function TooltipContent({
 						"relative w-fit max-w-[min(20rem,calc(100vw-1rem))] rounded-lg border border-foreground/60 bg-foreground bg-linear-to-b from-background/10 to-transparent px-2.5 py-1 text-xs font-normal leading-5 text-background whitespace-normal wrap-break-word outline-hidden [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*1.25)]",
 						"shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_1px_2px_rgba(0,0,0,0.16),0_6px_16px_-4px_rgba(0,0,0,0.24)]",
 						"origin-[var(--transform-origin)] transition-[opacity,scale,translate] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] data-ending-style:opacity-0 data-ending-style:duration-100 data-starting-style:opacity-0 motion-safe:data-ending-style:scale-[0.97] motion-safe:data-starting-style:scale-[0.97] motion-safe:data-[side=bottom]:data-starting-style:-translate-y-0.5 motion-safe:data-[side=left]:data-starting-style:translate-x-0.5 motion-safe:data-[side=right]:data-starting-style:-translate-x-0.5 motion-safe:data-[side=top]:data-starting-style:translate-y-0.5 motion-reduce:transition-opacity",
-						"[&_kbd]:border-background/15 [&_kbd]:bg-background/10 [&_kbd]:text-background/80",
+						// Keycaps invert with the tooltip: drop the page surface gradient and use the tooltip's own tones.
+						"[&_kbd]:border-background/20 [&_kbd]:bg-background/10 [&_kbd]:bg-none [&_kbd]:text-background/85 [&_kbd]:shadow-[inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(0,0,0,0.18)]",
 						className,
 					)}
 					{...props}
