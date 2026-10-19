@@ -12,9 +12,8 @@ import { RequestActions } from "./RequestActions";
 import { isOnboardingPost } from "@/lib/onboarding/post";
 import { OnboardingPostContent } from "@/components/requests/OnboardingPostContent";
 import { MergeSubmissionSection } from "@/components/requests/MergeSubmission";
-import { Linkify } from "@/components/post/linkify";
-
-
+import { PostBody } from "./PostBody";
+import { relativeTime } from "@/lib/time";
 
 interface RequestContentProps {
   post: SubdomainRequestDetailData;
@@ -31,45 +30,56 @@ export function RequestContent({
   initialActivity,
   initialCollapsedIds,
 }: RequestContentProps) {
-  const visibleCommentCount = initialComments?.length ?? post.commentCount
-  const showOnboardingContent = isOnboardingPost(post.metadata)
+  const visibleCommentCount = initialComments?.length ?? post.commentCount;
+  const showOnboardingContent = isOnboardingPost(post.metadata);
   const normalizedContent = showOnboardingContent
     ? post.content
-    : post.content?.replace(/\n{2,}/g, "\n")
+    : post.content?.replace(/\n{2,}/g, "\n");
 
   const rawDisplayAuthor = getDisplayUser(
     post.author
       ? {
-        name: post.author.name ?? undefined,
-        image: post.author.image ?? undefined,
-        email: post.author.email ?? undefined,
-      }
-      : undefined
+          name: post.author.name ?? undefined,
+          image: post.author.image ?? undefined,
+          email: post.author.email ?? undefined,
+        }
+      : undefined,
   );
 
   // Apply hidePublicMemberIdentity - only hide if it's enabled AND user is not a guest
-  const isGuest = !post.author?.name || rawDisplayAuthor.name === "Guest"
-  const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest
+  const isGuest = !post.author?.name || rawDisplayAuthor.name === "Guest";
+  const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest;
 
   return (
     <div className="min-w-0">
-      <article className="pb-6">
+      <article className="pb-8">
         <header className="mb-3 flex items-center justify-between gap-3">
           <StatusChip status={post.roadmapStatus} className="text-sm" />
           <RequestActions post={post} workspaceSlug={workspaceSlug} />
         </header>
 
-        <h1 className="mb-4 text-2xl font-semibold tracking-tight text-foreground">
-          {post.title}
-        </h1>
+        <div className="mb-5">
+          <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">
+            {post.title}
+          </h1>
+          {/* Board and date live in the sidebar on desktop. */}
+          <p
+            className="mt-1.5 text-sm text-muted-foreground md:hidden"
+            suppressHydrationWarning
+          >
+            {post.boardName} ·{" "}
+            {relativeTime(post.publishedAt ?? post.createdAt)}
+          </p>
+        </div>
 
         {normalizedContent ? (
           showOnboardingContent ? (
-            <OnboardingPostContent content={normalizedContent} className="mb-6" />
+            <OnboardingPostContent
+              content={normalizedContent}
+              className="mb-6"
+            />
           ) : (
-            <div className="prose dark:prose-invert mb-6 wrap-break-word whitespace-pre-wrap text-[15px] leading-7 text-accent">
-              <Linkify content={normalizedContent} />
-            </div>
+            <PostBody content={normalizedContent} className="mb-6" />
           )
         ) : null}
 
@@ -107,8 +117,8 @@ export function RequestContent({
         </div>
       </article>
 
-      <div className="border-t border-border/60 pt-2 dark:border-white/[0.07]">
-      <Discussion
+      <div>
+        <Discussion
           key={post.id}
           postId={post.id}
           initialCount={visibleCommentCount}
