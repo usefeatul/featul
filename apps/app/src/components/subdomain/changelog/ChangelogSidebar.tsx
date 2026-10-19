@@ -40,7 +40,7 @@ export function ChangelogSidebar({ title, author, publishedAt }: ChangelogSideba
     const published = formatPublished(publishedAt);
 
     return (
-        <aside className="hidden min-w-0 md:block md:pt-1">
+        <aside className="hidden min-w-0 md:block md:self-stretch md:pt-1">
             <div className="space-y-6 md:sticky md:top-20">
                 <ShareIdeaButton className="w-full" />
 
