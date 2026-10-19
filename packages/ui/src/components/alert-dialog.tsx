@@ -161,7 +161,7 @@ function AlertDialogAction({
   Pick<VariantProps<typeof buttonVariants>, "variant">) {
   return (
     <BaseAlertDialog.Close
-      className={cn(buttonVariants({ variant }), "rounded-md", className)}
+      className={cn(buttonVariants({ variant }), className)}
       {...props}
     />
   )
@@ -173,7 +173,7 @@ function AlertDialogCancel({
 }: React.ComponentProps<typeof BaseAlertDialog.Close>) {
   return (
     <BaseAlertDialog.Close
-      className={cn(buttonVariants({ variant: "card" }), "rounded-md", className)}
+      className={cn(buttonVariants({ variant: "card" }), className)}
       {...props}
     />
   )

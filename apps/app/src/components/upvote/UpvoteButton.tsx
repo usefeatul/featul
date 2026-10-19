@@ -37,7 +37,7 @@ export function UpvoteButton({
         "inline-flex cursor-pointer items-center gap-1.5 rounded-md text-xs text-muted-foreground/70 transition-colors group/vote hover:text-primary",
         className,
         hasVoted &&
-          "border-primary/60 bg-primary from-[color-mix(in_oklab,var(--primary),black_4%)] to-[color-mix(in_oklab,var(--primary),black_16%)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_1px_1px_rgba(0,0,0,0.12)] hover:bg-primary/90 hover:text-white hover:brightness-110 dark:border-primary/60 dark:bg-primary dark:from-[color-mix(in_oklab,var(--primary),black_4%)] dark:to-[color-mix(in_oklab,var(--primary),black_16%)] dark:text-white dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_1px_1px_rgba(0,0,0,0.12)] dark:hover:bg-primary/90 dark:hover:text-white",
+          "border-primary bg-primary text-white hover:bg-primary/90 hover:text-white dark:border-primary dark:bg-primary dark:text-white dark:hover:bg-primary/90 dark:hover:text-white",
       )}
       whileTap={{ scale: 0.97 }}
       aria-pressed={hasVoted}
