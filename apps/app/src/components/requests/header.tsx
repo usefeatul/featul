@@ -71,7 +71,7 @@ export default function Header({
           </TooltipContent>
         </Tooltip>
       ) : null}
-      <nav aria-label="Request navigation" className="min-w-0 flex-1">
+      <nav aria-label="Request navigation" className="min-w-0 flex-1 pl-1.5">
         <ol className="flex min-w-0 items-center gap-2 text-sm">
           <li className="shrink-0">
             <Link
