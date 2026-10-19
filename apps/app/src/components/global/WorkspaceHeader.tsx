@@ -18,6 +18,7 @@ import {
   type EditorAction,
 } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import {
   Tooltip,
@@ -35,8 +36,11 @@ function resolveTitle(segment: string): string {
   return found ? found.label : "";
 }
 
-const compactActionButtonClass =
-  "size-8 rounded-lg border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground data-[state=open]:bg-black/[0.06] dark:bg-secondary dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
+// Matches the requests/roadmap header buttons.
+const compactActionButtonClass = cn(
+  raisedSurfaceClass,
+  "size-8 rounded-lg p-0 text-accent ring-0 before:hidden hover:text-foreground hover:brightness-[0.98] data-[state=open]:brightness-[0.98] dark:hover:brightness-125 dark:data-[state=open]:brightness-125",
+);
 
 function EditorActionButton({ action }: { action: EditorAction }) {
   const label = action.label || "Back to changelog";
@@ -55,7 +59,7 @@ function EditorActionButton({ action }: { action: EditorAction }) {
       title={action.shortcut ? undefined : label}
       className={cn(
         compactActionButtonClass,
-        action.active && "bg-black/[0.08] text-foreground dark:bg-muted",
+        action.active && "text-primary hover:text-primary dark:text-primary",
       )}
     >
       {action.icon}
@@ -176,7 +180,10 @@ export default function WorkspaceHeader({
         action.type === "switch" ? (
           <div
             key={action.key}
-            className="flex h-8 items-center gap-2 rounded-lg bg-black/5 px-2.5 text-xs font-medium text-muted-foreground dark:bg-secondary"
+            className={cn(
+              raisedSurfaceClass,
+              "flex h-8 items-center gap-2 rounded-lg px-2.5 text-xs font-medium text-muted-foreground",
+            )}
           >
             <span>{action.label}</span>
             <Switch checked={action.checked} onCheckedChange={action.onClick} />

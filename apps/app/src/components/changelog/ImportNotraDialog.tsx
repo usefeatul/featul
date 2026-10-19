@@ -250,7 +250,8 @@ export function ImportNotraDialog({
         variant="plain"
         size={iconOnly ? "icon-sm" : undefined}
         className={cn(
-          toolbarItemClass,
+          // A custom trigger style replaces the toolbar segment look entirely.
+          !triggerClassName && toolbarItemClass,
           iconOnly
             ? "size-8 p-0"
             : "px-3 text-xs font-medium text-muted-foreground hover:text-foreground",
