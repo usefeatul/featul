@@ -19,25 +19,13 @@ export default function Signature({
   userImage?: string | null;
   boardUrl: string;
 }) {
-  const signature = buildSignature(userName, name, boardUrl);
+  const signature = buildSignature(userName, name, boardUrl, userImage);
   return (
     <ShareSection
       title="Email signature"
       description="A quiet invite at the bottom of every email you send."
     >
       <div className={shareCardClass}>
-        <div className="flex items-center justify-between gap-3 border-b border-border/50 px-5 py-3">
-          <span className="text-xs text-accent">Preview</span>
-          <div className="flex items-center gap-2">
-            <CopyButton text={signature.html} label="Copy HTML" />
-            <CopyButton
-              text={signature.text}
-              html={signature.html}
-              label="Copy signature"
-              primary
-            />
-          </div>
-        </div>
         <div className="px-5 py-6">
           <p className="text-sm text-accent">Thanks, talk soon.</p>
           <div className="mt-5 flex items-center gap-3">
@@ -61,6 +49,17 @@ export default function Signature({
               </a>
             </div>
           </div>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/50 px-5 py-3">
+          <p className="text-xs text-accent">
+            Paste into your Gmail, Outlook, or Apple Mail signature settings.
+          </p>
+          <CopyButton
+            text={signature.text}
+            html={signature.html}
+            label="Copy signature"
+            primary
+          />
         </div>
       </div>
     </ShareSection>

@@ -50,9 +50,15 @@ export function buildSignature(
   name: string,
   workspaceName: string,
   boardUrl: string,
+  image?: string | null,
 ) {
-  const text = `${name} · ${workspaceName}\nHelp shape what we build next.\nShare an idea: ${boardUrl}`;
-  const html = `<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6"><strong>${escapeHtml(name)} · ${escapeHtml(workspaceName)}</strong><br>Help shape what we build next.<br><a href="${escapeHtml(boardUrl)}">Share an idea →</a></div>`;
+  const cta = "Help shape what we build next →";
+  const text = `${name} · ${workspaceName}\n${cta} ${boardUrl}`;
+  const avatar =
+    image && /^https:\/\//.test(image)
+      ? `<td style="padding-right:12px;vertical-align:middle"><img src="${escapeHtml(image)}" width="40" height="40" alt="" style="display:block;border-radius:8px"></td>`
+      : "";
+  const html = `<table cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;font-size:14px;line-height:1.5"><tr>${avatar}<td style="vertical-align:middle"><strong>${escapeHtml(name)} · ${escapeHtml(workspaceName)}</strong><br><a href="${escapeHtml(boardUrl)}">${cta}</a></td></tr></table>`;
   return { text, html };
 }
 
