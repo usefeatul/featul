@@ -15,11 +15,22 @@ export function SidebarSection({ title, children }: { title: string; children: R
   )
 }
 
-/** Label on the left, value on the right; no frame. Use inside a `<dl>`. */
-export function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
+/**
+ * Label on the left, value on the right; no frame. Use inside a `<dl>`.
+ * `alignTop` keeps the label on the first line when the value wraps (e.g. 24px chips).
+ */
+export function DetailRow({
+  label,
+  children,
+  alignTop,
+}: {
+  label: string
+  children: React.ReactNode
+  alignTop?: boolean
+}) {
   return (
-    <div className="flex min-h-8 items-center justify-between gap-3 px-2.5 py-1">
-      <dt className="shrink-0 text-sm text-muted-foreground">{label}</dt>
+    <div className={cn("flex min-h-8 justify-between gap-3 px-2.5 py-1", alignTop ? "items-start" : "items-center")}>
+      <dt className={cn("shrink-0 text-sm text-muted-foreground", alignTop && "leading-6")}>{label}</dt>
       <dd className="flex min-w-0 justify-end text-sm font-medium text-foreground">{children}</dd>
     </div>
   )

@@ -39,13 +39,13 @@ type SubdomainLayoutShellProps = {
   initialUser?: AuthUser | null;
 };
 
-export type PortalMaxWidth = "5xl" | "6xl" | "7xl";
+export type PortalMaxWidth = "6xl" | "7xl" | "8xl";
 
 /** Container max-width token from compact / comfortable / spacious. */
 export function layoutMaxWidth(layoutStyle: BrandingInfo["layoutStyle"]): PortalMaxWidth {
-  if (layoutStyle === "compact") return "5xl";
-  if (layoutStyle === "spacious") return "7xl";
-  return "6xl";
+  if (layoutStyle === "compact") return "6xl";
+  if (layoutStyle === "spacious") return "8xl";
+  return "7xl";
 }
 
 /** Inject workspace primary into --primary, --ring, and --sidebar-primary; pin the page so it never rubber-bands. */

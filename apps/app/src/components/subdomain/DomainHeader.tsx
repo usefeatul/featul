@@ -39,7 +39,7 @@ export function DomainHeader({
   roadmapVisible: initialRoadmapVisible = true,
   helpVisible = false,
   initialUser,
-  maxWidth = "6xl",
+  maxWidth = "7xl",
 }: {
   workspace: WorkspaceInfo;
   subdomain: string;

@@ -120,7 +120,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
             </DetailRow>
 
             {canEdit || meta.isPinned || meta.isLocked || meta.isFeatured ? (
-              <DetailRow label="Flags">
+              <DetailRow label="Flags" alignTop={!canEdit}>
                 {canEdit ? (
                   <FlagsPicker
                     postId={post.id}
