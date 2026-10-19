@@ -3,6 +3,7 @@ import type { JSONContent } from "@tiptap/core";
 import type { HelpArticlePageData } from "@featul/api/help/queries";
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar";
 import { ArrowLeft, ArrowRight } from "@/components/global/icons";
+import RoleBadge from "@/components/global/RoleBadge";
 import { getInitials } from "@/utils/user";
 import { PoweredBy } from "../PoweredBy";
 import { HelpArticleBody } from "./HelpArticleBody";
@@ -47,9 +48,14 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
           ) : null}
           <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
             <span className="inline-flex items-center gap-2">
-              <Avatar className="size-6">
+              <Avatar className="relative size-6 overflow-visible">
                 <AvatarImage src={article.author.image || undefined} alt={author} />
                 <AvatarFallback className="bg-muted text-[9px]">{getInitials(author)}</AvatarFallback>
+                <RoleBadge
+                  role={article.author.role}
+                  isOwner={article.author.isOwner}
+                  isFeatul={article.author.isFeatul}
+                />
               </Avatar>
               <span className="font-medium text-foreground">{author}</span>
             </span>
@@ -76,7 +82,7 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
               {previous ? (
                 <Link
                   href={helpArticleHref(previous.slug)}
-                  className="group border-t border-border/70 pt-4 dark:border-white/[0.08]"
+                  className="group"
                 >
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <ArrowLeft className="size-3.5" /> Previous
@@ -89,7 +95,7 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
               {next ? (
                 <Link
                   href={helpArticleHref(next.slug)}
-                  className="group border-t border-border/70 pt-4 text-right sm:col-start-2 dark:border-white/[0.08]"
+                  className="group text-right sm:col-start-2"
                 >
                   <span className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
                     Next <ArrowRight className="size-3.5" />

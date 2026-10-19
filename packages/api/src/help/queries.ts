@@ -5,6 +5,7 @@ import {
   helpCollection,
   user,
   workspace,
+  workspaceMember,
 } from "@featul/db";
 
 type Db = any;
@@ -30,6 +31,9 @@ export type HelpArticleLink = {
 export type HelpArticleAuthor = {
   name: string | null;
   image: string | null;
+  role: "admin" | "member" | "viewer" | null;
+  isOwner: boolean;
+  isFeatul: boolean;
 };
 
 export type PublicHelpArticle = HelpArticleLink & {
@@ -231,11 +235,22 @@ export async function getHelpArticlePageData(
       content: helpArticle.content,
       updatedAt: helpArticle.updatedAt,
       publishedAt: helpArticle.publishedAt,
+      authorId: helpArticle.authorId,
       authorName: user.name,
       authorImage: user.image,
+      authorRole: workspaceMember.role,
+      ownerId: workspace.ownerId,
     })
     .from(helpArticle)
     .leftJoin(user, eq(helpArticle.authorId, user.id))
+    .leftJoin(workspace, eq(helpArticle.workspaceId, workspace.id))
+    .leftJoin(
+      workspaceMember,
+      and(
+        eq(workspaceMember.workspaceId, helpArticle.workspaceId),
+        eq(workspaceMember.userId, helpArticle.authorId),
+      ),
+    )
     .where(
       and(
         eq(helpArticle.workspaceId, ws.id),
@@ -246,10 +261,16 @@ export async function getHelpArticlePageData(
     .limit(1);
   if (!row) return null;
 
-  const { authorName, authorImage, ...rest } = row;
+  const { authorId, authorName, authorImage, authorRole, ownerId, ...rest } = row;
   const article: PublicHelpArticle = {
     ...rest,
-    author: { name: authorName ?? null, image: authorImage ?? null },
+    author: {
+      name: authorName ?? null,
+      image: authorImage ?? null,
+      role: authorRole ?? null,
+      isOwner: Boolean(authorId) && authorId === ownerId,
+      isFeatul: authorId === "featul-founder",
+    },
   };
 
   const tree = await loadHelpTree(db, ws.id);
