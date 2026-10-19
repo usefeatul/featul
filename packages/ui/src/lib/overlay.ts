@@ -19,6 +19,14 @@ export const overlayInnerClass =
 export const overlayDialogInnerClass =
   "overflow-hidden rounded-lg bg-card ring-1 ring-border/35 dark:bg-background dark:ring-white/[0.055]"
 
+/** Modal shell (dialog, alert dialog, sheet): menu-surface depth on the nested `p-1` frame. */
+export const modalShellClass =
+  "overflow-hidden rounded-xl border border-black/[0.08] bg-sidebar bg-linear-to-b from-sidebar to-[color-mix(in_oklab,var(--sidebar),var(--foreground)_3%)] p-1 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06),0_8px_20px_-8px_rgba(0,0,0,0.14)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--sidebar),white_4%)] dark:to-sidebar dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_2px_rgba(0,0,0,0.4),0_10px_24px_-8px_rgba(0,0,0,0.55)]"
+
+/** Modal content surface inside `modalShellClass`. */
+export const modalInnerClass =
+  "overflow-hidden rounded-lg bg-card ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(0,0,0,0.05)] dark:bg-background dark:ring-white/[0.06] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+
 /** Outer chip shell — a compact version of the shared subtle frame. */
 export const overlayChipShellClass =
   "box-border inline-flex shrink-0 items-stretch rounded-md border border-border/60 bg-card p-0.5 text-foreground dark:border-white/[0.07]"

@@ -6,8 +6,8 @@ import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog"
 import { cn } from "@featul/ui/lib/utils"
 import { buttonVariants } from "@featul/ui/components/button"
 import {
-  overlayDialogClass,
-  overlayDialogInnerClass,
+  modalShellClass,
+  modalInnerClass,
   overlayRoundedClass,
   overlayRoundedInnerClass,
 } from "@featul/ui/lib/overlay"
@@ -55,7 +55,7 @@ function AlertDialogInner({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       data-slot="alert-dialog-inner"
-      className={cn(overlayDialogInnerClass, overlayRoundedInnerClass, "px-5 py-6", className)}
+      className={cn(modalInnerClass, overlayRoundedInnerClass, "px-5 py-6", className)}
       {...props}
     />
   )
@@ -75,7 +75,7 @@ function AlertDialogContent({
       <BaseAlertDialog.Popup
         data-slot="alert-dialog-content"
         className={cn(
-          overlayDialogClass,
+          modalShellClass,
           overlayRoundedClass,
           "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 duration-200 outline-none sm:max-w-md",
           className
