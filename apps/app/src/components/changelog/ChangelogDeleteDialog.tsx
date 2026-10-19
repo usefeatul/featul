@@ -40,7 +40,6 @@ export function ChangelogDeleteDialog({
       onConfirm={handleDelete}
       title="Delete Entry"
       description="Are you sure you want to delete this changelog entry? This action cannot be undone."
-      confirmClassName="h-8 px-4 text-sm bg-destructive hover:bg-destructive/90 text-destructive-foreground"
     />
   );
 }

@@ -28,7 +28,7 @@ export function DestructiveConfirmDialog({
   description,
   confirmLabel = "Delete",
   pendingLabel = "Deleting...",
-  confirmClassName = "h-8 bg-red-500 px-4 text-sm text-white hover:bg-red-600",
+  confirmClassName = "h-8 px-4 text-sm",
 }: DestructiveConfirmDialogProps) {
   return (
     <AlertDialogShell
@@ -47,6 +47,7 @@ export function DestructiveConfirmDialog({
             onConfirm();
           }}
           disabled={isPending}
+          variant="destructive"
           className={confirmClassName}
         >
           {isPending ? pendingLabel : confirmLabel}

@@ -189,7 +189,8 @@ const AccountActionsPopover = React.forwardRef<
               onConfirmRemoveAccount();
             }}
             disabled={Boolean(removingAccountUserId) || !pendingRemoveAccount}
-            className="h-8 px-4 text-sm bg-red-500 hover:bg-red-600 text-white"
+            variant="destructive"
+            className="h-8 px-4 text-sm"
           >
             {removingAccountUserId ? "Removing..." : "Remove"}
           </AlertDialogAction>

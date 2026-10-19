@@ -5,6 +5,7 @@ import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog"
 
 import { cn } from "@featul/ui/lib/utils"
 import { buttonVariants } from "@featul/ui/components/button"
+import type { VariantProps } from "class-variance-authority"
 import {
   modalShellClass,
   modalInnerClass,
@@ -154,11 +155,13 @@ function AlertDialogDescription({
 
 function AlertDialogAction({
   className,
+  variant,
   ...props
-}: React.ComponentProps<typeof BaseAlertDialog.Close>) {
+}: React.ComponentProps<typeof BaseAlertDialog.Close> &
+  Pick<VariantProps<typeof buttonVariants>, "variant">) {
   return (
     <BaseAlertDialog.Close
-      className={cn(buttonVariants(), "rounded-md", className)}
+      className={cn(buttonVariants({ variant }), "rounded-md", className)}
       {...props}
     />
   )

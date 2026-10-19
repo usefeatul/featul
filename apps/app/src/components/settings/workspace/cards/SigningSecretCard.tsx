@@ -148,7 +148,6 @@ export default function SigningSecretCard({ slug }: Props) {
         description="Existing signed identities will stop working until you update FEATUL_WIDGET_SECRET on your server. Continue?"
         confirmLabel="Rotate secret"
         pendingLabel="Rotating…"
-        confirmClassName="h-8 bg-amber-600 px-4 text-sm text-white hover:bg-amber-700"
       />
     </div>
   );

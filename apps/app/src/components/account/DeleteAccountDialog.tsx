@@ -88,7 +88,8 @@ export function DeleteAccountDialog({
             void onDeleteAccount()
           }}
           disabled={!canDelete || deleting}
-          className="h-8 px-4 text-sm bg-red-500 text-white hover:bg-red-600"
+          variant="destructive"
+          className="h-8 px-4 text-sm"
         >
           {deleting ? "Deleting..." : "Delete account"}
         </AlertDialogAction>
