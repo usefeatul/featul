@@ -28,7 +28,8 @@ export function FilterIslandHeader({
   return (
     <div
       className={cn(
-        "flex h-8 items-center whitespace-nowrap",
+        // Shell border adds 2px; this keeps the collapsed pill at the 32px header-button height.
+        "flex h-[30px] items-center whitespace-nowrap",
         FILTER_ISLAND_INSET_X_CLASS,
         expanded ? "w-full justify-between gap-2" : "gap-1.5",
       )}
