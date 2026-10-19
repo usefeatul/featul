@@ -19,7 +19,7 @@ export function PoweredBy({ className }: { className?: string }) {
         href={utmUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-card px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground dark:border-white/[0.08] dark:bg-white/[0.03]"
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
       >
         <span>Powered by</span>
         <FeatulLogoIcon className="size-3.5 shrink-0" size={14} />
