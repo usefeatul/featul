@@ -6,7 +6,6 @@ import Visibility from "./visibility";
 import MentionList from "./MentionList";
 import { MentionTextarea } from "./MentionTextarea";
 import { Button } from "@featul/ui/components/button";
-import { cn } from "@featul/ui/lib/utils";
 import { LoaderIcon, ImageIcon, XMarkIcon } from "@/components/global/icons";
 
 import { commentActionIconClass } from "./styles";
@@ -205,13 +204,8 @@ export default function CommentForm({
           <Button
             type="submit"
             size="xs"
-            variant={canSubmit ? "quiet" : "outline"}
-            className={cn(
-              "h-8 px-4",
-              canSubmit
-                ? "bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
-                : "bg-black/5 dark:bg-white/5",
-            )}
+            variant="default"
+            className="h-8 px-4"
             disabled={!canSubmit}
             aria-label={submitLabel}
             aria-busy={isPending}
