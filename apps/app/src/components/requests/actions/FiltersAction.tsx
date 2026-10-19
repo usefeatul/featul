@@ -38,6 +38,7 @@ import { getSlugFromPath } from "@/config/nav";
 import { buildRequestsUrl } from "@/utils/request";
 import { parseRequestFiltersFromSearchParams } from "@/utils/request/filters";
 import { cn } from "@featul/ui/lib/utils";
+import { filterToolbarButtonClass } from "@/utils/filter/toolbar";
 import {
   fetchWorkspaceStatusCounts,
   workspaceQueryKeys,
@@ -334,10 +335,12 @@ export default function FiltersAction({
           aria-label={isActive ? "Filter and sort requests, filters active" : "Filter and sort requests"}
           title="Filter and sort requests"
           aria-pressed={isActive}
-          className={cn(
-            className,
-            "text-accent hover:text-foreground focus-visible:text-foreground dark:text-accent dark:hover:text-foreground dark:focus-visible:text-foreground",
-            isActive && "ring-0",
+          className={filterToolbarButtonClass(
+            isActive,
+            cn(
+              className,
+              "text-accent hover:text-foreground focus-visible:text-foreground dark:text-accent dark:hover:text-foreground dark:focus-visible:text-foreground",
+            ),
           )}
         >
           <FilterIcon className="size-4" size={16} />

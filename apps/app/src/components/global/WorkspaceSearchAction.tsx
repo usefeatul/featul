@@ -1,5 +1,6 @@
 "use client";
 
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { ShortcutKey } from "./keys";
 
 import React from "react";
@@ -328,6 +329,11 @@ export function WorkspaceSearchAction({
             title={compact ? undefined : searchLabel}
             aria-pressed={isSearchActive}
             className={cn(
+              !compact &&
+                cn(
+                  raisedSurfaceClass,
+                  "hover:brightness-[0.98] dark:hover:brightness-125",
+                ),
               filterToolbarButtonClass(isSearchActive && !compact),
               compact &&
                 "group border-0 bg-transparent text-neutral-400 shadow-none ring-0 before:hidden hover:bg-muted/60 hover:text-primary dark:bg-transparent dark:text-neutral-300 dark:hover:bg-white/[0.05] dark:hover:text-primary",
@@ -361,10 +367,7 @@ export function WorkspaceSearchAction({
                 )}
               >
                 {[platformKey, "K"].map((key) => (
-                  <ShortcutKey
-                    key={key}
-                    className="bg-muted text-muted-foreground dark:bg-black/30 dark:text-muted-foreground"
-                  >
+                  <ShortcutKey key={key}>
                     {key}
                   </ShortcutKey>
                 ))}

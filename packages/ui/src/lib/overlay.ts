@@ -35,6 +35,10 @@ export const imageShellClass =
 export const imageInnerClass =
   "relative overflow-hidden rounded-[0.5rem] [corner-shape:squircle] bg-card dark:bg-background"
 
+/** Small raised control (badges, count chips, search field, kbd): gradient, lit top edge, hairline shadow. */
+export const raisedSurfaceClass =
+  "border border-black/[0.1] bg-card bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_7%)] shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.07)] [corner-shape:squircle] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_5%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_1px_1px_rgba(0,0,0,0.3)]"
+
 /** Outer chip shell — a compact version of the shared subtle frame. */
 export const overlayChipShellClass =
   "box-border inline-flex shrink-0 items-stretch rounded-md border border-border/60 bg-card p-0.5 text-foreground dark:border-white/[0.07]"

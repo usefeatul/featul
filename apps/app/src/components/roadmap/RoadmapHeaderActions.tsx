@@ -4,10 +4,13 @@ import RoadmapSearchAction from "./actions/RoadmapSearchAction";
 import RoadmapFiltersAction from "./actions/RoadmapFiltersAction";
 import RoadmapSortAction from "./actions/RoadmapSortAction";
 import RoadmapShortcutsHint from "./RoadmapShortcutsHint";
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
-const actionButtonClass =
-  "size-8 rounded-lg border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08] hover:text-foreground dark:bg-secondary dark:hover:bg-muted";
+const actionButtonClass = cn(
+  raisedSurfaceClass,
+  "size-8 rounded-lg p-0 text-accent ring-0 before:hidden hover:text-foreground hover:brightness-[0.98] dark:hover:brightness-125",
+);
 
 export default function RoadmapHeaderActions({
   className = "",

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "@featul/auth/client";
 import { Button } from "@featul/ui/components/button";
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { Plus } from "@/components/global/icons";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
@@ -11,8 +12,10 @@ import { getSlugFromPath } from "@/config/nav";
 import FiltersAction from "./actions/FiltersAction";
 import SearchAction from "./actions/SearchAction";
 
-const actionButtonClass =
-  "h-8 rounded-lg border-0 bg-black/5! bg-none text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.08]! hover:text-foreground dark:bg-secondary! dark:hover:bg-muted!";
+const actionButtonClass = cn(
+  raisedSurfaceClass,
+  "h-8 rounded-lg text-accent ring-0 before:hidden hover:text-foreground hover:brightness-[0.98] dark:hover:brightness-125",
+);
 
 export default function HeaderActions({ className }: { className?: string }) {
   const pathname = usePathname();
@@ -25,7 +28,7 @@ export default function HeaderActions({ className }: { className?: string }) {
       <SearchAction
         className={cn(
           actionButtonClass,
-          "w-32 justify-start gap-2 border border-black/[0.03] px-2.5 text-xs dark:border-white/[0.03] sm:w-56 [&>span:last-child]:hidden sm:[&>span:last-child]:inline-flex [&_kbd]:rounded-[3px]",
+          "w-32 justify-start gap-2 px-2.5 text-xs sm:w-56 [&>span:last-child]:hidden sm:[&>span:last-child]:inline-flex [&_kbd]:rounded-[3px]",
         )}
       />
       <FiltersAction className={cn(actionButtonClass, "size-8 p-0")} />
