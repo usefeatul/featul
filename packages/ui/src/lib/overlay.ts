@@ -1,9 +1,13 @@
-/** Single, subtle edge for menus and confirmation dialogs. */
+/** Raised menu surface (popover, dropdown, select): soft gradient, lit top edge, short drop shadow. */
 export const subtleOverlayShellClass =
-  "overflow-hidden rounded-md border border-border/60 bg-popover text-popover-foreground shadow-sm"
+  "overflow-hidden rounded-[0.875rem] [corner-shape:squircle] border border-black/[0.08] bg-popover bg-linear-to-b from-popover to-[color-mix(in_oklab,var(--popover),var(--foreground)_4%)] text-popover-foreground shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06),0_4px_10px_-4px_rgba(0,0,0,0.1)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--popover),white_4%)] dark:to-popover dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_2px_rgba(0,0,0,0.4),0_6px_14px_-6px_rgba(0,0,0,0.5)]"
 
 export const subtleOverlayInnerClass =
-  "overflow-hidden rounded-md bg-transparent"
+  "overflow-hidden rounded-[inherit] bg-transparent"
+
+/** Highlighted row inside a menu surface; concentric with the shell across `p-1`. */
+export const menuItemClass =
+  "rounded-[0.625rem] [corner-shape:squircle] transition-colors duration-75 focus:bg-foreground/[0.05] focus:text-foreground data-[state=open]:bg-foreground/[0.05] dark:focus:bg-foreground/[0.07] dark:focus:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] dark:data-[state=open]:bg-foreground/[0.07]"
 
 export const overlayShellClass =
   "overflow-hidden rounded-xl border border-border/60 bg-sidebar text-foreground dark:border-white/[0.07]"

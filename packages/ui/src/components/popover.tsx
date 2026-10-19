@@ -157,7 +157,7 @@ function PopoverListItem({
       data-slot="popover-list-item"
       data-popover-item-id={id}
       className={cn(
-        "relative group group/popover-item flex cursor-pointer items-center gap-2 rounded-none first:rounded-t-md last:rounded-b-md px-3 py-2 text-left whitespace-nowrap transition-colors duration-150 motion-reduce:transition-none hover:bg-muted/40 dark:hover:bg-muted/30",
+        "relative group group/popover-item flex cursor-pointer items-center gap-2 rounded-none first:rounded-t-md last:rounded-b-md px-3 py-2 text-left whitespace-nowrap transition-colors duration-150 motion-reduce:transition-none hover:bg-foreground/[0.05] dark:hover:bg-foreground/[0.07]",
         className,
       )}
       {...(props as any)}
@@ -191,7 +191,7 @@ function PopoverListBack({
       type="button"
       data-slot="popover-list-back"
       className={cn(
-        "flex w-full cursor-pointer items-center gap-2 border-b border-border/60 px-3 py-2 text-left text-sm hover:bg-muted/40 dark:hover:bg-muted/30",
+        "flex w-full cursor-pointer items-center gap-2 border-b border-border/60 px-3 py-2 text-left text-sm hover:bg-foreground/[0.05] dark:hover:bg-foreground/[0.07]",
         className,
       )}
       {...props}
