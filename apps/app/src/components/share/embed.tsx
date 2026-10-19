@@ -65,17 +65,13 @@ const mockSparks = [
 ];
 const mockArea =
   "0,78 25,70 50,74 75,58 100,62 125,46 150,52 175,38 200,42 225,28 250,32 275,18 300,22";
-const mockRows = [
-  { width: "w-40", status: "bg-emerald-500" },
-  { width: "w-32", status: "bg-amber-500" },
-  { width: "w-44", status: "bg-blue-500" },
-  { width: "w-28", status: "bg-emerald-500" },
-  { width: "w-36", status: "bg-rose-500" },
-];
+const mockRows = ["w-40", "w-32", "w-44", "w-28", "w-36"];
 
 function MockApp({ dark }: { dark: boolean }) {
   const line = dark ? "bg-white/[0.07]" : "bg-black/[0.07]";
   const soft = dark ? "bg-white/[0.04]" : "bg-black/[0.04]";
+  const strong = dark ? "bg-white/[0.14]" : "bg-black/[0.12]";
+  const ink = dark ? "rgba(255,255,255,0.28)" : "rgba(0,0,0,0.24)";
   const border = dark ? "border-white/[0.06]" : "border-black/[0.06]";
   const card = cn(
     "rounded-xl border",
@@ -97,7 +93,7 @@ function MockApp({ dark }: { dark: boolean }) {
         )}
       >
         <div className="flex items-center gap-2 px-1.5 py-1">
-          <span className="size-6 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-500" />
+          <span className={cn("size-6 rounded-lg", strong)} />
           <span className={cn("h-2.5 w-16 rounded-full", line)} />
           <span className={cn("ml-auto size-3 rounded", soft)} />
         </div>
@@ -126,7 +122,9 @@ function MockApp({ dark }: { dark: boolean }) {
                 <span className={cn("size-3.5 rounded-[4px]", line)} />
                 <span className={cn("h-2 rounded-full", width, line)} />
                 {groupIndex === 0 && index === 1 ? (
-                  <span className="ml-auto h-3.5 w-5 rounded-full bg-blue-500/30" />
+                  <span
+                    className={cn("ml-auto h-3.5 w-5 rounded-full", line)}
+                  />
                 ) : null}
               </div>
             ))}
@@ -135,7 +133,7 @@ function MockApp({ dark }: { dark: boolean }) {
         <div className={cn("mt-auto space-y-2 p-3", card)}>
           <div className={cn("h-2 w-20 rounded-full", line)} />
           <div className={cn("h-1.5 w-full rounded-full", soft)}>
-            <div className="h-full w-2/3 rounded-full bg-blue-500/50" />
+            <div className={cn("h-full w-2/3 rounded-full", strong)} />
           </div>
         </div>
       </aside>
@@ -151,20 +149,18 @@ function MockApp({ dark }: { dark: boolean }) {
           <span className={cn("h-2 w-1.5 rounded-full", soft)} />
           <span className={cn("h-2 w-20 rounded-full", line)} />
           <div className="ml-auto flex -space-x-1.5">
-            {["bg-amber-400/60", "bg-rose-400/60", "bg-sky-400/60"].map(
-              (color) => (
-                <span
-                  key={color}
-                  className={cn(
-                    "size-6 rounded-full ring-2",
-                    color,
-                    dark ? "ring-[#161616]" : "ring-[#fafafa]",
-                  )}
-                />
-              ),
-            )}
+            {[strong, line, soft].map((color) => (
+              <span
+                key={color}
+                className={cn(
+                  "size-6 rounded-full ring-2",
+                  color,
+                  dark ? "ring-[#161616]" : "ring-[#fafafa]",
+                )}
+              />
+            ))}
           </div>
-          <span className="h-7 w-20 rounded-lg bg-blue-500/70" />
+          <span className={cn("h-7 w-20 rounded-lg", strong)} />
         </div>
 
         <div className="space-y-4 p-5">
@@ -173,7 +169,7 @@ function MockApp({ dark }: { dark: boolean }) {
               <div key={index} className={cn("space-y-3 p-3.5", card)}>
                 <div className="flex items-center justify-between">
                   <div className={cn("h-2 w-14 rounded-full", soft)} />
-                  <div className="h-3.5 w-9 rounded-full bg-emerald-500/20" />
+                  <div className={cn("h-3.5 w-9 rounded-full", soft)} />
                 </div>
                 <div className="flex items-end justify-between gap-2">
                   <div className={cn("h-5 w-20 rounded-md", line)} />
@@ -181,8 +177,7 @@ function MockApp({ dark }: { dark: boolean }) {
                     <polyline
                       points={points}
                       fill="none"
-                      stroke={index === 1 ? "#f43f5e" : "#10b981"}
-                      strokeOpacity={0.7}
+                      stroke={ink}
                       strokeWidth={2}
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -215,8 +210,8 @@ function MockApp({ dark }: { dark: boolean }) {
             >
               <defs>
                 <linearGradient id="mock-area" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+                  <stop offset="0%" stopColor={ink} stopOpacity={0.5} />
+                  <stop offset="100%" stopColor={ink} stopOpacity={0} />
                 </linearGradient>
               </defs>
               {[22, 44, 66].map((y) => (
@@ -238,7 +233,7 @@ function MockApp({ dark }: { dark: boolean }) {
               <polyline
                 points={mockArea}
                 fill="none"
-                stroke="#3b82f6"
+                stroke={ink}
                 strokeWidth={2}
                 strokeLinejoin="round"
                 vectorEffect="non-scaling-stroke"
@@ -252,7 +247,7 @@ function MockApp({ dark }: { dark: boolean }) {
               <div className={cn("ml-auto h-5 w-14 rounded-md", soft)} />
               <div className={cn("h-5 w-14 rounded-md", soft)} />
             </div>
-            {mockRows.map((row, index) => (
+            {mockRows.map((width, index) => (
               <div
                 key={index}
                 className={cn(
@@ -260,9 +255,14 @@ function MockApp({ dark }: { dark: boolean }) {
                   border,
                 )}
               >
-                <span className={cn("size-2 rounded-full", row.status)} />
+                <span
+                  className={cn(
+                    "size-2 rounded-full",
+                    index % 2 ? line : strong,
+                  )}
+                />
                 <span className={cn("h-2 w-8 rounded-full", soft)} />
-                <span className={cn("h-2 rounded-full", row.width, line)} />
+                <span className={cn("h-2 rounded-full", width, line)} />
                 <span className={cn("ml-auto h-4 w-14 rounded-full", soft)} />
                 <span className={cn("size-5 rounded-full", line)} />
               </div>
