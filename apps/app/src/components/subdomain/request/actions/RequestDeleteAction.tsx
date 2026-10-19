@@ -13,10 +13,8 @@ interface RequestDeleteActionProps {
   workspaceSlug?: string;
 }
 
-export function RequestDeleteAction({
-  postId,
-  workspaceSlug,
-}: RequestDeleteActionProps) {
+/** Delete flow shared by the post menu and the sidebar actions. */
+export function useDeletePost(postId: string, workspaceSlug?: string) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -53,27 +51,40 @@ export function RequestDeleteAction({
     });
   };
 
+  const dialog = (
+    <DestructiveConfirmDialog
+      open={open}
+      onOpenChange={(next) => {
+        if (isPending) return;
+        setOpen(next);
+      }}
+      isPending={isPending}
+      onConfirm={handleDelete}
+      title="Are you absolutely sure?"
+      description="This will permanently delete this post. This action cannot be undone."
+    />
+  );
+
+  return { openConfirm: () => setOpen(true), dialog };
+}
+
+export function RequestDeleteAction({
+  postId,
+  workspaceSlug,
+}: RequestDeleteActionProps) {
+  const { openConfirm, dialog } = useDeletePost(postId, workspaceSlug);
+
   return (
     <>
       <PopoverListItem
-        onClick={() => setOpen(true)}
+        onClick={openConfirm}
         className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
       >
         <span className="text-sm">Delete</span>
         <TrashIcon className="ml-auto size-4" />
       </PopoverListItem>
 
-      <DestructiveConfirmDialog
-        open={open}
-        onOpenChange={(next) => {
-          if (isPending) return;
-          setOpen(next);
-        }}
-        isPending={isPending}
-        onConfirm={handleDelete}
-        title="Are you absolutely sure?"
-        description="This will permanently delete this post. This action cannot be undone."
-      />
+      {dialog}
     </>
   );
 }

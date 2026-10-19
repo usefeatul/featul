@@ -14,8 +14,8 @@ import StatusPicker from "../requests/meta/StatusPicker";
 import FlagsPicker from "../requests/meta/FlagsPicker";
 import { StatusChip } from "./StatusChip";
 import { ShareIdeaButton } from "./ShareIdeaButton";
-import RoleBadge from "../global/RoleBadge";
-import { cn } from "@featul/ui/lib/utils";
+import { BoardIcon } from "@/components/global/icons";
+import { PostActionsNav } from "./request/PostActionsNav";
 import { RequestFlagReadout } from "@/components/global/flag-visuals";
 import type { SubdomainRequestDetailData } from "@/types/subdomain";
 
@@ -53,8 +53,6 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
     post.id,
   );
 
-  const isGuest = !post.author?.name || post.author.name === "Guest";
-  const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest;
   const authorInitials = getInitials(displayUser.name);
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt);
 
@@ -62,112 +60,107 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
     <aside className="hidden min-w-0 md:block md:pt-1">
       <div className="space-y-6 md:sticky md:top-20">
         <ShareIdeaButton className="w-full" />
+
         <section>
-          <header className="flex items-center gap-3 pb-4">
-            <div className="relative">
-              <Avatar className="relative size-8 overflow-visible">
-                {displayUser.image ? (
-                  <AvatarImage
-                    src={displayUser.image}
-                    alt={displayUser.name}
-                    className={
-                      displayUser.image?.includes("data:image/svg+xml")
-                        ? "p-1"
-                        : ""
-                    }
-                  />
-                ) : (
-                  <AvatarFallback className="bg-muted text-xs text-muted-foreground">
-                    {authorInitials}
-                  </AvatarFallback>
-                )}
-                {!showHiddenIdentity ? (
-                  <RoleBadge
-                    role={post.role}
-                    isOwner={post.isOwner}
-                    isFeatul={post.isFeatul}
-                    className="-bottom-1 -right-1 bg-background"
-                  />
-                ) : null}
-              </Avatar>
-            </div>
-            <div className="flex min-w-0 flex-col">
-              <span className="truncate text-sm font-medium leading-none text-foreground">
-                {displayUser.name}
-              </span>
-              <span
-                className="mt-1 text-xs text-muted-foreground"
-                suppressHydrationWarning
-              >
-                {timeLabel}
-              </span>
-            </div>
-          </header>
+          <h2 className="mb-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/80">
+            Details
+          </h2>
+          <dl className="space-y-0.5">
+            <DetailRow label="Board">
+              {canEdit ? (
+                <BoardPicker
+                  workspaceSlug={workspaceSlug}
+                  postId={post.id}
+                  value={board}
+                  onChange={setBoard}
+                />
+              ) : (
+                <span className="inline-flex min-w-0 items-center gap-1.5">
+                  <BoardIcon className="size-3.5 shrink-0 text-muted-foreground" />
+                  <span className="truncate">{board.name}</span>
+                </span>
+              )}
+            </DetailRow>
 
-          <div className="border-t border-border/60 pt-3 dark:border-white/[0.07]">
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm text-muted-foreground">Board</span>
-                {canEdit ? (
-                  <BoardPicker
-                    workspaceSlug={workspaceSlug}
-                    postId={post.id}
-                    value={board}
-                    onChange={setBoard}
-                  />
-                ) : (
-                  <span className="text-sm font-medium text-foreground">
-                    {board.name}
-                  </span>
-                )}
-              </div>
-
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm text-muted-foreground">Status</span>
-                {canEdit ? (
-                  <StatusPicker
-                    postId={post.id}
-                    value={meta.roadmapStatus}
-                    onChange={(v) =>
-                      setMeta((m) => ({ ...m, roadmapStatus: v }))
-                    }
-                  />
-                ) : (
-                  <StatusChip status={meta.roadmapStatus} className="text-sm" />
-                )}
-              </div>
-
-              {(canEdit ||
-                meta.isPinned ||
-                meta.isLocked ||
-                meta.isFeatured) && (
-                <div
-                  className={cn(
-                    canEdit
-                      ? "flex items-center justify-between"
-                      : "flex flex-col gap-2",
-                  )}
-                >
-                  <span className="text-sm text-muted-foreground">Flags</span>
-                  {canEdit ? (
-                    <FlagsPicker
-                      postId={post.id}
-                      value={meta}
-                      onChange={(v) => setMeta((m) => ({ ...m, ...v }))}
+            <DetailRow label="Created by">
+              <span className="inline-flex min-w-0 items-center gap-1.5">
+                <Avatar className="size-5 shrink-0">
+                  {displayUser.image ? (
+                    <AvatarImage
+                      src={displayUser.image}
+                      alt={displayUser.name}
+                      className={
+                        displayUser.image?.includes("data:image/svg+xml")
+                          ? "p-0.5"
+                          : ""
+                      }
                     />
                   ) : (
-                    <RequestFlagReadout
-                      flags={meta}
-                      className="flex w-full flex-wrap items-center gap-1.5"
-                      itemClassName="h-6 rounded-lg bg-muted/70 px-2 text-[11px] font-medium text-foreground/85 ring-1 ring-border/50 dark:bg-white/[0.055] dark:ring-white/[0.08]"
-                    />
+                    <AvatarFallback className="bg-muted text-[9px] text-muted-foreground">
+                      {authorInitials}
+                    </AvatarFallback>
                   )}
-                </div>
+                </Avatar>
+                <span className="truncate">{displayUser.name}</span>
+              </span>
+            </DetailRow>
+
+            <DetailRow label="Date">
+              <span suppressHydrationWarning>{timeLabel}</span>
+            </DetailRow>
+
+            <DetailRow label="Status">
+              {canEdit ? (
+                <StatusPicker
+                  postId={post.id}
+                  value={meta.roadmapStatus}
+                  onChange={(v) => setMeta((m) => ({ ...m, roadmapStatus: v }))}
+                />
+              ) : (
+                <StatusChip status={meta.roadmapStatus} className="text-sm" />
               )}
-            </div>
-          </div>
+            </DetailRow>
+
+            {canEdit || meta.isPinned || meta.isLocked || meta.isFeatured ? (
+              <DetailRow label="Flags">
+                {canEdit ? (
+                  <FlagsPicker
+                    postId={post.id}
+                    value={meta}
+                    onChange={(v) => setMeta((m) => ({ ...m, ...v }))}
+                  />
+                ) : (
+                  <RequestFlagReadout
+                    flags={meta}
+                    className="flex flex-wrap items-center justify-end gap-1.5"
+                    itemClassName="h-6 rounded-lg bg-muted/70 px-2 text-[11px] font-medium text-foreground/85 ring-1 ring-border/50 dark:bg-white/[0.055] dark:ring-white/[0.08]"
+                  />
+                )}
+              </DetailRow>
+            ) : null}
+          </dl>
         </section>
+
+        <PostActionsNav post={post} workspaceSlug={workspaceSlug} />
       </div>
     </aside>
+  );
+}
+
+/** Label on the left, value on the right; no frame. */
+function DetailRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex min-h-8 items-center justify-between gap-3 px-2.5 py-1">
+      <dt className="shrink-0 text-sm text-muted-foreground">{label}</dt>
+      <dd className="flex min-w-0 justify-end text-sm font-medium text-foreground">
+        {children}
+      </dd>
+    </div>
   );
 }

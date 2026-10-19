@@ -27,26 +27,38 @@ interface RequestActionsProps {
 export function RequestActions({ post, workspaceSlug }: RequestActionsProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
-  const { canEdit } = usePostEditAccess({ workspaceSlug, viewerCanEdit: post.viewerCanEdit });
+  const { canEdit } = usePostEditAccess({
+    workspaceSlug,
+    viewerCanEdit: post.viewerCanEdit,
+  });
 
   return (
     <>
       <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="plain" size="icon" className="size-8 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:bg-white/[0.06]">
-              <MoreVertical className="size-4" />
-              <span className="sr-only">More options</span>
-            </Button>
-          </PopoverTrigger>
+        <PopoverTrigger asChild>
+          <Button
+            variant="plain"
+            size="icon"
+            className="size-8 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:bg-white/[0.06]"
+          >
+            <MoreVertical className="size-4" />
+            <span className="sr-only">More options</span>
+          </Button>
+        </PopoverTrigger>
         <PopoverContent align="end" className="w-fit" list>
           <PopoverList>
-            {canEdit ? <RequestEditAction onClick={() => setEditOpen(true)} /> : null}
+            {canEdit ? (
+              <RequestEditAction onClick={() => setEditOpen(true)} />
+            ) : null}
             <RequestShareAction />
             <RequestReportAction onClick={() => setReportOpen(true)} />
             {canEdit ? (
               <>
                 <PopoverSeparator />
-                <RequestDeleteAction postId={post.id} workspaceSlug={workspaceSlug} />
+                <RequestDeleteAction
+                  postId={post.id}
+                  workspaceSlug={workspaceSlug}
+                />
               </>
             ) : null}
           </PopoverList>

@@ -55,7 +55,10 @@ export function RequestContent({
       <article className="pb-8">
         <header className="mb-3 flex items-center justify-between gap-3">
           <StatusChip status={post.roadmapStatus} className="text-sm" />
-          <RequestActions post={post} workspaceSlug={workspaceSlug} />
+          {/* Desktop actions live in the sidebar. */}
+          <div className="md:hidden">
+            <RequestActions post={post} workspaceSlug={workspaceSlug} />
+          </div>
         </header>
 
         <div className="mb-5">
