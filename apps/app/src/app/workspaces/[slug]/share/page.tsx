@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { and, eq } from "drizzle-orm";
-import { board, db } from "@featul/db";
+import { and, desc, eq } from "drizzle-orm";
+import { board, db, post } from "@featul/db";
 import Share from "@/components/share/share";
 import { requireSignedInUser } from "@/lib/auth/server";
 import { createPageMetadata } from "@/lib/seo";
@@ -32,7 +32,7 @@ export default async function SharePage({ params }: Props) {
   if (!workspaces.some((workspace) => workspace.slug === slug)) notFound();
   const workspace = await getWorkspaceBySlug(slug);
   if (!workspace) notFound();
-  const [domainInfo, publicSections] = await Promise.all([
+  const [domainInfo, publicSections, topPosts] = await Promise.all([
     getWorkspaceDomainInfoBySlug(slug),
     db
       .select({ type: board.systemType })
@@ -46,6 +46,26 @@ export default async function SharePage({ params }: Props) {
           eq(board.isActive, true),
         ),
       ),
+    db
+      .select({
+        id: post.id,
+        title: post.title,
+        upvotes: post.upvotes,
+        commentCount: post.commentCount,
+        roadmapStatus: post.roadmapStatus,
+      })
+      .from(post)
+      .innerJoin(board, eq(post.boardId, board.id))
+      .where(
+        and(
+          eq(board.workspaceId, workspace.id),
+          eq(board.isSystem, false),
+          eq(board.isPublic, true),
+          eq(post.status, "published"),
+        ),
+      )
+      .orderBy(desc(post.upvotes))
+      .limit(3),
   ]);
   const customDomain =
     domainInfo?.domain?.status === "verified"
@@ -65,6 +85,7 @@ export default async function SharePage({ params }: Props) {
       userName={user.name || workspace.name}
       userImage={user.image}
       logo={workspace.logo}
+      topPosts={topPosts}
       links={links}
     />
   );
