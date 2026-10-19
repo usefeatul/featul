@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { useUpvote } from "../../hooks/useUpvote";
 import { VoteIcon } from "./VoteIcon";
@@ -34,10 +35,12 @@ export function UpvoteButton({
       onClick={handleVote}
       disabled={isPending}
       className={cn(
-        "inline-flex cursor-pointer items-center gap-1.5 rounded-md text-xs text-muted-foreground/70 transition-colors group/vote hover:text-primary",
+        // Raised chip everywhere; voted switches to the primary button surface.
+        raisedSurfaceClass,
+        "group/vote inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-lg px-2 text-xs text-muted-foreground transition-[color,filter] hover:text-primary hover:brightness-[0.98] dark:hover:brightness-125",
         className,
         hasVoted &&
-          "border-primary bg-primary text-white hover:bg-primary/90 hover:text-white dark:border-primary dark:bg-primary dark:text-white dark:hover:bg-primary/90 dark:hover:text-white",
+          "border-primary/60 bg-primary from-[color-mix(in_oklab,var(--primary),black_4%)] to-[color-mix(in_oklab,var(--primary),black_16%)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_1px_2px_rgba(0,0,0,0.18)] hover:text-white hover:brightness-110 dark:border-primary/60 dark:from-[color-mix(in_oklab,var(--primary),black_4%)] dark:to-[color-mix(in_oklab,var(--primary),black_16%)] dark:text-white dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.28),0_1px_2px_rgba(0,0,0,0.18)] dark:hover:text-white dark:hover:brightness-110",
       )}
       whileTap={{ scale: 0.97 }}
       aria-pressed={hasVoted}

@@ -75,7 +75,7 @@ export default function RoadmapRequestItemFooter({
           postId={postId}
           upvotes={upvotes}
           hasVoted={hasVoted}
-          className="h-5 gap-1 rounded-lg bg-background/60 px-1.5 text-[10px] hover:bg-background/80 dark:bg-black/20 dark:hover:bg-black/30"
+          className="h-5 gap-1 px-1.5 text-[10px]"
         />
         <span className="shrink-0 whitespace-nowrap text-muted-foreground/80">
           {dateLabel}

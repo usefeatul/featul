@@ -211,7 +211,7 @@ export default function RequestDetail({
                       postId={post.id}
                       upvotes={post.upvotes}
                       hasVoted={post.hasVoted}
-                      className="h-8 rounded-lg border border-border/50 bg-muted px-2.5 hover:bg-muted/80 dark:border-white/[0.08] dark:bg-secondary dark:hover:bg-muted"
+                      className="h-8 px-2.5"
                     />
                   </div>
                 </div>

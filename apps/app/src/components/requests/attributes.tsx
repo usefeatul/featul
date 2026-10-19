@@ -45,7 +45,7 @@ export default function Attributes({ item }: { item: RequestItemData }) {
             postId={item.id}
             upvotes={item.upvotes}
             hasVoted={item.hasVoted}
-            className="relative z-10 h-5 gap-1 rounded-lg bg-muted/70 px-1.5 text-[10px] hover:bg-muted dark:bg-white/[0.055] dark:hover:bg-white/[0.08]"
+            className="relative z-10 h-5 gap-1 px-1.5 text-[10px]"
           />
           {flags.length > 0 ? (
             <span className="flex h-5 items-center gap-1 rounded-lg bg-muted/70 px-1.5 dark:bg-white/[0.055]">

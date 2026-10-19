@@ -73,7 +73,7 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className, panel = f
                   <UpvoteButton
                     postId={p.id}
                     upvotes={Number(p.upvotes || 0)}
-                    className="min-h-8 min-w-14 shrink-0 justify-center rounded-lg border border-border/60 px-2 text-xs tabular-nums hover:bg-black/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-white/10 dark:hover:bg-white/[0.03]"
+                    className="min-h-8 min-w-14 shrink-0 justify-center px-2 text-xs tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </div>
               </li>

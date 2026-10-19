@@ -145,8 +145,7 @@ export function RequestEngagementChip({
         upvotes={upvotes}
         hasVoted={hasVoted}
         className={cn(
-          requestBadgeClass,
-          "relative z-10 gap-1 text-muted-foreground/70 hover:bg-muted/80 dark:hover:bg-muted",
+          "relative z-10 h-5 gap-1 px-2 text-[10px] font-medium leading-none",
         )}
       />
     </span>
