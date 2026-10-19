@@ -6,7 +6,7 @@ import type { RequestItemData } from "@/types/request";
 
 import { BoardsDropdown } from "./BoardsDropdown";
 import { PublicRequestPagination } from "./PublicRequestPagination";
-import { SortTabs } from "./SortTabs";
+import { FeedbackListHeader } from "./FeedbackListHeader";
 import { SubdomainListLayout } from "./SubdomainListLayout";
 import { SubdomainListCard } from "./SubdomainListCard";
 import { SubdomainListItems } from "./SubdomainListItems";
@@ -99,15 +99,17 @@ export function MainContent({
       sortKeepParams={sortKeepParams}
     >
       <div>
-        {/* List toolbar: sort, plus the board switcher on mobile. */}
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <SortTabs basePath={paginationBasePath} keepParams={sortKeepParams} />
-          <Toolbar size="sm" className="w-fit md:hidden">
-            <BoardsDropdown slug={slug} initialBoards={initialBoards} selectedBoard={activeBoard} />
-          </Toolbar>
-        </div>
+        <FeedbackListHeader
+          basePath={paginationBasePath}
+          keepParams={sortKeepParams}
+          leading={
+            <Toolbar size="sm" className="w-fit md:hidden">
+              <BoardsDropdown slug={slug} initialBoards={initialBoards} selectedBoard={activeBoard} />
+            </Toolbar>
+          }
+        />
 
-        <SubdomainListCard>
+        <SubdomainListCard className="border-t-0">
           {searchQuery ? (
             <SubdomainActiveSearchHeader query={searchQuery} totalCount={totalCount} />
           ) : null}

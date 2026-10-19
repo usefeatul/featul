@@ -59,8 +59,11 @@ export function SortPopover({
           aria-label="Sort"
           title={label}
         >
-          <ArrowUpDownIcon className="size-4" />
-          <span className={compact ? "sr-only" : "truncate"}>{label}</span>
+          <ArrowUpDownIcon className="size-4 text-muted-foreground" />
+          <span className={compact ? "sr-only" : "truncate"}>
+            <span className="text-muted-foreground">Sort: </span>
+            {label}
+          </span>
           {!compact ? <ChevronDownIcon className="size-3 ml-auto" /> : null}
         </Button>
       </PopoverTrigger>
