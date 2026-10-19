@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { JSONContent } from "@tiptap/core";
 import type { HelpArticlePageData } from "@featul/api/help/queries";
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar";
+import { DitherGradient } from "@featul/ui/components/gradient";
+import { raisedCardClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { ArrowLeft, ArrowRight } from "@/components/global/icons";
 import RoleBadge from "@/components/global/RoleBadge";
 import { getInitials } from "@/utils/user";
@@ -114,7 +117,7 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
         </article>
 
         <aside className="hidden lg:block">
-          <div className="sticky top-20 space-y-6">
+          <div className="sticky top-20 space-y-10">
             <HelpToc headings={headings} />
             <StillStuck />
           </div>
@@ -127,12 +130,20 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
 
 function StillStuck() {
   return (
-    <div className="border-t border-border/70 pt-5 dark:border-white/[0.08]">
+    <div className={cn(raisedCardClass, "relative isolate overflow-hidden p-4")}>
+      {/* Same corner dither as the help home topic cards. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 opacity-70"
+        style={{ maskImage: "radial-gradient(ellipse 60% 55% at 100% 0%, black 0%, rgba(0,0,0,0.35) 45%, transparent 75%)" }}
+      >
+        <DitherGradient to="primary" direction="down" cell={3} opacity={0.35} />
+      </div>
       <p className="text-sm font-semibold text-foreground">Still stuck?</p>
       <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
         Post it on the board. The team answers there.
       </p>
-      <HelpAskButton className="mt-3 h-8 w-full justify-between text-[13px]" />
+      <HelpAskButton className="mt-4 h-8 w-full justify-between text-[13px]" />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { toast } from "sonner";
 import { client } from "@featul/api/client";
 import { cn } from "@featul/ui/lib/utils";
 import { DislikeIcon, LikeIcon } from "@/components/global/icons";
@@ -36,8 +37,10 @@ export function HelpFeedback({ slug, articleId }: { slug: string; articleId: str
       });
       if (!res.ok) throw new Error();
       window.localStorage.setItem(storageKey(articleId), helpful ? "yes" : "no");
+      toast.success(helpful ? "Thanks for letting us know." : "Thanks. We'll work on this article.");
     } catch {
       setVote(previous);
+      toast.error("Couldn't save your feedback. Please try again.");
     } finally {
       setPending(false);
     }
@@ -45,9 +48,7 @@ export function HelpFeedback({ slug, articleId }: { slug: string; articleId: str
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-y border-border/60 py-4 dark:border-white/[0.07]">
-      <p className="text-sm font-medium text-foreground" aria-live="polite">
-        {vote === null ? "Was this helpful?" : vote ? "Thanks for letting us know." : "Thanks. We'll work on this article."}
-      </p>
+      <p className="text-sm font-medium text-foreground">Was this helpful?</p>
       <div className="flex items-center gap-2">
         {([true, false] as const).map((helpful) => {
           const selected = vote === helpful;
