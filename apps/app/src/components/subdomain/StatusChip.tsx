@@ -2,13 +2,14 @@ import StatusIcon from "@/components/requests/StatusIcon"
 import { statusLabel } from "@/lib/roadmap"
 import { cn } from "@featul/ui/lib/utils"
 
+/** Label colours match the fills baked into each status icon. */
 const TEXT: Record<string, string> = {
-  planned: "text-sky-700 dark:text-sky-300",
-  progress: "text-violet-700 dark:text-violet-300",
-  review: "text-amber-700 dark:text-amber-300",
-  completed: "text-emerald-700 dark:text-emerald-300",
-  closed: "text-muted-foreground",
-  pending: "text-muted-foreground",
+  planned: "text-[#f59e0b]",
+  progress: "text-[#4d96e8]",
+  review: "text-[#a855f7]",
+  completed: "text-[#15CF59]",
+  closed: "text-[#FA3434]",
+  pending: "text-[#8A8A8A]",
 }
 
 /** Roadmap status as the status icon plus a coloured label, no pill. */
