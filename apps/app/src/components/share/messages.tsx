@@ -19,6 +19,8 @@ const hints: Record<string, string> = {
   email: "Your customer list",
   support: "Help desk replies",
   developer: "Whoever ships it",
+  shipped: "Close the loop",
+  banner: "Inside your product",
 };
 
 function Linkified({ text }: { text: string }) {
@@ -158,6 +160,49 @@ export default function Messages({
           <p className="mt-3 whitespace-pre-wrap break-words font-mono text-xs leading-6 text-foreground/80">
             <Linkified text={restLines.join("\n").trim()} />
           </p>
+        </div>
+      </Surface>
+    ),
+    shipped: (
+      <Surface label="Product update" meta="Newsletter">
+        <div className="px-6 py-6">
+          <p className="text-[11px] font-medium tracking-[0.08em] text-accent uppercase">
+            {name}
+          </p>
+          <p className="mt-2 text-lg font-semibold tracking-tight">
+            {subject ?? "You asked, we built it"}
+          </p>
+          <div className="mt-4">{copy}</div>
+        </div>
+      </Surface>
+    ),
+    banner: (
+      <Surface label={name} meta="Your app">
+        <div className="space-y-4 px-4 py-4">
+          <div className="flex items-start gap-3 rounded-lg border border-primary/25 bg-primary/5 px-3 py-2.5">
+            <span
+              aria-hidden
+              className="mt-2 size-1.5 shrink-0 rounded-full bg-primary"
+            />
+            <div className="min-w-0 flex-1">{copy}</div>
+            <span aria-hidden className="text-xs text-accent">
+              ✕
+            </span>
+          </div>
+          <div aria-hidden className="space-y-2.5">
+            {["w-2/5", "w-full", "w-11/12", "w-3/4", "w-full", "w-2/3"].map(
+              (width, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "h-2.5 rounded-full bg-muted-foreground/10",
+                    index === 0 && "h-3.5",
+                    width,
+                  )}
+                />
+              ),
+            )}
+          </div>
         </div>
       </Surface>
     ),

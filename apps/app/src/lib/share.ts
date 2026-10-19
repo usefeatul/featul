@@ -93,6 +93,18 @@ export function buildShareMessages(name: string, boardUrl: string) {
       description: "Send your developer the links and setup instructions.",
       text: `Please add a feedback entry point to ${name}.\n\nBoard: ${boardUrl}\n\nLink to it from our help menu or app footer. For an in-app experience, use the Featul widget snippet from our workspace’s Share page.\n\nSetup guide: https://www.featul.com/docs/getting-started/widget\n\nIf we identify signed-in users, generate the identity signature on our server; keep the signing secret out of browser code.`,
     },
+    {
+      id: "shipped",
+      label: "Shipped update",
+      description: "Tell users the thing they asked for is live.",
+      text: `Subject: You asked, we built it\n\nHi there,\n\nA while ago you shared an idea for ${name}. It’s live now — thank you for taking the time to tell us.\n\nSee what else is on the way, or add your next idea:\n${boardUrl}\n\nKeep them coming.`,
+    },
+    {
+      id: "banner",
+      label: "In-app banner",
+      description: "A short line for a banner, tooltip, or empty state.",
+      text: `Got an idea for ${name}? Share it and vote on what we build next. ${boardUrl}`,
+    },
   ];
 }
 
