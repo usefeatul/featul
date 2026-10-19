@@ -13,10 +13,30 @@ function isLabel(text: string) {
   return text.length <= 60 && !/[.!?,;]$/.test(text);
 }
 
+const ENTITIES: Record<string, string> = {
+  "&amp;": "&",
+  "&lt;": "<",
+  "&gt;": ">",
+  "&quot;": '"',
+  "&#39;": "'",
+  "&nbsp;": " ",
+};
+
+/** Some posts are stored as HTML; turn block tags into lines and drop the rest. */
+function htmlToText(content: string): string {
+  if (!/<\/?[a-z][\s\S]*?>/i.test(content)) return content;
+  return content
+    .replace(/<li[^>]*>/gi, "\n- ")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|h[1-6]|li|ul|ol|blockquote)>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&(amp|lt|gt|quot|#39|nbsp);/g, (m) => ENTITIES[m] ?? m);
+}
+
 /** Split plain post text into paragraphs and bullet lists. */
 function parseBlocks(content: string): Block[] {
   const blocks: Block[] = [];
-  for (const raw of content.split("\n")) {
+  for (const raw of htmlToText(content).split("\n")) {
     const line = raw.trim();
     if (!line) continue;
     if (BULLET.test(line)) {

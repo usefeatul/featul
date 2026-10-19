@@ -1,7 +1,6 @@
 import React from "react";
 import { UpvoteButton } from "../../upvote/UpvoteButton";
 import Discussion from "@/components/requests/discussion";
-import CommentCounter from "../../comments/CommentCounter";
 import type { CommentData } from "../../../types/comment";
 import { StatusChip } from "../StatusChip";
 import { getDisplayUser } from "@/utils/user";
@@ -50,14 +49,6 @@ export function RequestContent({
   return (
     <div className="min-w-0">
       <article className="pb-8">
-        <header className="mb-3 flex items-center justify-between gap-3">
-          <StatusChip status={post.roadmapStatus} className="text-sm" />
-          {/* Desktop actions live in the sidebar. */}
-          <div className="md:hidden">
-            <RequestActions post={post} workspaceSlug={workspaceSlug} />
-          </div>
-        </header>
-
         <div className="mb-5">
           <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">
             {post.title}
@@ -101,19 +92,21 @@ export function RequestContent({
           hidePublicMemberIdentity={post.hidePublicMemberIdentity}
         />
 
-        <div className="flex items-center justify-end gap-3 text-xs text-accent">
-          <UpvoteButton
-            postId={post.id}
-            upvotes={post.upvotes}
-            hasVoted={post.hasVoted}
-            className="text-xs"
-          />
-          <CommentCounter
-            postId={post.id}
-            initialCount={visibleCommentCount}
-            surface="public"
-            className="hover:text-foreground transition-colors"
-          />
+        {/* Footer: roadmap status on the left, upvote on the right. */}
+        <div className="flex items-center justify-between gap-3">
+          <StatusChip status={post.roadmapStatus} className="text-sm" />
+          <div className="flex items-center gap-2 text-xs text-accent">
+            {/* Desktop actions live in the sidebar. */}
+            <div className="md:hidden">
+              <RequestActions post={post} workspaceSlug={workspaceSlug} />
+            </div>
+            <UpvoteButton
+              postId={post.id}
+              upvotes={post.upvotes}
+              hasVoted={post.hasVoted}
+              className="text-xs"
+            />
+          </div>
         </div>
       </article>
 
