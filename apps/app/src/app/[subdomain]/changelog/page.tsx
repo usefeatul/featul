@@ -5,6 +5,7 @@ import { createWorkspaceSectionMetadata } from "@/lib/seo"
 import { getSidebarPositionBySlug } from "@/lib/workspace"
 import { client } from "@featul/api/client"
 import { ChangelogCard } from "@/components/subdomain/ChangelogCard"
+import { ChangelogSubscribeBar } from "@/components/subdomain/changelog/ChangelogSubscribeBar"
 import type { ChangelogEntriesListResponse, ChangelogEntry } from "@/types/changelog"
 import { SubdomainListLayout } from "@/components/subdomain/SubdomainListLayout"
 import { PublicRequestPagination } from "@/components/subdomain/PublicRequestPagination"
@@ -55,13 +56,10 @@ export default async function ChangelogPage({
       slug={slug}
       sidebarPosition={sidebarPosition}
       hideBoards
+      hideSidebar
     >
       <div className="flex flex-1 flex-col">
-        <div className="mb-3 text-xs text-muted-foreground">
-          <span className="font-medium text-foreground/80">Latest updates</span>
-          <span className="mx-1.5 text-muted-foreground/50">·</span>
-          <span className="tabular-nums">{totalCount} {totalCount === 1 ? "entry" : "entries"}</span>
-        </div>
+        <ChangelogSubscribeBar slug={slug} totalCount={totalCount} />
 
         {entries.length === 0 ? (
           <div className="flex flex-1 flex-col">
@@ -71,14 +69,9 @@ export default async function ChangelogPage({
             />
           </div>
         ) : (
-          <div className="flex flex-col gap-12">
-            {entries.map((entry, i) => (
-              <ChangelogCard
-                key={entry.id}
-                item={entry}
-                linkPrefix="/changelog/p"
-                isLast={i === entries.length - 1}
-              />
+          <div className="flex flex-col divide-y divide-border/60 dark:divide-white/[0.07] [&>*]:py-12 [&>*:first-child]:pt-0">
+            {entries.map((entry) => (
+              <ChangelogCard key={entry.id} item={entry} linkPrefix="/changelog/p" />
             ))}
           </div>
         )}

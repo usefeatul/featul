@@ -14,6 +14,8 @@ type SubdomainListLayoutProps = {
   children: React.ReactNode
   hideSubmitButton?: boolean
   hideBoards?: boolean
+  /** Single full-width column with no navigation rail (changelog list). */
+  hideSidebar?: boolean
   initialBoards?: Array<{ id: string; name: string; slug: string; postCount?: number }>
   selectedBoard?: string
   sortBasePath?: string
@@ -25,8 +27,18 @@ export function SubdomainListLayout({
   sidebarPosition = "right",
   children,
   hideBoards,
+  hideSidebar,
   selectedBoard,
 }: SubdomainListLayoutProps) {
+  if (hideSidebar) {
+    return (
+      <section className="flex flex-1 flex-col">
+        <PortalPageHeader />
+        <div className="flex flex-1 flex-col">{children}</div>
+        <PoweredBy className="mt-auto pt-10" />
+      </section>
+    )
+  }
   const grid = subdomainColumns(sidebarPosition)
   const rail = (
     <aside className="hidden min-w-0 md:block md:pt-1">

@@ -8,13 +8,10 @@ import RoleBadge from "@/components/global/RoleBadge";
 import type { ChangelogEntry } from "@/types/changelog";
 import { extractTextFromTiptap } from "@/types/changelog";
 import { ArrowRight } from "@/components/global/icons";
-import { cn } from "@featul/ui/lib/utils";
 
 export interface ChangelogCardProps {
     item: ChangelogEntry;
     linkPrefix?: string;
-    /** Last entry in the feed: stop the timeline line at the dot. */
-    isLast?: boolean;
 }
 
 function formatDate(value?: string | Date | null) {
@@ -27,8 +24,8 @@ function formatDate(value?: string | Date | null) {
     };
 }
 
-/** Timeline entry: date rail on the left, plain entry on the right. */
-export function ChangelogCard({ item, linkPrefix = "/p", isLast = false }: ChangelogCardProps) {
+/** Changelog entry: sticky date column on the left, plain entry on the right. */
+export function ChangelogCard({ item, linkPrefix = "/p" }: ChangelogCardProps) {
     const href = `${linkPrefix}/${item.slug}`;
     const displayName = item.author?.name || "Unknown";
     const displayImage = item.author?.image || undefined;
@@ -36,77 +33,63 @@ export function ChangelogCard({ item, linkPrefix = "/p", isLast = false }: Chang
     const date = formatDate(item.publishedAt);
 
     return (
-        <article className="relative grid gap-3 sm:grid-cols-[104px_minmax(0,1fr)] sm:gap-6">
-            {/* Date rail */}
-            <div className="relative flex items-start gap-3 sm:block sm:pt-1.5">
+        <article className="grid gap-2 sm:grid-cols-[160px_minmax(0,1fr)] sm:gap-10">
+            {/* Date column stays in view while a long entry scrolls past. */}
+            <div className="sm:sticky sm:top-24 sm:self-start sm:pt-1">
                 <time
                     dateTime={item.publishedAt ? new Date(item.publishedAt).toISOString() : undefined}
-                    title={date.full}
-                    className="text-xs font-medium tabular-nums text-muted-foreground sm:text-sm"
+                    className="text-sm text-muted-foreground"
                 >
-                    {date.short}
+                    {date.full}
                 </time>
             </div>
 
-            {/* Timeline dot + line segment (desktop); the gap between date and card is 24px wide. */}
-            <span
-                aria-hidden
-                className="absolute top-2.5 left-[111px] z-10 hidden size-2.5 rounded-full bg-primary ring-4 ring-background sm:block"
-            />
-            <span
-                aria-hidden
-                className={cn(
-                    "absolute top-2.5 left-[115.5px] hidden w-px bg-border sm:block dark:bg-white/[0.1]",
-                    isLast ? "h-5" : "-bottom-12",
-                )}
-            />
-
-            {/* Content: plain, no frame */}
             <div className="group relative min-w-0">
                 <Link href={href} className="absolute inset-0 z-10 focus:outline-none" aria-label={item.title}>
                     <span className="sr-only">View changelog</span>
                 </Link>
 
+                <h3 className="text-xl font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary sm:text-2xl">
+                    {item.title}
+                </h3>
+
                 {item.tags && item.tags.length > 0 ? (
-                    <div className="mb-1.5 flex flex-wrap items-center gap-x-2 text-xs font-medium text-primary">
-                        {item.tags.slice(0, 4).map((tag, i) => (
-                            <React.Fragment key={tag.id}>
-                                {i > 0 ? <span className="text-muted-foreground/50">·</span> : null}
-                                <span>{tag.name}</span>
-                            </React.Fragment>
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        {item.tags.slice(0, 4).map((tag) => (
+                            <span
+                                key={tag.id}
+                                className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground dark:bg-white/[0.06]"
+                            >
+                                {tag.name}
+                            </span>
                         ))}
                     </div>
                 ) : null}
 
-                <h3 className="text-xl font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary">
-                    {item.title}
-                </h3>
-
-                {previewText ? (
-                    <p className="mt-2 line-clamp-3 text-[15px] leading-relaxed text-muted-foreground">{previewText}</p>
-                ) : null}
-
                 {item.coverImage ? (
-                    <div className="mt-4 aspect-[2/1] w-full overflow-hidden rounded-lg bg-muted">
+                    <div className="mt-5 aspect-[2/1] w-full overflow-hidden rounded-lg bg-muted">
                         <img
                             src={item.coverImage}
                             alt=""
-                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
                         />
                     </div>
                 ) : null}
 
-                <div className="mt-4 flex items-center justify-between gap-3">
+                {previewText ? (
+                    <p className="mt-4 line-clamp-3 text-[15px] leading-7 text-accent">{previewText}</p>
+                ) : null}
+
+                <div className="mt-5 flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-2">
                         <Avatar className="relative size-5 overflow-visible">
                             <AvatarImage src={displayImage} alt={displayName} />
                             <AvatarFallback className="bg-muted text-[9px] text-muted-foreground">{getInitials(displayName)}</AvatarFallback>
                             <RoleBadge role={item.author?.role} isOwner={item.author?.isOwner} className="bg-background" />
                         </Avatar>
-                        <span className="truncate text-xs font-medium text-foreground/80">{displayName}</span>
-                        <span className="text-xs text-muted-foreground/70 sm:hidden">· {date.full}</span>
+                        <span className="truncate text-sm text-muted-foreground">{displayName}</span>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors group-hover:text-primary">
+                    <span className="inline-flex items-center gap-1 text-sm font-medium text-foreground/80 transition-colors group-hover:text-primary">
                         Read more
                         <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                     </span>

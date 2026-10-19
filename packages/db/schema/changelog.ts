@@ -10,6 +10,7 @@ import {
 import { createId } from "@paralleldrive/cuid2";
 import { board } from "./feedback";
 import { user } from "./auth";
+import { workspace } from "./workspace";
 
 export const changelogEntry = pgTable(
   "changelog_entry",
@@ -165,3 +166,38 @@ export const changelogMention = pgTable(
 );
 
 export type ChangelogMention = typeof changelogMention.$inferSelect;
+
+/** Signed-in portal users who want an email when a changelog entry is published. */
+export const changelogSubscription = pgTable(
+  "changelog_subscription",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    workspaceId: text("workspace_id")
+      .notNull()
+      .references(() => workspace.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    /** Lets the email footer link unsubscribe without signing in. */
+    unsubscribeToken: text("unsubscribe_token")
+      .notNull()
+      .$defaultFn(() => createId()),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) =>
+    ({
+      changelogSubscriptionWorkspaceUserUnique: uniqueIndex(
+        "changelog_subscription_workspace_user_unique",
+      ).on(table.workspaceId, table.userId),
+      changelogSubscriptionTokenUnique: uniqueIndex(
+        "changelog_subscription_token_unique",
+      ).on(table.unsubscribeToken),
+      changelogSubscriptionWorkspaceIdx: index(
+        "changelog_subscription_workspace_idx",
+      ).on(table.workspaceId),
+    }) as const,
+);
+
+export type ChangelogSubscription = typeof changelogSubscription.$inferSelect;

@@ -29,38 +29,27 @@ interface ChangelogContentProps {
   entry: ChangelogEntryData;
 }
 
-function formatDate(value?: string | Date | null) {
-  if (!value) return "";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
-}
-
-/** Plain changelog entry: date and tags, title, cover, body, related posts. */
+/** Plain changelog entry: title and tags, cover, body, related posts. */
 export function ChangelogContent({ entry }: ChangelogContentProps) {
-  const date = formatDate(entry.publishedAt);
   return (
     <article className="w-full min-w-0">
-      <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-        {date ? (
-          <time
-            className="text-muted-foreground"
-            dateTime={entry.publishedAt ? new Date(entry.publishedAt).toISOString() : undefined}
-          >
-            {date}
-          </time>
-        ) : null}
-        {entry.tags?.map((tag) => (
-          <React.Fragment key={tag.id}>
-            <span className="text-muted-foreground/50">·</span>
-            <span className="font-medium text-primary">{tag.name}</span>
-          </React.Fragment>
-        ))}
-      </div>
-
       <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground sm:text-3xl">
         {entry.title}
       </h1>
+
+      {/* Tags match the list's pills; the publish date lives in the sidebar. */}
+      {entry.tags && entry.tags.length > 0 ? (
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          {entry.tags.map((tag) => (
+            <span
+              key={tag.id}
+              className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground dark:bg-white/[0.06]"
+            >
+              {tag.name}
+            </span>
+          ))}
+        </div>
+      ) : null}
 
       {entry.coverImage ? (
         <div className="mt-6 aspect-video w-full overflow-hidden rounded-lg bg-muted">

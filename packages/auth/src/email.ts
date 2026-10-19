@@ -9,6 +9,10 @@ import {
   renderStatusChangeEmail,
   type StatusChangeEmailProps,
 } from "./email/statuschangeemail"
+import {
+  renderChangelogPublishedEmail,
+  type ChangelogPublishedEmailProps,
+} from "./email/changelogemail"
 import { db, user } from "@featul/db"
 import { eq } from "drizzle-orm"
 import {
@@ -180,6 +184,20 @@ export async function sendPostStatusChangeEmail(
     recipientName,
   })
   await sendEmail({ to, subject, html, text })
+}
+
+export async function sendChangelogPublishedEmail(
+  to: string,
+  props: ChangelogPublishedEmailProps,
+  idempotencyKey?: string,
+) {
+  const recipientName = await resolveRecipientName(to, props.recipientName)
+  const subject = `${props.workspaceName}: ${props.entryTitle}`
+  const { html, text } = await renderChangelogPublishedEmail({
+    ...props,
+    recipientName,
+  })
+  await sendEmail({ to, subject, html, text, idempotencyKey })
 }
 
 export async function sendBillingUpgradeEmail(to: string, props: BillingUpgradeEmailProps) {

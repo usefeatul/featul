@@ -7,6 +7,7 @@ import {
   workspaceMember,
   changelogEntry,
   changelogMention,
+  changelogSubscription,
   activityLog,
   user,
 } from "@featul/db";
@@ -36,6 +37,7 @@ import {
 } from "../validators/changelog";
 import { getRelatedPosts } from "../changelog/related";
 import { ACTIVITY_ACTIONS } from "../activity/actions";
+import { notifyChangelogSubscribers } from "../changelog/notify";
 
 function extractMentionedUserIdsFromContent(content: unknown): string[] {
   const ids = new Set<string>();
@@ -105,6 +107,25 @@ async function resolveValidMentionUserIds(params: {
   return Array.from(validMentionUserIds);
 }
 
+/** Workspace behind a public changelog, or 404 when the changelog is hidden. */
+async function requirePublicChangelogWorkspace(ctx: any, slug: string) {
+  const [ws] = await ctx.db
+    .select({ id: workspace.id, name: workspace.name })
+    .from(workspace)
+    .where(eq(workspace.slug, slug))
+    .limit(1);
+  if (!ws) throw new HTTPException(404, { message: "Workspace not found" });
+  const [b] = await ctx.db
+    .select({ isVisible: board.isVisible, isPublic: board.isPublic })
+    .from(board)
+    .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "changelog")))
+    .limit(1);
+  if (!b?.isVisible || !b?.isPublic) {
+    throw new HTTPException(404, { message: "Changelog not found" });
+  }
+  return ws as { id: string; name: string };
+}
+
 export function createChangelogRouter() {
   return j.router({
     visible: publicProcedure
@@ -136,6 +157,71 @@ export function createChangelogRouter() {
           "public, max-age=30, stale-while-revalidate=120",
         );
         return c.superjson({ visible: v });
+      }),
+
+    subscriptionStatus: privateProcedure
+      .input(bySlugSchema)
+      .get(async ({ ctx, input, c }) => {
+        const ws = await requirePublicChangelogWorkspace(ctx, input.slug);
+        const [row] = await ctx.db
+          .select({ id: changelogSubscription.id })
+          .from(changelogSubscription)
+          .where(
+            and(
+              eq(changelogSubscription.workspaceId, ws.id),
+              eq(changelogSubscription.userId, ctx.session.user.id),
+            ),
+          )
+          .limit(1);
+        return c.superjson({ subscribed: Boolean(row) });
+      }),
+
+    subscribe: privateProcedure
+      .input(bySlugSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requirePublicChangelogWorkspace(ctx, input.slug);
+        await ctx.db
+          .insert(changelogSubscription)
+          .values({ workspaceId: ws.id, userId: ctx.session.user.id })
+          .onConflictDoNothing({
+            target: [changelogSubscription.workspaceId, changelogSubscription.userId],
+          });
+        return c.superjson({ subscribed: true });
+      }),
+
+    unsubscribe: privateProcedure
+      .input(bySlugSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requirePublicChangelogWorkspace(ctx, input.slug);
+        await ctx.db
+          .delete(changelogSubscription)
+          .where(
+            and(
+              eq(changelogSubscription.workspaceId, ws.id),
+              eq(changelogSubscription.userId, ctx.session.user.id),
+            ),
+          );
+        return c.superjson({ subscribed: false });
+      }),
+
+    /** Email footer link: opt out without signing in. Unknown tokens are a no-op. */
+    unsubscribeByToken: publicProcedure
+      .input(z.object({ token: z.string().min(10).max(64) }))
+      .post(async ({ ctx, input, c }) => {
+        const [row] = await ctx.db
+          .delete(changelogSubscription)
+          .where(eq(changelogSubscription.unsubscribeToken, input.token))
+          .returning({ workspaceId: changelogSubscription.workspaceId });
+        let workspaceName: string | null = null;
+        if (row) {
+          const [ws] = await ctx.db
+            .select({ name: workspace.name })
+            .from(workspace)
+            .where(eq(workspace.id, row.workspaceId))
+            .limit(1);
+          workspaceName = ws?.name ?? null;
+        }
+        return c.superjson({ ok: true, workspaceName });
       }),
 
     settings: privateProcedure
@@ -446,6 +532,8 @@ export function createChangelogRouter() {
           },
         });
 
+        if (isPublished) await notifyChangelogSubscribers(ctx.db, entry.id);
+
         return c.superjson({ ok: true, entry });
       }),
 
@@ -506,6 +594,8 @@ export function createChangelogRouter() {
           }
           updates.relatedPostIds = input.relatedPostIds;
         }
+        const isFirstPublish =
+          input.status === "published" && !existing.publishedAt;
         if (input.status !== undefined) {
           updates.status = input.status;
           if (input.status === "published" && !existing.publishedAt) {
@@ -595,6 +685,8 @@ export function createChangelogRouter() {
             tags: entry.tags,
           },
         });
+
+        if (isFirstPublish) await notifyChangelogSubscribers(ctx.db, entry.id);
 
         return c.superjson({ ok: true, entry });
       }),
@@ -859,6 +951,8 @@ export function createChangelogRouter() {
             status: entry.status,
           },
         });
+
+        if (!existing.publishedAt) await notifyChangelogSubscribers(ctx.db, entry.id);
 
         return c.superjson({ ok: true, entry });
       }),

@@ -45,6 +45,7 @@ export const {
   changelogEntry,
   changelogAiConversation,
   changelogMention,
+  changelogSubscription,
   activityLog,
   workspaceIntegration,
   workspaceNotraConnection,

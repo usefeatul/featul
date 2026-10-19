@@ -218,6 +218,13 @@
       "when": 1792244689184,
       "tag": "0030_comment_likes",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1792427928358,
+      "tag": "0031_changelog_subscription",
+      "breakpoints": true
     }
   ]
 }
