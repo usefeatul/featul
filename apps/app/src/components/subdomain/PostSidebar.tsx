@@ -17,6 +17,7 @@ import { ShareIdeaButton } from "./ShareIdeaButton";
 import { DetailRow, SidebarSection } from "./SidebarSection";
 import { PostActionsNav } from "./request/PostActionsNav";
 import { RequestFlagReadout } from "@/components/global/flag-visuals";
+import RoleBadge from "@/components/global/RoleBadge";
 import type { SubdomainRequestDetailData } from "@/types/subdomain";
 
 export type PostSidebarProps = {
@@ -57,7 +58,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
   const timeLabel = relativeTime(post.publishedAt ?? post.createdAt);
 
   return (
-    <aside className="hidden min-w-0 md:block md:pt-1">
+    <aside className="hidden min-w-0 md:block md:self-stretch md:pt-1">
       <div className="space-y-6 md:sticky md:top-20">
         <ShareIdeaButton className="w-full" />
 
@@ -77,8 +78,8 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
             </DetailRow>
 
             <DetailRow label="Created by">
-              <span className="inline-flex min-w-0 items-center gap-1.5">
-                <Avatar className="size-5 shrink-0">
+              <span className="inline-flex min-w-0 items-center gap-2">
+                <Avatar className="relative size-6 shrink-0 overflow-visible">
                   {displayUser.image ? (
                     <AvatarImage
                       src={displayUser.image}
@@ -90,9 +91,12 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                       }
                     />
                   ) : (
-                    <AvatarFallback className="bg-muted text-[9px] text-muted-foreground">
+                    <AvatarFallback className="bg-muted text-[10px] text-muted-foreground">
                       {authorInitials}
                     </AvatarFallback>
+                  )}
+                  {!post.hidePublicMemberIdentity && (
+                    <RoleBadge role={post.role} isOwner={post.isOwner} isFeatul={post.isFeatul} />
                   )}
                 </Avatar>
                 <span className="truncate">{displayUser.name}</span>
