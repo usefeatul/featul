@@ -105,6 +105,18 @@ export function buildShareMessages(name: string, boardUrl: string) {
       description: "A short line for a banner, tooltip, or empty state.",
       text: `Got an idea for ${name}? Share it and vote on what we build next. ${boardUrl}`,
     },
+    {
+      id: "chat",
+      label: "Live chat",
+      description: "A quick reply when an idea comes up in chat.",
+      text: `Love this idea, thanks! Could you drop it on our feedback board? Others can vote on it there, and you’ll hear from us when it ships.\n\n${boardUrl}`,
+    },
+    {
+      id: "social",
+      label: "Social post",
+      description: "Ask your followers what to build next.",
+      text: `We’re building ${name} in the open.\n\nWhat should we build next? Share an idea or vote for the ones you want most:\n${boardUrl}`,
+    },
   ];
 }
 
