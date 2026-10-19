@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar";
 import { Copy, ShareIcon } from "@/components/global/icons";
+import RoleBadge from "@/components/global/RoleBadge";
 import { getInitials } from "@/utils/user";
 import type { Role } from "@/types/team";
 import { ShareIdeaButton } from "../ShareIdeaButton";
@@ -47,12 +48,13 @@ export function ChangelogSidebar({ title, author, publishedAt }: ChangelogSideba
                 <SidebarSection title="Details">
                     <dl className="space-y-0.5">
                         <DetailRow label="Author">
-                            <span className="inline-flex min-w-0 items-center gap-1.5">
-                                <Avatar className="size-5 shrink-0">
+                            <span className="inline-flex min-w-0 items-center gap-2">
+                                <Avatar className="relative size-6 shrink-0 overflow-visible">
                                     <AvatarImage src={author?.image || undefined} alt={displayName} />
-                                    <AvatarFallback className="bg-muted text-[9px] text-muted-foreground">
+                                    <AvatarFallback className="bg-muted text-[10px] text-muted-foreground">
                                         {getInitials(displayName)}
                                     </AvatarFallback>
+                                    <RoleBadge role={author?.role} isOwner={author?.isOwner} />
                                 </Avatar>
                                 <span className="truncate">{displayName}</span>
                             </span>
