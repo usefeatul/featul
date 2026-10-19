@@ -49,6 +49,10 @@ export const WORKSPACE_UPLOAD_POLICIES: Record<WorkspaceUploadFolder, UploadPoli
     allowedContentTypes: IMAGE_CONTENT_TYPES,
     maxBytes: CHANGELOG_IMAGE_UPLOAD_MAX_BYTES,
   },
+  "help/content": {
+    allowedContentTypes: IMAGE_CONTENT_TYPES,
+    maxBytes: CHANGELOG_IMAGE_UPLOAD_MAX_BYTES,
+  },
 }
 
 const MIME_EXTENSIONS: Record<string, string[]> = {

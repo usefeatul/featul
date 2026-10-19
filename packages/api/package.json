@@ -23,6 +23,8 @@
     "./request/*": "./src/request/*.ts",
     "./activity/*": "./src/activity/*.ts",
     "./changelog/*": "./src/changelog/*.ts",
+    "./help/*": "./src/help/*.ts",
+    "./validators/help": "./src/validators/help.ts",
     "./member/*": "./src/member/*.ts",
     "./status/*": "./src/status/*.ts",
     "./crypto/*": "./src/crypto/*.ts",

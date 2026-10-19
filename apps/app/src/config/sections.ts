@@ -84,6 +84,7 @@ export function getSectionMeta(v: string) {
 export const WORKSPACE_TITLES: Record<string, string> = {
   roadmap: "Roadmap",
   changelog: "Changelog",
+  help: "Help Center",
   settings: "Settings",
   system: "System",
   requests: "Requests",

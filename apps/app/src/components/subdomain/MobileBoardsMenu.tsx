@@ -8,6 +8,7 @@ import {
   CommentsIcon,
   RoadmapIcon,
   ChangelogIcon,
+  HelpCenterIcon,
 } from "@/components/global/icons";
 import { AccentBar } from "@featul/ui/components/cardElements"
 
@@ -20,11 +21,13 @@ export function MobileBoardsMenu({
   subdomain,
   roadmapVisible = true,
   changelogVisible = true,
+  helpVisible = false,
 }: {
   slug: string;
   subdomain: string;
   roadmapVisible?: boolean;
   changelogVisible?: boolean;
+  helpVisible?: boolean;
 }) {
   const router = useRouter()
   const pathname = usePathname() || ""
@@ -36,6 +39,8 @@ export function MobileBoardsMenu({
         ? `/`
         : value === "roadmap"
         ? `/roadmap`
+        : value === "help"
+        ? `/help`
         : `/changelog`
     setOpen(false)
     router.push(next)
@@ -45,6 +50,8 @@ export function MobileBoardsMenu({
     ? "roadmap"
     : pathname.startsWith(`/changelog`)
     ? "changelog"
+    : pathname.startsWith(`/help`)
+    ? "help"
     : "__all__"
 
   const showRoadmap = Boolean(roadmapVisible);
@@ -84,6 +91,13 @@ export function MobileBoardsMenu({
               <AccentBar width={2} className={active === "changelog" ? undefined : "bg-muted ring-0"} />
               <span className={cn("text-sm", active === "changelog" ? "text-primary" : "text-muted-foreground")}>Changelog</span>
               <ChangelogIcon size={16} className="text-accent ml-auto" />
+            </PopoverListItem>
+          ) : null}
+          {helpVisible ? (
+            <PopoverListItem onClick={() => go("help")}>
+              <AccentBar width={2} className={active === "help" ? undefined : "bg-muted ring-0"} />
+              <span className={cn("text-sm", active === "help" ? "text-primary" : "text-muted-foreground")}>Help</span>
+              <HelpCenterIcon size={16} className="text-accent ml-auto" />
             </PopoverListItem>
           ) : null}
         </PopoverList>

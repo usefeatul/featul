@@ -37,6 +37,7 @@ export function DomainHeader({
   subdomain,
   changelogVisible: initialChangelogVisible = true,
   roadmapVisible: initialRoadmapVisible = true,
+  helpVisible = false,
   initialUser,
   maxWidth = "6xl",
 }: {
@@ -44,13 +45,15 @@ export function DomainHeader({
   subdomain: string;
   changelogVisible?: boolean;
   roadmapVisible?: boolean;
+  helpVisible?: boolean;
   initialUser?: AuthUser | null;
   maxWidth?: PortalMaxWidth;
 }) {
   const pathname = usePathname() || "";
   const isRoadmap = pathname.startsWith("/roadmap");
   const isChangelog = pathname.startsWith("/changelog");
-  const isFeedback = !isRoadmap && !isChangelog;
+  const isHelp = pathname === "/help" || pathname.startsWith("/help/");
+  const isFeedback = !isRoadmap && !isChangelog && !isHelp;
   const { data: session } = useSession();
   const sessionUser = session?.user ?? null;
   const user: AuthUser | null = sessionUser ?? initialUser ?? null;
@@ -94,6 +97,7 @@ export function DomainHeader({
     { href: "/", label: "Feedback", active: isFeedback, visible: true },
     { href: "/roadmap", label: "Roadmap", active: isRoadmap, visible: roadmapVisible },
     { href: "/changelog", label: "Changelog", active: isChangelog, visible: changelogVisible },
+    { href: "/help", label: "Help", active: isHelp, visible: helpVisible },
   ].filter((x) => x.visible);
 
   const brand = (
@@ -184,6 +188,7 @@ export function DomainHeader({
             subdomain={subdomain}
             roadmapVisible={roadmapVisible}
             changelogVisible={changelogVisible}
+            helpVisible={helpVisible}
           />
           <div className="min-w-0 flex-1">{brand}</div>
           <SearchAction slug={workspace.slug} appearance="toolbar" className="rounded-lg px-2" />

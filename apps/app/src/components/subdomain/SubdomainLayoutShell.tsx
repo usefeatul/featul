@@ -31,6 +31,7 @@ type SubdomainLayoutShellProps = {
   branding: BrandingInfo;
   changelogVisible: boolean;
   roadmapVisible: boolean;
+  helpVisible: boolean;
   boards: PortalBoard[];
   statusCounts: PortalStatusCounts;
   totalPosts: number;
@@ -59,6 +60,7 @@ export function SubdomainLayoutShell({
   branding,
   changelogVisible,
   roadmapVisible,
+  helpVisible,
   boards,
   statusCounts,
   totalPosts,
@@ -86,6 +88,7 @@ export function SubdomainLayoutShell({
             changelogCount,
             roadmapVisible,
             changelogVisible,
+            helpVisible,
           }}
         >
           <style>{themeVars}</style>
@@ -96,6 +99,7 @@ export function SubdomainLayoutShell({
               subdomain={subdomain}
               changelogVisible={changelogVisible}
               roadmapVisible={roadmapVisible}
+              helpVisible={helpVisible}
               initialUser={initialUser ?? null}
               maxWidth={maxWidth}
             />

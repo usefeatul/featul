@@ -12,6 +12,7 @@ export type PortalData = {
   changelogCount: number
   roadmapVisible: boolean
   changelogVisible: boolean
+  helpVisible: boolean
 }
 
 const PortalDataContext = React.createContext<PortalData | null>(null)

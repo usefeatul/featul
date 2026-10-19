@@ -176,3 +176,24 @@ export async function createWorkspaceSectionMetadata(slug: string, section: 'fee
     ...(ws?.logo ? { icons: { icon: [ws.logo], shortcut: [ws.logo], apple: [ws.logo] } } : {}),
   }
 }
+
+/** Public help center page on the workspace's own domain; `label` is the collection or article title. */
+export async function createHelpMetadata(
+  slug: string,
+  opts: { path: string; label?: string; description?: string | null },
+): Promise<Metadata> {
+  const ws = await getWorkspaceBySlug(slug)
+  const name = ws?.name || slug
+  const baseUrl = ws?.customDomain ? `https://${ws.customDomain}` : `https://${slug}.featul.com`
+  const title = opts.label ? `${opts.label} - ${name} Help Center` : `Help Center - ${name}`
+  return createPageMetadata({
+    title,
+    description: opts.description || `Guides and answers from the ${name} team.`,
+    path: opts.path,
+    image: ws?.logo || undefined,
+    absoluteTitle: true,
+    baseUrl,
+    includeBrand: false,
+    indexable: true,
+  })
+}

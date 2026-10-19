@@ -11,6 +11,7 @@ const routerImports = {
     import("./router/storage").then((m) => m.createStorageRouter()),
   changelog: () =>
     import("./router/changelog").then((m) => m.createChangelogRouter()),
+  help: () => import("./router/help").then((m) => m.createHelpRouter()),
   reservation: () =>
     import("./router/reservation").then((m) => m.createReservationRouter()),
   post: () => import("./router/post").then((m) => m.createPostRouter()),
@@ -35,6 +36,7 @@ const appRouter = j.mergeRouters(api, {
   team: routerImports.team,
   storage: routerImports.storage,
   changelog: routerImports.changelog,
+  help: routerImports.help,
   reservation: routerImports.reservation,
   post: routerImports.post,
   comment: routerImports.comment,

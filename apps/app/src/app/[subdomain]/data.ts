@@ -1,5 +1,6 @@
 import { db, workspace, board, changelogEntry } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
+import { isHelpCenterPublic } from "@featul/api/help/queries";
 import {
   getBrandingBySlug,
   getWorkspaceBoards,
@@ -36,6 +37,7 @@ export type SubdomainLayoutData = {
   branding: Awaited<ReturnType<typeof getBrandingBySlug>>;
   changelogVisible: boolean;
   roadmapVisible: boolean;
+  helpVisible: boolean;
   boards: PortalBoard[];
   statusCounts: PortalStatusCounts;
   totalPosts: number;
@@ -64,6 +66,7 @@ export async function loadSubdomainLayoutData(
     branding,
     changelogVisible,
     roadmapVisible,
+    helpVisible,
     boards,
     totalPosts,
     planned,
@@ -76,6 +79,7 @@ export async function loadSubdomainLayoutData(
     getBrandingBySlug(subdomain),
     getSystemBoardVisibility(ws.id, "changelog"),
     getSystemBoardVisibility(ws.id, "roadmap"),
+    isHelpCenterPublic(db, ws.id),
     getWorkspaceBoards(subdomain),
     getWorkspacePostsCount(subdomain, { publicOnly: true }),
     getWorkspacePostsCount(subdomain, { statuses: ["planned"], publicOnly: true }),
@@ -95,6 +99,7 @@ export async function loadSubdomainLayoutData(
     branding,
     changelogVisible,
     roadmapVisible,
+    helpVisible,
     boards,
     statusCounts: { pending, review, planned, progress, completed, closed },
     totalPosts,

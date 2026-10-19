@@ -15,7 +15,7 @@ function rewriteTo(req: NextRequest, pathname: string) {
 
 /**
  * Map public tenant URLs onto workspace App Router paths.
- * `/`, `/roadmap`, `/changelog`, `/board/*` rewrite; anything else continues.
+ * `/`, `/roadmap`, `/changelog`, `/help`, `/board/*` rewrite; anything else continues.
  */
 export function reroute(
   req: NextRequest,
@@ -32,6 +32,9 @@ export function reroute(
     return rewriteTo(req, `/${slug}/changelog`);
   }
   if (pathname.startsWith("/changelog/")) {
+    return rewriteTo(req, `/${slug}${pathname}`);
+  }
+  if (pathname === "/help" || pathname.startsWith("/help/")) {
     return rewriteTo(req, `/${slug}${pathname}`);
   }
   if (pathname.startsWith("/board/")) {

@@ -39,6 +39,13 @@ import {
   IconSortDescending2Filled,
   IconListCheckFilled,
   IconInfoCircleFilled,
+  IconHelpCircleFilled,
+  IconBookFilled,
+  IconBoltFilled,
+  IconSparklesFilled,
+  IconBulbFilled,
+  IconThumbDownFilled,
+  IconFileTextFilled,
   type Icon as TablerIcon,
   type IconProps as TablerIconProps,
 } from "@tabler/icons-react";
@@ -178,6 +185,13 @@ export const ArchiveIcon = solid(IconArchiveFilled);
 export const BillingIcon = solid(IconCreditCardFilled);
 export const DocsIcon = solid(IconFolderFilled);
 export const ExportIcon = solid(IconDatabaseFilled);
+export const HelpCenterIcon = solid(IconHelpCircleFilled);
+export const BookIcon = solid(IconBookFilled);
+export const BoltIcon = solid(IconBoltFilled);
+export const SparklesIcon = solid(IconSparklesFilled);
+export const BulbIcon = solid(IconBulbFilled);
+export const DislikeIcon = solid(IconThumbDownFilled);
+export const ArticleIcon = solid(IconFileTextFilled);
 const LeftPanelIcon = solid(IconLayoutSidebarFilled);
 const RightPanelIcon = solid(IconLayoutSidebarRightFilled);
 

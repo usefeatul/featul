@@ -225,6 +225,13 @@
       "when": 1792427928358,
       "tag": "0031_changelog_subscription",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1792437202308,
+      "tag": "0032_help_center",
+      "breakpoints": true
     }
   ]
 }

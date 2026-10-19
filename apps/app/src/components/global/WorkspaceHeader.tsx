@@ -18,6 +18,7 @@ import {
   type EditorAction,
 } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
+import { HelpHeaderActions } from "@/components/help/HelpHeaderActions";
 import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import {
@@ -104,6 +105,9 @@ export default function WorkspaceHeader({
   const showRoadmapActions = rest[0] === "roadmap" && rest.length === 1;
   const showChangelogActions = rest[0] === "changelog" && rest.length === 1;
   const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2;
+  const showHelpActions = rest[0] === "help" && rest.length === 1;
+  const showHelpEditActions = rest[0] === "help" && rest.length >= 2;
+  const showEditorActions = showChangelogEditActions || showHelpEditActions;
   const isMembersSection = rest[0] === "members";
   const isMemberDetail = isMembersSection && rest.length > 1;
   const isSettingsSection = rest[0] === "settings";
@@ -117,7 +121,8 @@ export default function WorkspaceHeader({
   const editorContext = useEditorHeaderActionsOptional();
   const actions = editorActions ?? editorContext?.actions ?? [];
   const hasEmbeddedEditorHeader =
-    rest[0] === "changelog" && (rest[1] === "new" || rest[2] === "edit");
+    (rest[0] === "changelog" || rest[0] === "help") &&
+    (rest[1] === "new" || rest[2] === "edit");
   let title = rest.length === 0 ? "Requests" : "";
   if (isSettingsSection) {
     title = settingsMeta?.label || "Settings";
@@ -129,6 +134,9 @@ export default function WorkspaceHeader({
   }
   if (showChangelogEditActions) {
     title = rest[1] === "new" ? "New changelog" : "Edit changelog";
+  }
+  if (showHelpEditActions) {
+    title = rest[1] === "new" ? "New article" : "Edit article";
   }
 
   const pageActions = isMemberDetail ? (
@@ -174,7 +182,12 @@ export default function WorkspaceHeader({
         </Link>
       </Button>
     </div>
-  ) : showChangelogEditActions && actions.length > 0 ? (
+  ) : showHelpActions ? (
+    <HelpHeaderActions
+      workspaceSlug={workspaceSlug}
+      buttonClassName={compactActionButtonClass}
+    />
+  ) : showEditorActions && actions.length > 0 ? (
     <div className="ml-auto flex shrink-0 items-center gap-1">
       {actions.map((action) =>
         action.type === "switch" ? (
@@ -212,26 +225,30 @@ export default function WorkspaceHeader({
     rest[0] === "share" ||
     showRoadmapActions ||
     showChangelogActions ||
-    showChangelogEditActions ||
+    showEditorActions ||
+    showHelpActions ||
     (isMembersSection && !isMemberDetail);
   const showHeaderUtilityRow =
     showFilterSummary || Boolean(pageActions) || !showPageHeading;
 
   if (isCompactListHeader) {
-    const changelogTitle = editorTitle?.trim() || "Untitled changelog";
+    const editorSection = showHelpEditActions
+      ? { label: "Help Center", href: `/workspaces/${workspaceSlug}/help`, untitled: "Untitled article" }
+      : { label: "Changelog", href: `/workspaces/${workspaceSlug}/changelog`, untitled: "Untitled changelog" };
+    const changelogTitle = editorTitle?.trim() || editorSection.untitled;
     return (
       <header className="relative z-40 shrink-0 bg-background px-4 sm:px-6">
         <div className="flex min-h-12 min-w-0 items-center justify-between gap-2 sm:gap-3">
-          {embeddedInEditor && showChangelogEditActions ? (
-            <nav aria-label="Changelog navigation" className="min-w-0 flex-1">
+          {embeddedInEditor && showEditorActions ? (
+            <nav aria-label={`${editorSection.label} navigation`} className="min-w-0 flex-1">
               <ol className="flex min-w-0 items-center gap-2 text-sm">
                 <li className="shrink-0">
                   <Link
-                    href={`/workspaces/${workspaceSlug}/changelog`}
-                    aria-label="Back to changelog"
+                    href={editorSection.href}
+                    aria-label={`Back to ${editorSection.label.toLowerCase()}`}
                     className="flex items-center rounded-lg py-1 text-accent transition-colors hover:text-foreground"
                   >
-                    Changelog
+                    {editorSection.label}
                   </Link>
                 </li>
                 <li aria-hidden="true" className="shrink-0 text-accent/50">

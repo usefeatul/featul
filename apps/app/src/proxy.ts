@@ -11,6 +11,8 @@ export const config = {
     "/roadmap",
     "/changelog",
     "/changelog/:path*",
+    "/help",
+    "/help/:path*",
     "/workspaces/:path*",
     "/auth/:path*",
     "/start",

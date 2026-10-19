@@ -6,6 +6,7 @@ import {
   BoardIcon as WorkspaceBoardIcon,
   ChangelogIcon as WorkspaceChangelogIcon,
   DocsIcon as WorkspaceDocsIcon,
+  HelpCenterIcon as WorkspaceHelpIcon,
   DomainIcon as WorkspaceDomainIcon,
   ExportIcon as WorkspaceExportIcon,
   CollectIcon as WorkspaceFeedbackIcon,
@@ -84,7 +85,7 @@ export function buildTopNav(slug: string): NavItem[] {
   ];
 }
 
-/** Roadmap, changelog, members, public board, and settings links. */
+/** Roadmap, changelog, help center, members, public board, and settings links. */
 export function buildMiddleNav(
   slug: string,
   customDomain?: string | null,
@@ -96,6 +97,7 @@ export function buildMiddleNav(
       href: w(slug, "/changelog"),
       icon: WorkspaceChangelogIcon,
     },
+    { label: "Help Center", href: w(slug, "/help"), icon: WorkspaceHelpIcon },
     { label: "Members", href: w(slug, "/members"), icon: WorkspaceMembersIcon },
     { label: "Share", href: w(slug, "/share"), icon: ShareIcon },
     {
