@@ -2,17 +2,18 @@ import type { HelpCollectionPageData } from "@featul/api/help/queries";
 import { PoweredBy } from "../PoweredBy";
 import { HelpAskBanner, NumberedArticles } from "./HelpHome";
 import { HelpSearch } from "./HelpSearch";
-import { HelpBreadcrumbs, HelpCollectionChips, HelpCollectionTile, HelpSidebar } from "./HelpSidebar";
+import { HelpBreadcrumbs, HelpCollectionChips, HelpCollectionTile } from "./HelpSidebar";
+import { HelpNavTree } from "./HelpNavTree";
 
 export function HelpCollectionView({ data, slug }: { data: HelpCollectionPageData; slug: string }) {
-  const { collection, articles, collections } = data;
+  const { collection, articles, tree } = data;
   return (
     <section className="flex flex-1 flex-col">
       <div className="grid flex-1 grid-cols-1 gap-10 md:grid-cols-[13rem_minmax(0,1fr)] lg:grid-cols-[14rem_minmax(0,1fr)]">
         <aside className="hidden md:block">
-          <div className="sticky top-20 space-y-6">
+          <div className="sticky top-20 max-h-[calc(100dvh-6rem)] space-y-6 overflow-y-auto pb-6 [scrollbar-width:none]">
             <HelpSearch slug={slug} size="sm" />
-            <HelpSidebar collections={collections} current={collection} articles={articles} />
+            <HelpNavTree tree={tree} currentCollectionId={collection.id} />
           </div>
         </aside>
 
@@ -32,7 +33,7 @@ export function HelpCollectionView({ data, slug }: { data: HelpCollectionPageDat
           </header>
 
           <HelpSearch slug={slug} className="mt-6 md:hidden" size="sm" />
-          <HelpCollectionChips collections={collections} currentId={collection.id} className="mt-4" />
+          <HelpCollectionChips collections={tree.collections} currentId={collection.id} className="mt-4" />
 
           <NumberedArticles articles={articles} className="mt-8 lg:grid-cols-1" />
 

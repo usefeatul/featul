@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, ilike, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import {
   helpArticle,
   helpCenter,
@@ -41,10 +41,14 @@ export type PublicHelpArticle = HelpArticleLink & {
 
 export type PublicHelpWorkspace = { id: string; name: string; slug: string };
 
-export type HelpHomeData = {
-  workspace: PublicHelpWorkspace;
+/** Every public collection with its published article links, in display order. */
+export type HelpTree = {
   collections: Array<HelpCollectionSummary & { articles: HelpArticleLink[] }>;
   uncategorized: HelpArticleLink[];
+};
+
+export type HelpHomeData = HelpTree & {
+  workspace: PublicHelpWorkspace;
   popular: Array<HelpArticleLink & { collectionName: string | null }>;
 };
 
@@ -52,7 +56,7 @@ export type HelpCollectionPageData = {
   workspace: PublicHelpWorkspace;
   collection: HelpCollectionSummary;
   articles: HelpArticleLink[];
-  collections: HelpCollectionSummary[];
+  tree: HelpTree;
 };
 
 export type HelpArticlePageData = {
@@ -60,7 +64,7 @@ export type HelpArticlePageData = {
   article: PublicHelpArticle;
   collection: HelpCollectionSummary | null;
   siblings: HelpArticleLink[];
-  collections: HelpCollectionSummary[];
+  tree: HelpTree;
   previous: HelpArticleLink | null;
   next: HelpArticleLink | null;
 };
@@ -144,6 +148,37 @@ async function listPublicCollections(
   }));
 }
 
+function toSummary({ articles: _, ...summary }: HelpTree["collections"][number]): HelpCollectionSummary {
+  return summary;
+}
+
+/** Collections plus every published article link, grouped; feeds the home grid and the sidebar. */
+async function loadHelpTree(db: Db, workspaceId: string): Promise<HelpTree> {
+  const [collections, articles] = await Promise.all([
+    listPublicCollections(db, workspaceId),
+    db
+      .select(linkColumns)
+      .from(helpArticle)
+      .where(and(eq(helpArticle.workspaceId, workspaceId), published))
+      .orderBy(...articleOrder) as Promise<HelpArticleLink[]>,
+  ]);
+  const byCollection = new Map<string, HelpArticleLink[]>();
+  const uncategorized: HelpArticleLink[] = [];
+  for (const a of articles) {
+    if (!a.collectionId) {
+      uncategorized.push(a);
+      continue;
+    }
+    const list = byCollection.get(a.collectionId) ?? [];
+    list.push(a);
+    byCollection.set(a.collectionId, list);
+  }
+  return {
+    collections: collections.map((c) => ({ ...c, articles: byCollection.get(c.id) ?? [] })),
+    uncategorized,
+  };
+}
+
 export async function getHelpHomeData(
   db: Db,
   slug: string,
@@ -151,13 +186,8 @@ export async function getHelpHomeData(
   const ws = await findPublicHelpWorkspace(db, slug);
   if (!ws) return null;
 
-  const [collections, articles, popularRows] = await Promise.all([
-    listPublicCollections(db, ws.id),
-    db
-      .select(linkColumns)
-      .from(helpArticle)
-      .where(and(eq(helpArticle.workspaceId, ws.id), published))
-      .orderBy(...articleOrder),
+  const [tree, popular] = await Promise.all([
+    loadHelpTree(db, ws.id),
     db
       .select({ ...linkColumns, collectionName: helpCollection.name })
       .from(helpArticle)
@@ -171,27 +201,7 @@ export async function getHelpHomeData(
       .limit(5),
   ]);
 
-  const byCollection = new Map<string, HelpArticleLink[]>();
-  const uncategorized: HelpArticleLink[] = [];
-  for (const a of articles as HelpArticleLink[]) {
-    if (!a.collectionId) {
-      uncategorized.push(a);
-      continue;
-    }
-    const list = byCollection.get(a.collectionId) ?? [];
-    list.push(a);
-    byCollection.set(a.collectionId, list);
-  }
-
-  return {
-    workspace: ws,
-    collections: collections.map((c) => ({
-      ...c,
-      articles: byCollection.get(c.id) ?? [],
-    })),
-    uncategorized,
-    popular: popularRows,
-  };
+  return { workspace: ws, ...tree, popular };
 }
 
 export async function getHelpCollectionPageData(
@@ -201,15 +211,10 @@ export async function getHelpCollectionPageData(
 ): Promise<HelpCollectionPageData | null> {
   const ws = await findPublicHelpWorkspace(db, slug);
   if (!ws) return null;
-  const collections = await listPublicCollections(db, ws.id);
-  const collection = collections.find((c) => c.slug === collectionSlug);
-  if (!collection) return null;
-  const articles = await db
-    .select(linkColumns)
-    .from(helpArticle)
-    .where(and(eq(helpArticle.collectionId, collection.id), published))
-    .orderBy(...articleOrder);
-  return { workspace: ws, collection, articles, collections };
+  const tree = await loadHelpTree(db, ws.id);
+  const match = tree.collections.find((c) => c.slug === collectionSlug);
+  if (!match) return null;
+  return { workspace: ws, collection: toSummary(match), articles: match.articles, tree };
 }
 
 export async function getHelpArticlePageData(
@@ -247,22 +252,10 @@ export async function getHelpArticlePageData(
     author: { name: authorName ?? null, image: authorImage ?? null },
   };
 
-  const collections = await listPublicCollections(db, ws.id);
-  const collection =
-    collections.find((c) => c.id === article.collectionId) ?? null;
-  const siblings: HelpArticleLink[] = await db
-    .select(linkColumns)
-    .from(helpArticle)
-    .where(
-      and(
-        eq(helpArticle.workspaceId, ws.id),
-        article.collectionId
-          ? eq(helpArticle.collectionId, article.collectionId)
-          : isNull(helpArticle.collectionId),
-        published,
-      ),
-    )
-    .orderBy(...articleOrder);
+  const tree = await loadHelpTree(db, ws.id);
+  const match = tree.collections.find((c) => c.id === article.collectionId);
+  const collection = match ? toSummary(match) : null;
+  const siblings = match ? match.articles : tree.uncategorized;
 
   const index = siblings.findIndex((s) => s.id === article.id);
   return {
@@ -270,7 +263,7 @@ export async function getHelpArticlePageData(
     article,
     collection,
     siblings,
-    collections,
+    tree,
     previous: index > 0 ? (siblings[index - 1] ?? null) : null,
     next: index >= 0 ? (siblings[index + 1] ?? null) : null,
   };

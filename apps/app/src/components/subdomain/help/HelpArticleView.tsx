@@ -9,12 +9,13 @@ import { HelpArticleBody } from "./HelpArticleBody";
 import { HelpAskButton } from "./HelpAskButton";
 import { HelpFeedback } from "./HelpFeedback";
 import { HelpSearch } from "./HelpSearch";
-import { HelpBreadcrumbs, HelpMobileArticleNav, HelpSidebar } from "./HelpSidebar";
+import { HelpBreadcrumbs, HelpMobileArticleNav } from "./HelpSidebar";
+import { HelpNavTree } from "./HelpNavTree";
 import { HelpToc } from "./HelpToc";
 import { extractHeadings, formatHelpDate, helpArticleHref, helpCollectionHref, readingMinutes } from "./content";
 
 export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slug: string }) {
-  const { article, collection, siblings, collections, previous, next } = data;
+  const { article, collection, siblings, tree, previous, next } = data;
   const content = article.content as JSONContent;
   const headings = extractHeadings(content);
   const author = article.author.name || "Team";
@@ -26,12 +27,7 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
         <aside className="hidden md:block">
           <div className="sticky top-20 max-h-[calc(100dvh-6rem)] space-y-6 overflow-y-auto pb-6 [scrollbar-width:none]">
             <HelpSearch slug={slug} size="sm" />
-            <HelpSidebar
-              collections={collections}
-              current={collection}
-              articles={siblings}
-              activeArticleId={article.id}
-            />
+            <HelpNavTree tree={tree} currentCollectionId={article.collectionId} activeArticleId={article.id} />
           </div>
         </aside>
 
