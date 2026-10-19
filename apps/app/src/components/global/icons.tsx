@@ -12,6 +12,8 @@ import {
   IconPuzzleFilled,
   IconSettingsFilled,
   IconBellFilled,
+  IconMoonFilled,
+  IconSunFilled,
   IconCircleCheckFilled,
   IconClockFilled,
   IconCopyFilled,
@@ -93,9 +95,7 @@ import {
   Mail as LucideMail,
   Maximize2 as LucideMaximize2,
   Menu as LucideMenu,
-  Moon as LucideMoon,
   Rss as LucideRss,
-  Sun as LucideSun,
   MessageCircle as LucideMessageCircle,
   MessageSquareText as LucideMessageSquareText,
   MoreHorizontal as LucideMoreHorizontal,
@@ -209,8 +209,8 @@ export const ArrowBigUp = outline(LucideArrowBigUp);
 export const ArrowLeft = outline(LucideArrowLeft);
 export const ArrowRight = outline(LucideArrowRight);
 export const ArrowUp = outline(LucideArrowUp);
-export const MoonIcon = outline(LucideMoon);
-export const SunIcon = outline(LucideSun);
+export const MoonIcon = solid(IconMoonFilled);
+export const SunIcon = solid(IconSunFilled);
 export const RssIcon = outline(LucideRss);
 export const CalendarCheck2 = outline(LucideCalendarCheck2);
 export const CalendarDays = solid(IconCalendarFilled);
