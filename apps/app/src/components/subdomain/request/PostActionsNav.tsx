@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { cn } from "@featul/ui/lib/utils";
 import {
-  ClipboardIcon,
+  Copy,
   EditIcon,
   FlagIcon,
   ShareIcon,
@@ -71,7 +71,7 @@ export function PostActionsNav({
       </h2>
       <ul className="space-y-0.5">
         <ActionItem
-          icon={<ClipboardIcon className="size-4" />}
+          icon={<Copy className="size-4" />}
           label="Copy link"
           onClick={() => copyPostLink()}
         />
