@@ -27,7 +27,7 @@ function formatDate(value?: string | Date | null) {
     };
 }
 
-/** Timeline entry: date rail on the left, content card on the right. */
+/** Timeline entry: date rail on the left, plain entry on the right. */
 export function ChangelogCard({ item, linkPrefix = "/p", isLast = false }: ChangelogCardProps) {
     const href = `${linkPrefix}/${item.slug}`;
     const displayName = item.author?.name || "Unknown";
@@ -57,18 +57,37 @@ export function ChangelogCard({ item, linkPrefix = "/p", isLast = false }: Chang
                 aria-hidden
                 className={cn(
                     "absolute top-2.5 left-[115.5px] hidden w-px bg-border sm:block dark:bg-white/[0.1]",
-                    isLast ? "h-5" : "-bottom-8",
+                    isLast ? "h-5" : "-bottom-12",
                 )}
             />
 
-            {/* Content */}
-            <div className="group relative overflow-hidden rounded-xl border border-border/60 bg-card transition-colors hover:border-primary/40 dark:border-white/[0.07]">
-                <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
+            {/* Content: plain, no frame */}
+            <div className="group relative min-w-0">
+                <Link href={href} className="absolute inset-0 z-10 focus:outline-none" aria-label={item.title}>
                     <span className="sr-only">View changelog</span>
                 </Link>
 
+                {item.tags && item.tags.length > 0 ? (
+                    <div className="mb-1.5 flex flex-wrap items-center gap-x-2 text-xs font-medium text-primary">
+                        {item.tags.slice(0, 4).map((tag, i) => (
+                            <React.Fragment key={tag.id}>
+                                {i > 0 ? <span className="text-muted-foreground/50">·</span> : null}
+                                <span>{tag.name}</span>
+                            </React.Fragment>
+                        ))}
+                    </div>
+                ) : null}
+
+                <h3 className="text-xl font-semibold leading-snug tracking-tight text-foreground transition-colors group-hover:text-primary">
+                    {item.title}
+                </h3>
+
+                {previewText ? (
+                    <p className="mt-2 line-clamp-3 text-[15px] leading-relaxed text-muted-foreground">{previewText}</p>
+                ) : null}
+
                 {item.coverImage ? (
-                    <div className="aspect-[2/1] w-full overflow-hidden border-b border-border/60 bg-muted dark:border-white/[0.06]">
+                    <div className="mt-4 aspect-[2/1] w-full overflow-hidden rounded-lg bg-muted">
                         <img
                             src={item.coverImage}
                             alt=""
@@ -77,43 +96,20 @@ export function ChangelogCard({ item, linkPrefix = "/p", isLast = false }: Chang
                     </div>
                 ) : null}
 
-                <div className="p-5">
-                    {item.tags && item.tags.length > 0 ? (
-                        <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
-                            {item.tags.slice(0, 4).map((tag) => (
-                                <span
-                                    key={tag.id}
-                                    className="rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary ring-1 ring-inset ring-primary/15"
-                                >
-                                    {tag.name}
-                                </span>
-                            ))}
-                        </div>
-                    ) : null}
-
-                    <h3 className="text-lg font-semibold leading-snug tracking-tight text-foreground group-hover:text-primary sm:text-xl">
-                        {item.title}
-                    </h3>
-
-                    {previewText ? (
-                        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{previewText}</p>
-                    ) : null}
-
-                    <div className="mt-4 flex items-center justify-between gap-3">
-                        <div className="flex min-w-0 items-center gap-2">
-                            <Avatar className="relative size-6 overflow-visible">
-                                <AvatarImage src={displayImage} alt={displayName} />
-                                <AvatarFallback className="bg-muted text-[10px] text-muted-foreground">{getInitials(displayName)}</AvatarFallback>
-                                <RoleBadge role={item.author?.role} isOwner={item.author?.isOwner} className="bg-card" />
-                            </Avatar>
-                            <span className="truncate text-xs font-medium text-foreground/80">{displayName}</span>
-                            <span className="text-xs text-muted-foreground/70 sm:hidden">· {date.full}</span>
-                        </div>
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors group-hover:text-primary">
-                            Read more
-                            <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-                        </span>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                        <Avatar className="relative size-5 overflow-visible">
+                            <AvatarImage src={displayImage} alt={displayName} />
+                            <AvatarFallback className="bg-muted text-[9px] text-muted-foreground">{getInitials(displayName)}</AvatarFallback>
+                            <RoleBadge role={item.author?.role} isOwner={item.author?.isOwner} className="bg-background" />
+                        </Avatar>
+                        <span className="truncate text-xs font-medium text-foreground/80">{displayName}</span>
+                        <span className="text-xs text-muted-foreground/70 sm:hidden">· {date.full}</span>
                     </div>
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors group-hover:text-primary">
+                        Read more
+                        <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </span>
                 </div>
             </div>
         </article>

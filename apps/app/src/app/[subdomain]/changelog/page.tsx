@@ -64,14 +64,14 @@ export default async function ChangelogPage({
         </div>
 
         {entries.length === 0 ? (
-          <div className="flex flex-1 flex-col rounded-xl border border-border/60 bg-card dark:border-white/[0.07]">
+          <div className="flex flex-1 flex-col">
             <SubdomainListEmptyState
               title="No changelog entries yet"
               description="Check back soon for updates."
             />
           </div>
         ) : (
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-12">
             {entries.map((entry, i) => (
               <ChangelogCard
                 key={entry.id}

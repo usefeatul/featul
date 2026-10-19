@@ -14,6 +14,7 @@ import StatusPicker from "../requests/meta/StatusPicker";
 import FlagsPicker from "../requests/meta/FlagsPicker";
 import { StatusChip } from "./StatusChip";
 import { ShareIdeaButton } from "./ShareIdeaButton";
+import { DetailRow, SidebarSection } from "./SidebarSection";
 import { PostActionsNav } from "./request/PostActionsNav";
 import { RequestFlagReadout } from "@/components/global/flag-visuals";
 import type { SubdomainRequestDetailData } from "@/types/subdomain";
@@ -60,10 +61,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
       <div className="space-y-6 md:sticky md:top-20">
         <ShareIdeaButton className="w-full" />
 
-        <section>
-          <h2 className="mb-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/80">
-            Details
-          </h2>
+        <SidebarSection title="Details">
           <dl className="space-y-0.5">
             <DetailRow label="Board">
               {canEdit ? (
@@ -135,28 +133,10 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
               </DetailRow>
             ) : null}
           </dl>
-        </section>
+        </SidebarSection>
 
         <PostActionsNav post={post} workspaceSlug={workspaceSlug} />
       </div>
     </aside>
-  );
-}
-
-/** Label on the left, value on the right; no frame. */
-function DetailRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex min-h-8 items-center justify-between gap-3 px-2.5 py-1">
-      <dt className="shrink-0 text-sm text-muted-foreground">{label}</dt>
-      <dd className="flex min-w-0 justify-end text-sm font-medium text-foreground">
-        {children}
-      </dd>
-    </div>
   );
 }

@@ -9,39 +9,38 @@ import { ChangelogSidebar } from "./ChangelogSidebar";
 
 export default function SubdomainChangelogDetail({
     entry,
-    subdomain,
     backLink = "/changelog",
 }: {
     entry: ChangelogEntryData;
-    subdomain: string;
+    /** Kept for callers; the rail no longer needs it. */
+    subdomain?: string;
     backLink?: string;
 }) {
     const { sidebarPosition = "right" } = useDomainBranding();
 
     return (
         <section className="min-w-0 mb-12">
-            <ChangelogHeader sidebarPosition={sidebarPosition} backLink={backLink} />
-
-            {/* Main Content Grid */}
             <div
                 className={subdomainColumns(sidebarPosition)}
             >
                 {/* Left Sidebar */}
                 {sidebarPosition === "left" ? (
                     <ChangelogSidebar
-                        subdomain={subdomain}
+                        title={entry.title}
                         author={entry.author}
                         publishedAt={entry.publishedAt}
                     />
                 ) : null}
 
-                {/* Main Content */}
-                <ChangelogContent entry={entry} />
+                <div className="flex min-w-0 flex-col">
+                    <ChangelogHeader backLink={backLink} />
+                    <ChangelogContent entry={entry} />
+                </div>
 
                 {/* Right Sidebar */}
                 {sidebarPosition === "right" ? (
                     <ChangelogSidebar
-                        subdomain={subdomain}
+                        title={entry.title}
                         author={entry.author}
                         publishedAt={entry.publishedAt}
                     />

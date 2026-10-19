@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { cn } from "@featul/ui/lib/utils";
 import {
   Copy,
   EditIcon,
@@ -11,42 +10,11 @@ import {
 } from "@/components/global/icons";
 import { usePostEditAccess } from "@/hooks/usePostEditAccess";
 import type { SubdomainRequestDetailData } from "../../../types/subdomain";
+import { SidebarActionItem, SidebarSection } from "../SidebarSection";
 import EditPostModal from "./EditPostModal";
 import ReportPostDialog from "./ReportPostDialog";
 import { useDeletePost } from "./actions/RequestDeleteAction";
 import { copyPostLink, sharePostLink } from "./actions/RequestShareAction";
-
-function ActionItem({
-  icon,
-  label,
-  onClick,
-  destructive,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  destructive?: boolean;
-}) {
-  return (
-    <li>
-      <button
-        type="button"
-        onClick={onClick}
-        className={cn(
-          "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-sm transition-colors",
-          destructive
-            ? "text-muted-foreground hover:bg-red-500/10 hover:text-red-500"
-            : "text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground",
-        )}
-      >
-        <span className="flex size-4 shrink-0 items-center justify-center">
-          {icon}
-        </span>
-        {label}
-      </button>
-    </li>
-  );
-}
 
 /** Sidebar list of post actions: share, report, and edit/delete for editors. */
 export function PostActionsNav({
@@ -65,34 +33,31 @@ export function PostActionsNav({
   const deletion = useDeletePost(post.id, workspaceSlug);
 
   return (
-    <section>
-      <h2 className="mb-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/80">
-        Actions
-      </h2>
+    <SidebarSection title="Actions">
       <ul className="space-y-0.5">
-        <ActionItem
+        <SidebarActionItem
           icon={<Copy className="size-4" />}
           label="Copy link"
           onClick={() => copyPostLink()}
         />
-        <ActionItem
+        <SidebarActionItem
           icon={<ShareIcon className="size-4" />}
           label="Share"
           onClick={() => sharePostLink(undefined, post.title)}
         />
-        <ActionItem
+        <SidebarActionItem
           icon={<FlagIcon className="size-4" />}
           label="Report"
           onClick={() => setReportOpen(true)}
         />
         {canEdit ? (
           <>
-            <ActionItem
+            <SidebarActionItem
               icon={<EditIcon className="size-4" />}
               label="Edit post"
               onClick={() => setEditOpen(true)}
             />
-            <ActionItem
+            <SidebarActionItem
               icon={<TrashIcon className="size-4" />}
               label="Delete post"
               onClick={deletion.openConfirm}
@@ -116,6 +81,6 @@ export function PostActionsNav({
         postId={post.id}
       />
       {deletion.dialog}
-    </section>
+    </SidebarSection>
   );
 }
