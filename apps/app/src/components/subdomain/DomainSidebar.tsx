@@ -7,6 +7,7 @@ import { cn } from "@featul/ui/lib/utils"
 import { BoardIcon, ChangelogIcon, RoadmapIcon, RssIcon } from "@/components/global/icons"
 import StatusIcon from "@/components/requests/StatusIcon"
 import { usePortalData } from "./PortalDataProvider"
+import type { PortalStatusCounts } from "@/app/[subdomain]/data"
 import { PoweredBy } from "./PoweredBy"
 import { ShareIdeaButton } from "./ShareIdeaButton"
 import { encodeArray } from "@/utils/request"
@@ -33,10 +34,13 @@ export function boardDotClass(index: number) {
   return DOT_PALETTE[index % DOT_PALETTE.length]
 }
 
-const ROADMAP_RAIL: Array<{ status: "planned" | "progress" | "completed"; label: string }> = [
+const STATUS_RAIL: Array<{ status: keyof PortalStatusCounts; label: string }> = [
+  { status: "pending", label: "Pending" },
+  { status: "review", label: "In review" },
   { status: "planned", label: "Planned" },
   { status: "progress", label: "In progress" },
   { status: "completed", label: "Completed" },
+  { status: "closed", label: "Closed" },
 ]
 
 function RailGroup({
@@ -80,11 +84,11 @@ function RailLink({
         className={cn(
           "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors",
           active
-            ? "bg-primary/10 font-medium text-foreground dark:bg-primary/15"
-            : "text-muted-foreground hover:bg-muted/60 hover:text-foreground dark:hover:bg-white/[0.04]",
+            ? "bg-sidebar-accent font-medium text-foreground dark:bg-white/[0.07]"
+            : "text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground",
         )}
       >
-        <span className="flex size-4 shrink-0 items-center justify-center">{leading}</span>
+        <span className={cn("flex size-4 shrink-0 items-center justify-center", active && "text-primary")}>{leading}</span>
         <span className="min-w-0 flex-1 truncate">{label}</span>
         {typeof count === "number" ? (
           <span
@@ -138,7 +142,7 @@ export function DomainSidebar({
           <RailLink
             href="/"
             active={isFeedback && currentBoard === "__all__" && !currentStatus}
-            leading={<span className="size-2 rounded-full bg-foreground/60" />}
+            leading={<span className="size-2 rounded-full bg-current opacity-70" />}
             label="All feedback"
             count={data.totalPosts}
           />
@@ -155,9 +159,8 @@ export function DomainSidebar({
         </RailGroup>
       ) : null}
 
-      {data.roadmapVisible ? (
-        <RailGroup title="Roadmap" icon={<RoadmapIcon className="size-3.5" />}>
-          {ROADMAP_RAIL.map(({ status, label }) => (
+      <RailGroup title="Status" icon={<RoadmapIcon className="size-3.5" />}>
+          {STATUS_RAIL.map(({ status, label }) => (
             <RailLink
               key={status}
               href={statusHref(statusBase, status)}
@@ -167,8 +170,7 @@ export function DomainSidebar({
               count={data.statusCounts[status]}
             />
           ))}
-        </RailGroup>
-      ) : null}
+      </RailGroup>
 
       {data.changelogVisible ? (
         <RailGroup title="Updates" icon={<ChangelogIcon className="size-3.5" />}>

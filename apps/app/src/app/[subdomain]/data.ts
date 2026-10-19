@@ -23,10 +23,12 @@ export type PortalBoard = {
 };
 
 export type PortalStatusCounts = {
+  pending: number;
+  review: number;
   planned: number;
   progress: number;
   completed: number;
-  review: number;
+  closed: number;
 };
 
 export type SubdomainLayoutData = {
@@ -68,6 +70,8 @@ export async function loadSubdomainLayoutData(
     progress,
     completed,
     review,
+    pending,
+    closed,
   ] = await Promise.all([
     getBrandingBySlug(subdomain),
     getSystemBoardVisibility(ws.id, "changelog"),
@@ -78,6 +82,8 @@ export async function loadSubdomainLayoutData(
     getWorkspacePostsCount(subdomain, { statuses: ["progress"], publicOnly: true }),
     getWorkspacePostsCount(subdomain, { statuses: ["completed"], publicOnly: true }),
     getWorkspacePostsCount(subdomain, { statuses: ["review"], publicOnly: true }),
+    getWorkspacePostsCount(subdomain, { statuses: ["pending"], publicOnly: true }),
+    getWorkspacePostsCount(subdomain, { statuses: ["closed"], publicOnly: true }),
   ]);
 
   const changelogCount = changelogVisible
@@ -90,7 +96,7 @@ export async function loadSubdomainLayoutData(
     changelogVisible,
     roadmapVisible,
     boards,
-    statusCounts: { planned, progress, completed, review },
+    statusCounts: { pending, review, planned, progress, completed, closed },
     totalPosts,
     changelogCount,
   };
