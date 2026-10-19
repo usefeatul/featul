@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
 const buttonVariants = cva(
@@ -12,16 +13,15 @@ const buttonVariants = cva(
           "border-primary/60 bg-primary from-[color-mix(in_oklab,var(--primary),black_8%)] to-[color-mix(in_oklab,var(--primary),black_20%)] text-primary-foreground hover:brightness-110",
         destructive:
           "border-destructive/60 bg-destructive from-destructive to-[color-mix(in_oklab,var(--destructive),black_12%)] text-white hover:brightness-110 focus-visible:ring-destructive/20 dark:from-[color-mix(in_oklab,var(--destructive),black_20%)] dark:to-[color-mix(in_oklab,var(--destructive),black_30%)] dark:focus-visible:ring-destructive/40",
-        outline:
-          "border-border bg-background from-background to-muted text-foreground hover:brightness-[0.97] aria-expanded:from-secondary aria-expanded:to-secondary shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_1px_2px_rgba(0,0,0,0.06)] dark:from-input dark:to-muted dark:text-foreground dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.4)] dark:hover:brightness-125",
+        outline: `${raisedSurfaceClass} text-foreground hover:brightness-[0.97] aria-expanded:brightness-[0.97] dark:text-foreground dark:hover:brightness-125 dark:aria-expanded:brightness-125`,
         secondary:
           "border-foreground/60 bg-foreground from-foreground/85 to-foreground text-background hover:from-foreground/70 hover:to-foreground/85 dark:text-background",
         ghost: "hover:bg-muted/50 hover:text-accent-foreground dark:hover:bg-muted/50 dark:bg-black/40",
         link: "text-primary dark:text-primary underline-offset-4 hover:underline bg-transparent",
         quiet: "bg-primary text-primary-foreground hover:bg-primary/70",
-        nav: "border border-border/40 bg-card text-foreground hover:bg-muted/30 hover:text-accent-foreground dark:border-white/8 dark:bg-background dark:hover:bg-white/5",
+        nav: `${raisedSurfaceClass} text-foreground hover:brightness-[0.97] hover:text-accent-foreground dark:text-foreground dark:hover:brightness-125`,
         plain: "bg-card dark:bg-background text-foreground hover:bg-muted hover:text-accent-foreground dark:hover:bg-black/50",
-        card: "border border-border/40 bg-card text-foreground hover:bg-muted/20 hover:text-accent-foreground dark:border-white/8 dark:bg-black/50 dark:hover:bg-black/30",
+        card: `${raisedSurfaceClass} text-foreground hover:brightness-[0.97] hover:text-accent-foreground dark:text-foreground dark:hover:brightness-125`,
       },
       size: {
         default: "h-8.5 px-1.5 py-1 has-[>svg]:px-3",
@@ -35,7 +35,7 @@ const buttonVariants = cva(
     },
     compoundVariants: [
       {
-        variant: ["default", "secondary", "outline", "destructive"],
+        variant: ["default", "secondary", "outline", "destructive", "card", "nav"],
         className:
           "border bg-linear-to-b enabled:active:not-aria-[haspopup]:translate-y-px disabled:bg-none disabled:shadow-none",
       },
