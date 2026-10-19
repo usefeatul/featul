@@ -229,7 +229,7 @@ function CollectionPicker({
           <ChevronDown className="size-3" />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" list className="w-56 min-w-0">
+      <PopoverContent align="start" list>
         <div className="px-3 py-2 text-xs font-medium text-accent">Collection</div>
         <PopoverList>
           {collections.map((c) => (

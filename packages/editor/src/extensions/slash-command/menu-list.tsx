@@ -101,7 +101,7 @@ export const EditorSlashMenu = ({
         className={cn(
           overlayDialogClass,
           overlayRoundedClass,
-          "z-50 flex w-80 flex-col gap-2 text-popover-foreground outline-hidden",
+          "z-50 flex w-max max-w-80 flex-col gap-2 text-popover-foreground outline-hidden",
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2",
         )}
       >
