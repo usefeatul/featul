@@ -11,6 +11,13 @@ import { helpArticleHref, helpCollectionHref } from "./content";
 
 const UNCATEGORIZED = "__more__";
 
+/**
+ * Each help page renders its own tree, so navigating remounts it. This survives the remount
+ * (client only; never read during SSR) so open collections and the rail's scroll stay put
+ * instead of snapping back.
+ */
+const navMemory = { expanded: new Set<string>(), railScroll: 0 };
+
 // Short and soft: the tree should feel responsive, never bouncy.
 const glide: Transition = { type: "spring", stiffness: 520, damping: 42, mass: 0.6 };
 const reveal: Transition = { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] };
@@ -38,9 +45,12 @@ export function HelpNavTree({
     : { glide, reveal };
   const currentKey =
     currentCollectionId === undefined ? undefined : (currentCollectionId ?? UNCATEGORIZED);
-  const [expanded, setExpanded] = React.useState<Set<string>>(
-    () => new Set(currentKey ? [currentKey] : []),
-  );
+  const navRef = React.useRef<HTMLElement>(null);
+  const [expanded, setExpanded] = React.useState<Set<string>>(() => {
+    // Empty on the server and on a fresh page load, so hydration still matches.
+    const remembered = typeof window === "undefined" ? [] : [...navMemory.expanded];
+    return new Set([...remembered, ...(currentKey ? [currentKey] : [])]);
+  });
   // Moves the marker on click, before the next page arrives, so the slide is visible.
   const [selectedId, setSelectedId] = React.useState(activeArticleId);
   const [hoveredRow, setHoveredRow] = React.useState<string | null>(null);
@@ -52,6 +62,22 @@ export function HelpNavTree({
     if (!currentKey) return;
     setExpanded((prev) => (prev.has(currentKey) ? prev : new Set(prev).add(currentKey)));
   }, [currentKey]);
+
+  React.useEffect(() => {
+    navMemory.expanded = new Set(expanded);
+  }, [expanded]);
+
+  // Put the rail back where the reader left it before the new page paints.
+  React.useLayoutEffect(() => {
+    const rail = navRef.current?.closest<HTMLElement>("[data-help-rail]");
+    if (!rail) return;
+    rail.scrollTop = navMemory.railScroll;
+    const save = () => {
+      navMemory.railScroll = rail.scrollTop;
+    };
+    rail.addEventListener("scroll", save, { passive: true });
+    return () => rail.removeEventListener("scroll", save);
+  }, []);
 
   const toggle = (key: string) =>
     setExpanded((prev) => {
@@ -83,7 +109,7 @@ export function HelpNavTree({
   ];
 
   return (
-    <nav aria-label="Help center" className="text-sm">
+    <nav ref={navRef} aria-label="Help center" className="text-sm">
       <Link
         href="/help"
         className="mb-3 flex items-center px-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"

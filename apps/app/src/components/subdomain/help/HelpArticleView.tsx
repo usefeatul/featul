@@ -25,7 +25,7 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
     <section className="flex flex-1 flex-col">
       <div className="grid flex-1 grid-cols-1 gap-10 md:grid-cols-[13rem_minmax(0,1fr)] lg:grid-cols-[14rem_minmax(0,1fr)_13rem]">
         <aside className="hidden md:block">
-          <div className="sticky top-20 max-h-[calc(100dvh-6rem)] space-y-6 overflow-y-auto pb-6 [scrollbar-width:none]">
+          <div data-help-rail className="sticky top-20 max-h-[calc(100dvh-6rem)] space-y-6 overflow-y-auto pb-6 [scrollbar-width:none]">
             <HelpSearch slug={slug} size="sm" />
             <HelpNavTree tree={tree} currentCollectionId={article.collectionId} activeArticleId={article.id} />
           </div>
