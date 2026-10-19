@@ -22,7 +22,7 @@ export const widgetChipInnerClass =
 
 /** Two-tone image frame — same shell/inner language as create-post ContentImage. */
 export const widgetImageShellClass =
-  "relative overflow-hidden rounded-lg border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-shell))] p-0.5";
+  "relative overflow-hidden rounded-xl [corner-shape:squircle] border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-shell))] bg-linear-to-b from-[rgb(var(--widget-surface))] to-[rgb(var(--widget-shell))] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]";
 
 export const widgetImageInnerClass =
-  "overflow-hidden rounded-lg bg-[rgb(var(--widget-surface))] ring-1 ring-[rgb(var(--widget-fg)/0.1)]";
+  "relative overflow-hidden rounded-[0.5rem] [corner-shape:squircle] bg-[rgb(var(--widget-surface))]";

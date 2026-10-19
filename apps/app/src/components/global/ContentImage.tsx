@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay";
+import { imageInnerClass, imageShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { ImageLightbox } from "@/components/global/ImageLightbox";
 
@@ -33,8 +33,8 @@ export default function ContentImage({
     <>
       <div
         className={cn(
-          overlayShellClass,
-          "relative cursor-pointer p-0.5 transition-opacity hover:opacity-90",
+          imageShellClass,
+          "relative cursor-pointer transition-[filter] hover:brightness-95 dark:hover:brightness-110",
           className,
         )}
         onClick={openPreview}
@@ -48,7 +48,7 @@ export default function ContentImage({
         }}
         aria-label="Click to view full size image"
       >
-        <div className={overlayInnerClass}>
+        <div className={cn(imageInnerClass, "h-full")}>
           <div className="relative aspect-video h-full w-full min-h-[60px] bg-background">
             <Image
               src={url}

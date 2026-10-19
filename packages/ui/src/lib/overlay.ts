@@ -27,6 +27,14 @@ export const modalShellClass =
 export const modalInnerClass =
   "overflow-hidden rounded-lg bg-card ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(0,0,0,0.05)] dark:bg-linear-to-b dark:from-[color-mix(in_oklab,var(--card),white_3%)] dark:to-card dark:ring-white/[0.07] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.4)]"
 
+/** Image thumbnail frame: lit edge and gradient around a `p-1` inset, no drop shadow. */
+export const imageShellClass =
+  "overflow-hidden rounded-xl [corner-shape:squircle] border border-black/[0.08] bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_5%)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,1)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_5%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+
+/** Picture clip inside `imageShellClass`; the shell carries the only border. */
+export const imageInnerClass =
+  "relative overflow-hidden rounded-[0.5rem] [corner-shape:squircle] bg-card dark:bg-background"
+
 /** Outer chip shell — a compact version of the shared subtle frame. */
 export const overlayChipShellClass =
   "box-border inline-flex shrink-0 items-stretch rounded-md border border-border/60 bg-card p-0.5 text-foreground dark:border-white/[0.07]"
