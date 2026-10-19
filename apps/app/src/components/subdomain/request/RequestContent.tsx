@@ -101,7 +101,7 @@ export function RequestContent({
           hidePublicMemberIdentity={post.hidePublicMemberIdentity}
         />
 
-        <div className="flex items-center gap-3 text-xs text-accent">
+        <div className="flex items-center justify-end gap-3 text-xs text-accent">
           <UpvoteButton
             postId={post.id}
             upvotes={post.upvotes}
