@@ -76,20 +76,17 @@ function MockApp({ dark }: { dark: boolean }) {
   const card = cn(
     "rounded-xl border",
     border,
-    dark ? "bg-white/[0.02]" : "bg-white",
+    dark ? "bg-white/[0.02]" : "bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)]",
   );
   const stroke = dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
 
   return (
-    <div
-      aria-hidden
-      className="pointer-events-none flex h-full select-none opacity-80 blur-[2px]"
-    >
+    <div aria-hidden className="pointer-events-none flex h-full select-none blur-[0.5px]">
       <aside
         className={cn(
           "hidden w-52 shrink-0 flex-col gap-5 border-r p-3 md:flex",
           border,
-          dark ? "bg-[#121212]" : "bg-[#f3f3f3]",
+          dark ? "bg-[#121212]" : "bg-[#f4f4f4]",
         )}
       >
         <div className="flex items-center gap-2 px-1.5 py-1">
@@ -305,11 +302,31 @@ function Preview({
 
   return (
     <div className={shareCardClass}>
-      <div className="flex items-center gap-1.5 border-b border-border/50 px-4 py-2.5">
-        <span className="size-2.5 rounded-full bg-muted-foreground/20" />
-        <span className="size-2.5 rounded-full bg-muted-foreground/20" />
-        <span className="size-2.5 rounded-full bg-muted-foreground/20" />
-        <span className="mx-auto rounded-md bg-muted/50 px-3 py-0.5 text-[11px] text-accent dark:bg-white/5">
+      <div
+        className={cn(
+          "flex items-center gap-1.5 border-b px-4 py-2.5 transition-colors duration-300",
+          dark
+            ? "border-white/[0.06] bg-[#0f0f0f]"
+            : "border-black/[0.06] bg-[#ececec]",
+        )}
+      >
+        {[0, 1, 2].map((dot) => (
+          <span
+            key={dot}
+            className={cn(
+              "size-2.5 rounded-full",
+              dark ? "bg-white/15" : "bg-black/15",
+            )}
+          />
+        ))}
+        <span
+          className={cn(
+            "mx-auto rounded-md px-3 py-0.5 text-[11px]",
+            dark
+              ? "bg-white/5 text-neutral-400"
+              : "bg-white text-neutral-500 shadow-[0_1px_2px_rgba(0,0,0,0.06)]",
+          )}
+        >
           yourapp.com
         </span>
         <span className="w-[42px]" />
@@ -322,6 +339,13 @@ function Preview({
       >
         <MockApp dark={dark} />
         <div
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-0 transition-colors duration-300",
+            dark ? "bg-black/35" : "bg-neutral-900/[0.06]",
+          )}
+        />
+        <div
           className={cn(
             "absolute bottom-4 flex flex-col gap-3 transition-all duration-300",
             position === "right" ? "right-4 items-end" : "left-4 items-start",
@@ -332,7 +356,7 @@ function Preview({
               "h-[38rem] w-[min(370px,calc(100vw-5rem))] overflow-hidden rounded-xl border shadow-2xl",
               dark
                 ? "border-white/10 bg-[#111111]"
-                : "border-black/10 bg-[#f3f3f3]",
+                : "border-black/[0.08] bg-white shadow-[0_24px_64px_-16px_rgba(0,0,0,0.25)]",
             )}
           >
             {src ? (
