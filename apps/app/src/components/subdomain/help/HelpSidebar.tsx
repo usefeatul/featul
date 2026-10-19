@@ -32,7 +32,8 @@ export function HelpCollectionTile({ icon, className }: { icon?: string | null; 
   return (
     <span
       className={cn(
-        "flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-inset ring-primary/15",
+        // Raised-surface depth (gradient + lit top edge) with a barely-there drop shadow.
+        "flex size-9 shrink-0 items-center justify-center rounded-lg [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-xl border border-black/[0.08] bg-card bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_5%)] text-primary shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_1px_rgba(0,0,0,0.03)] dark:border-white/[0.07] dark:from-[color-mix(in_oklab,var(--card),white_5%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_1px_rgba(0,0,0,0.12)]",
         className,
       )}
     >
