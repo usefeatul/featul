@@ -12,10 +12,7 @@ import { NotraConnectionSection } from "@/components/changelog/notra/NotraConnec
 import { NotraCredentialsSection } from "@/components/changelog/notra/NotraCredentialsSection";
 import { NotraDialogActions } from "@/components/changelog/notra/NotraDialogActions";
 import { NotraImportOptionsSection } from "@/components/changelog/notra/NotraImportOptionsSection";
-import type {
-  ImportResponse,
-  NotraConnectionResponse,
-} from "@/types/notra";
+import type { ImportResponse, NotraConnectionResponse } from "@/types/notra";
 import {
   readMessageFromResponse,
   showImportSummaryToasts,
@@ -164,7 +161,8 @@ export function ImportNotraDialog({
 
     const safeOrganizationId = organizationId.trim();
     const safeApiKey = String(apiKeyInputRef.current?.value || "").trim();
-    const shouldUseStoredConnection = useStoredConnection && hasStoredConnection;
+    const shouldUseStoredConnection =
+      useStoredConnection && hasStoredConnection;
 
     if (!shouldUseStoredConnection) {
       if (!safeOrganizationId) {
@@ -188,7 +186,7 @@ export function ImportNotraDialog({
         if (!saveResponse.ok) {
           toast.error(
             (await readMessageFromResponse(saveResponse)) ||
-            "Failed to save Notra credentials",
+              "Failed to save Notra credentials",
           );
           return;
         }
@@ -197,7 +195,9 @@ export function ImportNotraDialog({
 
       const response = await client.changelog.importFromNotra.$post({
         slug: workspaceSlug,
-        organizationId: shouldUseStoredConnection ? undefined : safeOrganizationId,
+        organizationId: shouldUseStoredConnection
+          ? undefined
+          : safeOrganizationId,
         apiKey: shouldUseStoredConnection ? undefined : safeApiKey,
         useStoredConnection: shouldUseStoredConnection,
         status: includeDrafts ? ["published", "draft"] : ["published"],
@@ -272,45 +272,53 @@ export function ImportNotraDialog({
         icon={<NotraIcon className="size-4" />}
         width="wide"
       >
-        <form onSubmit={handleSubmit} className="space-y-4 px-1 pb-1">
-          <NotraConnectionSection
-            hasStoredConnection={hasStoredConnection}
-            isUsingStoredConnection={isUsingStoredConnection}
-            isSwitchDisabled={
-              isPending || isInitialConnectionLoad || !hasStoredConnection
-            }
-            isLoadingConnection={isLoadingConnection}
-            organizationId={organizationId}
-            connectionNotice={connectionNotice}
-            showConnectionNotice={hasLoadedConnection}
-            onUseStoredConnectionChange={setUseStoredConnection}
-          />
-
-          {!isUsingStoredConnection ? (
-            <NotraCredentialsSection
+        {/* Sections scroll inside the dialog's max height; actions stay pinned below. */}
+        <form
+          onSubmit={handleSubmit}
+          className="flex min-h-0 flex-1 flex-col gap-4"
+        >
+          <div className="-mx-1 min-h-0 flex-1 space-y-4 overflow-y-auto px-2 pb-1">
+            <NotraConnectionSection
+              hasStoredConnection={hasStoredConnection}
+              isUsingStoredConnection={isUsingStoredConnection}
+              isSwitchDisabled={
+                isPending || isInitialConnectionLoad || !hasStoredConnection
+              }
+              isLoadingConnection={isLoadingConnection}
               organizationId={organizationId}
-              onOrganizationIdChange={setOrganizationId}
-              isPending={isPending}
-              apiKeyInputRef={apiKeyInputRef}
+              connectionNotice={connectionNotice}
+              showConnectionNotice={hasLoadedConnection}
+              onUseStoredConnectionChange={setUseStoredConnection}
             />
-          ) : null}
 
-          <NotraImportOptionsSection
-            isUsingStoredConnection={isUsingStoredConnection}
-            saveConnectionDescription={saveConnectionDescription}
-            saveConnection={saveConnection}
-            onSaveConnectionChange={setSaveConnection}
-            isSaveConnectionDisabled={
-              isPending || isInitialConnectionLoad || canStoreConnection !== true
-            }
-            includeDrafts={includeDrafts}
-            onIncludeDraftsChange={setIncludeDrafts}
-            updateExisting={updateExisting}
-            onUpdateExistingChange={setUpdateExisting}
-            preservePublishStatus={preservePublishStatus}
-            onPreservePublishStatusChange={setPreservePublishStatus}
-            isPending={isPending}
-          />
+            {!isUsingStoredConnection ? (
+              <NotraCredentialsSection
+                organizationId={organizationId}
+                onOrganizationIdChange={setOrganizationId}
+                isPending={isPending}
+                apiKeyInputRef={apiKeyInputRef}
+              />
+            ) : null}
+
+            <NotraImportOptionsSection
+              isUsingStoredConnection={isUsingStoredConnection}
+              saveConnectionDescription={saveConnectionDescription}
+              saveConnection={saveConnection}
+              onSaveConnectionChange={setSaveConnection}
+              isSaveConnectionDisabled={
+                isPending ||
+                isInitialConnectionLoad ||
+                canStoreConnection !== true
+              }
+              includeDrafts={includeDrafts}
+              onIncludeDraftsChange={setIncludeDrafts}
+              updateExisting={updateExisting}
+              onUpdateExistingChange={setUpdateExisting}
+              preservePublishStatus={preservePublishStatus}
+              onPreservePublishStatusChange={setPreservePublishStatus}
+              isPending={isPending}
+            />
+          </div>
 
           <NotraDialogActions
             hasStoredConnection={hasStoredConnection}
