@@ -22,6 +22,14 @@ function toPlain(s?: string | null): string {
   return s.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
 }
 
+/** Accent rule under each column heading, matching the status icon fills. */
+const ACCENT: Record<RoadmapColumnStatus, string> = {
+  planned: "bg-[#f59e0b]",
+  progress: "bg-[#4d96e8]",
+  completed: "bg-[#15CF59]",
+}
+
+/** Plain roadmap column: heading over a coloured rule, then hairline-divided rows. */
 export function RoadmapColumn({
   status,
   items,
@@ -35,52 +43,44 @@ export function RoadmapColumn({
   const overflow = Math.max(totalCount - items.length, 0)
 
   return (
-    <section
-      aria-labelledby={`roadmap-${status}`}
-      className="flex min-w-0 flex-col rounded-xl border border-border/60 bg-sidebar/60 dark:border-white/[0.07] dark:bg-white/[0.02]"
-    >
-      <header className="flex items-center gap-2.5 px-4 pt-3.5 pb-3">
-        <div className="min-w-0 flex-1">
-          <h2 id={`roadmap-${status}`} className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <StatusIcon status={status} className="size-4" />
-            {meta.label}
-            <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-muted-foreground dark:bg-white/[0.06]">
-              {totalCount}
-            </span>
-          </h2>
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">{meta.hint}</p>
-        </div>
+    <section aria-labelledby={`roadmap-${status}`} className="flex min-w-0 flex-col">
+      <header className="pb-3">
+        <h2 id={`roadmap-${status}`} className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <StatusIcon status={status} className="size-4" />
+          {meta.label}
+          <span className="ml-auto text-xs font-medium tabular-nums text-muted-foreground">{totalCount}</span>
+        </h2>
+        <p className="mt-0.5 pl-6 text-xs text-muted-foreground">{meta.hint}</p>
       </header>
+      <div className="relative h-px bg-border/60 dark:bg-white/[0.07]">
+        <span aria-hidden className={`absolute left-0 top-1/2 h-0.5 w-10 -translate-y-1/2 rounded-full ${ACCENT[status]}`} />
+      </div>
 
-      <ol className="flex flex-col gap-2 px-2 pb-2">
+      <ol className="divide-y divide-border/60 dark:divide-white/[0.07]">
         {items.length === 0 ? (
-          <li className="rounded-lg border border-dashed border-border/70 px-4 py-8 text-center text-xs text-muted-foreground dark:border-white/[0.08]">
-            Nothing here yet.
-          </li>
+          <li className="py-10 text-center text-sm text-muted-foreground/80">Nothing here yet.</li>
         ) : (
           items.map((item) => {
             const excerpt = toPlain(item.content)
             return (
-              <li
-                key={item.id}
-                className="group relative flex gap-3 rounded-lg border border-border/60 bg-card p-3 transition-colors hover:border-primary/40 dark:border-white/[0.07] dark:bg-card"
-              >
+              <li key={item.id} className="group relative flex gap-3 py-4">
                 <Link
                   href={`/board/p/${item.slug}?from=roadmap`}
-                  className="absolute inset-0 rounded-lg focus:outline-none"
+                  className="absolute inset-0 focus:outline-none"
                   aria-label={item.title}
                 />
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-sm font-medium leading-snug text-foreground group-hover:text-primary">
+                  <h3 className="text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
                     {item.title}
                   </h3>
                   {excerpt ? (
-                    <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{excerpt}</p>
+                    <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-muted-foreground">{excerpt}</p>
                   ) : null}
-                  <div className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
+                  <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
                     {item.boardName ? <span className="truncate">{item.boardName}</span> : null}
+                    {item.boardName ? <span className="text-muted-foreground/50">·</span> : null}
                     <span className="inline-flex items-center gap-1 tabular-nums">
-                      <CommentsIcon className="size-3" aria-hidden />
+                      <CommentsIcon className="size-3.5" aria-hidden />
                       {item.commentCount}
                     </span>
                   </div>
@@ -99,10 +99,10 @@ export function RoadmapColumn({
           })
         )}
         {overflow > 0 ? (
-          <li>
+          <li className="py-2">
             <Link
               href={statusHref("/", status)}
-              className="flex items-center justify-center gap-1 rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+              className="inline-flex items-center gap-1 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               View {overflow} more
               <ArrowRight className="size-3.5" />

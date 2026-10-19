@@ -60,12 +60,13 @@ export default async function RoadmapPage({
           <SubdomainActiveSearchHeader query={search} totalCount={matched} />
         </div>
       ) : null}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-x-10 gap-y-10 lg:grid-cols-3">
         {columns.map((c) => (
           <RoadmapColumn key={c.status} status={c.status} items={c.items} totalCount={c.totalCount} />
         ))}
       </div>
-      <PoweredBy />
+      {/* Pinned to the bottom of the page, however short the columns are. */}
+      <PoweredBy className="mt-auto pt-10" />
     </section>
   )
 }
