@@ -22,23 +22,24 @@
   }
 
   .tableWrapper {
-    margin-top: 3rem;
-    margin-bottom: 3rem;
+    margin-block: 1.75rem;
   }
 
   table {
     border-collapse: collapse;
-    border-color: rgba(0, 0, 0, 0.1);
+    border-color: var(--content-rule);
     border-radius: 0.25rem;
     box-sizing: border-box;
     width: 100%;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
   }
 
   table td,
   table th {
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--content-rule);
     min-width: 100px;
-    padding: 0.5rem;
+    padding: 0.625rem 0.875rem;
     position: relative;
     text-align: left;
     vertical-align: top;
@@ -72,7 +73,10 @@
   }
 
   table th {
-    font-weight: 700;
+    background: var(--content-tint);
+    color: var(--content-muted);
+    font-size: 0.8125rem;
+    font-weight: 500;
   }
 
   table .column-resize-handle {
@@ -197,15 +201,6 @@
 
 /* Dark mode overrides - scoped outside ProseMirror to handle body class */
 .dark .ProseMirror {
-  table {
-    border-color: rgba(255, 255, 255, 0.5);
-  }
-
-  table td,
-  table th {
-    border-color: rgba(255, 255, 255, 0.5);
-  }
-
   table .column-resize-handle::before {
     background-color: rgba(255, 255, 255, 0.5);
   }
@@ -253,4 +248,62 @@
     background-color: rgba(255, 255, 255, 0.3);
     border-color: rgba(255, 255, 255, 0.3);
   }
+}
+
+/*
+ * Reading view (changelog, help, widget): the table sits in a raised frame with hairline
+ * row rules and no column grid. Editing keeps the grid above for resize and grip handles.
+ */
+.ProseMirror[contenteditable="false"] :is(.tableScroll, .tableWrapper) {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin-block: 1.75rem;
+  border: 1px solid var(--content-rule);
+  border-radius: var(--content-radius);
+  corner-shape: squircle;
+  background: linear-gradient(to bottom, var(--content-surface), color-mix(in oklab, var(--content-surface), var(--content-fg) 2%));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .ProseMirror[contenteditable="false"] :is(.tableScroll, .tableWrapper) {
+  background: linear-gradient(to bottom, color-mix(in oklab, var(--content-surface), white 3%), var(--content-surface));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.ProseMirror[contenteditable="false"] :is(.tableScroll, .tableWrapper) table {
+  margin: 0;
+  border: 0;
+}
+
+.ProseMirror[contenteditable="false"] :is(.tableScroll, .tableWrapper) :is(th, td) {
+  min-width: 9rem;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-top: 1px solid var(--content-rule);
+}
+
+.ProseMirror[contenteditable="false"] :is(.tableScroll, .tableWrapper) tr:first-child > :is(th, td) {
+  border-top: 0;
+}
+
+.ProseMirror[contenteditable="false"] :is(.tableScroll, .tableWrapper) th {
+  padding-block: 0.625rem;
+}
+
+.ProseMirror[contenteditable="false"] :is(.tableScroll, .tableWrapper) td {
+  transition: background-color 120ms ease;
+}
+
+.ProseMirror[contenteditable="false"] :is(.tableScroll, .tableWrapper) tr:hover > td {
+  background: var(--content-tint);
+}
+
+/* API-style first columns read as one token; the frame scrolls if the table gets wide. */
+.ProseMirror[contenteditable="false"] :is(.tableScroll, .tableWrapper) td:first-child code {
+  white-space: nowrap;
+}
+
+.ProseMirror :is(td, th) code {
+  font-size: 0.8125rem;
 }

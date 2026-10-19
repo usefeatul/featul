@@ -22,21 +22,26 @@ export default function WidgetLayout({ children }: { children: React.ReactNode }
         html {
           font-size: 16px;
         }
-        .widget-shell .ProseMirror .tableScroll table {
+        /* Shared content design (editor.css) in the widget's own palette. */
+        .widget-shell .ProseMirror,
+        .dark .widget-shell .ProseMirror {
+          --content-fg: rgb(var(--widget-fg));
+          --content-body: rgb(var(--widget-fg) / 0.72);
+          --content-muted: rgb(var(--widget-fg) / 0.55);
+          --content-accent: rgb(var(--widget-fg));
+          --content-rule: rgb(var(--widget-fg) / 0.12);
+          --content-tint: rgb(var(--widget-fg) / 0.04);
+          --content-surface: rgb(var(--widget-fg) / 0.02);
+        }
+        .widget-shell .ProseMirror :is(.tableScroll, .tableWrapper) table {
           font-size: 12px;
           line-height: 1.5;
         }
-        .widget-shell .ProseMirror .tableScroll td,
-        .widget-shell .ProseMirror .tableScroll th {
-          min-width: 9rem;
+        .widget-shell .ProseMirror :is(.tableScroll, .tableWrapper) :is(td, th) {
           padding: 0.625rem 0.75rem;
-          border-color: rgb(var(--widget-fg) / 0.14);
           overflow-wrap: anywhere;
         }
-        .widget-shell .ProseMirror .tableScroll th {
-          background: rgb(var(--widget-fg) / 0.04);
-        }
-        .widget-shell .ProseMirror .tableScroll p {
+        .widget-shell .ProseMirror :is(.tableScroll, .tableWrapper) p {
           font-size: inherit;
           line-height: inherit;
         }

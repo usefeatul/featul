@@ -107,7 +107,7 @@ function FeedEditorMenus({ onAiSelection }: { onAiSelection?: () => void }) {
 				) : null}
 			</EditorBubbleMenu>
 
-			<div className="prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-[200px] [&_a]:cursor-pointer [&_a]:text-primary [&_a]:font-medium [&_a]:underline [&_a]:decoration-primary/40 [&_a:hover]:decoration-primary [&_a[href*='github.com']]:rounded-lg [&_a[href*='github.com']]:bg-primary/5 [&_a[href*='github.com']]:px-1 [&_a[href*='github.com']]:py-0.5 [&_a[href*='github.com']]:font-semibold">
+			<div className="prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-[200px] [&_a]:cursor-pointer">
 				<TiptapEditorContent editor={contentEditor} />
 			</div>
 

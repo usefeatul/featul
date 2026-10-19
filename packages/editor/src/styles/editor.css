@@ -45,12 +45,6 @@ div[data-twitter] :where(.react-tweet-theme) {
 	}
 }
 
-/* Base editor spacing */
-.ProseMirror {
-	line-height: 1.75;
-	font-size: 0.95rem;
-}
-
 /* Required for floating drag-handle positioning */
 .tiptap {
 	--drag-handle-gutter: 2.5rem;
@@ -129,16 +123,6 @@ div[data-twitter] :where(.react-tweet-theme) {
 	cursor: grabbing;
 }
 
-/* Paragraph spacing */
-.ProseMirror p {
-	margin-top: 0;
-	margin-bottom: 1em;
-}
-
-.ProseMirror p:last-child {
-	margin-bottom: 0;
-}
-
 /* Keep figure spacing visually equal above/below by removing paragraph gap before figure nodes */
 .ProseMirror p:has(+ .featul-figure-node) {
 	margin-bottom: 0;
@@ -167,58 +151,6 @@ div[data-twitter] :where(.react-tweet-theme) {
 	pointer-events: none;
 }
 
-/* Heading styles */
-.ProseMirror h1 {
-	font-size: 1.75em;
-	font-weight: 700;
-	margin-top: 1em;
-	margin-bottom: 0.5em;
-}
-
-.ProseMirror h2 {
-	font-size: 1.4em;
-	font-weight: 600;
-	margin-top: 1em;
-	margin-bottom: 0.5em;
-}
-
-.ProseMirror h3 {
-	font-size: 1.2em;
-	font-weight: 600;
-	margin-top: 1em;
-	margin-bottom: 0.5em;
-}
-
-/* List styles */
-.ProseMirror ul {
-	list-style-type: disc;
-	padding-left: 1.5em;
-	margin: 0.5em 0;
-}
-
-.ProseMirror ol {
-	list-style-type: decimal;
-	padding-left: 1.5em;
-	margin: 0.5em 0;
-}
-
-.ProseMirror li {
-	margin: 0.25em 0;
-}
-
-.ProseMirror li > p {
-	margin: 0;
-}
-
-/* Blockquote styles */
-.ProseMirror blockquote {
-	border-left: 3px solid var(--border, #e5e7eb);
-	padding-left: 1em;
-	margin: 1em 0;
-	color: var(--muted-foreground, #6b7280);
-	font-style: italic;
-}
-
 /* CSS for bold coloring and highlighting issue*/
 span[style] > strong {
 	color: inherit;
@@ -233,90 +165,320 @@ mark[style] > strong {
 	background-color: var(--sidebar);
 }
 
-/* Mention chip styling to match github-link badge treatment */
-.ProseMirror [data-type="mention"],
-.ProseMirror .mention,
-.prose [data-type="mention"],
-.prose .mention {
-	color: var(--primary);
-	background-color: color-mix(in oklab, var(--primary) 8%, transparent);
-	border-radius: 0.5rem;
-	padding: 0.125rem 0.25rem;
+/*
+ * Featul content design. One source of truth for how rich text looks wherever it renders:
+ * the editor, changelog entries, help articles and the widget. Everything reads from the
+ * --content-* tokens so a host (e.g. the widget) can retheme by overriding them.
+ * This file is unlayered on purpose: it must win over Tailwind Typography's :where() rules.
+ */
+.ProseMirror {
+	--content-fg: var(--foreground);
+	--content-body: color-mix(in oklab, var(--foreground) 86%, transparent);
+	--content-muted: var(--muted-foreground);
+	--content-accent: var(--primary);
+	--content-rule: color-mix(in oklab, var(--foreground) 10%, transparent);
+	--content-tint: color-mix(in oklab, var(--foreground) 3.5%, transparent);
+	--content-surface: var(--card);
+	--content-radius: 0.75rem;
+	--content-mono: "JetBrainsMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+	color: var(--content-body);
+	line-height: 1.75;
+	font-size: 0.95rem;
+	overflow-wrap: break-word;
+}
+
+.dark .ProseMirror {
+	--content-rule: rgba(255, 255, 255, 0.08);
+	--content-tint: rgba(255, 255, 255, 0.035);
+}
+
+.ProseMirror > :first-child {
+	margin-top: 0;
+}
+
+/* Text */
+.ProseMirror p {
+	margin: 0 0 1em;
+}
+
+.ProseMirror p:last-child {
+	margin-bottom: 0;
+}
+
+.ProseMirror strong,
+.ProseMirror b {
+	color: var(--content-fg);
 	font-weight: 600;
+}
+
+.ProseMirror :is(h1, h2, h3) {
+	color: var(--content-fg);
+	font-weight: 600;
+	letter-spacing: -0.015em;
+	line-height: 1.3;
+	text-wrap: balance;
+}
+
+.ProseMirror h1 {
+	font-size: 1.6em;
+	margin: 1.75em 0 0.6em;
+}
+
+.ProseMirror h2 {
+	font-size: 1.3em;
+	margin: 1.75em 0 0.5em;
+}
+
+.ProseMirror h3 {
+	font-size: 1.1em;
+	margin: 1.5em 0 0.4em;
+}
+
+.ProseMirror :is(h1, h2, h3) + :is(h1, h2, h3) {
+	margin-top: 0.75em;
+}
+
+.ProseMirror a {
+	color: var(--content-accent);
+	font-weight: 500;
+	text-decoration: underline;
+	text-decoration-color: color-mix(in oklab, var(--content-accent) 40%, transparent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+	transition: text-decoration-color 120ms ease;
+}
+
+.ProseMirror a:hover {
+	text-decoration-color: var(--content-accent);
+}
+
+.ProseMirror hr {
+	margin: 2.25em 0;
+	border: 0;
+	border-top: 1px solid var(--content-rule);
+}
+
+/* Inline code: a small raised chip, never Typography's backticks. */
+.ProseMirror :not(pre) > code {
+	padding: 0.125em 0.4em;
+	border: 1px solid var(--content-rule);
+	border-radius: 0.375rem;
+	background: var(--content-tint);
+	color: var(--content-fg);
+	font-family: var(--content-mono);
+	font-size: 0.85em;
+	font-weight: 500;
+	white-space: break-spaces;
+}
+
+.ProseMirror code::before,
+.ProseMirror code::after {
+	content: none;
+}
+
+.ProseMirror mark {
+	border-radius: 0.25rem;
+	padding: 0.05em 0.2em;
+	color: inherit;
+	box-decoration-break: clone;
+	-webkit-box-decoration-break: clone;
+}
+
+.ProseMirror mark:not([style]) {
+	background: color-mix(in oklab, #facc15 38%, transparent);
+}
+
+/* Mentions: accent chip */
+.ProseMirror [data-type="mention"],
+.ProseMirror .mention {
+	padding: 0.1em 0.35em;
+	border-radius: 0.375rem;
+	background: color-mix(in oklab, var(--content-accent) 10%, transparent);
+	color: var(--content-accent);
+	font-weight: 500;
 	text-decoration: none;
 }
 
-/* codeblocks */
+/* Lists */
+.ProseMirror :is(ul, ol) {
+	margin: 0.75em 0 1em;
+	padding-left: 1.4em;
+}
 
-pre {
-	background: linear-gradient(180deg, #0f1525 0%, #0b111d 100%);
-	color: #e6edf3;
-	font-family:
-		"JetBrainsMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-		"Liberation Mono", "Courier New", monospace;
-	font-size: 0.76rem;
-	line-height: 1.5;
-	padding: 0.65rem 0.85rem;
-	border-radius: 0.5rem;
-	border: 1px solid #273244;
+.ProseMirror ul {
+	list-style-type: disc;
+}
+
+.ProseMirror ol {
+	list-style-type: decimal;
+}
+
+.ProseMirror li {
+	margin: 0.3em 0;
+	padding-left: 0.2em;
+}
+
+.ProseMirror li > p {
+	margin: 0;
+}
+
+.ProseMirror li::marker {
+	color: var(--content-muted);
+}
+
+.ProseMirror ol > li::marker {
+	font-variant-numeric: tabular-nums;
+	font-size: 0.9em;
+}
+
+.ProseMirror :is(ul, ol) :is(ul, ol) {
+	margin: 0.25em 0;
+}
+
+/* Quotes render as callouts: tinted surface, accent edge. */
+.ProseMirror blockquote {
+	margin: 1.5em 0;
+	padding: 0.75em 1em;
+	border: 1px solid var(--content-rule);
+	border-left: 3px solid var(--content-accent);
+	border-radius: var(--content-radius);
+	background: var(--content-tint);
+	color: var(--content-fg);
+	font-style: normal;
+	font-weight: 400;
+}
+
+.ProseMirror blockquote p::before,
+.ProseMirror blockquote p::after {
+	content: none;
+}
+
+/* Images, figures and embeds share one frame. */
+.ProseMirror img {
+	max-width: 100%;
+	height: auto;
+	border: 1px solid var(--content-rule);
+	border-radius: var(--content-radius);
+}
+
+.ProseMirror figure figcaption {
+	margin-top: 0.6em;
+	color: var(--content-muted);
+	font-size: 0.8125rem;
+	font-style: normal;
+	text-align: center;
+}
+
+.ProseMirror figure figcaption p {
+	margin: 0;
+}
+
+.ProseMirror div[data-youtube-video] > iframe {
+	border: 1px solid var(--content-rule);
+	border-radius: var(--content-radius);
+	background: var(--content-tint);
+}
+
+/* Code blocks: framed surface with a light and a dark syntax palette. */
+.ProseMirror pre {
+	--code-keyword: #cf222e;
+	--code-title: #8250df;
+	--code-constant: #0550ae;
+	--code-string: #0a3069;
+	--code-builtin: #953800;
+	--code-comment: #6e7781;
+	--code-name: #116329;
+	--code-added: #116329;
+	--code-removed: #82071e;
+
+	margin: 1.5em 0;
+	padding: 0.875em 1.1em;
 	overflow-x: auto;
+	border: 1px solid var(--content-rule);
+	border-radius: var(--content-radius);
+	background: var(--content-tint);
+	color: var(--content-fg);
+	font-family: var(--content-mono);
+	font-size: 0.8125rem;
+	line-height: 1.65;
+	tab-size: 2;
+	scrollbar-width: thin;
+}
 
-	code {
-		color: inherit;
-		padding: 0;
-		background: none;
-		font-size: inherit;
-		line-height: inherit;
-	}
+.dark .ProseMirror pre {
+	--code-keyword: #ff7b72;
+	--code-title: #d2a8ff;
+	--code-constant: #79c0ff;
+	--code-string: #a5d6ff;
+	--code-builtin: #ffa657;
+	--code-comment: #8b949e;
+	--code-name: #7ee787;
+	--code-added: #aff5b4;
+	--code-removed: #ffdcd7;
+}
 
-	.hljs-comment,
-	.hljs-quote {
-		color: #616161;
-	}
+.ProseMirror pre code {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	white-space: pre;
+}
 
-	.hljs-variable,
-	.hljs-template-variable,
-	.hljs-attribute,
-	.hljs-tag,
-	.hljs-name,
-	.hljs-regexp,
-	.hljs-link,
-	.hljs-selector-id,
-	.hljs-selector-class {
-		color: #f98181;
-	}
+.ProseMirror pre :is(.hljs-keyword, .hljs-doctag, .hljs-template-tag, .hljs-template-variable, .hljs-type, .hljs-variable.language_, .hljs-selector-tag) {
+	color: var(--code-keyword);
+}
 
-	.hljs-number,
-	.hljs-meta,
-	.hljs-built_in,
-	.hljs-builtin-name,
-	.hljs-literal,
-	.hljs-type,
-	.hljs-params {
-		color: #fbbc88;
-	}
+.ProseMirror pre :is(.hljs-title, .hljs-title.class_, .hljs-title.function_, .hljs-section) {
+	color: var(--code-title);
+}
 
-	.hljs-string,
-	.hljs-symbol,
-	.hljs-bullet {
-		color: #b9f18d;
-	}
+.ProseMirror pre :is(.hljs-attr, .hljs-attribute, .hljs-literal, .hljs-meta, .hljs-number, .hljs-operator, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-id, .hljs-variable) {
+	color: var(--code-constant);
+}
 
-	.hljs-title,
-	.hljs-section {
-		color: #faf594;
-	}
+.ProseMirror pre :is(.hljs-string, .hljs-regexp, .hljs-meta .hljs-string) {
+	color: var(--code-string);
+}
 
-	.hljs-keyword,
-	.hljs-selector-tag {
-		color: #70cff8;
-	}
+.ProseMirror pre :is(.hljs-built_in, .hljs-symbol, .hljs-bullet, .hljs-params) {
+	color: var(--code-builtin);
+}
 
-	.hljs-emphasis {
-		font-style: italic;
-	}
+.ProseMirror pre :is(.hljs-comment, .hljs-quote, .hljs-code, .hljs-formula) {
+	color: var(--code-comment);
+	font-style: italic;
+}
 
-	.hljs-strong {
-		font-weight: 700;
-	}
+.ProseMirror pre :is(.hljs-name, .hljs-tag, .hljs-selector-pseudo) {
+	color: var(--code-name);
+}
+
+.ProseMirror pre .hljs-addition {
+	color: var(--code-added);
+	background: color-mix(in oklab, var(--code-added) 12%, transparent);
+}
+
+.ProseMirror pre .hljs-deletion {
+	color: var(--code-removed);
+	background: color-mix(in oklab, var(--code-removed) 12%, transparent);
+}
+
+.ProseMirror pre .hljs-strong {
+	font-weight: 700;
+}
+
+.ProseMirror pre .hljs-emphasis {
+	font-style: italic;
+}
+
+/* GitHub issue and PR links read as a chip rather than an underlined link. */
+.ProseMirror a[href*="github.com"] {
+	padding: 0.1em 0.35em;
+	border-radius: 0.375rem;
+	background: color-mix(in oklab, var(--content-accent) 8%, transparent);
+	font-weight: 600;
+	text-decoration: none;
 }

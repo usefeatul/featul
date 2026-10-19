@@ -253,7 +253,7 @@ export const FigureView = ({
           >
             <img
               alt={altValue}
-              className="h-auto w-full rounded-md  border border-muted"
+              className="h-auto w-full"
               src={src}
             />
 
@@ -279,7 +279,7 @@ export const FigureView = ({
 
             {/* Caption - only shown when it has content */}
             {captionValue && (
-              <figcaption className="mt-2 text-center text-muted-foreground text-sm italic">
+              <figcaption>
                 <p>{captionValue}</p>
               </figcaption>
             )}

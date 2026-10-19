@@ -3,29 +3,14 @@
 import React from "react";
 import type { JSONContent } from "@tiptap/core";
 import { EditorContent, useFeatulEditor } from "@featul/editor";
-import { cn } from "@featul/ui/lib/utils";
 import type { HelpHeading } from "./content";
-import "./article-table.css";
 
-const proseClass = cn(
-  "prose dark:prose-invert max-w-none focus:outline-none text-[15px] leading-7 text-foreground/85",
-  "prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-foreground",
-  "prose-h2:mt-10 prose-h2:mb-3 prose-h2:text-xl prose-h3:mt-8 prose-h3:mb-2 prose-h3:text-lg",
-  "prose-p:my-3 prose-strong:text-foreground prose-li:my-1",
-  "prose-a:font-medium prose-a:text-primary prose-a:underline prose-a:decoration-primary/40 hover:prose-a:decoration-primary",
-  "prose-code:rounded-md prose-code:border prose-code:border-border/70 prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[13px] prose-code:font-medium prose-code:before:content-none prose-code:after:content-none dark:prose-code:border-white/10 dark:prose-code:bg-white/5",
-  "prose-img:max-w-full prose-img:rounded-xl prose-img:border prose-img:border-border/60 dark:prose-img:border-white/10",
-  // Wide code scrolls inside itself instead of widening the page on phones (tables: article-table.css).
-  "break-words prose-pre:max-w-full prose-pre:overflow-x-auto",
-);
+// Element styling (headings, callouts, code, tables...) is the shared content design in
+// @featul/editor's editor.css; this only sets the reading container.
+const proseClass = "prose dark:prose-invert max-w-none focus:outline-none";
 
-// editor.css styles `.ProseMirror blockquote` outside any cascade layer, so the overlapping properties need `!` to win.
-const calloutClass = cn(
-  "[&_.ProseMirror_blockquote]:my-6! [&_.ProseMirror_blockquote]:rounded-xl [&_.ProseMirror_blockquote]:border [&_.ProseMirror_blockquote]:border-l-[3px]! [&_.ProseMirror_blockquote]:border-border/70 [&_.ProseMirror_blockquote]:border-l-primary! [&_.ProseMirror_blockquote]:bg-muted/50 [&_.ProseMirror_blockquote]:px-4! [&_.ProseMirror_blockquote]:py-0.5 [&_.ProseMirror_blockquote]:not-italic! [&_.ProseMirror_blockquote]:text-foreground/90!",
-  // Anchor jumps land below the sticky portal header.
-  "[&_.ProseMirror_:is(h1,h2,h3,h4,h5,h6)]:scroll-mt-20",
-  "dark:[&_.ProseMirror_blockquote]:border-white/10 dark:[&_.ProseMirror_blockquote]:border-l-primary! dark:[&_.ProseMirror_blockquote]:bg-white/[0.03] [&_.ProseMirror_blockquote_p]:before:content-none [&_.ProseMirror_blockquote_p]:after:content-none",
-);
+// Anchor jumps land below the sticky portal header.
+const anchorClass = "[&_.ProseMirror_:is(h1,h2,h3,h4,h5,h6)]:scroll-mt-20";
 
 /** Read-only article body; tags rendered headings with the ids the table of contents links to. */
 export function HelpArticleBody({
@@ -61,7 +46,7 @@ export function HelpArticleBody({
 
   if (!editor) return null;
   return (
-    <div ref={ref} data-help-article className={calloutClass}>
+    <div ref={ref} className={anchorClass}>
       <EditorContent editor={editor} className="min-w-0 max-w-full" />
     </div>
   );
