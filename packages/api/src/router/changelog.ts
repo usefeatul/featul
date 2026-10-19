@@ -13,7 +13,7 @@ import {
 } from "@featul/db";
 import { HTTPException } from "hono/http-exception";
 import { getPlanLimits, assertWithinLimit } from "../shared/plan";
-import { toSlug } from "../shared/slug";
+import { toSlug, toUrlSlug } from "../shared/slug";
 import {
   getWorkspaceAccessPlan,
   requireBoardManagerBySlug,
@@ -470,7 +470,7 @@ export function createChangelogRouter() {
         if ((await getRelatedPosts(ctx.db, ws.id, { ids: relatedPostIds })).length !== relatedPostIds.length) {
           throw new HTTPException(400, { message: "Some related posts are unavailable in this workspace" });
         }
-        const entrySlug = toSlug(input.title) + "-" + Date.now().toString(36);
+        const entrySlug = (toUrlSlug(input.title) || "update") + "-" + Date.now().toString(36);
         const isPublished = input.status === "published";
 
         assertOptionalWorkspaceAssetUrl(

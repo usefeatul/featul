@@ -12,8 +12,18 @@ export const revalidate = 60;
 
 type Props = { params: Promise<{ subdomain: string; slug: string }> };
 
+/** Next hands over the segment still percent-encoded (":" arrives as "%3A"); match the stored slug. */
+function decodeEntrySlug(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { subdomain, slug: entrySlug } = await params;
+  const { subdomain, slug } = await params;
+  const entrySlug = decodeEntrySlug(slug);
   const res = await client.changelog.entriesGet.$get({
     slug: subdomain,
     entrySlug,
@@ -38,7 +48,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ChangelogEntryPage({ params }: Props) {
-  const { subdomain, slug: entrySlug } = await params;
+  const { subdomain, slug } = await params;
+  const entrySlug = decodeEntrySlug(slug);
 
   const res = await client.changelog.entriesGet.$get({
     slug: subdomain,
