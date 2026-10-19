@@ -27,12 +27,12 @@ export const overlayChipShellClass =
 export const overlayChipInnerClass =
   "inline-flex h-4 min-h-4 min-w-4 flex-1 items-center justify-center overflow-hidden rounded-[4px] bg-background text-xs font-extralight tabular-nums text-accent"
 
-/** Circular avatar frame — nested ring on the photo, no inset padding. */
+/** Avatar frame with the menu surface's depth: lit top edge, soft gradient, short shadow. Follows the root's radius. */
 export const overlayAvatarShellClass =
-  "relative inline-flex shrink-0 overflow-visible rounded-full border border-border/60 bg-card after:pointer-events-none after:absolute after:inset-px after:rounded-full after:ring-1 after:ring-border/35 after:ring-inset dark:border-white/[0.07] dark:after:ring-white/[0.055]"
+  "relative inline-flex shrink-0 overflow-visible rounded-full border border-black/[0.08] bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_6%)] shadow-[0_1px_2px_rgba(0,0,0,0.08)] after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(0,0,0,0.08)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_6%)] dark:to-card dark:shadow-[0_1px_2px_rgba(0,0,0,0.4)] dark:after:shadow-[inset_0_1px_0_rgba(255,255,255,0.14),inset_0_-1px_0_rgba(0,0,0,0.3)]"
 
 export const overlayAvatarInnerClass =
-  "size-full overflow-hidden rounded-full bg-muted"
+  "size-full overflow-hidden rounded-[inherit] bg-transparent"
 
 /** Rotated corner ribbon — nested chip on a 45° square. */
 export const overlayRibbonShellClass =
