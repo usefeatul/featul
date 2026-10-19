@@ -14,7 +14,6 @@ import StatusPicker from "../requests/meta/StatusPicker";
 import FlagsPicker from "../requests/meta/FlagsPicker";
 import { StatusChip } from "./StatusChip";
 import { ShareIdeaButton } from "./ShareIdeaButton";
-import { BoardIcon } from "@/components/global/icons";
 import { PostActionsNav } from "./request/PostActionsNav";
 import { RequestFlagReadout } from "@/components/global/flag-visuals";
 import type { SubdomainRequestDetailData } from "@/types/subdomain";
@@ -75,10 +74,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
                   onChange={setBoard}
                 />
               ) : (
-                <span className="inline-flex min-w-0 items-center gap-1.5">
-                  <BoardIcon className="size-3.5 shrink-0 text-muted-foreground" />
-                  <span className="truncate">{board.name}</span>
-                </span>
+                <span className="truncate">{board.name}</span>
               )}
             </DetailRow>
 
