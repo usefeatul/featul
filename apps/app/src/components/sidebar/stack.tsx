@@ -3,6 +3,8 @@
 import { useId, useRef, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { DitherGradient } from "@featul/ui/components/gradient";
+import { subtleOverlayShellClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { X } from "@/components/global/icons";
 
 export type StackCard = {
@@ -36,11 +38,11 @@ export default function Stack({ cards, total }: { cards: StackCard[]; total: num
           <div
             key={index}
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 rounded-lg border border-border/60 bg-muted"
+            className={cn(subtleOverlayShellClass, "pointer-events-none absolute inset-x-0 bottom-0")}
             style={{ top: index * 6, marginInline: (layers - index) * 6, opacity: 0.45 + index * 0.2 }}
           />
         ))}
-        <article aria-labelledby={titleId} className="relative overflow-hidden rounded-lg border border-border/70 bg-sidebar p-3 shadow-sm">
+        <article aria-labelledby={titleId} className={cn(subtleOverlayShellClass, "relative p-3")}>
           {/* Pattern sits in the top-left corner and fades out toward the copy. */}
           <div
             aria-hidden="true"
@@ -59,7 +61,7 @@ export default function Stack({ cards, total }: { cards: StackCard[]; total: num
               onClick={dismiss}
               aria-label={`Hide ${card.title} card for three days`}
               title="Hide for three days"
-              className="-mr-1 flex size-6 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="-mr-1 flex size-6 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/[0.05] hover:text-foreground dark:hover:bg-foreground/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <X className="size-3.5" aria-hidden />
             </button>
