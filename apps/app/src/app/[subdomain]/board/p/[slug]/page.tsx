@@ -42,7 +42,6 @@ export default async function PublicBoardRequestDetailPage({ params, searchParam
       post={data.post}
       workspaceSlug={data.workspaceSlug}
       initialComments={data.initialComments}
-      initialActivity={data.initialActivity}
       initialCollapsedIds={data.initialCollapsedIds}
       backLink={backLink}
     />

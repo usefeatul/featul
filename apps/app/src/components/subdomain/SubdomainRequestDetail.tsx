@@ -1,6 +1,5 @@
 "use client";
 
-import type { InitialActivity } from "@/types/activity";
 
 import React from "react";
 import type { CommentData } from "../../types/comment";
@@ -15,14 +14,12 @@ export default function SubdomainRequestDetail({
   post,
   workspaceSlug,
   initialComments,
-  initialActivity,
   initialCollapsedIds,
   backLink,
 }: {
   post: SubdomainRequestDetailData;
   workspaceSlug: string;
   initialComments?: CommentData[];
-  initialActivity?: InitialActivity;
   initialCollapsedIds?: string[];
   navigation?: {
     prev: { slug: string; title: string } | null;
@@ -46,7 +43,6 @@ export default function SubdomainRequestDetail({
             post={post}
             workspaceSlug={workspaceSlug}
             initialComments={initialComments}
-            initialActivity={initialActivity}
             initialCollapsedIds={initialCollapsedIds}
           />
         </div>

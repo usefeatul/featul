@@ -1,4 +1,3 @@
-import type { InitialActivity } from "@/types/activity";
 import { db, board, post, postTag, tag, user, widgetUser, workspaceMember } from "@featul/db";
 import { and, eq, sql } from "drizzle-orm";
 import { getServerSession } from "@featul/auth/session";
@@ -58,7 +57,6 @@ export type PublicBoardRequestDetailPageData = {
   workspaceSlug: string;
   post: SubdomainRequestDetailData;
   initialComments: CommentData[];
-  initialActivity?: InitialActivity;
   initialCollapsedIds: string[];
   backLink: string;
 };
@@ -120,7 +118,7 @@ export async function loadPublicBoardRequestDetailPageData({
 
   const tags = await loadPostTags(rawPost.id);
   const hasVoted = await readHasVotedForPost(rawPost.id);
-  const { initialComments, initialCollapsedIds, initialActivity } = await loadPostComments(
+  const { initialComments, initialCollapsedIds } = await loadPostComments(
     rawPost.id,
     "public",
   );
@@ -161,7 +159,6 @@ export async function loadPublicBoardRequestDetailPageData({
     workspaceSlug: subdomain,
     post,
     initialComments,
-    initialActivity,
     initialCollapsedIds,
     backLink: `/board/${post.boardSlug}`,
   };

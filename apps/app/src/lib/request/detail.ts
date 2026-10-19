@@ -107,7 +107,10 @@ export async function loadPostComments(
   const incomingHeaders = await headers();
   const cookieHeader = incomingHeaders.get("cookie");
   const [initialActivity, commentsRes] = await Promise.all([
-    loadInitialActivity(postId, surface),
+    // The activity timeline is workspace-only; public portals never render it.
+    surface === "workspace"
+      ? loadInitialActivity(postId, surface)
+      : Promise.resolve(undefined),
     client.comment.list.$get(
       { postId, surface },
       cookieHeader
