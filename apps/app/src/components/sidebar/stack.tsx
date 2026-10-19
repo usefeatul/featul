@@ -7,6 +7,10 @@ import { subtleOverlayShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { X } from "@/components/global/icons";
 
+// One step lighter than the menu surface: keeps the lit edges, drops the longer shadow.
+const cardShadowClass =
+  "shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_2px_rgba(0,0,0,0.4)]";
+
 export type StackCard = {
   id: string;
   title: string;
@@ -38,16 +42,16 @@ export default function Stack({ cards, total }: { cards: StackCard[]; total: num
           <div
             key={index}
             aria-hidden="true"
-            className={cn(subtleOverlayShellClass, "pointer-events-none absolute inset-x-0 bottom-0")}
+            className={cn(subtleOverlayShellClass, cardShadowClass, "pointer-events-none absolute inset-x-0 bottom-0")}
             style={{ top: index * 6, marginInline: (layers - index) * 6, opacity: 0.45 + index * 0.2 }}
           />
         ))}
-        <article aria-labelledby={titleId} className={cn(subtleOverlayShellClass, "relative p-3")}>
+        <article aria-labelledby={titleId} className={cn(subtleOverlayShellClass, cardShadowClass, "relative p-3")}>
           {/* Pattern sits in the top-left corner and fades out toward the copy. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-0 top-0 h-3/4 w-2/3"
-            style={{ maskImage: "radial-gradient(circle at top left, black, transparent 75%)" }}
+            className="pointer-events-none absolute inset-0"
+            style={{ maskImage: "radial-gradient(ellipse 85% 75% at top left, black 10%, rgba(0,0,0,0.4) 45%, transparent 80%)" }}
           >
             <DitherGradient key={card.id} to="primary" direction="down" cell={3} opacity={0.45} />
           </div>
