@@ -47,9 +47,9 @@ export function layoutMaxWidth(layoutStyle: BrandingInfo["layoutStyle"]): Portal
   return "6xl";
 }
 
-/** Inject workspace primary into --primary, --ring, and --sidebar-primary. */
+/** Inject workspace primary into --primary, --ring, and --sidebar-primary; pin the page so it never rubber-bands. */
 function buildThemeVars(primary: string) {
-  return `:root{--primary:${primary};--ring:${primary};--sidebar-primary:${primary};}`;
+  return `:root{--primary:${primary};--ring:${primary};--sidebar-primary:${primary};}html,body{overscroll-behavior:none;}`;
 }
 
 export function SubdomainLayoutShell({
