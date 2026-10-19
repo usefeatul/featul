@@ -119,11 +119,14 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
         <aside className="hidden lg:block">
           <div className="sticky top-20 space-y-10">
             <HelpToc headings={headings} />
-            <StillStuck />
+            <div>
+              <StillStuck />
+              <PoweredBy className="justify-start pt-4" />
+            </div>
           </div>
         </aside>
       </div>
-      <PoweredBy className="mt-auto pt-12" />
+      <PoweredBy className="mt-auto pt-12 lg:hidden" />
     </section>
   );
 }
