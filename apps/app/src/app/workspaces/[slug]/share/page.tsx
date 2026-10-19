@@ -64,6 +64,7 @@ export default async function SharePage({ params }: Props) {
       boardUrl={boardUrl}
       userName={user.name || workspace.name}
       userImage={user.image}
+      logo={workspace.logo}
       links={links}
     />
   );

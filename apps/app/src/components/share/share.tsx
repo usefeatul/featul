@@ -18,6 +18,7 @@ export default function Share({
   boardUrl,
   userName,
   userImage,
+  logo,
   links,
 }: {
   workspaceId: string;
@@ -26,6 +27,7 @@ export default function Share({
   boardUrl: string;
   userName: string;
   userImage?: string | null;
+  logo?: string | null;
   links: ShareLink[];
 }) {
   const displayUrl = boardUrl.replace(/^https?:\/\//, "");
@@ -89,7 +91,7 @@ export default function Share({
       <Signature
         name={name}
         userName={userName}
-        userImage={userImage}
+        logo={logo}
         boardUrl={boardUrl}
       />
 
