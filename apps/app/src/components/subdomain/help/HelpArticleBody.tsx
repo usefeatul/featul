@@ -5,6 +5,7 @@ import type { JSONContent } from "@tiptap/core";
 import { EditorContent, useFeatulEditor } from "@featul/editor";
 import { cn } from "@featul/ui/lib/utils";
 import type { HelpHeading } from "./content";
+import "./article-table.css";
 
 const proseClass = cn(
   "prose dark:prose-invert max-w-none focus:outline-none text-[15px] leading-7 text-foreground/85",
@@ -14,8 +15,8 @@ const proseClass = cn(
   "prose-a:font-medium prose-a:text-primary prose-a:underline prose-a:decoration-primary/40 hover:prose-a:decoration-primary",
   "prose-code:rounded-md prose-code:border prose-code:border-border/70 prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[13px] prose-code:font-medium prose-code:before:content-none prose-code:after:content-none dark:prose-code:border-white/10 dark:prose-code:bg-white/5",
   "prose-img:max-w-full prose-img:rounded-xl prose-img:border prose-img:border-border/60 dark:prose-img:border-white/10",
-  // Wide code and tables scroll inside themselves instead of widening the page on phones.
-  "break-words prose-pre:max-w-full prose-pre:overflow-x-auto [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto",
+  // Wide code scrolls inside itself instead of widening the page on phones (tables: article-table.css).
+  "break-words prose-pre:max-w-full prose-pre:overflow-x-auto",
 );
 
 // editor.css styles `.ProseMirror blockquote` outside any cascade layer, so the overlapping properties need `!` to win.
@@ -60,7 +61,7 @@ export function HelpArticleBody({
 
   if (!editor) return null;
   return (
-    <div ref={ref} className={calloutClass}>
+    <div ref={ref} data-help-article className={calloutClass}>
       <EditorContent editor={editor} className="min-w-0 max-w-full" />
     </div>
   );
