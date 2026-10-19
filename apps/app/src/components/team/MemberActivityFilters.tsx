@@ -7,6 +7,7 @@ import {
   CATEGORY_FILTERS,
   type ActivityCategory,
 } from "@/components/team/activity/utils"
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 
 interface MemberActivityFiltersProps {
@@ -19,10 +20,11 @@ interface MemberActivityFiltersProps {
 
 function chipClass(active: boolean) {
   return cn(
-    "h-7 rounded-lg border-0 bg-muted/55 px-3 text-xs shadow-none ring-0 dark:bg-white/[0.045]",
+    raisedSurfaceClass,
+    "h-7 rounded-lg px-3 text-xs ring-0",
     active
-      ? "text-foreground ring-1 ring-primary/35"
-      : "text-accent hover:bg-muted hover:text-foreground dark:hover:bg-white/[0.075]",
+      ? "text-foreground ring-1 ring-primary/40"
+      : "text-accent hover:text-foreground hover:brightness-[0.98] dark:hover:brightness-125",
   )
 }
 
@@ -41,7 +43,7 @@ export function MemberActivityFilters({
       <div className="min-w-0 space-y-2">
         <div className="px-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-accent/80">Type</div>
         <div className={rowClass}>
-          <div className="inline-flex min-w-max gap-1.5 pr-1">
+          <div className="inline-flex min-w-max gap-1.5 p-px pr-1">
             {CATEGORY_FILTERS.map((filter) => (
               <Button
                 key={filter.id}
@@ -62,7 +64,7 @@ export function MemberActivityFilters({
         <div className="min-w-0 space-y-2">
           <div className="px-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-accent/80">Status</div>
           <div className={rowClass}>
-            <div className="inline-flex min-w-max gap-1.5 pr-1">
+            <div className="inline-flex min-w-max gap-1.5 p-px pr-1">
               <Button
                 type="button"
                 variant="card"
