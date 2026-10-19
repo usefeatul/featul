@@ -7,17 +7,12 @@ import { client } from "@featul/api/client"
 import { ChangelogCard } from "@/components/subdomain/ChangelogCard"
 import type { ChangelogEntriesListResponse, ChangelogEntry } from "@/types/changelog"
 import { SubdomainListLayout } from "@/components/subdomain/SubdomainListLayout"
-import { SubdomainListHeader } from "@/components/subdomain/SubdomainListHeader"
 import { PublicRequestPagination } from "@/components/subdomain/PublicRequestPagination"
-import { SubdomainListCard } from "@/components/subdomain/SubdomainListCard"
 import { SubdomainListEmptyState } from "@/components/subdomain/SubdomainListEmptyState"
-import { SubdomainListItems } from "@/components/subdomain/SubdomainListItems"
 import {
   parsePositiveIntSearchParam,
   resolveSearchParams,
 } from "@/utils/search/params"
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
-import { cn } from "@featul/ui/lib/utils"
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
   const { subdomain } = await params
@@ -59,50 +54,35 @@ export default async function ChangelogPage({
       subdomain={subdomain}
       slug={slug}
       sidebarPosition={sidebarPosition}
-      hideSubmitButton={false}
-      hideBoards={true}
-      sortBasePath="/changelog"
-      sortKeepParams={["page"]}
+      hideBoards
     >
-      <div>
-        <SubdomainListHeader
-          title="Changelog"
-          sidebarPosition={sidebarPosition}
-          desktopSecondary={
-            <Toolbar size="sm" className="w-fit">
-              <a
-                href="/changelog/feed.xml"
-                className={cn(toolbarItemClass, "inline-flex items-center px-3 text-xs text-accent")}
-              >
-                RSS feed
-              </a>
-            </Toolbar>
-          }
-          mobileSecondary={
-            <Toolbar size="sm" className="w-fit">
-              <a
-                href="/changelog/feed.xml"
-                className={cn(toolbarItemClass, "inline-flex items-center px-3 text-xs text-accent")}
-              >
-                RSS
-              </a>
-            </Toolbar>
-          }
-        />
-        <SubdomainListCard>
-          {entries.length === 0 ? (
+      <div className="flex flex-1 flex-col">
+        <div className="mb-3 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground/80">Latest updates</span>
+          <span className="mx-1.5 text-muted-foreground/50">·</span>
+          <span className="tabular-nums">{totalCount} {totalCount === 1 ? "entry" : "entries"}</span>
+        </div>
+
+        {entries.length === 0 ? (
+          <div className="flex flex-1 flex-col rounded-xl border border-border/60 bg-card dark:border-white/[0.07]">
             <SubdomainListEmptyState
               title="No changelog entries yet"
               description="Check back soon for updates."
             />
-          ) : (
-            <SubdomainListItems>
-              {entries.map((entry) => (
-                <ChangelogCard key={entry.id} item={entry} linkPrefix="/changelog/p" />
-              ))}
-            </SubdomainListItems>
-          )}
-        </SubdomainListCard>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-8">
+            {entries.map((entry, i) => (
+              <ChangelogCard
+                key={entry.id}
+                item={entry}
+                linkPrefix="/changelog/p"
+                isLast={i === entries.length - 1}
+              />
+            ))}
+          </div>
+        )}
+
         <PublicRequestPagination
           page={page}
           pageSize={PAGE_SIZE}

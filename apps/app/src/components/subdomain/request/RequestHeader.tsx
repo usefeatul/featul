@@ -32,7 +32,7 @@ export function RequestHeader({ sidebarPosition, backLink = "/" }: RequestHeader
             </Link>
           </Button>
         </Toolbar>
-        <h1 className="text-xl font-semibold text-foreground">Submissions</h1>
+        <h1 className="text-xl font-semibold text-foreground">Feedback</h1>
       </div>
 
       {/* Right Spacer for Sidebar */}

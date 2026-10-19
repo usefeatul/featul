@@ -31,20 +31,19 @@ export function MobileBoardsMenu({
   const [open, setOpen] = React.useState(false)
 
   function go(value: string) {
-    const base = `/${subdomain}`
     const next =
       value === "__all__"
         ? `/`
         : value === "roadmap"
-        ? `${base}/roadmap`
-        : `${base}/changelog`
+        ? `/roadmap`
+        : `/changelog`
     setOpen(false)
     router.push(next)
   }
 
-  const active = pathname.startsWith(`/${subdomain}/roadmap`)
+  const active = pathname.startsWith(`/roadmap`)
     ? "roadmap"
-    : pathname.startsWith(`/${subdomain}/changelog`)
+    : pathname.startsWith(`/changelog`)
     ? "changelog"
     : "__all__"
 
@@ -59,14 +58,14 @@ export function MobileBoardsMenu({
           type="button"
           variant="plain"
           aria-label="Open boards"
-          className={cn(toolbarItemClass, "inline-flex items-center justify-center px-2.5")}
+          className={cn(toolbarItemClass, "inline-flex items-center justify-center rounded-lg px-2")}
           disabled={false}
         >
           <MenuIcon width={20} height={20} className="text-accent" />
         </Button>
       </PopoverTrigger>
       <PopoverContent id={`popover-${subdomain}-${slug}-mobile-menu`} align="start" list className="min-w-9rem] w-fit">
-        <div className="px-3 py-2 text-xs font-medium text-accent">Boards</div>
+        <div className="px-3 py-2 text-xs font-medium text-accent">Browse</div>
         <PopoverList>
           <PopoverListItem onClick={() => go("__all__")}> 
             <AccentBar width={2} className={active === "__all__" ? undefined : "bg-muted ring-0"} />

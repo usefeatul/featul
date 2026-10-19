@@ -1,6 +1,10 @@
-import { db, workspace, board } from "@featul/db";
-import { and, eq } from "drizzle-orm";
-import { getBrandingBySlug } from "@/lib/workspace";
+import { db, workspace, board, changelogEntry } from "@featul/db";
+import { and, eq, sql } from "drizzle-orm";
+import {
+  getBrandingBySlug,
+  getWorkspaceBoards,
+  getWorkspacePostsCount,
+} from "@/lib/workspace";
 
 type WorkspaceRow = {
   id: string;
@@ -10,14 +14,33 @@ type WorkspaceRow = {
   logo: string | null;
 };
 
+export type PortalBoard = {
+  id: string;
+  name: string;
+  slug: string;
+  postCount: number;
+  hidePublicMemberIdentity?: boolean;
+};
+
+export type PortalStatusCounts = {
+  planned: number;
+  progress: number;
+  completed: number;
+  review: number;
+};
+
 export type SubdomainLayoutData = {
   workspace: WorkspaceRow;
   branding: Awaited<ReturnType<typeof getBrandingBySlug>>;
   changelogVisible: boolean;
   roadmapVisible: boolean;
+  boards: PortalBoard[];
+  statusCounts: PortalStatusCounts;
+  totalPosts: number;
+  changelogCount: number;
 };
 
-/** Workspace, branding, and public changelog/roadmap flags for the subdomain layout. */
+/** Workspace, branding, nav visibility, boards and public counts for the portal shell. */
 export async function loadSubdomainLayoutData(
   subdomain: string
 ): Promise<SubdomainLayoutData | null> {
@@ -35,16 +58,41 @@ export async function loadSubdomainLayoutData(
 
   if (!ws) return null;
 
-  const branding = await getBrandingBySlug(subdomain);
+  const [
+    branding,
+    changelogVisible,
+    roadmapVisible,
+    boards,
+    totalPosts,
+    planned,
+    progress,
+    completed,
+    review,
+  ] = await Promise.all([
+    getBrandingBySlug(subdomain),
+    getSystemBoardVisibility(ws.id, "changelog"),
+    getSystemBoardVisibility(ws.id, "roadmap"),
+    getWorkspaceBoards(subdomain),
+    getWorkspacePostsCount(subdomain, { publicOnly: true }),
+    getWorkspacePostsCount(subdomain, { statuses: ["planned"], publicOnly: true }),
+    getWorkspacePostsCount(subdomain, { statuses: ["progress"], publicOnly: true }),
+    getWorkspacePostsCount(subdomain, { statuses: ["completed"], publicOnly: true }),
+    getWorkspacePostsCount(subdomain, { statuses: ["review"], publicOnly: true }),
+  ]);
 
-  const changelogVisible = await getSystemBoardVisibility(ws.id, "changelog");
-  const roadmapVisible = await getSystemBoardVisibility(ws.id, "roadmap");
+  const changelogCount = changelogVisible
+    ? await getPublishedChangelogCount(ws.id)
+    : 0;
 
   return {
     workspace: ws,
     branding,
     changelogVisible,
     roadmapVisible,
+    boards,
+    statusCounts: { planned, progress, completed, review },
+    totalPosts,
+    changelogCount,
   };
 }
 
@@ -71,3 +119,18 @@ async function getSystemBoardVisibility(
   return Boolean(b?.isVisible) && Boolean(b?.isPublic);
 }
 
+/** Published changelog entries on the workspace's changelog board. */
+async function getPublishedChangelogCount(workspaceId: string): Promise<number> {
+  const [row] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(changelogEntry)
+    .innerJoin(board, eq(changelogEntry.boardId, board.id))
+    .where(
+      and(
+        eq(board.workspaceId, workspaceId),
+        eq(board.systemType, "changelog"),
+        eq(changelogEntry.status, "published")
+      )
+    );
+  return Number(row?.count || 0);
+}

@@ -9,7 +9,6 @@ import BoardPicker from "../requests/meta/BoardPicker"
 import StatusPicker from "../requests/meta/StatusPicker"
 import FlagsPicker from "../requests/meta/FlagsPicker"
 import StatusIcon from "../requests/StatusIcon"
-import { PoweredBy } from "./PoweredBy"
 import RoleBadge from "../global/RoleBadge"
 import {
   settingsCardInnerClass,
@@ -84,7 +83,7 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
             <span className="truncate text-sm font-medium leading-none text-foreground">
               {displayUser.name}
             </span>
-            <span className="mt-1 text-xs text-muted-foreground">{timeLabel}</span>
+            <span className="mt-1 text-xs text-muted-foreground" suppressHydrationWarning>{timeLabel}</span>
           </div>
         </header>
 
@@ -156,7 +155,6 @@ export default function PostSidebar({ post, workspaceSlug }: PostSidebarProps) {
           </div>
         </div>
       </section>
-      <PoweredBy />
     </aside>
   )
 }

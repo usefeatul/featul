@@ -1,6 +1,5 @@
 import { SubmitIdeaCard } from "../SubmitIdeaCard";
 import { ChangelogAuthorCard } from "./ChangelogAuthorCard";
-import { PoweredBy } from "../PoweredBy";
 import type { Role } from "@/types/team";
 
 interface ChangelogSidebarProps {
@@ -22,9 +21,6 @@ export function ChangelogSidebar({ subdomain, author, publishedAt }: ChangelogSi
 
             {/* Author Card */}
             <ChangelogAuthorCard author={author} publishedAt={publishedAt} />
-
-            {/* Powered By */}
-            <PoweredBy />
         </aside>
     );
 }

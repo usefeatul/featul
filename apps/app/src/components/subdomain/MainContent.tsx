@@ -6,10 +6,7 @@ import type { RequestItemData } from "@/types/request";
 
 import { BoardsDropdown } from "./BoardsDropdown";
 import { PublicRequestPagination } from "./PublicRequestPagination";
-import { SortPopover } from "./SortPopover";
-import { SearchAction } from "./SearchAction";
-import { SubmitIdeaCard } from "./SubmitIdeaCard";
-import { SubdomainListHeader } from "./SubdomainListHeader";
+import { SortTabs } from "./SortTabs";
 import { SubdomainListLayout } from "./SubdomainListLayout";
 import { SubdomainListCard } from "./SubdomainListCard";
 import { SubdomainListItems } from "./SubdomainListItems";
@@ -17,8 +14,7 @@ import PostCard from "@/components/subdomain/PostCard";
 import { SubdomainListEmptyState } from "./SubdomainListEmptyState";
 import { SubdomainActiveSearchHeader } from "./SubdomainActiveSearchHeader";
 import EmptyDomainPosts from "./EmptyPosts";
-import { Toolbar, ToolbarSeparator } from "@featul/ui/components/toolbar";
-import { RoadmapStatusFilter } from "./status";
+import { Toolbar } from "@featul/ui/components/toolbar";
 import { parseRoadmapStatusFilter } from "@/utils/subdomain/status";
 
 type Item = RequestItemData;
@@ -68,7 +64,6 @@ export function MainContent({
       if (orderParam === "likes") {
         next.sort(
           (a, b) =>
-            // Pinned posts always first
             (Number(b.isPinned || false) - Number(a.isPinned || false)) ||
             (Number(b.upvotes || 0) - Number(a.upvotes || 0)) ||
             new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
@@ -85,12 +80,13 @@ export function MainContent({
         setListItems((prev) => prev.filter((p) => p.id !== detail.postId));
       }
     };
-
     window.addEventListener("post:deleted", handlePostDeleted);
     return () => {
       window.removeEventListener("post:deleted", handlePostDeleted);
     };
   }, []);
+
+  const activeBoard = selectedBoard || boardParam;
 
   return (
     <SubdomainListLayout
@@ -98,58 +94,22 @@ export function MainContent({
       slug={slug}
       sidebarPosition={sidebarPosition}
       initialBoards={initialBoards}
-      selectedBoard={selectedBoard || boardParam}
+      selectedBoard={activeBoard}
       sortBasePath={paginationBasePath}
       sortKeepParams={sortKeepParams}
     >
       <div>
-        <SubdomainListHeader
-          sidebarPosition={sidebarPosition}
-          mobileActions={
-            <Toolbar size="sm" className="w-fit">
-              <SortPopover
-                subdomain={subdomain}
-                slug={slug}
-                basePath={paginationBasePath}
-                keepParams={sortKeepParams}
-                compact
-              />
-              <ToolbarSeparator />
-              <SearchAction slug={slug} />
-            </Toolbar>
-          }
-          mobileSecondary={
-            <Toolbar size="sm" className="w-fit">
-              <BoardsDropdown
-                slug={slug}
-                initialBoards={initialBoards}
-                selectedBoard={selectedBoard || boardParam}
-              />
-              <ToolbarSeparator />
-              <RoadmapStatusFilter compact />
-            </Toolbar>
-          }
-          desktopSecondary={
-            <Toolbar size="sm" className="w-fit">
-              <BoardsDropdown
-                slug={slug}
-                initialBoards={initialBoards}
-                selectedBoard={selectedBoard || boardParam}
-              />
-              <ToolbarSeparator />
-              <RoadmapStatusFilter />
-            </Toolbar>
-          }
-        />
-        <div className="md:hidden mb-4">
-          <SubmitIdeaCard subdomain={subdomain} slug={slug} />
+        {/* List toolbar: sort, plus the board switcher on mobile. */}
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <SortTabs basePath={paginationBasePath} keepParams={sortKeepParams} />
+          <Toolbar size="sm" className="w-fit md:hidden">
+            <BoardsDropdown slug={slug} initialBoards={initialBoards} selectedBoard={activeBoard} />
+          </Toolbar>
         </div>
+
         <SubdomainListCard>
           {searchQuery ? (
-            <SubdomainActiveSearchHeader
-              query={searchQuery}
-              totalCount={totalCount}
-            />
+            <SubdomainActiveSearchHeader query={searchQuery} totalCount={totalCount} />
           ) : null}
           {items.length === 0 ? (
             searchQuery ? (
@@ -168,11 +128,17 @@ export function MainContent({
           ) : (
             <SubdomainListItems>
               {listItems.map((p) => {
-                // Check if the board for this post has hidePublicMemberIdentity enabled
                 const postBoard = initialBoards?.find((b) => b.slug === p.boardSlug);
                 const hideIdentity = postBoard?.hidePublicMemberIdentity ?? false;
                 return (
-                  <PostCard key={p.id} item={p} onVoteChange={handleVoteChange} linkPrefix={linkPrefix} hidePublicMemberIdentity={hideIdentity} />
+                  <PostCard
+                    key={p.id}
+                    item={p}
+                    onVoteChange={handleVoteChange}
+                    linkPrefix={linkPrefix}
+                    hidePublicMemberIdentity={hideIdentity}
+                    showBoard={!activeBoard}
+                  />
                 );
               })}
             </SubdomainListItems>

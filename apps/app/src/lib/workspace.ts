@@ -751,6 +751,32 @@ export async function getPlannedRoadmapPosts(
     publicOnly: true,
   });
 }
+/** Public posts in one roadmap column when the roadmap board is visible. */
+export async function getRoadmapColumnPosts(
+  slug: string,
+  status: "planned" | "progress" | "completed",
+  opts?: { limit?: number; search?: string },
+) {
+  const ws = await getWorkspaceBySlug(slug);
+  if (!ws) return [];
+
+  const [rb] = await db
+    .select({ isVisible: board.isVisible, isPublic: board.isPublic })
+    .from(board)
+    .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "roadmap")))
+    .limit(1);
+  if (!rb?.isVisible || !rb?.isPublic) return [];
+
+  const search = (opts?.search || "").trim();
+  return getWorkspacePosts(slug, {
+    statuses: [status],
+    limit: opts?.limit ?? 30,
+    order: "likes",
+    search: search || undefined,
+    publicOnly: true,
+  });
+}
+
 /** Non-system board by workspace and board slug. */
 export async function getBoardByWorkspaceSlug(
   slug: string,

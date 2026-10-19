@@ -24,6 +24,10 @@ export default async function Layout({
       branding={data.branding}
       changelogVisible={data.changelogVisible}
       roadmapVisible={data.roadmapVisible}
+      boards={data.boards}
+      statusCounts={data.statusCounts}
+      totalPosts={data.totalPosts}
+      changelogCount={data.changelogCount}
       initialUser={session?.user ?? null}
     >
       {children}
