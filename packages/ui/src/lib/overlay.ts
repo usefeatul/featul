@@ -27,6 +27,14 @@ export const modalShellClass =
 export const modalInnerClass =
   "overflow-hidden rounded-lg bg-card ring-1 ring-black/[0.06] shadow-[0_1px_2px_rgba(0,0,0,0.05)] dark:bg-linear-to-b dark:from-[color-mix(in_oklab,var(--card),white_3%)] dark:to-card dark:ring-white/[0.07] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.4)]"
 
+/** Card frame with the modal's design (gradient `p-1` shell, lit edge) and only a hairline drop shadow. */
+export const modalCardShellClass =
+  "overflow-hidden rounded-2xl [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*4)] border border-black/[0.08] bg-sidebar bg-linear-to-b from-sidebar to-[color-mix(in_oklab,var(--sidebar),var(--foreground)_3%)] p-1 text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.03)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--sidebar),white_2%)] dark:to-sidebar dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_1px_rgba(0,0,0,0.12)]"
+
+/** Card content surface inside `modalCardShellClass`; matches `modalInnerClass` without a drop shadow. */
+export const modalCardInnerClass =
+  "overflow-hidden rounded-xl [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*3.5)] bg-card ring-1 ring-black/[0.06] dark:bg-linear-to-b dark:from-[color-mix(in_oklab,var(--card),white_3%)] dark:to-card dark:ring-white/[0.07] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+
 /** Image thumbnail frame: lit edge and gradient around a `p-1` inset, no drop shadow. */
 export const imageShellClass =
   "overflow-hidden rounded-xl [corner-shape:squircle] border border-black/[0.08] bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_5%)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,1)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_5%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"

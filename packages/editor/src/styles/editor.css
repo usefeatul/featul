@@ -457,6 +457,54 @@ mark[style] > strong {
 	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16 18 6-6-6-6M8 6l-6 6 6 6'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
+/* Copy button: right end of the header row, styled like the dialog close button. */
+.ProseMirror pre .featul-code-copy {
+	position: absolute;
+	top: 0.3125rem;
+	right: 0.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	padding: 0;
+	border: 0;
+	border-radius: 0.375rem;
+	background: transparent;
+	color: var(--foreground);
+	opacity: 0.7;
+	cursor: pointer;
+	transition: opacity 120ms ease, background-color 120ms ease;
+}
+
+.ProseMirror pre .featul-code-copy:hover {
+	opacity: 1;
+	background: color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+
+.ProseMirror pre .featul-code-copy:focus-visible {
+	opacity: 1;
+	outline: 2px solid var(--ring);
+	outline-offset: 1px;
+}
+
+.ProseMirror pre .featul-code-copy::before {
+	content: "";
+	width: 0.875rem;
+	height: 0.875rem;
+	background: currentColor;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='8' y='8' width='13' height='13' rx='2.5'/%3E%3Cpath d='M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.ProseMirror pre .featul-code-copy[data-copied]::before {
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+.ProseMirror pre .featul-code-copy[data-copied] {
+	opacity: 1;
+	color: var(--primary);
+}
+
 .ProseMirror[contenteditable="false"] pre code {
 	display: block;
 	padding: 0.875em 1.1em;

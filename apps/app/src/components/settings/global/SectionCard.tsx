@@ -1,6 +1,10 @@
 import React from "react";
 import { cn } from "@featul/ui/lib/utils";
 import {
+  modalCardInnerClass,
+  modalCardShellClass,
+} from "@featul/ui/lib/overlay";
+import {
   AlertCircle,
   CheckCircle,
   InfoIcon,
@@ -49,17 +53,18 @@ export const settingsPlanCardCurrentClass =
 export const settingsTableShellClass =
   "overflow-hidden rounded-lg border border-border/50 bg-background/50";
 
-export const settingsSectionClass =
-  "flex min-w-0 flex-col gap-3 text-foreground";
+/** Section frame: the create-post dialog's `p-1` shell with the header inside it. */
+export const settingsSectionClass = `${modalCardShellClass} flex min-w-0 flex-col`;
 
-export const settingsSurfaceClass =
-  "min-w-0 overflow-hidden rounded-[calc(var(--radius)*2)] border border-border/50 bg-card px-5 py-4 shadow-xs dark:border-transparent dark:shadow-none";
+/** Section header row inside `settingsSurfaceShellClass`, aligned like the dialog title. */
+export const settingsSurfaceHeaderClass =
+  "flex flex-wrap items-center justify-between gap-3 px-2.5 py-1.5";
 
-export const settingsCardShellClass =
-  "flex flex-col overflow-hidden rounded-lg border border-border/70 bg-sidebar px-2 pt-2 pb-2 text-foreground dark:border-white/[0.07]";
+export const settingsSurfaceClass = `${modalCardInnerClass} min-w-0 px-5 py-4`;
 
-export const settingsCardInnerClass =
-  "flex flex-1 flex-col rounded-lg bg-card px-4 py-3 ring-1 ring-border/45 dark:bg-background dark:ring-white/[0.055]";
+export const settingsCardShellClass = `${modalCardShellClass} flex flex-col`;
+
+export const settingsCardInnerClass = `${modalCardInnerClass} flex flex-1 flex-col px-4 py-3`;
 
 export default function SectionCard({
   title,
@@ -85,7 +90,7 @@ export default function SectionCard({
 
   return (
     <section className={cn(settingsSectionClass, className)}>
-      <header className="flex flex-wrap items-center justify-between gap-3 px-1">
+      <header className={settingsSurfaceHeaderClass}>
         <div className="flex min-w-0 flex-wrap items-center gap-3">
           {icon ? (
             <div className="flex size-5 shrink-0 items-center justify-center">
@@ -111,19 +116,8 @@ export default function SectionCard({
         ) : null}
       </header>
       {description || children || status?.message ? (
-        <div
-          className={cn(
-            status?.message &&
-              "overflow-hidden rounded-[calc(var(--radius)*2)] border border-border/50 bg-card shadow-xs dark:border-transparent dark:shadow-none",
-          )}
-        >
-          <div
-            className={cn(
-              settingsSurfaceClass,
-              status?.message && "rounded-none border-0 shadow-none",
-              contentClassName,
-            )}
-          >
+        <div className={cn(modalCardInnerClass, "min-w-0")}>
+          <div className={cn("min-w-0 px-5 py-4", contentClassName)}>
             {description ? (
               <div
                 className={cn(

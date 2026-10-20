@@ -16,7 +16,7 @@ export default function CommentsDisabledState({
 }: CommentsDisabledStateProps) {
   return (
     <div className={settingsCardShellClass}>
-      <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+      <header className="flex flex-col gap-2 px-2 py-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
             {title}

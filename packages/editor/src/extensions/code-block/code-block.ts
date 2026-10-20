@@ -1,6 +1,6 @@
 import { mergeAttributes } from "@tiptap/core";
 import CodeBlockLowlight, { type CodeBlockLowlightOptions } from "@tiptap/extension-code-block-lowlight";
-import type { DOMOutputSpec, Node as ProseMirrorNode } from "@tiptap/pm/model";
+import { type DOMOutputSpec, DOMSerializer, type Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { lowlight } from "../../lib/lowlight";
 
 const LANGUAGE_LABELS: Record<string, string> = {
@@ -32,15 +32,24 @@ function languageLabel(language: string | null | undefined) {
   return LANGUAGE_LABELS[language.toLowerCase()] ?? language.charAt(0).toUpperCase() + language.slice(1);
 }
 
+const COPY_BUTTON: DOMOutputSpec = [
+  "button",
+  { type: "button", class: "featul-code-copy", "aria-label": "Copy code", title: "Copy" },
+];
+const COPIED_MS = 1500;
+
+/** `copyButton` is for reading views only; the editor's own HTML (getHTML) never carries it. */
 function codeBlockSpec(
   node: ProseMirrorNode,
   options: CodeBlockLowlightOptions,
   HTMLAttributes: Record<string, unknown>,
   children: DOMOutputSpec[] | [0],
+  copyButton = false,
 ): DOMOutputSpec {
   return [
     "pre",
     mergeAttributes(options.HTMLAttributes, HTMLAttributes, { "data-language": languageLabel(node.attrs.language) }),
+    ...(copyButton ? [COPY_BUTTON] : []),
     [
       "code",
       { class: node.attrs.language ? options.languageClassPrefix + node.attrs.language : null },
@@ -56,6 +65,46 @@ function codeBlockSpec(
 export const CodeBlock = CodeBlockLowlight.extend({
   renderHTML({ node, HTMLAttributes }) {
     return codeBlockSpec(node, this.options, HTMLAttributes, [0]);
+  },
+
+  // Read-only editors (changelog, help, widget) get the copy button. A plain node view keeps
+  // the button's copied state out of ProseMirror's DOM observer; editing keeps the default.
+  addNodeView() {
+    if (this.editor.options.editable) return null;
+    const options = this.options;
+
+    return ({ node, HTMLAttributes }) => {
+      const { dom, contentDOM } = DOMSerializer.renderSpec(
+        document,
+        codeBlockSpec(node, options, HTMLAttributes, [0], true),
+      );
+      const button = (dom as HTMLElement).querySelector<HTMLButtonElement>(".featul-code-copy");
+      let reset: ReturnType<typeof setTimeout> | undefined;
+
+      button?.addEventListener("click", () => {
+        navigator.clipboard
+          ?.writeText(contentDOM?.textContent ?? "")
+          .then(() => {
+            button.dataset.copied = "true";
+            button.setAttribute("aria-label", "Copied");
+            clearTimeout(reset);
+            reset = setTimeout(() => {
+              delete button.dataset.copied;
+              button.setAttribute("aria-label", "Copy code");
+            }, COPIED_MS);
+          })
+          .catch(() => {});
+      });
+
+      return {
+        dom,
+        contentDOM,
+        stopEvent: (event) => !!button && button.contains(event.target as Node),
+        ignoreMutation: (mutation) =>
+          mutation.type !== "selection" && !contentDOM?.contains(mutation.target),
+        destroy: () => clearTimeout(reset),
+      };
+    };
   },
 }).configure({
   lowlight,
@@ -95,6 +144,6 @@ export const StaticCodeBlock = CodeBlock.extend({
         ? lowlight.highlight(language, text)
         : lowlight.highlightAuto(text);
 
-    return codeBlockSpec(node, this.options, HTMLAttributes, highlightSpecs(tree.children as HighlightNode[]));
+    return codeBlockSpec(node, this.options, HTMLAttributes, highlightSpecs(tree.children as HighlightNode[]), true);
   },
 });

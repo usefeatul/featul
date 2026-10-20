@@ -105,7 +105,7 @@ export function SelectableListShell({
       )}
     >
       {isNested && (toolbar || title || headerAction) ? (
-        <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+        <header className="flex flex-col gap-2 px-2 py-2 sm:flex-row sm:items-center sm:justify-between">
           {toolbar ? (
             <div className="min-w-0 flex-1">{toolbar}</div>
           ) : (
