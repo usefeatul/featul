@@ -3,13 +3,9 @@
 import { useId, useRef, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { DitherGradient } from "@featul/ui/components/gradient";
-import { subtleOverlayShellClass } from "@featul/ui/lib/overlay";
+import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { X } from "@/components/global/icons";
-
-// One step lighter than the menu surface: keeps the lit edges, drops the longer shadow.
-const cardShadowClass =
-  "shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_2px_rgba(0,0,0,0.4)]";
 
 export type StackCard = {
   id: string;
@@ -42,20 +38,13 @@ export default function Stack({ cards, total }: { cards: StackCard[]; total: num
           <div
             key={index}
             aria-hidden="true"
-            className={cn(subtleOverlayShellClass, cardShadowClass, "pointer-events-none absolute inset-x-0 bottom-0")}
+            className={cn(modalCardShellClass, "pointer-events-none absolute inset-x-0 bottom-0")}
             style={{ top: index * 6, marginInline: (layers - index) * 6, opacity: 0.45 + index * 0.2 }}
           />
         ))}
-        <article aria-labelledby={titleId} className={cn(subtleOverlayShellClass, cardShadowClass, "relative p-3")}>
-          {/* Pattern sits in the top-left corner and fades out toward the copy. */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{ maskImage: "radial-gradient(ellipse 85% 75% at top left, black 10%, rgba(0,0,0,0.4) 45%, transparent 80%)" }}
-          >
-            <DitherGradient key={card.id} to="primary" direction="down" cell={3} opacity={0.45} />
-          </div>
-          <div className="relative mb-2 flex h-6 items-center justify-between">
+        {/* Settings-card frame: counter and close in the shell header, copy on the inner surface. */}
+        <article aria-labelledby={titleId} className={cn(modalCardShellClass, "relative flex flex-col")}>
+          <div className="flex h-7 items-center justify-between pr-0.5 pl-2">
             <span className="text-[10px] tabular-nums text-muted-foreground" aria-live="polite" aria-atomic="true">
               {total - cards.length + 1} of {total}
             </span>
@@ -70,17 +59,27 @@ export default function Stack({ cards, total }: { cards: StackCard[]; total: num
               <X className="size-3.5" aria-hidden />
             </button>
           </div>
-          <motion.div
-            key={card.id}
-            className="relative"
-            initial={reduceMotion ? false : { opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.16, ease: "easeOut" }}
-          >
-            <p id={titleId} className="text-xs font-medium text-foreground">{card.title}</p>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{card.description}</p>
-            <div className="mt-1">{card.action}</div>
-          </motion.div>
+          <div className={cn(modalCardInnerClass, "relative isolate p-3")}>
+            {/* Pattern sits in the top-left corner and fades out toward the copy. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 -z-10"
+              style={{ maskImage: "radial-gradient(ellipse 85% 75% at top left, black 10%, rgba(0,0,0,0.4) 45%, transparent 80%)" }}
+            >
+              <DitherGradient key={card.id} to="primary" direction="down" cell={3} opacity={0.45} />
+            </div>
+            <motion.div
+              key={card.id}
+              className="relative"
+              initial={reduceMotion ? false : { opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.16, ease: "easeOut" }}
+            >
+              <p id={titleId} className="text-xs font-medium text-foreground">{card.title}</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{card.description}</p>
+              <div className="mt-1">{card.action}</div>
+            </motion.div>
+          </div>
         </article>
       </div>
     </section>
