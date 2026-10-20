@@ -131,9 +131,9 @@ export function CollectionDialog({
                 onClick={() => setIcon(key)}
                 className={cn(
                   helpCollectionTileClass,
-                  "aspect-square w-full cursor-pointer transition-[color,box-shadow]",
+                  "aspect-square w-full cursor-pointer transition-colors",
                   icon === key
-                    ? "text-primary ring-2 ring-primary/50"
+                    ? "text-primary"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
