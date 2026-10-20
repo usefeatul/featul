@@ -3,7 +3,11 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { client } from "@featul/api/client";
-import { inputSurfaceClass } from "@featul/ui/lib/overlay";
+import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
+import {
+  settingsSectionClass,
+  settingsSurfaceHeaderClass,
+} from "@/components/settings/global/SectionCard";
 import { cn } from "@featul/ui/lib/utils";
 import { ArticleIcon, LoaderIcon, SearchIcon, SparklesIcon } from "@/components/global/icons";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -110,56 +114,88 @@ export function HelpSearch({
 
   return (
     <div className={cn("relative w-full", className)}>
+      {/* Settings-card frame: title row in the shell (hero size), the field is the inner surface. */}
       <div
         className={cn(
-          // Same raised surface and keycaps as the portal header's search field.
-          inputSurfaceClass,
-          "flex items-center gap-2.5 rounded-lg transition-[filter,box-shadow] hover:brightness-[0.98] focus-within:border-primary/15 dark:focus-within:border-primary/15 dark:hover:brightness-125",
-          large ? "h-12 px-4" : "h-10 px-3.5",
+          large ? settingsSectionClass : modalCardShellClass,
+          "text-left transition-[border-color] focus-within:border-primary/25 dark:focus-within:border-primary/25",
         )}
       >
-        {loading ? (
-          <LoaderIcon className={cn("shrink-0 text-muted-foreground", large ? "size-4.5" : "size-4")} />
-        ) : (
-          <SearchIcon className={cn("shrink-0 text-muted-foreground", large ? "size-4.5" : "size-4")} />
-        )}
-        <input
-          ref={inputRef}
-          type="search"
-          role="combobox"
-          aria-expanded={showPanel}
-          aria-controls={listId}
-          aria-autocomplete="list"
-          aria-label="Search articles"
-          value={query}
-          placeholder={askAi ? "Search articles or ask a question" : "Search articles"}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setOpen(true);
-          }}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 120)}
-          onKeyDown={(e) => {
-            if (e.key === "ArrowDown") {
-              e.preventDefault();
-              setActive((i) => Math.min(i + 1, options.length - 1));
-            } else if (e.key === "ArrowUp") {
-              e.preventDefault();
-              setActive((i) => Math.max(i - 1, 0));
-            } else if (e.key === "Enter") {
-              e.preventDefault();
-              choose(options[active]);
-            } else if (e.key === "Escape") {
-              setOpen(false);
-              inputRef.current?.blur();
-            }
-          }}
+        {large ? (
+          <header className={settingsSurfaceHeaderClass}>
+            <div className="flex min-w-0 items-center gap-2.5">
+              <SearchIcon className="size-4 shrink-0 text-primary" />
+              <h2 className="text-sm font-medium leading-6 text-foreground">Search articles</h2>
+            </div>
+            {askAi ? (
+              <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+                <SparklesIcon className="size-3.5 text-primary" />
+                Ask AI
+              </span>
+            ) : null}
+          </header>
+        ) : null}
+        <div
           className={cn(
-            "min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden",
-            // 16px on phones so iOS Safari doesn't zoom the page when the field is focused.
-            large ? "text-base sm:text-[15px]" : "text-base sm:text-sm",
+            modalCardInnerClass,
+            "flex items-center gap-2.5 transition-[box-shadow] focus-within:ring-primary/20 dark:focus-within:ring-primary/25",
+            large ? "h-12 px-4" : "h-10 px-3.5",
           )}
-        />
+        >
+          {large ? null : loading ? (
+            <LoaderIcon className="size-4 shrink-0 text-muted-foreground" />
+          ) : (
+            <SearchIcon className="size-4 shrink-0 text-muted-foreground" />
+          )}
+          <input
+            ref={inputRef}
+            type="search"
+            role="combobox"
+            aria-expanded={showPanel}
+            aria-controls={listId}
+            aria-autocomplete="list"
+            aria-label="Search articles"
+            value={query}
+            placeholder={
+              large
+                ? askAi
+                  ? "Type a keyword or ask a question"
+                  : "Type a keyword"
+                : askAi
+                  ? "Search articles or ask a question"
+                  : "Search articles"
+            }
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setOpen(true);
+            }}
+            onFocus={() => setOpen(true)}
+            onBlur={() => setTimeout(() => setOpen(false), 120)}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setActive((i) => Math.min(i + 1, options.length - 1));
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setActive((i) => Math.max(i - 1, 0));
+              } else if (e.key === "Enter") {
+                e.preventDefault();
+                choose(options[active]);
+              } else if (e.key === "Escape") {
+                setOpen(false);
+                inputRef.current?.blur();
+              }
+            }}
+            className={cn(
+              "min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden",
+              // 16px on phones so iOS Safari doesn't zoom the page when the field is focused.
+              large ? "text-base sm:text-[15px]" : "text-base sm:text-sm",
+            )}
+          />
+          {large && loading ? (
+            <LoaderIcon className="size-4 shrink-0 text-muted-foreground" />
+          ) : null}
+        </div>
       </div>
 
       {showPanel ? (
