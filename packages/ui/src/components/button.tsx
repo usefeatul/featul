@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
+import { raisedSurfaceClass, selectorSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
 const buttonVariants = cva(
@@ -22,6 +22,8 @@ const buttonVariants = cva(
         nav: `${raisedSurfaceClass} text-foreground hover:brightness-[0.97] hover:text-accent-foreground dark:text-foreground dark:hover:brightness-125`,
         plain: "bg-card dark:bg-background text-foreground hover:bg-muted hover:text-accent-foreground dark:hover:bg-black/50",
         card: `${raisedSurfaceClass} text-foreground hover:brightness-[0.97] hover:text-accent-foreground dark:text-foreground dark:hover:brightness-125`,
+        /** Select/picker trigger: the card surface with only a hairline drop shadow. */
+        selector: `${selectorSurfaceClass} text-foreground hover:brightness-[0.97] aria-expanded:brightness-[0.97] dark:text-foreground dark:hover:brightness-125 dark:aria-expanded:brightness-125`,
       },
       size: {
         default: "h-8.5 px-1.5 py-1 has-[>svg]:px-3",
@@ -35,7 +37,7 @@ const buttonVariants = cva(
     },
     compoundVariants: [
       {
-        variant: ["default", "secondary", "outline", "destructive", "card", "nav"],
+        variant: ["default", "secondary", "outline", "destructive", "card", "nav", "selector"],
         className:
           "border bg-linear-to-b enabled:active:not-aria-[haspopup]:translate-y-px disabled:bg-none disabled:shadow-none",
       },

@@ -154,7 +154,6 @@ export default function SetPassword() {
                             id="email"
                             value={email}
                             disabled
-                            className="bg-muted"
                         />
                         <p className={styles.mutedTextCls}>
                             This is the email associated with your account

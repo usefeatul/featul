@@ -9,10 +9,12 @@ import { Button } from "@featul/ui/components/button";
 import { Switch } from "@featul/ui/components/switch";
 import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import { BookIcon, ExternalLink, Plus } from "@/components/global/icons";
+import { AnalyticsIcon, BookIcon, ExternalLink, Plus, SparklesIcon } from "@/components/global/icons";
+import { ActionTooltip } from "@/components/global/ActionTooltip";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { expectOk } from "@/hooks/useHelpTree";
 import { CollectionDialog } from "./CollectionDialog";
+import { openHelpImport } from "./HelpImport";
 
 type HelpSettings = { isVisible: boolean; publishedCount: number };
 
@@ -59,45 +61,70 @@ export function HelpHeaderActions({
     }
   };
 
-  const liveHint =
-    isVisible && data && data.publishedCount === 0
+  const visibilityHint = !isVisible
+    ? "Hidden from your public site. Turn on to show it."
+    : data && data.publishedCount === 0
       ? "Shows on your public site once an article is published"
-      : undefined;
+      : "Showing on your public site";
 
   return (
     <div className="ml-auto flex shrink-0 items-center gap-1">
-      <label
-        title={liveHint}
-        className={cn(
-          raisedSurfaceClass,
-          "flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-xs font-medium text-muted-foreground",
-        )}
-      >
-        <span>Public</span>
-        <Switch checked={isVisible} onCheckedChange={toggle} aria-label="Show help center on public site" />
-      </label>
+      <ActionTooltip label={visibilityHint}>
+        <label
+          className={cn(
+            raisedSurfaceClass,
+            "flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-xs font-medium text-muted-foreground",
+          )}
+        >
+          <span>Public</span>
+          <Switch checked={isVisible} onCheckedChange={toggle} aria-label="Show help center on public site" />
+        </label>
+      </ActionTooltip>
       {boardUrl ? (
+        <ActionTooltip label="View your live help center">
+          <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
+            <Link href={`${boardUrl}/help`} target="_blank" rel="noopener noreferrer" aria-label="View help center">
+              <ExternalLink className="size-4" />
+            </Link>
+          </Button>
+        </ActionTooltip>
+      ) : null}
+      <ActionTooltip label="Draft articles from your website">
+        <Button
+          variant="plain"
+          size="icon-sm"
+          className={buttonClassName}
+          aria-label="Draft from website"
+          onClick={openHelpImport}
+        >
+          <SparklesIcon className="size-4" />
+        </Button>
+      </ActionTooltip>
+      <ActionTooltip label="Analytics">
         <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
-          <Link href={`${boardUrl}/help`} target="_blank" rel="noopener noreferrer" aria-label="View help center" title="View help center">
-            <ExternalLink className="size-4" />
+          <Link href={`/workspaces/${workspaceSlug}/help/analytics`} aria-label="Analytics">
+            <AnalyticsIcon className="size-4" />
           </Link>
         </Button>
-      ) : null}
-      <Button
-        variant="plain"
-        size="icon-sm"
-        className={buttonClassName}
-        aria-label="New collection"
-        title="New collection"
-        onClick={() => setCollectionOpen(true)}
-      >
-        <BookIcon className="size-4" />
-      </Button>
-      <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
-        <Link href={`/workspaces/${workspaceSlug}/help/new`} aria-label="New article" title="New article">
-          <Plus className="size-4" />
-        </Link>
-      </Button>
+      </ActionTooltip>
+      <ActionTooltip label="New collection">
+        <Button
+          variant="plain"
+          size="icon-sm"
+          className={buttonClassName}
+          aria-label="New collection"
+          onClick={() => setCollectionOpen(true)}
+        >
+          <BookIcon className="size-4" />
+        </Button>
+      </ActionTooltip>
+      <ActionTooltip label="New article">
+        <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
+          <Link href={`/workspaces/${workspaceSlug}/help/new`} aria-label="New article">
+            <Plus className="size-4" />
+          </Link>
+        </Button>
+      </ActionTooltip>
       <CollectionDialog open={collectionOpen} onOpenChange={setCollectionOpen} workspaceSlug={workspaceSlug} />
     </div>
   );

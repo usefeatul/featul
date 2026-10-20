@@ -10,7 +10,7 @@ import {
   OverlayCard,
   OverlayCardPanel,
 } from "@/components/shared/overlay-card"
-import { Tabs, TabsList, TabsTrigger } from "@featul/ui/components/tabs"
+import { SegmentedControl } from "@featul/ui/components/segmented-control"
 import type { PixelColor } from "@/components/dither-kit/pixel"
 import { SubtleDitherWash } from "@/components/home/visual-well"
 import Link from "next/link"
@@ -259,41 +259,29 @@ function BillingCycleTabs({
   billingCycle: BillingCycle
   onChange: (value: BillingCycle) => void
 }) {
-  const handleValueChange = React.useCallback(
-    (value: string) => {
-      if (value === "monthly" || value === "yearly") onChange(value)
-    },
-    [onChange],
-  )
-
   return (
-    <Tabs value={billingCycle} onValueChange={handleValueChange} className="gap-0">
-      <TabsList className="w-auto gap-0 overflow-visible rounded-md border border-border/70 bg-muted/40 p-0.5 pb-0 [&>div.pointer-events-none.absolute]:hidden">
-        <TabsTrigger
-          value="monthly"
-          className={cn(
-            "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-muted-foreground",
-            billingCycle === "monthly" && "bg-card text-foreground dark:bg-black/50",
-          )}
-        >
-          Monthly
-        </TabsTrigger>
-        <TabsTrigger
-          value="yearly"
-          className={cn(
-            "h-auto cursor-pointer rounded-md border-0 px-2 py-1 text-xs text-muted-foreground",
-            billingCycle === "yearly" && "bg-card text-foreground dark:bg-black/50",
-          )}
-        >
-          Yearly
-          {billingCycle === "yearly" ? (
-            <span className="ml-1 rounded-sm bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
-              2 months free
-            </span>
-          ) : null}
-        </TabsTrigger>
-      </TabsList>
-    </Tabs>
+    <SegmentedControl
+      aria-label="Billing cycle"
+      size="sm"
+      value={billingCycle}
+      onValueChange={onChange}
+      options={[
+        { value: "monthly", label: "Monthly" },
+        {
+          value: "yearly",
+          label: (
+            <>
+              Yearly
+              {billingCycle === "yearly" ? (
+                <span className="ml-1 rounded-sm bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                  2 months free
+                </span>
+              ) : null}
+            </>
+          ),
+        },
+      ]}
+    />
   )
 }
 

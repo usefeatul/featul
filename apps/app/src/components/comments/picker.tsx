@@ -13,7 +13,7 @@ import {
   settingsCardInnerClass,
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard";
-import styles from "./emoji.module.css";
+import { emojiPickerClass, emojiSurfaceClass } from "./styles";
 
 const pickerHeight =
   "min(360px, calc(var(--radix-popover-content-available-height, 378px) - 18px))";
@@ -61,13 +61,14 @@ export default function EmojiPicker({
         <div
           className={cn(
             settingsCardInnerClass,
-            styles.surface,
+            emojiSurfaceClass,
             "overflow-hidden p-0",
           )}
         >
           {open && (
             <Picker
-              className={styles.picker}
+              className={emojiPickerClass}
+              cssLayer="epr"
               searchPlaceholder="Search emojis…"
               width="100%"
               height={pickerHeight}

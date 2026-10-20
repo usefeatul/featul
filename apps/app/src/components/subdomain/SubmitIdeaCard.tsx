@@ -15,7 +15,7 @@ export function SubmitIdeaCard({ subdomain, slug }: { subdomain: string; slug: s
   return (
     <>
       <div className={settingsCardShellClass}>
-        <header className="flex items-center gap-2 py-2">
+        <header className="flex items-center gap-2 px-2 py-2">
           <IdeaIcon className="size-4" />
           <h2 className="text-sm font-medium leading-none">Got an idea?</h2>
         </header>

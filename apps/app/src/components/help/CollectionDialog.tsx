@@ -10,7 +10,12 @@ import { LoadingButton } from "@/components/global/LoadingButton";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
 import { BookIcon } from "@/components/global/icons";
 import { expectOk, useRefreshHelpTree } from "@/hooks/useHelpTree";
-import { HELP_ICON_KEYS, HelpCollectionIcon, type HelpCollectionIconKey } from "./icons";
+import {
+  HELP_ICON_KEYS,
+  HelpCollectionIcon,
+  helpCollectionTileClass,
+  type HelpCollectionIconKey,
+} from "./icons";
 import type { HelpAdminCollection } from "./types";
 
 type CollectionDialogProps = {
@@ -125,10 +130,11 @@ export function CollectionDialog({
                 aria-pressed={icon === key}
                 onClick={() => setIcon(key)}
                 className={cn(
-                  "flex aspect-square cursor-pointer items-center justify-center rounded-lg border text-muted-foreground transition-colors hover:text-foreground",
+                  helpCollectionTileClass,
+                  "aspect-square w-full cursor-pointer transition-colors",
                   icon === key
-                    ? "border-primary/60 bg-primary/10 text-primary hover:text-primary"
-                    : "border-border/60 hover:bg-muted dark:border-white/10 dark:hover:bg-white/5",
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <HelpCollectionIcon icon={key} className="size-4" />

@@ -255,6 +255,17 @@ function parseInlineContent(
   };
 
   while (index < value.length) {
+    // Inline code: everything up to the closing backtick is literal.
+    if (value[index] === "`") {
+      const close = value.indexOf("`", index + 1);
+      if (close > index + 1) {
+        flushBuffer();
+        nodes.push(textNode(value.slice(index + 1, close), [...activeMarks, { type: "code" }]));
+        index = close + 1;
+        continue;
+      }
+    }
+
     const strong = parseStrongToken(value, index);
     if (strong) {
       flushBuffer();
@@ -321,9 +332,11 @@ function headingNode(level: number, text: string): TiptapNode {
 function listNode(
   type: "bulletList" | "orderedList",
   items: string[],
+  start = 1,
 ): TiptapNode {
   return {
     type,
+    ...(type === "orderedList" && start !== 1 ? { attrs: { start } } : {}),
     content: items
       .map((item) => item.trim())
       .filter(Boolean)
@@ -366,6 +379,24 @@ export function markdownToTiptapDoc(markdown: string): TiptapDoc {
       continue;
     }
 
+    const fence = line.match(/^```\s*([\w+-]*)/);
+    if (fence) {
+      const codeLines: string[] = [];
+      index += 1;
+      while (index < lines.length && !cleanLine(lines[index] ?? "").trim().startsWith("```")) {
+        codeLines.push((lines[index] ?? "").replace(CONTROL_CHAR_REGEX, ""));
+        index += 1;
+      }
+      index += 1; // closing fence
+      const code = codeLines.join("\n").replace(/\s+$/, "");
+      nodes.push({
+        type: "codeBlock",
+        attrs: { language: fence[1] || null },
+        ...(code ? { content: [{ type: "text", text: code }] } : {}),
+      });
+      continue;
+    }
+
     const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
     if (headingMatch) {
       const level = headingMatch[1]?.length ?? 1;
@@ -401,6 +432,8 @@ export function markdownToTiptapDoc(markdown: string): TiptapDoc {
     }
 
     if (/^\d+\.\s+/.test(line)) {
+      // Keep numbering going when a list resumes after a code block or paragraph.
+      const start = Number(line.match(/^(\d+)\./)?.[1] ?? 1);
       const items: string[] = [];
       while (index < lines.length) {
         const itemRaw = cleanLine(lines[index] ?? "").trim();
@@ -409,7 +442,7 @@ export function markdownToTiptapDoc(markdown: string): TiptapDoc {
         items.push(match[1] ?? "");
         index += 1;
       }
-      nodes.push(listNode("orderedList", items));
+      nodes.push(listNode("orderedList", items, start));
       continue;
     }
 
@@ -421,7 +454,8 @@ export function markdownToTiptapDoc(markdown: string): TiptapDoc {
         /^(#{1,6})\s+/.test(part) ||
         /^>\s?/.test(part) ||
         /^[-*]\s+/.test(part) ||
-        /^\d+\.\s+/.test(part)
+        /^\d+\.\s+/.test(part) ||
+        /^```/.test(part)
       ) {
         break;
       }

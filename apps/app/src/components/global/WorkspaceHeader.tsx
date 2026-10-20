@@ -106,7 +106,12 @@ export default function WorkspaceHeader({
   const showChangelogActions = rest[0] === "changelog" && rest.length === 1;
   const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2;
   const showHelpActions = rest[0] === "help" && rest.length === 1;
-  const showHelpEditActions = rest[0] === "help" && rest.length >= 2;
+  // Help Center sub-pages that get a breadcrumb instead of the article editor chrome.
+  const helpSubpage =
+    rest[0] === "help" ? ({ analytics: "Analytics" } as Record<string, string>)[rest[1] ?? ""] : undefined;
+  const isHelpAnalytics = Boolean(helpSubpage);
+  const showHelpEditActions =
+    rest[0] === "help" && rest.length >= 2 && !isHelpAnalytics;
   const showEditorActions = showChangelogEditActions || showHelpEditActions;
   const isMembersSection = rest[0] === "members";
   const isMemberDetail = isMembersSection && rest.length > 1;
@@ -138,6 +143,7 @@ export default function WorkspaceHeader({
   if (showHelpEditActions) {
     title = rest[1] === "new" ? "New article" : "Edit article";
   }
+  if (helpSubpage) title = helpSubpage;
 
   const pageActions = isMemberDetail ? (
     <Toolbar size="sm">
@@ -227,6 +233,7 @@ export default function WorkspaceHeader({
     showChangelogActions ||
     showEditorActions ||
     showHelpActions ||
+    isHelpAnalytics ||
     (isMembersSection && !isMemberDetail);
   const showHeaderUtilityRow =
     showFilterSummary || Boolean(pageActions) || !showPageHeading;
@@ -239,7 +246,26 @@ export default function WorkspaceHeader({
     return (
       <header className="relative z-40 shrink-0 bg-background px-4 sm:px-6">
         <div className="flex min-h-12 min-w-0 items-center justify-between gap-2 sm:gap-3">
-          {embeddedInEditor && showEditorActions ? (
+          {isHelpAnalytics ? (
+            <nav aria-label="Help Center navigation" className="min-w-0 flex-1">
+              <ol className="flex min-w-0 items-center gap-2 text-sm">
+                <li className="shrink-0">
+                  <Link
+                    href={`/workspaces/${workspaceSlug}/help`}
+                    className="flex items-center rounded-lg py-1 text-accent transition-colors hover:text-foreground"
+                  >
+                    Help Center
+                  </Link>
+                </li>
+                <li aria-hidden="true" className="shrink-0 text-accent/50">
+                  /
+                </li>
+                <li aria-current="page" className="min-w-0 truncate font-medium">
+                  {helpSubpage}
+                </li>
+              </ol>
+            </nav>
+          ) : embeddedInEditor && showEditorActions ? (
             <nav aria-label={`${editorSection.label} navigation`} className="min-w-0 flex-1">
               <ol className="flex min-w-0 items-center gap-2 text-sm">
                 <li className="shrink-0">

@@ -103,7 +103,7 @@ export default function CommentList({
 
   const thread =
     commentCount > 0 ? (
-      <div className={cn(!plain && settingsCardShellClass, "pt-2")}>
+      <div className={plain ? "pt-2" : settingsCardShellClass}>
         <div
           className={cn(
             !plain && settingsCardInnerClass,
@@ -128,7 +128,7 @@ export default function CommentList({
     <div className="space-y-4">
       <div className={plain ? "pt-2" : settingsCardShellClass}>
         {!hideHeading && (
-          <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+          <header className="flex flex-col gap-2 px-2 py-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-3">
               <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
                 Comments

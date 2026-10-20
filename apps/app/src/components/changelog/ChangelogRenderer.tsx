@@ -1,6 +1,6 @@
 "use client";
 
-import { EditorContent, useFeatulEditor, type JSONContent } from "@featul/editor";
+import { EditorContent, EditorStaticContent, useFeatulEditor, type JSONContent } from "@featul/editor";
 import { cn } from "@featul/ui/lib/utils";
 
 interface ChangelogRendererProps {
@@ -12,22 +12,19 @@ export function ChangelogRenderer({
 	content,
 	className,
 }: ChangelogRendererProps) {
-	const editorInstance = useFeatulEditor({
+	const proseClass = cn(
+		"prose prose-sm dark:prose-invert max-w-none focus:outline-none [&_a]:cursor-pointer",
+		className,
+	);
+	const editor = useFeatulEditor({
 		content,
 		editable: false,
-		editorProps: {
-			attributes: {
-				class: cn(
-					"prose prose-sm dark:prose-invert max-w-none focus:outline-none [&_a]:cursor-pointer",
-					className,
-				),
-			},
-		},
+		editorProps: { attributes: { class: proseClass } },
 	});
-	const editor = editorInstance;
 
+	// The editor mounts after hydration; the static render keeps the content in the first paint.
 	if (!editor) {
-		return null;
+		return <EditorStaticContent content={content} className={proseClass} />;
 	}
 
 	return <EditorContent editor={editor} className="min-w-0 max-w-full" />;

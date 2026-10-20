@@ -1,9 +1,13 @@
 "use client"
 
 import React from "react"
-import { cn } from "@featul/ui/lib/utils"
-import { Tabs, TabsList, TabsTrigger } from "@featul/ui/components/tabs"
+import { SegmentedControl } from "@featul/ui/components/segmented-control"
 import { type BillingCycle } from "./data"
+
+const OPTIONS: { value: BillingCycle; label: string }[] = [
+  { value: "monthly", label: "Monthly" },
+  { value: "yearly", label: "Yearly" },
+]
 
 type BillingCycleSegmentProps = {
   billingCycle: BillingCycle
@@ -11,36 +15,12 @@ type BillingCycleSegmentProps = {
 }
 
 export default function BillingCycleSegment({ billingCycle, onChange }: BillingCycleSegmentProps) {
-  const handleValueChange = React.useCallback((value: string) => {
-    if (value === "monthly" || value === "yearly") {
-      onChange(value)
-    }
-  }, [onChange])
-
   return (
-    <Tabs value={billingCycle} onValueChange={handleValueChange} className="gap-0">
-      <TabsList className="h-auto w-auto gap-0 overflow-visible rounded-lg border border-border/70 bg-muted/40 p-0.5 [&>div.pointer-events-none.absolute]:hidden">
-        <TabsTrigger
-          value="monthly"
-          className={cn(
-            "h-auto cursor-pointer rounded-lg border-0 px-2.5 py-1 text-xs text-accent",
-            billingCycle === "monthly" &&
-              "bg-card text-foreground dark:bg-black/50",
-          )}
-        >
-          Monthly
-        </TabsTrigger>
-        <TabsTrigger
-          value="yearly"
-          className={cn(
-            "h-auto cursor-pointer rounded-lg border-0 px-2.5 py-1 text-xs text-accent",
-            billingCycle === "yearly" &&
-              "bg-card text-foreground dark:bg-black/50",
-          )}
-        >
-          Yearly
-        </TabsTrigger>
-      </TabsList>
-    </Tabs>
+    <SegmentedControl
+      aria-label="Billing cycle"
+      value={billingCycle}
+      onValueChange={onChange}
+      options={OPTIONS}
+    />
   )
 }

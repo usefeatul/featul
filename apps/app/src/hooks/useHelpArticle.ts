@@ -8,7 +8,7 @@ import type { JSONContent } from "@featul/editor";
 import type { FeedEditorRef } from "@/components/editor/editor";
 import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload/policy";
 import { uploadFileToSignedUrl } from "@/lib/upload";
-import { useRefreshHelpTree } from "./useHelpTree";
+import { expectOk, useRefreshHelpTree } from "./useHelpTree";
 
 export type HelpArticleFormData = {
   title: string;
@@ -23,22 +23,37 @@ type Props = {
   mode: "create" | "edit";
   articleId?: string;
   initialData?: HelpArticleFormData;
+  /** Prefills a new article's title, e.g. from a content-gap search. */
+  initialTitle?: string;
   initialCollectionId?: string | null;
 };
 
 /** Help article form state, image upload, save, and 5s dirty autosave once the article exists. */
-export function useHelpArticle({ workspaceSlug, mode, articleId, initialData, initialCollectionId }: Props) {
+export function useHelpArticle({
+  workspaceSlug,
+  mode,
+  articleId,
+  initialData,
+  initialTitle,
+  initialCollectionId,
+}: Props) {
   const router = useRouter();
   const refreshTree = useRefreshHelpTree(workspaceSlug);
   const editorRef = useRef<FeedEditorRef>(null);
-  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [title, setTitle] = useState(initialData?.title ?? initialTitle ?? "");
   const [summary, setSummary] = useState(initialData?.summary ?? "");
   const [collectionId, setCollectionId] = useState<string | null>(
     initialData?.collectionId ?? initialCollectionId ?? null,
   );
   const [isDraft, setIsDraft] = useState(initialData?.status !== "published");
   const [isSaving, setIsSaving] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
+  const [isDirty, setDirtyState] = useState(false);
+  // A failed autosave would otherwise retry (and toast) every 5s; wait for the next edit instead.
+  const [autosavePaused, setAutosavePaused] = useState(false);
+  const setIsDirty = useCallback((dirty: boolean) => {
+    setDirtyState(dirty);
+    if (dirty) setAutosavePaused(false);
+  }, []);
 
   const handleImageUpload = useCallback(
     async (file: File): Promise<string> => {
@@ -88,6 +103,7 @@ export function useHelpArticle({ workspaceSlug, mode, articleId, initialData, in
             collectionId,
             status,
           });
+          await expectOk(res, "Failed to create article");
           const data = await res.json();
           if (!("ok" in data) || !data.ok) throw new Error("Failed to create article");
           setIsDirty(false);
@@ -104,6 +120,7 @@ export function useHelpArticle({ workspaceSlug, mode, articleId, initialData, in
             collectionId,
             status,
           });
+          await expectOk(res, "Failed to save article");
           const data = await res.json();
           if (!("ok" in data) || !data.ok) throw new Error("Failed to save article");
           setIsDirty(false);
@@ -111,20 +128,21 @@ export function useHelpArticle({ workspaceSlug, mode, articleId, initialData, in
           if (!silent) toast.success("Changes saved");
         }
       } catch (error) {
+        if (silent) setAutosavePaused(true);
         toast.error(error instanceof Error ? error.message : "Something went wrong");
       } finally {
         setIsSaving(false);
       }
     },
-    [mode, articleId, workspaceSlug, title, summary, collectionId, isDraft, router, refreshTree],
+    [mode, articleId, workspaceSlug, title, summary, collectionId, isDraft, router, refreshTree, setIsDirty],
   );
 
   // New articles wait for an explicit save so a half-typed title never creates a row.
   useEffect(() => {
-    if (mode !== "edit" || !isDirty || isSaving) return;
+    if (mode !== "edit" || !isDirty || isSaving || autosavePaused) return;
     const timer = setTimeout(() => void handleSave({ silent: true }), 5000);
     return () => clearTimeout(timer);
-  }, [mode, isDirty, isSaving, handleSave]);
+  }, [mode, isDirty, isSaving, autosavePaused, handleSave]);
 
   return {
     editorRef,

@@ -418,6 +418,126 @@ mark[style] > strong {
 	--code-removed: #ffdcd7;
 }
 
+/*
+ * Reading view: the create-post dialog frame (DialogContent's modalShellClass around a
+ * DialogInner, @featul/ui lib/overlay) minus the outer drop shadow. The pre is the shell with
+ * an icon + language header row; its code is the inner card.
+ */
+.ProseMirror[contenteditable="false"] pre {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	padding: 0.25rem;
+	overflow: hidden;
+	border-color: rgba(0, 0, 0, 0.08);
+	border-radius: 1rem;
+	background: linear-gradient(to bottom, var(--sidebar), color-mix(in oklab, var(--sidebar), var(--foreground) 3%));
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* Header row: same type and spacing as the dialog title (icon, gap-2, px-2 py-1.5, text-sm). */
+.ProseMirror[contenteditable="false"] pre::before {
+	content: attr(data-language);
+	padding: 0.25rem 0.5rem 0.125rem 1.875rem;
+	color: var(--foreground);
+	font-family: var(--font-sans);
+	font-size: 0.8125rem;
+	line-height: 1.25rem;
+}
+
+.ProseMirror[contenteditable="false"] pre::after {
+	content: "";
+	position: absolute;
+	top: 0.5625rem;
+	left: 0.875rem;
+	width: 0.875rem;
+	height: 0.875rem;
+	background: var(--muted-foreground);
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16 18 6-6-6-6M8 6l-6 6 6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Copy button: right end of the header row, styled like the dialog close button. */
+.ProseMirror pre .featul-code-copy {
+	position: absolute;
+	top: 0.3125rem;
+	right: 0.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	padding: 0;
+	border: 0;
+	border-radius: 0.375rem;
+	background: transparent;
+	color: var(--foreground);
+	opacity: 0.7;
+	cursor: pointer;
+	transition: opacity 120ms ease, background-color 120ms ease;
+}
+
+.ProseMirror pre .featul-code-copy:hover {
+	opacity: 1;
+	background: color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+
+.ProseMirror pre .featul-code-copy:focus-visible {
+	opacity: 1;
+	outline: 2px solid var(--ring);
+	outline-offset: 1px;
+}
+
+.ProseMirror pre .featul-code-copy::before {
+	content: "";
+	width: 0.875rem;
+	height: 0.875rem;
+	background: currentColor;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='8' y='8' width='13' height='13' rx='2.5'/%3E%3Cpath d='M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.ProseMirror pre .featul-code-copy[data-copied]::before {
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+.ProseMirror pre .featul-code-copy[data-copied] {
+	opacity: 1;
+	color: var(--primary);
+}
+
+.ProseMirror[contenteditable="false"] pre code {
+	display: block;
+	padding: 0.875em 1.1em;
+	overflow-x: auto;
+	scrollbar-width: thin;
+	border-radius: 0.75rem;
+	background: var(--card);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+@supports (corner-shape: squircle) {
+	.ProseMirror[contenteditable="false"] pre {
+		corner-shape: squircle;
+		border-radius: calc(var(--radius) * 4);
+	}
+
+	.ProseMirror[contenteditable="false"] pre code {
+		corner-shape: squircle;
+		border-radius: calc(var(--radius) * 3.5);
+	}
+}
+
+.dark .ProseMirror[contenteditable="false"] pre {
+	border-color: rgba(255, 255, 255, 0.08);
+	background: linear-gradient(to bottom, color-mix(in oklab, var(--sidebar), white 2%), var(--sidebar));
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.dark .ProseMirror[contenteditable="false"] pre code {
+	background: linear-gradient(to bottom, color-mix(in oklab, var(--card), white 3%), var(--card));
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
 .ProseMirror pre code {
 	padding: 0;
 	border: 0;

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Search, X, SidebarPanelIcon, LoaderIcon } from "@/components/global/icons";
 
 import { Button } from "@featul/ui/components/button";
+import { Input, InputGroup } from "@featul/ui/components/input";
 import {
   Tooltip,
   TooltipTrigger,
@@ -13,7 +14,7 @@ import {
 import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
 import { PanelShortcutKeys } from "@/components/global/keys";
 import { cn } from "@featul/ui/lib/utils";
-import { sidebarHeaderActionClassName, sidebarSearchBackgroundClassName } from "@/components/sidebar/styles";
+import { sidebarHeaderActionClassName } from "@/components/sidebar/styles";
 import {
   keepPreviousData,
   useInfiniteQuery,
@@ -266,15 +267,15 @@ export default function Navigator({
 
           {searchOpen ? (
             <div className="px-3 pb-2 pt-1">
-              <label className={cn("flex h-9 items-center gap-2 rounded-lg border border-border/60 px-3 text-muted-foreground focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10", sidebarSearchBackgroundClassName)}>
-                <Search className="size-5 shrink-0 text-neutral-600 dark:text-neutral-300" />
-                <input
+              <InputGroup className="gap-2">
+                <Search className="size-5 shrink-0" />
+                <Input
+                  variant="plain"
                   autoFocus
                   aria-label="Search request queue"
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search requests…"
-                  className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 />
                 {search ? (
                   <button
@@ -286,7 +287,7 @@ export default function Navigator({
                     <X className="size-3" />
                   </button>
                 ) : null}
-              </label>
+              </InputGroup>
             </div>
           ) : null}
 

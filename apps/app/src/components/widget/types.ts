@@ -64,6 +64,14 @@ export type SimilarPost = {
   boardId: string;
 };
 
+/** Help center article suggested while composing; `url` opens the public article. */
+export type WidgetHelpArticle = {
+  id: string;
+  title: string;
+  summary: string | null;
+  url: string;
+};
+
 export type WidgetApiBase = {
   projectId: string;
   parentOrigin: string;

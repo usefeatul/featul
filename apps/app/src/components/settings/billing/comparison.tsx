@@ -6,11 +6,16 @@ import {
   type DitherGradientProps,
 } from "@featul/ui/components/gradient";
 import Counter from "./counter";
-import styles from "./plans.module.css";
+import { planCardClass, planComparisonTableClass, planPatternClass } from "./styles";
 import { getPlanLimits } from "@featul/api/shared/plan";
 import {
   AccountIcon,
+  AnalyticsIcon,
+  ArticleIcon,
+  SearchIcon,
+  SparklesIcon,
   BoardIcon,
+  BookIcon,
   CheckIcon,
   CollectIcon,
   EditIcon,
@@ -70,6 +75,46 @@ export const comparison = [
     icon: TagIcon,
     value: (plan: PlanKey) =>
       getPlanLimits(plan).maxChangelogTags ?? "Unlimited",
+  },
+  {
+    label: "Help center collections",
+    icon: BookIcon,
+    value: (plan: PlanKey) =>
+      getPlanLimits(plan).maxHelpCollections ?? "Unlimited",
+  },
+  {
+    label: "Published help articles",
+    icon: ArticleIcon,
+    value: (plan: PlanKey) =>
+      getPlanLimits(plan).maxHelpArticles ?? "Unlimited",
+  },
+  {
+    label: "Draft articles from your website",
+    icon: SparklesIcon,
+    value: (plan: PlanKey) => {
+      const limits = getPlanLimits(plan);
+      return limits.helpImportsPerMonth !== null ? `${limits.helpImportsPerMonth} / month` : "1 at setup";
+    },
+  },
+  {
+    label: "Help articles in widget",
+    icon: PanelIcon,
+    value: (plan: PlanKey) => getPlanLimits(plan).allowHelpWidget,
+  },
+  {
+    label: "Help center analytics",
+    icon: AnalyticsIcon,
+    value: (plan: PlanKey) => getPlanLimits(plan).allowHelpAnalytics,
+  },
+  {
+    label: "Search insights & content gaps",
+    icon: SearchIcon,
+    value: (plan: PlanKey) => getPlanLimits(plan).allowHelpSearchInsights,
+  },
+  {
+    label: "Ask AI answers / month",
+    icon: SparklesIcon,
+    value: (plan: PlanKey) => getPlanLimits(plan).monthlyHelpAiAnswers || false,
   },
   // These capabilities are controlled by board settings and member permissions,
   // not by subscription tier (see the board, post, comment, and widget routers).
@@ -171,7 +216,7 @@ export default function Comparison({
           return (
             <section
               key={key}
-              className={styles.plan}
+              className={planCardClass}
               aria-label={`${plan.label} plan`}
             >
               <DitherGradient
@@ -181,7 +226,7 @@ export default function Comparison({
                 cell={3}
                 bloom="low"
                 opacity={0.45}
-                className={styles.pattern}
+                className={planPatternClass}
               />
               <div className="relative z-10 flex flex-1 flex-col">
                 <div className="flex min-h-5 items-center justify-between gap-2">
@@ -228,12 +273,12 @@ export default function Comparison({
         })}
       </div>
       <div
-        className={`mt-6 overflow-x-auto ${styles.scroll}`}
+        className="mt-6 overflow-x-auto"
         tabIndex={0}
         role="region"
         aria-label="Plan feature comparison"
       >
-        <table className={styles.comparison}>
+        <table className={planComparisonTableClass}>
           <caption className="sr-only">
             Features and limits included in each plan
           </caption>

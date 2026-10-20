@@ -4,6 +4,7 @@ import BrandingSection from "../branding/Branding";
 import TeamSection from "../team/Team";
 import FeedbackSection from "../feedback/Feedback";
 import ChangelogSection from "../changelog/Changelog";
+import HelpCenterSection from "../help/HelpCenter";
 import BillingSection from "../billing/Billing";
 import DomainSection from "../domain/Domain";
 import IntegrationsSection from "../integrations/Integrations";
@@ -210,6 +211,8 @@ function SectionRenderer({
           }
         />
       );
+    case "help":
+      return <HelpCenterSection slug={slug} plan={initialPlan} />;
     case "billing":
       return (
         <BillingSection

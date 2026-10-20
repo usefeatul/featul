@@ -15,7 +15,7 @@ import { cn } from "@featul/ui/lib/utils";
 import BillingCycleSegment from "./BillingCycleSegment";
 import PlanCheckoutButton from "./PlanCheckoutButton";
 import Comparison from "./comparison";
-import styles from "./plans.module.css";
+import { plansDialogSurfaceClass } from "./styles";
 import { getPlan, type BillingCycle } from "./data";
 
 type Props = {
@@ -43,7 +43,7 @@ export default function Plans(props: Props) {
       <DialogContent
         className={cn(
           "flex max-h-[82dvh] w-[calc(100%-2rem)] max-w-[56rem] flex-col gap-0 overflow-hidden bg-background p-0 sm:max-w-[56rem] dark:bg-background",
-          styles.surface,
+          plansDialogSurfaceClass,
         )}
       >
         <DialogHeader className="shrink-0 px-5 pb-5 pt-6 text-left sm:px-7 sm:pt-7">
@@ -55,10 +55,7 @@ export default function Plans(props: Props) {
           </DialogDescription>
         </DialogHeader>
         <div
-          className={cn(
-            "min-h-0 overflow-y-auto overscroll-contain",
-            styles.scroll,
-          )}
+          className="min-h-0 overflow-y-auto overscroll-contain"
         >
           <Comparison
             currentPlan={props.currentPlan}

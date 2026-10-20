@@ -1,14 +1,19 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
+import { inputSurfaceClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 
 const textareaVariants = cva(
-  "placeholder:text-accent flex field-sizing-content min-h-16 w-full rounded-md px-3 py-2 text-base transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm border border-border ",
+  "placeholder:text-accent flex field-sizing-content min-h-16 w-full rounded-md px-3 py-2 text-base transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
   {
     variants: {
       variant: {
-        default: "border-input bg-muted border focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[1px] dark:bg-input/20 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+        // Same raised surface as the portal and help-center search fields.
+        default: cn(
+          inputSurfaceClass,
+          "rounded-lg transition-[filter,box-shadow,border-color] focus-visible:border-primary/15 dark:focus-visible:border-primary/15 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/15 dark:aria-invalid:border-destructive",
+        ),
         plain: "bg-transparent border-none shadow-none focus-visible:ring-0 px-0",
       },
     },

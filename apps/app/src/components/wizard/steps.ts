@@ -19,6 +19,11 @@ export const WIZARD_STEPS = [
     title: "Pick a timezone.",
     description: "All timestamps and charts will align to this timezone.",
   },
+  {
+    id: "help",
+    title: "Start your help center.",
+    description: "Get a head start with articles drafted from your website.",
+  },
 ] as const
 
 export type WizardStepId = (typeof WIZARD_STEPS)[number]["id"]

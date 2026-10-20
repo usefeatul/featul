@@ -3,11 +3,15 @@ import type { JSONContent } from "@tiptap/core";
 import type { HelpArticlePageData } from "@featul/api/help/queries";
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar";
 import { DitherGradient } from "@featul/ui/components/gradient";
-import { raisedCardClass } from "@featul/ui/lib/overlay";
+import { modalCardInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { ArrowLeft, ArrowRight } from "@/components/global/icons";
 import RoleBadge from "@/components/global/RoleBadge";
 import { getInitials } from "@/utils/user";
+import {
+  settingsSectionClass,
+  settingsSurfaceHeaderClass,
+} from "@/components/settings/global/SectionCard";
 import { PoweredBy } from "../PoweredBy";
 import { HelpArticleBody } from "./HelpArticleBody";
 import { HelpAskButton } from "./HelpAskButton";
@@ -30,7 +34,7 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
       <div className="grid flex-1 grid-cols-1 gap-10 md:grid-cols-[13rem_minmax(0,1fr)] lg:grid-cols-[14rem_minmax(0,1fr)_13rem]">
         <aside className="hidden md:block">
           <div data-help-rail className="sticky top-20 max-h-[calc(100dvh-6rem)] space-y-6 overflow-y-auto pb-6 [scrollbar-width:none]">
-            <HelpSearch slug={slug} size="sm" />
+            <HelpSearch slug={slug} size="sm" askAi={data.workspace.askAi} />
             <HelpNavTree tree={tree} currentCollectionId={article.collectionId} activeArticleId={article.id} />
           </div>
         </aside>
@@ -131,22 +135,26 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
   );
 }
 
-function StillStuck() {
+export function StillStuck() {
   return (
-    <div className={cn(raisedCardClass, "relative isolate overflow-hidden p-4")}>
-      {/* Same corner dither as the help home topic cards. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-70"
-        style={{ maskImage: "radial-gradient(ellipse 60% 55% at 100% 0%, black 0%, rgba(0,0,0,0.35) 45%, transparent 75%)" }}
-      >
-        <DitherGradient to="primary" direction="down" cell={3} opacity={0.35} />
+    <div className={settingsSectionClass}>
+      <header className={settingsSurfaceHeaderClass}>
+        <h2 className="text-sm font-medium leading-6 text-foreground">Still stuck?</h2>
+      </header>
+      <div className={cn(modalCardInnerClass, "relative isolate px-4 py-3")}>
+        {/* Same corner dither as the help home topic cards. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 opacity-70"
+          style={{ maskImage: "radial-gradient(ellipse 60% 55% at 100% 0%, black 0%, rgba(0,0,0,0.35) 45%, transparent 75%)" }}
+        >
+          <DitherGradient to="primary" direction="down" cell={3} opacity={0.35} />
+        </div>
+        <p className="text-[13px] leading-5 text-muted-foreground">
+          Post it on the board. The team answers there.
+        </p>
+        <HelpAskButton className="mt-3 h-8 w-full justify-between text-[13px]" />
       </div>
-      <p className="text-sm font-semibold text-foreground">Still stuck?</p>
-      <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
-        Post it on the board. The team answers there.
-      </p>
-      <HelpAskButton className="mt-4 h-8 w-full justify-between text-[13px]" />
     </div>
   );
 }

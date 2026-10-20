@@ -4,6 +4,7 @@ import { LoaderIcon } from "@/components/global/icons";
 import {
   settingsSectionClass,
   settingsSurfaceClass,
+  settingsSurfaceHeaderClass,
 } from "@/components/settings/global/SectionCard";
 
 type Props = {
@@ -105,7 +106,7 @@ export default function SettingsCard({
 
   return (
     <section className={settingsSectionClass}>
-      <header className="flex flex-wrap items-center justify-between gap-3 px-1">
+      <header className={settingsSurfaceHeaderClass}>
         <div className="flex min-w-0 items-center gap-2.5">
           <div className="flex size-4 shrink-0 items-center justify-center [&_svg]:size-4">
             {icon}

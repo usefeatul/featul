@@ -1,3 +1,7 @@
+/* The emoji picker emits its CSS into `epr` (see `cssLayer` in comments/picker.tsx):
+   above preflight so its own resets win, below utilities so ours can restyle it. */
+@layer theme, base, epr, components, utilities;
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "@featul/ui/globals.css";
@@ -14,6 +18,24 @@
   --radius-2xl: var(--radius);
   --radius-3xl: var(--radius);
   --radius-4xl: var(--radius);
+}
+
+@theme {
+  /* Help import: new drafts land on the page one after another. */
+  --animate-rise: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* Billing usage: a glint passes over the meter fill. */
+  --animate-sweep: sweep 1.6s ease-out both;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(6px); }
+  }
+
+  @keyframes sweep {
+    from { transform: translateX(-100%); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
 }
 
 @utility rounded {

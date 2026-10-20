@@ -7,6 +7,8 @@ import {
   workspace,
   workspaceMember,
 } from "@featul/db";
+import { getWorkspaceAccessPlan } from "../shared/access";
+import { getPlanLimits } from "../shared/plan";
 
 type Db = any;
 
@@ -45,6 +47,9 @@ export type PublicHelpArticle = HelpArticleLink & {
 
 export type PublicHelpWorkspace = { id: string; name: string; slug: string };
 
+/** Public page workspace plus the plan features the page needs to render. */
+export type HelpPageWorkspace = PublicHelpWorkspace & { askAi: boolean };
+
 /** Every public collection with its published article links, in display order. */
 export type HelpTree = {
   collections: Array<HelpCollectionSummary & { articles: HelpArticleLink[] }>;
@@ -52,19 +57,19 @@ export type HelpTree = {
 };
 
 export type HelpHomeData = HelpTree & {
-  workspace: PublicHelpWorkspace;
+  workspace: HelpPageWorkspace;
   popular: Array<HelpArticleLink & { collectionName: string | null }>;
 };
 
 export type HelpCollectionPageData = {
-  workspace: PublicHelpWorkspace;
+  workspace: HelpPageWorkspace;
   collection: HelpCollectionSummary;
   articles: HelpArticleLink[];
   tree: HelpTree;
 };
 
 export type HelpArticlePageData = {
-  workspace: PublicHelpWorkspace;
+  workspace: HelpPageWorkspace;
   article: PublicHelpArticle;
   collection: HelpCollectionSummary | null;
   siblings: HelpArticleLink[];
@@ -121,6 +126,13 @@ export async function findPublicHelpWorkspace(
     .limit(1);
   if (!ws) return null;
   return (await isHelpCenterPublic(db, ws.id)) ? ws : null;
+}
+
+async function findHelpPageWorkspace(db: Db, slug: string): Promise<HelpPageWorkspace | null> {
+  const ws = await findPublicHelpWorkspace(db, slug);
+  if (!ws) return null;
+  const { monthlyHelpAiAnswers } = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
+  return { ...ws, askAi: monthlyHelpAiAnswers > 0 };
 }
 
 /** Collections that have at least one published article, with that count. */
@@ -187,7 +199,7 @@ export async function getHelpHomeData(
   db: Db,
   slug: string,
 ): Promise<HelpHomeData | null> {
-  const ws = await findPublicHelpWorkspace(db, slug);
+  const ws = await findHelpPageWorkspace(db, slug);
   if (!ws) return null;
 
   const [tree, popular] = await Promise.all([
@@ -213,7 +225,7 @@ export async function getHelpCollectionPageData(
   slug: string,
   collectionSlug: string,
 ): Promise<HelpCollectionPageData | null> {
-  const ws = await findPublicHelpWorkspace(db, slug);
+  const ws = await findHelpPageWorkspace(db, slug);
   if (!ws) return null;
   const tree = await loadHelpTree(db, ws.id);
   const match = tree.collections.find((c) => c.slug === collectionSlug);
@@ -226,7 +238,7 @@ export async function getHelpArticlePageData(
   slug: string,
   articleSlug: string,
 ): Promise<HelpArticlePageData | null> {
-  const ws = await findPublicHelpWorkspace(db, slug);
+  const ws = await findHelpPageWorkspace(db, slug);
   if (!ws) return null;
 
   const [row] = await db
@@ -315,7 +327,8 @@ export async function searchHelpArticles(
         or(
           ilike(helpArticle.title, pattern),
           ilike(helpArticle.summary, pattern),
-          sql`${helpArticle.content}::text ilike ${pattern}`,
+          // Plain text, so JSON keys like "paragraph" or "type" don't match every article.
+          ilike(helpArticle.searchText, pattern),
         ),
       ),
     )

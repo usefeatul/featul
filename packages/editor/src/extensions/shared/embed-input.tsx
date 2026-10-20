@@ -87,8 +87,9 @@ export const EmbedInput = ({
             autoFocus={autoFocus}
             className={cn(
               "h-8 text-sm placeholder:text-accent dark:placeholder:text-accent",
-              error && "border-destructive focus-visible:ring-destructive",
+              error && "focus-visible:ring-destructive",
             )}
+            aria-invalid={error ? true : undefined}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}

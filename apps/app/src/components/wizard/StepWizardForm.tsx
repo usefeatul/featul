@@ -2,7 +2,7 @@
 
 import React from "react"
 import { Button } from "@featul/ui/components/button"
-import { Input } from "@featul/ui/components/input"
+import { Input, InputGroup } from "@featul/ui/components/input"
 import { Label } from "@featul/ui/components/label"
 import { OverlayChip } from "@featul/ui/components/overlay-chip"
 import {
@@ -13,11 +13,10 @@ import {
   CardContent,
   CardFooter,
 } from "@featul/ui/components/card"
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar"
-import { cn } from "@featul/ui/lib/utils"
 import TimezonePicker from "./TimezonePicker"
-import WizardPreview from "./WizardPreview"
-import { CheckIcon, XMarkIcon, LoaderIcon } from "@/components/global/icons";
+import WizardLivePreview from "./WizardLivePreview"
+import { CheckIcon, GitHubIcon, XMarkIcon, LoaderIcon } from "@/components/global/icons";
+import { Switch } from "@featul/ui/components/switch"
 
 import { WebsiteFavicon } from "./WebsiteFavicon"
 import {
@@ -47,7 +46,7 @@ interface StepWizardFormProps {
   now: Date
   isCreating: boolean
   domainValid: boolean
-  create: () => void | Promise<void>
+  create: (options?: { helpImport?: { repo: string } | null }) => void | Promise<void>
   isAppCreator?: boolean
 }
 
@@ -70,6 +69,9 @@ export default function StepWizardForm({
   isAppCreator = false,
 }: StepWizardFormProps) {
   const [step, setStep] = React.useState(0)
+  const [draftHelp, setDraftHelp] = React.useState(true)
+  const [repo, setRepo] = React.useState("")
+  const repoValid = !repo.trim() || /^(https?:\/\/)?(www\.)?github\.com\/[\w.-]+\/[\w.-]+\/?$|^[\w.-]+\/[\w.-]+$/.test(repo.trim())
   const steps = WIZARD_STEPS
   const current = steps[step] ?? steps[0]
   const viewedStepsRef = React.useRef<Set<string>>(new Set())
@@ -95,8 +97,9 @@ export default function StepWizardForm({
     if (id === "name") return isNameValid(name, reservedAllowed)
     if (id === "slug") return slugLocked ? true : !!slug && isSlugValid(slug, reservedAllowed) && slugAvailable === true
     if (id === "timezone") return isTimezoneValid(timezone)
+    if (id === "help") return !draftHelp || repoValid
     return false
-  }, [step, steps, domain, domainValid, name, slug, slugAvailable, slugLocked, timezone, reservedAllowed])
+  }, [step, steps, domain, domainValid, name, slug, slugAvailable, slugLocked, timezone, reservedAllowed, draftHelp, repoValid])
 
   const allValid =
     isNameValid(name, reservedAllowed) &&
@@ -165,18 +168,14 @@ export default function StepWizardForm({
         step_index: step,
         next_step: "workspace_created",
       })
-      create()
+      create({ helpImport: draftHelp ? { repo } : null })
     }
-  }, [step, steps, allValid, isCreating, create, canNext])
+  }, [step, steps, allValid, isCreating, create, canNext, draftHelp, repo])
 
   const onBack = React.useCallback(() => {
     setStep((s) => Math.max(0, s - 1))
   }, [])
 
-  const fieldInputClass = cn(
-    toolbarItemClass,
-    "h-8 min-w-0 flex-1 px-2.5 text-xs font-medium placeholder:text-accent hover:bg-transparent md:text-sm",
-  )
   const suggestedDomain = suggestDomainFix(domain)
 
   return (
@@ -201,10 +200,8 @@ export default function StepWizardForm({
             {current.id === "domain" && (
               <div className="space-y-2">
                 <Label htmlFor="domain">Domain</Label>
-                <Toolbar size="sm" className="w-full">
-                  <span className="inline-flex h-full shrink-0 items-center self-stretch rounded-l-lg border-r border-border bg-card px-3 text-xs font-medium tracking-wide text-accent dark:bg-black dark:text-accent">
-                    HTTPS
-                  </span>
+                <InputGroup invalid={!domainValid && domain.length > 0}>
+                  <WebsiteFavicon domain={domain} className="size-4 shrink-0 rounded-sm" />
                   <Input
                     id="domain"
                     variant="plain"
@@ -212,20 +209,13 @@ export default function StepWizardForm({
                     value={domain}
                     onChange={(e) => setDomain(e.target.value)}
                     placeholder="example.com"
-                    className={fieldInputClass}
+                    aria-invalid={(!domainValid && domain.length > 0) || undefined}
                     autoFocus
                   />
                   {!domainValid && domain.length > 0 ? (
-                    <span
-                      className={cn(
-                        toolbarItemClass,
-                        "inline-flex items-center px-2 hover:bg-transparent",
-                      )}
-                    >
-                      <XMarkIcon className="size-4 text-destructive" />
-                    </span>
+                    <XMarkIcon className="size-4 shrink-0 text-destructive" />
                   ) : null}
-                </Toolbar>
+                </InputGroup>
                 {reservedWorkspaceUrl ? (
                   <p className="text-xs text-accent">
                     Reserved URL{" "}
@@ -257,18 +247,16 @@ export default function StepWizardForm({
             {current.id === "name" && (
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
-                <Toolbar size="sm" className="w-full">
-                  <Input
-                    id="name"
-                    variant="plain"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="My workspace"
-                    className={fieldInputClass}
-                    autoFocus
-                    maxLength={15}
-                  />
-                </Toolbar>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="My workspace"
+                  className="h-9"
+                  aria-invalid={nameReserved || undefined}
+                  autoFocus
+                  maxLength={15}
+                />
                 {nameReserved ? (
                   <p className="text-xs text-destructive">This workspace name is reserved.</p>
                 ) : null}
@@ -291,31 +279,18 @@ export default function StepWizardForm({
                     </OverlayChip>
                   ) : null}
                 </Label>
-                <Toolbar size="sm" className="w-full">
-                  <span
-                    className={cn(
-                      toolbarItemClass,
-                      "inline-flex shrink-0 items-center px-2",
-                    )}
-                  >
-                    <WebsiteFavicon domain={domain} />
-                  </span>
+                <InputGroup>
+                  <WebsiteFavicon domain={domain} className="size-4 shrink-0 rounded-sm" />
                   <Input
                     id="slug"
                     variant="plain"
                     value={slug}
                     onChange={(e) => handleSlugChange(e.target.value)}
                     placeholder="project-slug"
-                    className={fieldInputClass}
                     disabled={!!slugLocked}
                     autoFocus
                   />
-                  <span
-                    className={cn(
-                      toolbarItemClass,
-                      "inline-flex shrink-0 items-center gap-1.5 px-2.5 hover:bg-transparent",
-                    )}
-                  >
+                  <span className="inline-flex shrink-0 items-center gap-1.5">
                     {!slugLocked && slugChecking ? (
                       <LoaderIcon className="size-3.5 text-accent" />
                     ) : !slugLocked && slug && slugAvailable === true ? (
@@ -330,7 +305,7 @@ export default function StepWizardForm({
                     ) : null}
                     <span className="text-xs text-accent">.featul.com</span>
                   </span>
-                </Toolbar>
+                </InputGroup>
                 {slug && !slugReserved && !isSlugValid(slug, reservedAllowed) ? (
                   <p className="text-xs text-destructive">
                     Use lowercase letters only (min 5 chars).
@@ -351,6 +326,71 @@ export default function StepWizardForm({
                 <TimezonePicker value={timezone} onChange={setTimezone} now={now} />
               </div>
             )}
+
+            {current.id === "help" && (
+              <div className="space-y-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="draft-help">Draft help articles for me</Label>
+                    <p className="text-xs text-accent">
+                      Nothing is published until you review and publish it.
+                    </p>
+                  </div>
+                  <Switch id="draft-help" checked={draftHelp} onCheckedChange={setDraftHelp} />
+                </div>
+
+                {draftHelp ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label>Website</Label>
+                      <InputGroup className="cursor-default">
+                        <WebsiteFavicon domain={domain} className="size-4 shrink-0 rounded-sm" />
+                        <span className="min-w-0 flex-1 truncate text-base text-foreground md:text-sm">
+                          {domain}
+                        </span>
+                        <span className="shrink-0 text-xs text-accent">From step 1</span>
+                      </InputGroup>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="repo">
+                        GitHub repository <span className="font-normal text-accent">(optional)</span>
+                      </Label>
+                      <InputGroup invalid={!repoValid} className="gap-0">
+                        <GitHubIcon className="mr-2.5 size-4 shrink-0" />
+                        <span className="shrink-0 text-base text-accent md:text-sm">github.com/</span>
+                        <Input
+                          id="repo"
+                          variant="plain"
+                          value={repo}
+                          onChange={(e) =>
+                            setRepo(e.target.value.trim().replace(/^(https?:\/\/)?(www\.)?github\.com\//i, ""))
+                          }
+                          placeholder="your-org/your-repo"
+                          aria-invalid={!repoValid || undefined}
+                          autoFocus
+                        />
+                        {repo && repoValid ? (
+                          <span className="ml-2.5 inline-flex size-3.5 shrink-0 items-center justify-center rounded-lg bg-emerald-500 text-white">
+                            <CheckIcon className="size-2" />
+                          </span>
+                        ) : null}
+                      </InputGroup>
+                      {!repoValid ? (
+                        <p className="text-xs text-destructive">Use the owner and repo name, like clerk/javascript.</p>
+                      ) : (
+                        <p className="text-xs text-accent">Public repos only. READMEs and docs make setup guides more accurate.</p>
+                      )}
+                    </div>
+
+                  </>
+                ) : (
+                  <p className="text-xs text-accent">
+                    No problem. You can draft articles any time from Settings → Help Center.
+                  </p>
+                )}
+              </div>
+            )}
           </CardContent>
 
           <CardFooter className="flex items-center justify-between gap-2">
@@ -361,7 +401,7 @@ export default function StepWizardForm({
               {isCreating ? (
                 <LoaderIcon className="size-4" />
               ) : step === steps.length - 1 ? (
-                "Create"
+                draftHelp ? "Create and draft" : "Create"
               ) : (
                 "Next"
               )}
@@ -370,7 +410,15 @@ export default function StepWizardForm({
         </Card>
       </div>
 
-      <WizardPreview />
+      <WizardLivePreview
+        step={current.id}
+        domain={domain}
+        name={name}
+        slug={slugLocked ?? slug}
+        timezone={timezone}
+        now={now}
+        draftHelp={draftHelp}
+      />
     </div>
   )
 }

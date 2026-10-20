@@ -212,10 +212,8 @@ export const ImageUploadComp = ({
 					{showEmbedInput ? (
 						<div className="flex flex-1 items-center gap-2">
 							<Input
-								className={cn(
-									"flex-1 h-8 text-sm placeholder:text-accent dark:placeholder:text-accent",
-									urlError && "border-destructive",
-								)}
+								aria-invalid={urlError ? true : undefined}
+								className="flex-1 h-8 text-sm placeholder:text-accent dark:placeholder:text-accent"
 								disabled={isValidatingUrl || loading}
 								onChange={({ target }) => {
 									setEmbedUrl(target.value);

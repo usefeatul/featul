@@ -23,6 +23,7 @@ export type {
   EditorNodeTextProps,
   EditorProviderProps,
   EditorSelectorProps,
+  EditorStaticContentProps,
   useFeatulEditorOptions,
   // Legacy-compatible types
 } from "./components";
@@ -50,6 +51,7 @@ export {
   EditorNodeText,
   EditorProvider,
   EditorSelector,
+  EditorStaticContent,
   EditorTableMenus,
   useCurrentEditor,
   useEditor,

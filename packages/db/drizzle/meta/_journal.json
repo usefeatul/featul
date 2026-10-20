@@ -232,6 +232,41 @@
       "when": 1792437202308,
       "tag": "0032_help_center",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1792484618952,
+      "tag": "0033_help_analytics",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1792494493545,
+      "tag": "0034_help_import",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1792507619340,
+      "tag": "0035_help_github",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1792510422186,
+      "tag": "0036_help_github_repos",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1792511929783,
+      "tag": "0037_help_search_index",
+      "breakpoints": true
     }
   ]
 }

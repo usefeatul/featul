@@ -22,8 +22,6 @@ import LayoutStylePicker from "./LayoutStylePicker";
 import SidebarPositionPicker from "./SidebarPositionPicker";
 import { setLiveWorkspaceName, setWorkspaceLogo } from "@/lib/branding/store";
 import { Input } from "@featul/ui/components/input";
-import { cn } from "@featul/ui/lib/utils";
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import { getPlanLimits, normalizePlan, type PlanKey } from "@/lib/plan";
@@ -278,36 +276,33 @@ export default function BrandingSection({
       <SectionCard title="Brand">
         <div className="-mx-5 -my-4 divide-y divide-border/50 [&>*]:px-5">
           <SettingRow label="Workspace name" description="The name shown across your workspace and public board.">
-            <Toolbar size="sm" className="w-fit">
-              <Input
-                variant="plain"
-                aria-label="Workspace name"
-                value={workspaceName}
-                onChange={(e) => setWorkspaceName(e.target.value)}
-                onBlur={() => {
-                  const nextName = workspaceName.trim();
-                  if (nextName === originalNameRef.current) return;
-                  void persistWorkspaceName(nextName)
-                    .then((updated) => {
-                      if (updated) toast.success("Saved");
-                    })
-                    .catch((error: unknown) => {
-                      const message =
-                        error instanceof Error && error.message
-                          ? error.message
-                          : "Failed to update name";
-                      toast.error(message);
-                    });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") e.currentTarget.blur();
-                }}
-                className={cn(toolbarItemClass, "h-8 w-auto min-w-[4ch] px-2.5 text-right text-xs font-medium")}
-                size={workspaceNameInputSize}
-                maxLength={15}
-                disabled={!canEditBranding}
-              />
-            </Toolbar>
+            <Input
+              aria-label="Workspace name"
+              value={workspaceName}
+              onChange={(e) => setWorkspaceName(e.target.value)}
+              onBlur={() => {
+                const nextName = workspaceName.trim();
+                if (nextName === originalNameRef.current) return;
+                void persistWorkspaceName(nextName)
+                  .then((updated) => {
+                    if (updated) toast.success("Saved");
+                  })
+                  .catch((error: unknown) => {
+                    const message =
+                      error instanceof Error && error.message
+                        ? error.message
+                        : "Failed to update name";
+                    toast.error(message);
+                  });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+              }}
+              className="h-8 w-auto min-w-[4ch] px-2.5 text-right text-xs font-medium md:text-xs"
+              size={workspaceNameInputSize}
+              maxLength={15}
+              disabled={!canEditBranding}
+            />
           </SettingRow>
           <SettingRow label="Logo" description="Your workspace identity on the public board.">
             <LogoUploader
