@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { JSONContent } from "@tiptap/core";
-import { EditorContent, useFeatulEditor } from "@featul/editor";
+import { EditorContent, EditorStaticContent, useFeatulEditor } from "@featul/editor";
 import type { HelpHeading } from "./content";
 
 // Element styling (headings, callouts, code, tables...) is the shared content design in
@@ -44,10 +44,13 @@ export function HelpArticleBody({
     return () => cancelAnimationFrame(frame);
   }, [editor, headings]);
 
-  if (!editor) return null;
   return (
     <div ref={ref} className={anchorClass}>
-      <EditorContent editor={editor} className="min-w-0 max-w-full" />
+      {editor ? (
+        <EditorContent editor={editor} className="min-w-0 max-w-full" />
+      ) : (
+        <EditorStaticContent content={content} className={proseClass} />
+      )}
     </div>
   );
 }
