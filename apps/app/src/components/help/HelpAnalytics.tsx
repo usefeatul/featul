@@ -12,11 +12,17 @@ import type {
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
 import type { GradientColor } from "@featul/ui/components/gradient";
-import { raisedCardClass } from "@featul/ui/lib/overlay";
 import { fillOf } from "@featul/ui/lib/pixel";
 import { rgb } from "@featul/ui/lib/palette";
+import {
+  modalInnerClass,
+  modalShellClass,
+  overlayRoundedClass,
+  overlayRoundedInnerClass,
+} from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import {
+  AnalyticsIcon,
   ArticleIcon,
   ArrowRight,
   DislikeIcon,
@@ -63,10 +69,23 @@ function helpfulRate(helpful: number, notHelpful: number) {
   return votes === 0 ? null : Math.round((helpful / votes) * 100);
 }
 
-const cardClass = cn(
-  raisedCardClass,
-  "relative isolate overflow-hidden rounded-2xl",
+/** Outer layer of a two-layer card, as in dialogs: the title sits here, above the inner surface. */
+const panelShellClass = cn(
+  modalShellClass,
+  overlayRoundedClass,
+  "flex flex-col",
+  // Only the hairline drop shadow; the dialog's deeper lift is too much on a page.
+  "shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_2px_rgba(0,0,0,0.4)]",
 );
+const panelInnerClass = cn(
+  modalInnerClass,
+  overlayRoundedInnerClass,
+  "relative isolate flex-1",
+);
+
+/** The brand banner as the inner layer of the top card. */
+const heroInnerClass =
+  "bg-primary px-6 pb-6 pt-6 text-primary-foreground ring-black/5 sm:px-8 sm:pt-8 dark:bg-none dark:bg-primary dark:ring-white/10";
 
 /**
  * Help center analytics as a board of cards: a dithered hero with the headline number, a
@@ -94,13 +113,14 @@ export function HelpAnalytics({ workspaceSlug }: { workspaceSlug: string }) {
   if (error && !data) {
     return (
       <div className="space-y-4 px-4 pb-14 sm:px-6">
-        <section className="relative isolate overflow-hidden rounded-3xl bg-primary px-6 py-6 text-primary-foreground ring-1 ring-inset ring-black/5 sm:px-8 sm:py-8 dark:ring-white/10">
+        <Panel
+          title={`Help center · last ${days} days`}
+          icon={AnalyticsIcon}
+          innerClassName={cn(heroInnerClass, "pb-6 sm:pb-8")}
+        >
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.14em] text-primary-foreground/75">
-                Help center · last {days} days
-              </p>
-              <p className="mt-3 text-sm text-primary-foreground/85">
+              <p className="text-sm text-primary-foreground/85">
                 {error.message}
               </p>
               <Button
@@ -114,7 +134,7 @@ export function HelpAnalytics({ workspaceSlug }: { workspaceSlug: string }) {
             </div>
             <RangePicker days={days} onDays={setDays} />
           </div>
-        </section>
+        </Panel>
       </div>
     );
   }
@@ -328,15 +348,16 @@ function Hero({
   billingHref: string;
 }) {
   return (
-    <section className="relative isolate overflow-hidden rounded-3xl bg-primary px-6 pb-6 pt-6 text-primary-foreground ring-1 ring-inset ring-black/5 sm:px-8 sm:pt-8 dark:ring-white/10">
+    <Panel
+      title={
+        trends ? `Help center · last ${days} days` : "Help center · all time"
+      }
+      icon={AnalyticsIcon}
+      innerClassName={heroInnerClass}
+    >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.14em] text-primary-foreground/75">
-            {trends
-              ? `Help center · last ${days} days`
-              : "Help center · all time"}
-          </p>
-          <p className="mt-3 text-5xl font-semibold tabular-nums tracking-tight sm:text-6xl">
+          <p className="text-5xl font-semibold tabular-nums tracking-tight sm:text-6xl">
             {number.format(views)}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-primary-foreground/85">
@@ -376,7 +397,7 @@ function Hero({
           ariaLabel={`Daily article views over the last ${days} days`}
         />
       ) : null}
-    </section>
+    </Panel>
   );
 }
 
@@ -487,58 +508,58 @@ function StatCard({
   ringCenter?: React.ReactNode;
 }) {
   return (
-    <article className={cn(cardClass, "group/stat flex flex-col p-5")}>
-      <div className="flex items-center justify-between gap-2">
-        <span className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-background/80 ring-1 ring-border/70 dark:bg-white/[0.04] dark:ring-white/10">
-            <Icon className="size-3.5 text-foreground/70" />
-          </span>
-          {label}
-        </span>
-        {change ? <Change {...change} /> : null}
-      </div>
-      {ring !== undefined ? (
-        <div className="mt-auto flex items-end justify-between gap-3 pt-4">
-          <div>
+    <article className={cn(panelShellClass, "group/stat")}>
+      <PanelHeader
+        title={label}
+        icon={Icon}
+        action={change ? <Change {...change} /> : null}
+      />
+      <div className={cn(panelInnerClass, "flex flex-col p-5")}>
+        {ring !== undefined ? (
+          <div className="mt-auto flex items-end justify-between gap-3">
+            <div>
+              <p className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+                {value}
+              </p>
+              <p className="mt-1 min-h-4 text-xs text-muted-foreground">
+                {hint}
+              </p>
+            </div>
+            <RingGauge
+              value={ring}
+              color={swatch(color)}
+              size={84}
+              label={`${label}: ${value}`}
+            >
+              {ringCenter ?? (
+                <span className="text-[11px] font-semibold tabular-nums text-foreground">
+                  {Math.round(ring * 100)}%
+                </span>
+              )}
+            </RingGauge>
+          </div>
+        ) : (
+          <>
             <p className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
               {value}
             </p>
             <p className="mt-1 min-h-4 text-xs text-muted-foreground">{hint}</p>
-          </div>
-          <RingGauge
-            value={ring}
-            color={swatch(color)}
-            size={84}
-            label={`${label}: ${value}`}
-          >
-            {ringCenter ?? (
-              <span className="text-[11px] font-semibold tabular-nums text-foreground">
-                {Math.round(ring * 100)}%
-              </span>
-            )}
-          </RingGauge>
-        </div>
-      ) : (
-        <>
-          <p className="mt-4 text-3xl font-semibold tabular-nums tracking-tight text-foreground">
-            {value}
-          </p>
-          <p className="mt-1 min-h-4 text-xs text-muted-foreground">{hint}</p>
-          <div className="-mx-5 -mb-5 mt-auto pt-4">
-            {spark ? (
-              <GlowWave
-                data={spark}
-                color={color}
-                compact
-                className="h-16"
-                ariaLabel={`${label} trend, per day`}
-              />
-            ) : (
-              <div className="h-16" />
-            )}
-          </div>
-        </>
-      )}
+            <div className="-mx-5 -mb-5 mt-auto pt-4">
+              {spark ? (
+                <GlowWave
+                  data={spark}
+                  color={color}
+                  compact
+                  className="h-16"
+                  ariaLabel={`${label} trend, per day`}
+                />
+              ) : (
+                <div className="h-16" />
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </article>
   );
 }
@@ -577,13 +598,14 @@ function TrendCard({
   const labelEvery = Math.max(1, Math.ceil(series.length / 6));
 
   return (
-    <section className={cn(cardClass, "flex flex-col p-5 sm:p-6")}>
+    <Panel
+      title={`Activity · ${metric.label}`}
+      icon={AnalyticsIcon}
+      innerClassName="flex flex-col p-5 sm:p-6"
+    >
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            Activity · {metric.label}
-          </p>
-          <div className="mt-2 flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             <p className="text-4xl font-semibold tabular-nums tracking-tight">
               {number.format(metric.total)}
             </p>
@@ -695,24 +717,48 @@ function TrendCard({
           </span>
         ) : null}
       </div>
+    </Panel>
+  );
+}
+
+/** Two-layer card: the title row on the outer shell, the content on the inner surface. */
+function Panel({
+  title,
+  icon: Icon,
+  action,
+  className,
+  innerClassName,
+  children,
+}: {
+  title: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
+  action?: React.ReactNode;
+  className?: string;
+  innerClassName?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className={cn(panelShellClass, className)}>
+      <PanelHeader title={title} icon={Icon} action={action} />
+      <div className={cn(panelInnerClass, innerClassName)}>{children}</div>
     </section>
   );
 }
 
-function CardHeader({
+function PanelHeader({
   title,
   icon: Icon,
   action,
 }: {
-  title: string;
+  title: React.ReactNode;
   icon: React.ComponentType<{ className?: string }>;
   action?: React.ReactNode;
 }) {
   return (
-    <header className="flex items-center justify-between gap-3 px-5 pb-3 pt-4">
-      <h2 className="flex items-center gap-2 text-sm font-medium text-foreground">
-        <Icon className="size-3.5 text-foreground/60" />
-        {title}
+    <header className="flex min-h-8 items-center justify-between gap-3 px-2.5 pb-1 pt-0.5">
+      <h2 className="flex min-w-0 items-center gap-2 text-sm font-medium text-foreground">
+        <Icon className="size-3.5 shrink-0 text-foreground/60" />
+        <span className="truncate">{title}</span>
       </h2>
       {action}
     </header>
@@ -720,9 +766,7 @@ function CardHeader({
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="px-5 pb-6 pt-2 text-sm text-muted-foreground">{children}</p>
-  );
+  return <p className="px-5 py-6 text-sm text-muted-foreground">{children}</p>;
 }
 
 function TopArticlesCard({
@@ -734,12 +778,11 @@ function TopArticlesCard({
 }) {
   const top = Math.max(1, ...articles.map((a) => a.views));
   return (
-    <section className={cardClass}>
-      <CardHeader title="Most viewed" icon={EyeIcon} />
+    <Panel title="Most viewed" icon={EyeIcon}>
       {articles.length === 0 ? (
         <Empty>No article views in this range yet.</Empty>
       ) : (
-        <ol className="space-y-1 px-2 pb-3">
+        <ol className="space-y-1 p-2">
           {articles.map((article, index) => (
             <li key={article.id}>
               <Link
@@ -768,7 +811,7 @@ function TopArticlesCard({
           ))}
         </ol>
       )}
-    </section>
+    </Panel>
   );
 }
 
@@ -776,9 +819,8 @@ function VotesCard({ range }: { range: HelpRangeTotals }) {
   const votes = range.helpful + range.notHelpful;
   const rate = helpfulRate(range.helpful, range.notHelpful);
   return (
-    <section className={cardClass}>
-      <CardHeader title="Reader feedback" icon={LikeIcon} />
-      <div className="px-5 pb-5">
+    <Panel title="Reader feedback" icon={LikeIcon}>
+      <div className="p-5">
         {votes === 0 ? (
           <p className="pt-1 text-sm text-muted-foreground">
             No votes in this range yet.
@@ -811,7 +853,7 @@ function VotesCard({ range }: { range: HelpRangeTotals }) {
           </>
         )}
       </div>
-    </section>
+    </Panel>
   );
 }
 
@@ -823,12 +865,11 @@ function NeedsWorkCard({
   articles: HelpArticleStat[];
 }) {
   return (
-    <section className={cardClass}>
-      <CardHeader title="Needs work" icon={DislikeIcon} />
+    <Panel title="Needs work" icon={DislikeIcon}>
       {articles.length === 0 ? (
         <Empty>No articles have been marked unhelpful.</Empty>
       ) : (
-        <ul className="space-y-1 px-2 pb-3">
+        <ul className="space-y-1 p-2">
           {articles.map((article) => {
             const votes = article.helpful + article.notHelpful;
             const rate = helpfulRate(article.helpful, article.notHelpful) ?? 0;
@@ -860,19 +901,18 @@ function NeedsWorkCard({
           })}
         </ul>
       )}
-    </section>
+    </Panel>
   );
 }
 
 function SearchesCard({ searches }: { searches: HelpSearchStat[] }) {
   const top = Math.max(1, ...searches.map((s) => s.count));
   return (
-    <section className={cn(cardClass, "flex flex-col")}>
-      <CardHeader title="Top searches" icon={SearchIcon} />
+    <Panel title="Top searches" icon={SearchIcon}>
       {searches.length === 0 ? (
         <Empty>No searches in this range yet.</Empty>
       ) : (
-        <ol className="space-y-1 px-2 pb-3">
+        <ol className="space-y-1 p-2">
           {searches.map((search, index) => (
             <li key={search.query} className="rounded-xl px-3 py-2.5">
               <div className="flex items-baseline gap-3 text-sm">
@@ -902,7 +942,7 @@ function SearchesCard({ searches }: { searches: HelpSearchStat[] }) {
           ))}
         </ol>
       )}
-    </section>
+    </Panel>
   );
 }
 
@@ -919,20 +959,19 @@ function GapsCard({
     return `/workspaces/${workspaceSlug}/help/new?title=${encodeURIComponent(title)}`;
   };
   return (
-    <section className={cardClass}>
-      <CardHeader
-        title="Content gaps"
-        icon={Plus}
-        action={
-          <span className="text-xs text-muted-foreground">
-            Questions with no answer
-          </span>
-        }
-      />
+    <Panel
+      title="Content gaps"
+      icon={Plus}
+      action={
+        <span className="truncate text-xs text-muted-foreground">
+          Questions with no answer
+        </span>
+      }
+    >
       {gaps.length === 0 ? (
         <Empty>Every search found something. Nice.</Empty>
       ) : (
-        <ul className="space-y-1 px-2 pb-3">
+        <ul className="space-y-1 p-2">
           {gaps.map((gap) => (
             <li
               key={`${gap.source}:${gap.query}`}
@@ -975,16 +1014,15 @@ function GapsCard({
           ))}
         </ul>
       )}
-    </section>
+    </Panel>
   );
 }
 
 function AskAiCard({ used, limit }: { used: number; limit: number }) {
   const atLimit = used >= limit;
   return (
-    <section className={cardClass}>
-      <CardHeader title="Ask AI" icon={SparklesIcon} />
-      <div className="px-5 pb-5">
+    <Panel title="Ask AI" icon={SparklesIcon}>
+      <div className="p-5">
         <p className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
           {number.format(used)}
           <span className="ml-1.5 text-sm font-normal text-muted-foreground">
@@ -1003,7 +1041,7 @@ function AskAiCard({ used, limit }: { used: number; limit: number }) {
             : "Resets monthly. Questions that match no articles don't count."}
         </p>
       </div>
-    </section>
+    </Panel>
   );
 }
 
@@ -1017,20 +1055,14 @@ function LockedStat({
   href: string;
 }) {
   return (
-    <Link
-      href={href}
-      className={cn(
-        cardClass,
-        "group/locked flex flex-col justify-between p-5",
-      )}
-    >
-      <span className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span className="flex size-7 items-center justify-center rounded-lg bg-background/80 ring-1 ring-border/70 dark:bg-white/[0.04] dark:ring-white/10">
-          <LockIcon className="size-3 text-foreground/70" />
-        </span>
-        {label}
-      </span>
-      <span className="mt-8 flex items-center justify-between text-sm font-medium text-foreground">
+    <Link href={href} className={cn(panelShellClass, "group/locked")}>
+      <PanelHeader title={label} icon={LockIcon} />
+      <span
+        className={cn(
+          panelInnerClass,
+          "flex items-end justify-between p-5 text-sm font-medium text-foreground",
+        )}
+      >
         Available on {plan}
         <ArrowRight className="size-4 transition-transform group-hover/locked:translate-x-0.5" />
       </span>
@@ -1052,44 +1084,43 @@ function LockedCard({
   tall?: boolean;
 }) {
   return (
-    <section
-      className={cn(
-        cardClass,
+    <Panel
+      title={title}
+      icon={LockIcon}
+      action={
+        <span className="rounded-full px-2 py-0.5 text-xs font-medium text-muted-foreground ring-1 ring-border/70 dark:ring-white/10">
+          {plan}
+        </span>
+      }
+      innerClassName={cn(
         "flex flex-col justify-end p-6",
-        tall ? "min-h-64" : "min-h-52",
+        tall ? "min-h-56" : "min-h-44",
       )}
     >
-      <span className="mb-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-background/80 px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-border/70 backdrop-blur-sm dark:ring-white/10">
-        <LockIcon className="size-3" />
-        {plan}
-      </span>
-      <h2 className="text-base font-semibold text-foreground">{title}</h2>
-      <p className="mt-1 max-w-md text-sm text-muted-foreground">
-        {description}
-      </p>
+      <p className="max-w-md text-sm text-muted-foreground">{description}</p>
       <Button asChild size="sm" className="mt-4 w-fit rounded-full">
         <Link href={href}>
           Upgrade to {plan}
           <ArrowRight className="size-3.5" />
         </Link>
       </Button>
-    </section>
+    </Panel>
   );
 }
 
 function AnalyticsSkeleton() {
   return (
     <div className="space-y-4 px-4 pb-14 sm:px-6">
-      <div className="h-56 animate-pulse rounded-3xl bg-primary/15" />
+      <div className="h-64 animate-pulse rounded-[calc(var(--radius)*4)] bg-primary/15" />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }, (_, i) => (
           <div
             key={i}
-            className="h-44 animate-pulse rounded-2xl bg-muted/60 dark:bg-white/[0.04]"
+            className="h-44 animate-pulse rounded-[calc(var(--radius)*2)] bg-muted/60 dark:bg-white/[0.04]"
           />
         ))}
       </div>
-      <div className="h-80 animate-pulse rounded-2xl bg-muted/60 dark:bg-white/[0.04]" />
+      <div className="h-80 animate-pulse rounded-[calc(var(--radius)*2)] bg-muted/60 dark:bg-white/[0.04]" />
     </div>
   );
 }
