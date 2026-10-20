@@ -427,7 +427,8 @@ export function WorkspaceSearchAction({
           onValueChange={setValue}
           placeholder={placeholder}
           aria-label={placeholder}
-          wrapperClassName="px-6 [&>svg]:size-4"
+          showIcon={false}
+          wrapperClassName="px-6"
           className="px-0 text-sm"
           onKeyDown={(event) => {
             if (event.key === "Enter") {
