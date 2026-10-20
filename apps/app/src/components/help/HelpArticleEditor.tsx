@@ -15,9 +15,11 @@ import {
 import { cn } from "@featul/ui/lib/utils";
 import {
   ChevronDown,
+  CheckIcon,
   ChevronLeftIcon,
   InfoIcon,
   LoaderIcon,
+  NoCollectionIcon,
   TickIcon,
 } from "@/components/global/icons";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
@@ -233,7 +235,11 @@ function CollectionPicker({
           type="button"
           className="inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-lg border border-border/70 px-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground dark:border-white/10"
         >
-          <HelpCollectionIcon icon={selected?.icon} className="size-3.5" />
+          {selected ? (
+            <HelpCollectionIcon icon={selected.icon} className="size-3.5" />
+          ) : (
+            <NoCollectionIcon className="size-3.5" />
+          )}
           <span className="max-w-48 truncate">{selected?.name ?? "No collection"}</span>
           <ChevronDown className="size-3" />
         </button>
@@ -242,16 +248,16 @@ function CollectionPicker({
         <div className="px-3 py-2 text-xs font-medium text-accent">Collection</div>
         <PopoverList>
           {collections.map((c) => (
-            <PopoverListItem key={c.id} onClick={() => pick(c.id)}>
+            <PopoverListItem key={c.id} onClick={() => pick(c.id)} aria-selected={c.id === value}>
               <HelpCollectionIcon icon={c.icon} className="size-4 text-muted-foreground" />
-              <span className={cn("truncate text-sm", c.id === value && "text-primary")}>{c.name}</span>
+              <span className={cn("truncate text-sm", c.id === value && "font-medium")}>{c.name}</span>
+              {c.id === value ? <CheckIcon className="ml-auto size-3.5 shrink-0 text-primary" /> : null}
             </PopoverListItem>
           ))}
-          <PopoverListItem onClick={() => pick(null)}>
-            <span className="size-4" />
-            <span className={cn("text-sm text-muted-foreground", value === null && "text-primary")}>
-              No collection
-            </span>
+          <PopoverListItem onClick={() => pick(null)} aria-selected={value === null}>
+            <NoCollectionIcon className="size-4 text-muted-foreground" />
+            <span className={cn("text-sm", value === null && "font-medium")}>No collection</span>
+            {value === null ? <CheckIcon className="ml-auto size-3.5 shrink-0 text-primary" /> : null}
           </PopoverListItem>
         </PopoverList>
       </PopoverContent>
