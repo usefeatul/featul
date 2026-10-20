@@ -24,6 +24,7 @@ import {
   Plus,
   TrashIcon,
 } from "@/components/global/icons";
+import { ActionTooltip } from "@/components/global/ActionTooltip";
 import { ContextMenuShell } from "@/components/global/ContextMenuShell";
 import { ContextMenuItem, CONTEXT_MENU_DESTRUCTIVE_CLASS } from "@/components/global/ContextMenuItem";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
@@ -187,11 +188,13 @@ function CollectionGroup({
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-0.5">
-          <Button asChild variant="plain" size="icon-sm" className="text-muted-foreground hover:text-foreground">
-            <Link href={newHref} aria-label={`New article in ${collection?.name ?? "Uncategorized"}`} title="New article">
-              <Plus className="size-4" />
-            </Link>
-          </Button>
+          <ActionTooltip label={collection ? `New article in ${collection.name}` : "New article"}>
+            <Button asChild variant="plain" size="icon-sm" className="text-muted-foreground hover:text-foreground">
+              <Link href={newHref} aria-label={`New article in ${collection?.name ?? "Uncategorized"}`}>
+                <Plus className="size-4" />
+              </Link>
+            </Button>
+          </ActionTooltip>
           {collection ? (
             <CollectionMenu
               onEdit={onEdit}
@@ -253,16 +256,18 @@ function CollectionMenu({
   };
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="plain"
-          size="icon-sm"
-          aria-label="Collection actions"
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <MoreHorizontal className="size-4" />
-        </Button>
-      </PopoverTrigger>
+      <ActionTooltip label="Edit, reorder or delete">
+        <PopoverTrigger asChild>
+          <Button
+            variant="plain"
+            size="icon-sm"
+            aria-label="Collection actions"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <MoreHorizontal className="size-4" />
+          </Button>
+        </PopoverTrigger>
+      </ActionTooltip>
       <PopoverContent align="end" list className="w-max min-w-0">
         <PopoverList>
           <ContextMenuItem icon={<EditIcon className="size-4" />} label="Edit collection" onClick={run(onEdit)} />
