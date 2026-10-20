@@ -3,9 +3,11 @@ import { HTTPException } from "hono/http-exception";
 import { helpArticle, helpCenter, helpCollection } from "@featul/db";
 import { j, publicProcedure, privateProcedure } from "../jstack";
 import {
+  getWorkspaceAccessPlan,
   requireActiveWorkspaceMemberBySlug,
   requireBoardManagerBySlug,
 } from "../shared/access";
+import { getPlanLimits } from "../shared/plan";
 import { toUrlSlug } from "../shared/slug";
 import { bySlugSchema } from "../validators/changelog";
 import {
@@ -20,16 +22,24 @@ import {
   helpFeedbackSchema,
   helpReorderSchema,
   helpSearchSchema,
+  helpTrackSearchSchema,
+  helpAnalyticsSchema,
+  helpImportApplySchema,
 } from "../validators/help";
+import { markdownToTiptapDoc } from "../notra/content";
+import { getHelpImportUsage } from "../help/import/usage";
+import { getHelpAiUsage } from "../help/ask";
 import {
   countPublishedHelpArticles,
   findPublicHelpWorkspace,
   getHelpAdminTree,
   isHelpCenterEnabled,
   nextHelpPosition,
-  searchHelpArticles,
   uniqueHelpSlug,
 } from "../help/queries";
+import { getHelpAnalytics } from "../help/analytics";
+import { searchHelpCenter } from "../help/rank";
+import { bumpHelpArticleDaily, recordHelpSearch } from "../help/stats";
 
 async function requireCollection(ctx: any, workspaceId: string, id: string) {
   const [row] = await ctx.db
@@ -41,6 +51,27 @@ async function requireCollection(ctx: any, workspaceId: string, id: string) {
     .limit(1);
   if (!row) throw new HTTPException(404, { message: "Collection not found" });
   return row;
+}
+
+async function assertCollectionLimit(ctx: any, workspaceId: string) {
+  const { maxHelpCollections: max } = getPlanLimits(await getWorkspaceAccessPlan(workspaceId));
+  if (max === null) return;
+  const [row] = await ctx.db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(helpCollection)
+    .where(eq(helpCollection.workspaceId, workspaceId));
+  if (Number(row?.count || 0) >= max) {
+    throw new HTTPException(403, { message: `Help collections limit reached (${max})` });
+  }
+}
+
+/** Only publishing counts toward the article cap, so drafts stay unlimited. */
+async function assertPublishLimit(ctx: any, workspaceId: string) {
+  const { maxHelpArticles: max } = getPlanLimits(await getWorkspaceAccessPlan(workspaceId));
+  if (max === null) return;
+  if ((await countPublishedHelpArticles(ctx.db, workspaceId)) >= max) {
+    throw new HTTPException(403, { message: `Published articles limit reached (${max})` });
+  }
 }
 
 async function requireArticle(ctx: any, workspaceId: string, id: string) {
@@ -69,7 +100,7 @@ async function requirePublicArticle(ctx: any, slug: string, articleId: string) {
     )
     .limit(1);
   if (!row) throw new HTTPException(404, { message: "Article not found" });
-  return row;
+  return { id: row.id as string, workspaceId: ws.id };
 }
 
 export function createHelpRouter() {
@@ -87,7 +118,7 @@ export function createHelpRouter() {
       .get(async ({ ctx, input, c }) => {
         const ws = await findPublicHelpWorkspace(ctx.db, input.slug);
         if (!ws) return c.superjson({ articles: [] });
-        const articles = await searchHelpArticles(ctx.db, ws.id, input.q, input.limit);
+        const articles = await searchHelpCenter(ctx.db, ws.id, input.q, input.limit);
         return c.superjson({ articles });
       }),
 
@@ -99,6 +130,23 @@ export function createHelpRouter() {
           .update(helpArticle)
           .set({ viewCount: sql`${helpArticle.viewCount} + 1`, updatedAt: sql`${helpArticle.updatedAt}` })
           .where(eq(helpArticle.id, article.id));
+        await bumpHelpArticleDaily(ctx.db, { workspaceId: article.workspaceId, articleId: article.id, views: 1 });
+        return c.superjson({ ok: true });
+      }),
+
+    trackSearch: publicProcedure
+      .input(helpTrackSearchSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await findPublicHelpWorkspace(ctx.db, input.slug);
+        if (!ws) return c.superjson({ ok: true });
+        // Re-run the search instead of trusting a client-reported result count.
+        const results = await searchHelpCenter(ctx.db, ws.id, input.q, 8);
+        await recordHelpSearch(ctx.db, {
+          workspaceId: ws.id,
+          source: "search",
+          query: input.q,
+          results: results.length,
+        });
         return c.superjson({ ok: true });
       }),
 
@@ -124,7 +172,104 @@ export function createHelpRouter() {
             updatedAt: sql`${helpArticle.updatedAt}`,
           })
           .where(eq(helpArticle.id, article.id));
+        // Daily buckets count votes cast; a flipped vote isn't taken back from an earlier day.
+        await bumpHelpArticleDaily(ctx.db, {
+          workspaceId: article.workspaceId,
+          articleId: article.id,
+          helpful: input.helpful ? 1 : 0,
+          notHelpful: input.helpful ? 0 : 1,
+        });
         return c.superjson({ ok: true });
+      }),
+
+    analytics: privateProcedure
+      .input(helpAnalyticsSchema)
+      .get(async ({ ctx, input, c }) => {
+        const ws = await requireActiveWorkspaceMemberBySlug(ctx, input.slug);
+        const plan = await getWorkspaceAccessPlan(ws.id);
+        return c.superjson(await getHelpAnalytics(ctx.db, ws.id, plan, input.days));
+      }),
+
+    importStatus: privateProcedure
+      .input(bySlugSchema)
+      .get(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const plan = await getWorkspaceAccessPlan(ws.id);
+        const [usage, collections, published, aiUsed] = await Promise.all([
+          getHelpImportUsage(ctx.db, ws.id, plan),
+          ctx.db
+            .select({ count: sql<number>`count(*)::int` })
+            .from(helpCollection)
+            .where(eq(helpCollection.workspaceId, ws.id)),
+          countPublishedHelpArticles(ctx.db, ws.id),
+          getHelpAiUsage(ws.id),
+        ]);
+        return c.superjson({
+          plan,
+          usage,
+          counts: { collections: Number(collections[0]?.count ?? 0), published, aiAnswers: aiUsed },
+        });
+      }),
+
+    importApply: privateProcedure
+      .input(helpImportApplySchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const { maxHelpCollections } = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
+        const existing: Array<{ id: string; name: string }> = await ctx.db
+          .select({ id: helpCollection.id, name: helpCollection.name })
+          .from(helpCollection)
+          .where(eq(helpCollection.workspaceId, ws.id));
+        const byName = new Map(existing.map((col) => [col.name.trim().toLowerCase(), col.id]));
+        let collectionCount = existing.length;
+        let collectionsCreated = 0;
+
+        // Only collections an article actually uses; past the plan limit, articles stay uncategorized.
+        const wanted = new Set(input.articles.map((a) => a.collection?.trim().toLowerCase()).filter(Boolean));
+        for (const col of input.collections) {
+          const key = col.name.trim().toLowerCase();
+          if (!wanted.has(key) || byName.has(key)) continue;
+          if (maxHelpCollections !== null && collectionCount >= maxHelpCollections) break;
+          const [created] = await ctx.db
+            .insert(helpCollection)
+            .values({
+              workspaceId: ws.id,
+              name: col.name,
+              slug: await uniqueHelpSlug(ctx.db, helpCollection, ws.id, toUrlSlug(col.name) || "collection"),
+              description: col.description || null,
+              icon: col.icon ?? "book",
+              position: await nextHelpPosition(ctx.db, helpCollection, eq(helpCollection.workspaceId, ws.id)),
+            })
+            .returning({ id: helpCollection.id });
+          byName.set(key, created.id);
+          collectionCount += 1;
+          collectionsCreated += 1;
+        }
+
+        let created = 0;
+        for (const article of input.articles) {
+          const collectionId = byName.get(article.collection?.trim().toLowerCase() ?? "") ?? null;
+          await ctx.db.insert(helpArticle).values({
+            workspaceId: ws.id,
+            collectionId,
+            title: article.title,
+            slug: await uniqueHelpSlug(ctx.db, helpArticle, ws.id, toUrlSlug(article.title) || "article"),
+            summary: article.summary || null,
+            content: markdownToTiptapDoc(article.body) as unknown as Record<string, unknown>,
+            status: "draft",
+            authorId: ctx.session.user.id,
+            position: await nextHelpPosition(
+              ctx.db,
+              helpArticle,
+              and(
+                eq(helpArticle.workspaceId, ws.id),
+                collectionId ? eq(helpArticle.collectionId, collectionId) : isNull(helpArticle.collectionId),
+              )!,
+            ),
+          });
+          created += 1;
+        }
+        return c.superjson({ ok: true, created, collectionsCreated });
       }),
 
     settings: privateProcedure
@@ -163,6 +308,7 @@ export function createHelpRouter() {
       .input(helpCollectionCreateSchema)
       .post(async ({ ctx, input, c }) => {
         const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        await assertCollectionLimit(ctx, ws.id);
         const slug = await uniqueHelpSlug(
           ctx.db,
           helpCollection,
@@ -268,6 +414,7 @@ export function createHelpRouter() {
         const collectionId = input.collectionId ?? null;
         if (collectionId) await requireCollection(ctx, ws.id, collectionId);
         const isPublished = input.status === "published";
+        if (isPublished) await assertPublishLimit(ctx, ws.id);
         const [slug, position] = await Promise.all([
           uniqueHelpSlug(ctx.db, helpArticle, ws.id, toUrlSlug(input.title) || "article"),
           nextHelpPosition(
@@ -336,6 +483,9 @@ export function createHelpRouter() {
           );
         }
         if (input.status !== undefined) {
+          if (input.status === "published" && existing.status !== "published") {
+            await assertPublishLimit(ctx, ws.id);
+          }
           patch.status = input.status;
           if (input.status === "published" && !existing.publishedAt) {
             patch.publishedAt = new Date();

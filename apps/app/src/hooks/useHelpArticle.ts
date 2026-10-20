@@ -8,7 +8,7 @@ import type { JSONContent } from "@featul/editor";
 import type { FeedEditorRef } from "@/components/editor/editor";
 import { IMAGE_UPLOAD_CONTENT_TYPES, CHANGELOG_IMAGE_UPLOAD_MAX_BYTES } from "@featul/api/upload/policy";
 import { uploadFileToSignedUrl } from "@/lib/upload";
-import { useRefreshHelpTree } from "./useHelpTree";
+import { expectOk, useRefreshHelpTree } from "./useHelpTree";
 
 export type HelpArticleFormData = {
   title: string;
@@ -23,15 +23,24 @@ type Props = {
   mode: "create" | "edit";
   articleId?: string;
   initialData?: HelpArticleFormData;
+  /** Prefills a new article's title, e.g. from a content-gap search. */
+  initialTitle?: string;
   initialCollectionId?: string | null;
 };
 
 /** Help article form state, image upload, save, and 5s dirty autosave once the article exists. */
-export function useHelpArticle({ workspaceSlug, mode, articleId, initialData, initialCollectionId }: Props) {
+export function useHelpArticle({
+  workspaceSlug,
+  mode,
+  articleId,
+  initialData,
+  initialTitle,
+  initialCollectionId,
+}: Props) {
   const router = useRouter();
   const refreshTree = useRefreshHelpTree(workspaceSlug);
   const editorRef = useRef<FeedEditorRef>(null);
-  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [title, setTitle] = useState(initialData?.title ?? initialTitle ?? "");
   const [summary, setSummary] = useState(initialData?.summary ?? "");
   const [collectionId, setCollectionId] = useState<string | null>(
     initialData?.collectionId ?? initialCollectionId ?? null,
@@ -88,6 +97,7 @@ export function useHelpArticle({ workspaceSlug, mode, articleId, initialData, in
             collectionId,
             status,
           });
+          await expectOk(res, "Failed to create article");
           const data = await res.json();
           if (!("ok" in data) || !data.ok) throw new Error("Failed to create article");
           setIsDirty(false);
@@ -104,6 +114,7 @@ export function useHelpArticle({ workspaceSlug, mode, articleId, initialData, in
             collectionId,
             status,
           });
+          await expectOk(res, "Failed to save article");
           const data = await res.json();
           if (!("ok" in data) || !data.ok) throw new Error("Failed to save article");
           setIsDirty(false);

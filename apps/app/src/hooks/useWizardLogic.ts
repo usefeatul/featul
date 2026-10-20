@@ -150,7 +150,8 @@ export function useWizardLogic(_options: UseWizardLogicOptions = {}) {
     return () => clearTimeout(id);
   }, [slug, slugLocked, isAppCreator]);
 
-  const create = useCallback(async () => {
+  /** `helpImport` sends the new workspace to the help center draft scan instead of the dashboard. */
+  const create = useCallback(async (options?: { helpImport?: { repo: string } | null }) => {
     setIsCreating(true);
 
     try {
@@ -205,6 +206,12 @@ export function useWizardLogic(_options: UseWizardLogicOptions = {}) {
       }
       const welcomeQuery = isFirstWorkspace ? "?welcome=1" : "";
 
+      if (options?.helpImport) {
+        const params = new URLSearchParams({ site: domain.trim(), start: "1", onboarding: "1" });
+        if (options.helpImport.repo.trim()) params.set("repo", options.helpImport.repo.trim());
+        router.push(`/workspaces/${createdSlug}/help/import?${params.toString()}`);
+        return;
+      }
       router.push(`/workspaces/${createdSlug}${welcomeQuery}`);
     } catch (e: unknown) {
       const message = (e as { message?: string })?.message || "Failed to create workspace";

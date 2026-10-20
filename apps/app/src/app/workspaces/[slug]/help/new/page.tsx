@@ -12,7 +12,7 @@ export const metadata = createPageMetadata({
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ collection?: string | string[] }>;
+  searchParams?: Promise<{ collection?: string | string[]; title?: string | string[] }>;
 };
 
 export default async function NewHelpArticlePage({ params, searchParams }: Props) {
@@ -21,6 +21,7 @@ export default async function NewHelpArticlePage({ params, searchParams }: Props
   const tree = await getHelpTreeData(slug);
   const collections = tree?.collections ?? [];
   const requested = typeof sp.collection === "string" ? sp.collection : null;
+  const initialTitle = typeof sp.title === "string" ? sp.title.slice(0, 200) : undefined;
   const initialCollectionId =
     collections.find((c) => c.id === requested)?.id ?? collections[0]?.id ?? null;
 
@@ -30,6 +31,7 @@ export default async function NewHelpArticlePage({ params, searchParams }: Props
       mode="create"
       collections={collections}
       initialCollectionId={initialCollectionId}
+      initialTitle={initialTitle}
     />
   );
 }

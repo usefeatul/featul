@@ -10,7 +10,12 @@ import styles from "./plans.module.css";
 import { getPlanLimits } from "@featul/api/shared/plan";
 import {
   AccountIcon,
+  AnalyticsIcon,
+  ArticleIcon,
+  SearchIcon,
+  SparklesIcon,
   BoardIcon,
+  BookIcon,
   CheckIcon,
   CollectIcon,
   EditIcon,
@@ -70,6 +75,46 @@ export const comparison = [
     icon: TagIcon,
     value: (plan: PlanKey) =>
       getPlanLimits(plan).maxChangelogTags ?? "Unlimited",
+  },
+  {
+    label: "Help center collections",
+    icon: BookIcon,
+    value: (plan: PlanKey) =>
+      getPlanLimits(plan).maxHelpCollections ?? "Unlimited",
+  },
+  {
+    label: "Published help articles",
+    icon: ArticleIcon,
+    value: (plan: PlanKey) =>
+      getPlanLimits(plan).maxHelpArticles ?? "Unlimited",
+  },
+  {
+    label: "Draft articles from your website",
+    icon: SparklesIcon,
+    value: (plan: PlanKey) => {
+      const limits = getPlanLimits(plan);
+      return limits.helpImportsPerMonth !== null ? `${limits.helpImportsPerMonth} / month` : "1 at setup";
+    },
+  },
+  {
+    label: "Help articles in widget",
+    icon: PanelIcon,
+    value: (plan: PlanKey) => getPlanLimits(plan).allowHelpWidget,
+  },
+  {
+    label: "Help center analytics",
+    icon: AnalyticsIcon,
+    value: (plan: PlanKey) => getPlanLimits(plan).allowHelpAnalytics,
+  },
+  {
+    label: "Search insights & content gaps",
+    icon: SearchIcon,
+    value: (plan: PlanKey) => getPlanLimits(plan).allowHelpSearchInsights,
+  },
+  {
+    label: "Ask AI answers / month",
+    icon: SparklesIcon,
+    value: (plan: PlanKey) => getPlanLimits(plan).monthlyHelpAiAnswers || false,
   },
   // These capabilities are controlled by board settings and member permissions,
   // not by subscription tier (see the board, post, comment, and widget routers).

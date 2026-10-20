@@ -1,0 +1,28 @@
+/* Success: drafted articles fan out of a stack. */
+.fan {
+  animation: fan 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+
+@keyframes fan {
+  from { opacity: 0; transform: translateY(24px) rotate(0deg) scale(0.9); }
+  to { opacity: 1; }
+}
+
+/* A ring that pulses out of the success badge. */
+.ring {
+  animation: ring 1.6s ease-out infinite;
+}
+
+@keyframes ring {
+  from { transform: scale(1); opacity: 0.6; }
+  to { transform: scale(1.9); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring {
+    animation: none;
+  }
+  .fan {
+    animation-duration: 0.01ms;
+  }
+}

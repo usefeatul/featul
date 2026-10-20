@@ -86,3 +86,44 @@ export const helpArticlesDeleteSchema = z.object({
   slug,
   articleIds: z.array(z.string().min(1)).min(1).max(200),
 });
+
+/** A settled public search, sent once the visitor stops typing or opens a result. */
+export const helpTrackSearchSchema = z.object({
+  slug,
+  q: z.string().trim().min(2).max(120),
+});
+
+export const helpAskSchema = z.object({
+  slug,
+  question: z.string().trim().min(3).max(300),
+});
+
+export const helpAnalyticsSchema = z.object({
+  slug,
+  days: z.coerce.number().int().refine((d) => [7, 30, 90].includes(d)).default(30),
+});
+
+/** Proposal items the user kept after an import scan; bodies are Markdown. */
+export const helpImportApplySchema = z.object({
+  slug,
+  collections: z
+    .array(
+      z.object({
+        name: z.string().trim().min(1).max(80),
+        description: z.string().trim().max(240).optional(),
+        icon: icon.optional(),
+      }),
+    )
+    .max(8),
+  articles: z
+    .array(
+      z.object({
+        title: z.string().trim().min(1).max(200),
+        summary: z.string().trim().max(300).optional(),
+        collection: z.string().trim().max(80).optional(),
+        body: z.string().trim().min(1).max(20_000),
+      }),
+    )
+    .min(1)
+    .max(30),
+});

@@ -35,6 +35,7 @@ type HelpArticleEditorProps = {
   articleId?: string;
   initialData?: HelpArticleFormData;
   initialCollectionId?: string | null;
+  initialTitle?: string;
   collections: HelpAdminCollection[];
 };
 
@@ -44,6 +45,7 @@ export function HelpArticleEditor({
   articleId,
   initialData,
   initialCollectionId,
+  initialTitle,
   collections: initialCollections,
 }: HelpArticleEditorProps) {
   const router = useRouter();
@@ -66,7 +68,14 @@ export function HelpArticleEditor({
     setIsDirty,
     handleImageUpload,
     handleSave,
-  } = useHelpArticle({ workspaceSlug, mode, articleId, initialData, initialCollectionId });
+  } = useHelpArticle({
+    workspaceSlug,
+    mode,
+    articleId,
+    initialData,
+    initialTitle,
+    initialCollectionId,
+  });
 
   useEffect(() => {
     let cancelled = false;

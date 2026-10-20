@@ -6,6 +6,8 @@ import * as React from "react";
 import { client } from "@featul/api/client";
 import { Textarea } from "@featul/ui/components/textarea";
 import {
+  ArticleIcon,
+  ExternalLink,
   ImageIcon,
   ArrowBigUp,
   Camera,
@@ -25,9 +27,10 @@ import type {
   IdentifiedUser,
   SimilarPost,
   WidgetApiBase,
+  WidgetHelpArticle,
   WidgetPost,
 } from "./types";
-import { parseSimilarPosts, parseWidgetPost } from "./load";
+import { parseSimilarPosts, parseWidgetHelpArticles, parseWidgetPost } from "./load";
 import { isAllowedImageType, viewerPayload, resolveBugsBoard, readErrorMessage, readSignedUpload, deleteWidgetUploadedImage } from "./utils";
 import { WidgetImageStrip } from "./gallery";
 import {
@@ -84,6 +87,7 @@ export function WidgetFeedbackCompose({
   const [message, setMessage] = React.useState("");
   const [created, setCreated] = React.useState<WidgetPost | null>(null);
   const [similar, setSimilar] = React.useState<SimilarPost[]>([]);
+  const [helpArticles, setHelpArticles] = React.useState<WidgetHelpArticle[]>([]);
   const [uploadedImages, setUploadedImages] = React.useState<UploadedImage[]>([]);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const uploadedImagesRef = React.useRef<UploadedImage[]>([]);
@@ -107,22 +111,36 @@ export function WidgetFeedbackCompose({
     const q = title.trim();
     if (q.length < 2) {
       setSimilar([]);
+      setHelpArticles([]);
       return;
     }
     let canceled = false;
-    const timer = window.setTimeout(async () => {
-      try {
-        const res = await client.widget.similar.$get({
-          ...apiBase,
-          title: q.slice(0, 128),
-          boardId: boardId || undefined,
-        });
-        if (!res.ok || canceled) return;
-        const data = await res.json();
-        if (!canceled) setSimilar(parseSimilarPosts(data.posts));
-      } catch {
-        if (!canceled) setSimilar([]);
-      }
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const res = await client.widget.similar.$get({
+            ...apiBase,
+            title: q.slice(0, 128),
+            boardId: boardId || undefined,
+          });
+          if (!res.ok || canceled) return;
+          const data = await res.json();
+          if (!canceled) setSimilar(parseSimilarPosts(data.posts));
+        } catch {
+          if (!canceled) setSimilar([]);
+        }
+      })();
+      // Empty unless the workspace's plan includes help articles in the widget.
+      void (async () => {
+        try {
+          const res = await client.widget.helpArticles.$get({ ...apiBase, q: q.slice(0, 128) });
+          if (!res.ok || canceled) return;
+          const data = await res.json();
+          if (!canceled) setHelpArticles(parseWidgetHelpArticles(data.articles));
+        } catch {
+          if (!canceled) setHelpArticles([]);
+        }
+      })();
     }, 300);
     return () => {
       canceled = true;
@@ -261,6 +279,7 @@ export function WidgetFeedbackCompose({
       setTitle("");
       setContent("");
       setSimilar([]);
+      setHelpArticles([]);
       setUploadedImages([]);
     } catch {
       setMessage("Couldn’t send this. Try again.");
@@ -335,6 +354,39 @@ export function WidgetFeedbackCompose({
           onRemove={(index) => void removeUploadedImage(index)}
           removeDisabled={uploading}
         />
+      ) : null}
+
+      {helpArticles.length ? (
+        <div className="-mx-5 mt-3 border-t border-dashed border-[rgb(var(--widget-fg)/0.14)]">
+          <p className="px-5 pt-3 text-xs font-semibold uppercase tracking-[0.12em] text-[rgb(var(--widget-fg)/0.45)]">
+            Help articles
+          </p>
+          <ul>
+            {helpArticles.map((article) => (
+              <li key={article.id}>
+                <a
+                  href={article.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center gap-3 px-5 py-2.5 text-left"
+                >
+                  <ArticleIcon className="size-3.5 shrink-0 text-[rgb(var(--widget-fg)/0.4)]" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium text-[rgb(var(--widget-fg))]">
+                      {article.title}
+                    </span>
+                    {article.summary ? (
+                      <span className="block truncate text-xs text-[rgb(var(--widget-fg)/0.5)]">
+                        {article.summary}
+                      </span>
+                    ) : null}
+                  </span>
+                  <ExternalLink className="size-3.5 shrink-0 text-[rgb(var(--widget-fg)/0.35)]" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
 
       {similar.length ? (

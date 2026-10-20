@@ -5,8 +5,10 @@ import {
   json,
   integer,
   boolean,
+  date,
   uniqueIndex,
   index,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { user } from "./auth";
@@ -18,6 +20,14 @@ export const helpCenter = pgTable("help_center", {
     .primaryKey()
     .references(() => workspace.id, { onDelete: "cascade" }),
   isVisible: boolean("is_visible").notNull().default(true),
+  /** Last sources used to draft articles, prefilled for the next scan. */
+  importSiteUrl: text("import_site_url"),
+  importRepoUrl: text("import_repo_url"),
+  lastImportAt: timestamp("last_import_at"),
+  importsTotal: integer("imports_total").notNull().default(0),
+  /** `YYYY-MM` the monthly counter belongs to; a new month resets it. */
+  importMonth: text("import_month"),
+  importsThisMonth: integer("imports_this_month").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()
@@ -118,3 +128,53 @@ export const helpArticle = pgTable(
 
 export type HelpArticle = typeof helpArticle.$inferSelect;
 export type NewHelpArticle = typeof helpArticle.$inferInsert;
+
+/** Per-article counters bucketed by UTC day, so analytics can chart a date range. */
+export const helpArticleDaily = pgTable(
+  "help_article_daily",
+  {
+    articleId: text("article_id")
+      .notNull()
+      .references(() => helpArticle.id, { onDelete: "cascade" }),
+    workspaceId: text("workspace_id")
+      .notNull()
+      .references(() => workspace.id, { onDelete: "cascade" }),
+    day: date("day", { mode: "string" }).notNull(),
+    views: integer("views").notNull().default(0),
+    helpful: integer("helpful").notNull().default(0),
+    notHelpful: integer("not_helpful").notNull().default(0),
+  },
+  (table) =>
+    ({
+      pk: primaryKey({ columns: [table.articleId, table.day] }),
+      helpArticleDailyWorkspaceIdx: index("help_article_daily_workspace_idx").on(
+        table.workspaceId,
+        table.day,
+      ),
+    }) as const,
+);
+
+export const helpSearchSource = ["search", "ai"] as const;
+export type HelpSearchSource = (typeof helpSearchSource)[number];
+
+/** Settled visitor searches and AI questions, one row per normalized query per day. */
+export const helpSearchDaily = pgTable(
+  "help_search_daily",
+  {
+    workspaceId: text("workspace_id")
+      .notNull()
+      .references(() => workspace.id, { onDelete: "cascade" }),
+    day: date("day", { mode: "string" }).notNull(),
+    source: text("source", { enum: helpSearchSource }).notNull(),
+    query: text("query").notNull(),
+    count: integer("count").notNull().default(0),
+    /** Result count from the most recent occurrence; 0 marks a content gap. */
+    results: integer("results").notNull().default(0),
+  },
+  (table) =>
+    ({
+      pk: primaryKey({
+        columns: [table.workspaceId, table.day, table.source, table.query],
+      }),
+    }) as const,
+);

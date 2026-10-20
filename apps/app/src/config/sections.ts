@@ -31,6 +31,12 @@ export const SECTIONS: SettingsSection[] = [
     desc: "Manage product updates",
   },
   {
+    value: "help",
+    group: "Product",
+    label: "Help Center",
+    desc: "Draft articles and plan features",
+  },
+  {
     value: "board",
     group: "Product",
     label: "Board Settings",

@@ -46,6 +46,8 @@ import {
   IconBulbFilled,
   IconThumbDownFilled,
   IconFileTextFilled,
+  IconChartAreaFilled,
+  IconEyeFilled,
   type Icon as TablerIcon,
   type IconProps as TablerIconProps,
 } from "@tabler/icons-react";
@@ -70,6 +72,8 @@ import {
   ArrowRight as LucideArrowRight,
   ArrowUp as LucideArrowUp,
   ArrowUpRight as LucideArrowUpRight,
+  TrendingUp as LucideTrendingUp,
+  TrendingDown as LucideTrendingDown,
   CalendarCheck2 as LucideCalendarCheck2,
   Camera as LucideCamera,
   Check as LucideCheck,
@@ -192,6 +196,8 @@ export const SparklesIcon = solid(IconSparklesFilled);
 export const BulbIcon = solid(IconBulbFilled);
 export const DislikeIcon = solid(IconThumbDownFilled);
 export const ArticleIcon = solid(IconFileTextFilled);
+export const AnalyticsIcon = solid(IconChartAreaFilled);
+export const EyeIcon = solid(IconEyeFilled);
 const LeftPanelIcon = solid(IconLayoutSidebarFilled);
 const RightPanelIcon = solid(IconLayoutSidebarRightFilled);
 
@@ -270,6 +276,8 @@ export const SearchIcon = WorkspaceSearchIcon;
 
 export const ArrowLeftIcon = ArrowLeft;
 export const ArrowIcon = outline(LucideArrowUpRight);
+export const TrendUpIcon = outline(LucideTrendingUp);
+export const TrendDownIcon = outline(LucideTrendingDown);
 export const AiIcon = Sparkles;
 export const AvatarIcon = outline(LucideCircleUserRound);
 export const CalendarIcon = CalendarDays;

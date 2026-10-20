@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
-import { Plus } from "@/components/global/icons";
+import { Plus, SparklesIcon } from "@/components/global/icons";
 import { CollectionDialog } from "./CollectionDialog";
 
 export function EmptyHelpCenter({ workspaceSlug }: { workspaceSlug: string }) {
@@ -16,11 +16,17 @@ export function EmptyHelpCenter({ workspaceSlug }: { workspaceSlug: string }) {
           Group answers into collections like Getting started or Billing, then write
           the articles your users keep asking for.
         </p>
-        <div className="mt-4 flex items-center gap-2">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <Button asChild className="px-4">
+            <Link href={`/workspaces/${workspaceSlug}/help/import`}>
+              <SparklesIcon className="mr-2 size-4" />
+              Draft from your website
+            </Link>
+          </Button>
           <Button variant="card" className="px-4" onClick={() => setOpen(true)}>
             New collection
           </Button>
-          <Button asChild className="px-4">
+          <Button asChild variant="card" className="px-4">
             <Link href={`/workspaces/${workspaceSlug}/help/new`}>
               <Plus className="mr-2 size-4" />
               Write an article

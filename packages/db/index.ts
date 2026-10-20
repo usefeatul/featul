@@ -49,6 +49,8 @@ export const {
   helpCenter,
   helpCollection,
   helpArticle,
+  helpArticleDaily,
+  helpSearchDaily,
   activityLog,
   workspaceIntegration,
   workspaceNotraConnection,

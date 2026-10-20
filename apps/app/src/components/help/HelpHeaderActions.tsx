@@ -9,7 +9,7 @@ import { Button } from "@featul/ui/components/button";
 import { Switch } from "@featul/ui/components/switch";
 import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import { BookIcon, ExternalLink, Plus } from "@/components/global/icons";
+import { AnalyticsIcon, BookIcon, ExternalLink, Plus, SparklesIcon } from "@/components/global/icons";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { expectOk } from "@/hooks/useHelpTree";
 import { CollectionDialog } from "./CollectionDialog";
@@ -83,6 +83,16 @@ export function HelpHeaderActions({
           </Link>
         </Button>
       ) : null}
+      <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
+        <Link href={`/workspaces/${workspaceSlug}/help/import`} aria-label="Draft from website" title="Draft from website">
+          <SparklesIcon className="size-4" />
+        </Link>
+      </Button>
+      <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
+        <Link href={`/workspaces/${workspaceSlug}/help/analytics`} aria-label="Analytics" title="Analytics">
+          <AnalyticsIcon className="size-4" />
+        </Link>
+      </Button>
       <Button
         variant="plain"
         size="icon-sm"

@@ -24,7 +24,12 @@ export function HelpHome({ data, slug }: { data: HelpHomeData; slug: string }) {
   const compact = count > RICH_TOPIC_LIMIT;
   return (
     <section className="flex flex-1 flex-col gap-14 sm:gap-16">
-      <HelpHero name={data.workspace.name} slug={slug} popular={data.popular.slice(0, 3)} />
+      <HelpHero
+        name={data.workspace.name}
+        slug={slug}
+        askAi={data.workspace.askAi}
+        popular={data.popular.slice(0, 3)}
+      />
 
       {count > 0 ? (
         <div>
@@ -57,10 +62,12 @@ export function HelpHome({ data, slug }: { data: HelpHomeData; slug: string }) {
 function HelpHero({
   name,
   slug,
+  askAi,
   popular,
 }: {
   name: string;
   slug: string;
+  askAi: boolean;
   popular: HelpArticleLink[];
 }) {
   return (
@@ -82,7 +89,7 @@ function HelpHero({
         <p className="mt-4 text-[15px] text-muted-foreground">
           Guides and answers from the {name} team.
         </p>
-        <HelpSearch slug={slug} className="mt-9" />
+        <HelpSearch slug={slug} className="mt-9" askAi={askAi} />
         {popular.length > 0 ? (
           <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
             <span className="mr-1 text-xs text-muted-foreground">Popular:</span>

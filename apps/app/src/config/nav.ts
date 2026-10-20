@@ -132,6 +132,7 @@ const SETTINGS_ICONS: Record<string, NavItem["icon"]> = {
   team: WorkspaceMembersIcon,
   feedback: WorkspaceFeedbackIcon,
   changelog: WorkspaceChangelogIcon,
+  help: WorkspaceHelpIcon,
   board: WorkspaceBoardIcon,
   billing: WorkspaceBillingIcon,
   domain: WorkspaceDomainIcon,

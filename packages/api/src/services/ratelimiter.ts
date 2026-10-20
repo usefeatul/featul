@@ -245,3 +245,18 @@ export async function limitStorageDeleteUser(
   if (!ratelimitStorageDeleteUser) return createBypassRateLimitResult();
   return withEnabledResult(await ratelimitStorageDeleteUser.limit(userId));
 }
+
+// Each Ask AI answer costs a model call, so visitors get far fewer than ordinary reads.
+const ratelimitHelpAsk = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(6, "60 s"),
+      analytics: false,
+      prefix: "rl:help-ask",
+    })
+  : null;
+
+export async function limitHelpAsk(req: Request): Promise<RateLimitResult> {
+  if (!ratelimitHelpAsk) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitHelpAsk.limit(getIp(req)));
+}
