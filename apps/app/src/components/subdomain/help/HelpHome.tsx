@@ -190,29 +190,36 @@ export function NumberedArticles({
   );
 }
 
-/** Featured closing card: settings-card frame, brand dither behind the copy, one button. */
+/** Closing card: settings-card frame, icon tile and heading beside one button, dither glowing up from the corner. */
 export function HelpAskBanner({ className }: { className?: string }) {
   return (
     <div className={cn(settingsSectionClass, className)}>
       <header className={settingsSurfaceHeaderClass}>
-        <h2 className="text-sm font-medium leading-6 text-foreground">Can&apos;t find what you need?</h2>
+        <h2 className="text-sm font-medium leading-6 text-foreground">Still need help?</h2>
       </header>
       <div
         className={cn(
           modalCardInnerClass,
-          "relative isolate flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between",
+          "relative isolate flex flex-col gap-5 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-6",
         )}
       >
+        {/* Soft corner glow behind the button rather than a band down the edge. */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 -z-10"
-          style={{ maskImage: "radial-gradient(ellipse 45% 120% at 100% 50%, black 0%, rgba(0,0,0,0.35) 50%, transparent 80%)" }}
+          style={{ maskImage: "radial-gradient(ellipse 40% 140% at 100% 100%, black 0%, rgba(0,0,0,0.3) 45%, transparent 75%)" }}
         >
-          <DitherGradient to="primary" direction="left" cell={4} opacity={0.4} />
+          <DitherGradient to="primary" direction="up" cell={3} opacity={0.3} />
         </div>
-        <p className="max-w-md text-sm leading-5 text-muted-foreground">
-          Ask on the board. The team answers there, and if others need it too, it becomes a feature.
-        </p>
+        <div className="flex min-w-0 items-start gap-4">
+          <HelpCollectionTile icon="chat" />
+          <div className="min-w-0">
+            <h3 className="text-[15px] font-semibold leading-6 text-foreground">Ask the team on the board</h3>
+            <p className="mt-1 max-w-md text-sm leading-5 text-muted-foreground">
+              Post your question and the team answers there. If others need it too, it becomes a feature.
+            </p>
+          </div>
+        </div>
         <HelpAskButton className="shrink-0 self-start sm:self-auto" />
       </div>
     </div>
