@@ -179,6 +179,8 @@ export async function createHelpAskResponse(req: Request) {
         if (!cancelled) controller.enqueue(encoder.encode(encode(event)));
       };
       let answered = false;
+      let raw = "";
+      let noAnswer = false;
 
       try {
         send({ type: "sources", articles: sources });
@@ -188,9 +190,7 @@ export async function createHelpAskResponse(req: Request) {
         }
 
         const texts = await helpArticleTexts(db, workspace.id, sources.map((s) => s.id));
-        let raw = "";
         let emitted = 0;
-        let noAnswer = false;
 
         try {
           await streamOpenRouterChat(
@@ -221,10 +221,7 @@ export async function createHelpAskResponse(req: Request) {
             upstream.signal,
           );
         } catch (error) {
-          if (!noAnswer) {
-            if (!raw) await refundHelpAnswer(workspace.id);
-            throw error;
-          }
+          if (!noAnswer) throw error;
         }
 
         if (noAnswer || NO_ANSWER.startsWith(raw.trim())) {
@@ -235,6 +232,8 @@ export async function createHelpAskResponse(req: Request) {
           send({ type: "done" });
         }
       } catch {
+        // Nothing reached the visitor (including failures before the model call), so give the answer back.
+        if (sources.length > 0 && !raw) await refundHelpAnswer(workspace.id);
         send({ type: "error", message: "Couldn't generate an answer. Please try again." });
       } finally {
         clearTimeout(timeout);

@@ -123,11 +123,11 @@ type HighlightNode = {
 
 /** Same flattening as the lowlight plugin: one span per text run carrying every enclosing class. */
 function highlightSpecs(nodes: HighlightNode[], classes: string[] = []): DOMOutputSpec[] {
-  return nodes.flatMap((node) => {
+  return nodes.flatMap<DOMOutputSpec>((node) => {
     const nested = [...classes, ...(node.properties?.className ?? [])];
     if (node.children) return highlightSpecs(node.children, nested);
     const text = node.value ?? "";
-    return nested.length ? [["span", { class: nested.join(" ") }, text] as DOMOutputSpec] : [text];
+    return nested.length ? [["span", { class: nested.join(" ") }, text]] : [text];
   });
 }
 

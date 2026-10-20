@@ -126,7 +126,9 @@ export async function draftHelpCenter(input: {
 }): Promise<HelpProposal> {
   const { system, user } = buildPrompt(input);
   let raw = "";
-  let reported = 0;
+  // Scanning resumes after the last complete title, so each chunk only rescans the new tail.
+  let scannedTo = 0;
+  const titlePattern = /"title"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
   await streamOpenRouterChat(
     {
       model: resolveOpenRouterStreamModel(),
@@ -139,10 +141,10 @@ export async function draftHelpCenter(input: {
     },
     (text) => {
       raw += text;
-      const titles = [...raw.matchAll(/"title"\s*:\s*"((?:[^"\\]|\\.)*)"/g)];
-      while (reported < titles.length) {
-        input.onArticle?.(JSON.parse(`"${titles[reported]![1]}"`) as string);
-        reported++;
+      titlePattern.lastIndex = scannedTo;
+      for (let match = titlePattern.exec(raw); match; match = titlePattern.exec(raw)) {
+        input.onArticle?.(JSON.parse(`"${match[1]}"`) as string);
+        scannedTo = titlePattern.lastIndex;
       }
     },
     input.signal,

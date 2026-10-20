@@ -190,7 +190,8 @@ export async function getHelpAnalytics(
               gaps: sql<number>`(sum(${helpSearchDaily.count}) filter (where ${helpSearchDaily.results} = 0))::int`,
             })
             .from(helpSearchDaily)
-            .where(searchesInWindow)
+            // Ask AI questions are usually typed in search first, and have their own usage count.
+            .where(and(searchesInWindow, eq(helpSearchDaily.source, "search")))
             .groupBy(helpSearchDaily.day)
         : Promise.resolve([]),
       access.searches

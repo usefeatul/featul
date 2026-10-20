@@ -118,7 +118,8 @@ export const helpArticle = pgTable(
     publishedAt: timestamp("published_at"),
     /*
      * Search fields, filled by the `help_article_search_refresh` trigger (migration 0037) whenever
-     * the title, summary or content changes, so no write path can leave them stale.
+     * the title, summary or content changes, so no write path can leave them stale. Drizzle doesn't
+     * model triggers, so `db:push` creates these columns without it: run the migrations instead.
      */
     /** Plain text of the content. */
     searchText: text("search_text").notNull().default(""),

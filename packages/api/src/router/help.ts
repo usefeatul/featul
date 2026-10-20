@@ -80,10 +80,15 @@ async function assertCollectionLimit(ctx: any, workspaceId: string) {
   if (max !== null && (await countHelpCollections(ctx, workspaceId)) >= max) throw collectionLimitError(max);
 }
 
-/** Only publishing counts toward the article cap, so drafts stay unlimited. */
-async function assertPublishLimit(ctx: any, workspaceId: string) {
+/** Only publishing counts toward the article cap, so drafts stay unlimited. Returns the cap once it's reached. */
+async function publishLimitReached(ctx: any, workspaceId: string) {
   const { maxHelpArticles: max } = getPlanLimits(await getWorkspaceAccessPlan(workspaceId));
-  if (max !== null && (await countPublishedHelpArticles(ctx.db, workspaceId)) >= max) throw publishLimitError(max);
+  return max !== null && (await countPublishedHelpArticles(ctx.db, workspaceId)) >= max ? max : null;
+}
+
+async function assertPublishLimit(ctx: any, workspaceId: string) {
+  const max = await publishLimitReached(ctx, workspaceId);
+  if (max !== null) throw publishLimitError(max);
 }
 
 /*
@@ -194,8 +199,9 @@ export function createHelpRouter() {
       .post(async ({ ctx, input, c }) => {
         const article = await requirePublicArticle(ctx, input.slug, input.articleId);
         // The visitor's last vote comes from the server when it can be tracked, not the browser.
+        // With no server record yet (voted before tracking, or the key expired), the browser's is used once.
         const tracked = await swapHelpVote(c.req.raw, article.id, input.helpful);
-        const previous = tracked ? tracked.previous : input.previous;
+        const previous = tracked?.previous ?? input.previous;
         if (previous === input.helpful) return c.superjson({ ok: true });
         const bump = (col: AnyColumn, by: number) =>
           sql`greatest(${col} + ${by}, 0)`;
@@ -604,22 +610,25 @@ export function createHelpRouter() {
           );
         }
         const publishing = input.status === "published" && existing.status !== "published";
-        if (input.status !== undefined) {
-          if (publishing) await assertPublishLimit(ctx, ws.id);
+        // Over the cap, the edits are still saved but the article stays unpublished.
+        const blockedAt = publishing ? await publishLimitReached(ctx, ws.id) : null;
+        if (input.status !== undefined && blockedAt === null) {
           patch.status = input.status;
           if (input.status === "published" && !existing.publishedAt) {
             patch.publishedAt = new Date();
           }
         }
 
-        const [article] = await ctx.db
-          .update(helpArticle)
-          .set(patch)
-          .where(eq(helpArticle.id, existing.id))
-          .returning(articleColumns);
+        const [article] = Object.keys(patch).length
+          ? await ctx.db
+              .update(helpArticle)
+              .set(patch)
+              .where(eq(helpArticle.id, existing.id))
+              .returning(articleColumns)
+          : [existing];
+        if (blockedAt !== null) throw publishLimitError(blockedAt);
         const over = publishing ? await publishOverLimit(ctx, ws.id) : null;
         if (over !== null) {
-          // Keep the edits, but not the publish.
           await ctx.db
             .update(helpArticle)
             .set({ status: existing.status, publishedAt: existing.publishedAt })

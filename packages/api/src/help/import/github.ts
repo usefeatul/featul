@@ -22,7 +22,8 @@ export async function getHelpGithubConnection(db: Db, workspaceId: string): Prom
     .from(helpCenter)
     .where(eq(helpCenter.workspaceId, workspaceId))
     .limit(1);
-  return row?.installationId ? (row as HelpGithubConnection) : null;
+  // Connections saved before the repo allow-list existed can't scan anything; treat them as unconnected so the UI asks to reconnect.
+  return row?.installationId && row.repos ? (row as HelpGithubConnection) : null;
 }
 
 /** The installation to scan `fullName` (lowercase `owner/name`) with, if the connecting user can access it. */

@@ -103,10 +103,11 @@ export function HelpSearch({
 
   const choose = (option: Option | undefined) => {
     if (!option) return;
-    track(trimmed);
     setOpen(false);
-    if (option.kind === "ask") setAsking(trimmed);
-    else router.push(helpArticleHref(option.result.slug));
+    // Ask AI records the question itself (as an "ai" search), so only article picks count here.
+    if (option.kind === "ask") return setAsking(trimmed);
+    track(trimmed);
+    router.push(helpArticleHref(option.result.slug));
   };
 
   const showPanel = open && trimmed.length > 0;

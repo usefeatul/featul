@@ -47,7 +47,13 @@ export function useHelpArticle({
   );
   const [isDraft, setIsDraft] = useState(initialData?.status !== "published");
   const [isSaving, setIsSaving] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
+  const [isDirty, setDirtyState] = useState(false);
+  // A failed autosave would otherwise retry (and toast) every 5s; wait for the next edit instead.
+  const [autosavePaused, setAutosavePaused] = useState(false);
+  const setIsDirty = useCallback((dirty: boolean) => {
+    setDirtyState(dirty);
+    if (dirty) setAutosavePaused(false);
+  }, []);
 
   const handleImageUpload = useCallback(
     async (file: File): Promise<string> => {
@@ -122,20 +128,21 @@ export function useHelpArticle({
           if (!silent) toast.success("Changes saved");
         }
       } catch (error) {
+        if (silent) setAutosavePaused(true);
         toast.error(error instanceof Error ? error.message : "Something went wrong");
       } finally {
         setIsSaving(false);
       }
     },
-    [mode, articleId, workspaceSlug, title, summary, collectionId, isDraft, router, refreshTree],
+    [mode, articleId, workspaceSlug, title, summary, collectionId, isDraft, router, refreshTree, setIsDirty],
   );
 
   // New articles wait for an explicit save so a half-typed title never creates a row.
   useEffect(() => {
-    if (mode !== "edit" || !isDirty || isSaving) return;
+    if (mode !== "edit" || !isDirty || isSaving || autosavePaused) return;
     const timer = setTimeout(() => void handleSave({ silent: true }), 5000);
     return () => clearTimeout(timer);
-  }, [mode, isDirty, isSaving, handleSave]);
+  }, [mode, isDirty, isSaving, autosavePaused, handleSave]);
 
   return {
     editorRef,
