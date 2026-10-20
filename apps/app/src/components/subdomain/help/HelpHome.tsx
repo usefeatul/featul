@@ -1,13 +1,17 @@
 import Link from "next/link";
 import type { HelpArticleLink, HelpHomeData } from "@featul/api/help/queries";
 import { DitherGradient } from "@featul/ui/components/gradient";
-import { raisedCardClass } from "@featul/ui/lib/overlay";
+import { modalCardInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { ArrowRight } from "@/components/global/icons";
 import { PoweredBy } from "../PoweredBy";
 import { HelpAskButton } from "./HelpAskButton";
 import { HelpSearch } from "./HelpSearch";
-import { HelpCollectionTile } from "@/components/help/icons";
+import { HelpCollectionIcon } from "@/components/help/icons";
+import {
+  settingsSectionClass,
+  settingsSurfaceHeaderClass,
+} from "@/components/settings/global/SectionCard";
 import { helpArticleHref, helpCollectionHref } from "./content";
 
 const rule = "border-t border-border/70 dark:border-white/[0.08]";
@@ -114,51 +118,72 @@ function TopicCard({ collection: c }: { collection: HelpHomeData["collections"][
   const preview = c.articles.slice(0, PREVIEW_COUNT);
   const more = c.articleCount - preview.length;
   return (
-    <article className={cn(raisedCardClass, "group/topic relative isolate flex w-full flex-col overflow-hidden p-5")}>
-      {/* Corner dither ties each card to the brand without filling it. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-70 transition-opacity group-hover/topic:opacity-100"
-        style={{ maskImage: "radial-gradient(ellipse 60% 55% at 100% 0%, black 0%, rgba(0,0,0,0.35) 45%, transparent 75%)" }}
-      >
-        <DitherGradient to="primary" direction="down" cell={3} opacity={0.35} />
+    <article className={cn(settingsSectionClass, "group/topic w-full")}>
+      <TopicCardHeader collection={c} href={href} />
+      <div className={cn(modalCardInnerClass, "relative isolate flex flex-1 flex-col px-4 py-3")}>
+        {/* Corner dither ties each card to the brand without filling it. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 opacity-70 transition-opacity group-hover/topic:opacity-100"
+          style={{ maskImage: "radial-gradient(ellipse 60% 55% at 100% 0%, black 0%, rgba(0,0,0,0.35) 45%, transparent 75%)" }}
+        >
+          <DitherGradient to="primary" direction="down" cell={3} opacity={0.35} />
+        </div>
+        {c.description ? (
+          <p className="line-clamp-2 text-sm leading-5 text-muted-foreground">{c.description}</p>
+        ) : null}
+
+        <ul className={cn(c.description && cn(rule, "mt-3 pt-2"), "flex-1")}>
+          {preview.map((a) => (
+            <li key={a.id}>
+              <Link
+                href={helpArticleHref(a.slug)}
+                className="group -mx-2 flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground/85 transition-colors hover:bg-muted/70 hover:text-foreground dark:hover:bg-white/[0.04]"
+              >
+                <span className="min-w-0 flex-1 truncate">{a.title}</span>
+                <ArrowRight className="size-3.5 shrink-0 text-muted-foreground/50 transition-[transform,color] group-hover:translate-x-0.5 group-hover:text-primary" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {more > 0 ? (
+          <Link href={href} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
+            View all {c.articleCount} articles <ArrowRight className="size-3" />
+          </Link>
+        ) : null}
       </div>
-
-      <Link href={href} className="flex items-start gap-3.5 focus-visible:outline-none">
-        <HelpCollectionTile icon={c.icon} />
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-[15px] font-semibold text-foreground transition-colors hover:text-primary">
-            {c.name}
-          </span>
-          <span className="mt-0.5 block text-xs tabular-nums text-muted-foreground">
-            {c.articleCount} {c.articleCount === 1 ? "article" : "articles"}
-          </span>
-        </span>
-      </Link>
-      {c.description ? (
-        <p className="mt-3 line-clamp-2 text-sm leading-5 text-muted-foreground">{c.description}</p>
-      ) : null}
-
-      <ul className={cn(rule, "mt-4 flex-1 pt-2")}>
-        {preview.map((a) => (
-          <li key={a.id}>
-            <Link
-              href={helpArticleHref(a.slug)}
-              className="group -mx-2 flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground/85 transition-colors hover:bg-muted/70 hover:text-foreground dark:hover:bg-white/[0.04]"
-            >
-              <span className="min-w-0 flex-1 truncate">{a.title}</span>
-              <ArrowRight className="size-3.5 shrink-0 text-muted-foreground/50 transition-[transform,color] group-hover:translate-x-0.5 group-hover:text-primary" />
-            </Link>
-          </li>
-        ))}
-      </ul>
-
-      {more > 0 ? (
-        <Link href={href} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
-          View all {c.articleCount} articles <ArrowRight className="size-3" />
-        </Link>
-      ) : null}
     </article>
+  );
+}
+
+/** Settings-card header row: collection icon, name and article count inside the frame. */
+function TopicCardHeader({
+  collection: c,
+  href,
+}: {
+  collection: HelpHomeData["collections"][number];
+  href?: string;
+}) {
+  const name = (
+    <span className="truncate text-sm font-medium leading-6 text-foreground transition-colors group-hover/topic:text-primary">
+      {c.name}
+    </span>
+  );
+  return (
+    <header className={cn(settingsSurfaceHeaderClass, "flex-nowrap")}>
+      <div className="flex min-w-0 items-center gap-2.5">
+        <HelpCollectionIcon icon={c.icon} className="size-4 shrink-0 text-primary" />
+        {href ? (
+          <Link href={href} className="min-w-0 truncate focus-visible:outline-none">
+            {name}
+          </Link>
+        ) : (
+          name
+        )}
+      </div>
+      <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{c.articleCount}</span>
+    </header>
   );
 }
 
@@ -168,29 +193,23 @@ function CompactTopicCard({ collection: c }: { collection: HelpHomeData["collect
     <Link
       href={helpCollectionHref(c.slug)}
       className={cn(
-        raisedCardClass,
-        "group/topic relative isolate flex w-full items-start gap-3.5 overflow-hidden p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        settingsSectionClass,
+        "group/topic w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
       )}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-300 group-hover/topic:opacity-100"
-        style={{ maskImage: "radial-gradient(ellipse 55% 80% at 100% 0%, black 0%, rgba(0,0,0,0.3) 45%, transparent 75%)" }}
-      >
-        <DitherGradient to="primary" direction="down" cell={3} opacity={0.35} />
-      </div>
-      <HelpCollectionTile icon={c.icon} />
-      <span className="min-w-0 flex-1">
-        <span className="flex items-baseline justify-between gap-3">
-          <span className="truncate text-[15px] font-semibold text-foreground transition-colors group-hover/topic:text-primary">
-            {c.name}
-          </span>
-          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{c.articleCount}</span>
-        </span>
-        <span className="mt-1 line-clamp-2 text-[13px] leading-5 text-muted-foreground">
+      <TopicCardHeader collection={c} />
+      <div className={cn(modalCardInnerClass, "relative isolate flex-1 px-4 py-3")}>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-300 group-hover/topic:opacity-100"
+          style={{ maskImage: "radial-gradient(ellipse 55% 80% at 100% 0%, black 0%, rgba(0,0,0,0.3) 45%, transparent 75%)" }}
+        >
+          <DitherGradient to="primary" direction="down" cell={3} opacity={0.35} />
+        </div>
+        <span className="line-clamp-2 text-[13px] leading-5 text-muted-foreground">
           {c.description || c.articles.slice(0, 3).map((a) => a.title).join(" · ")}
         </span>
-      </span>
+      </div>
     </Link>
   );
 }
@@ -241,30 +260,31 @@ export function NumberedArticles({
   );
 }
 
-/** Featured closing card: brand dither behind the copy, one button. */
+/** Featured closing card: settings-card frame, brand dither behind the copy, one button. */
 export function HelpAskBanner({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        raisedCardClass,
-        "relative isolate flex flex-col gap-5 overflow-hidden px-6 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-8",
-        className,
-      )}
-    >
+    <div className={cn(settingsSectionClass, className)}>
+      <header className={settingsSurfaceHeaderClass}>
+        <h2 className="text-sm font-medium leading-6 text-foreground">Can&apos;t find what you need?</h2>
+      </header>
       <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{ maskImage: "radial-gradient(ellipse 45% 120% at 100% 50%, black 0%, rgba(0,0,0,0.35) 50%, transparent 80%)" }}
+        className={cn(
+          modalCardInnerClass,
+          "relative isolate flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between",
+        )}
       >
-        <DitherGradient to="primary" direction="left" cell={4} opacity={0.4} />
-      </div>
-      <div className="max-w-md">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground">Can&apos;t find what you need?</h2>
-        <p className="mt-1 text-sm leading-5 text-muted-foreground">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{ maskImage: "radial-gradient(ellipse 45% 120% at 100% 50%, black 0%, rgba(0,0,0,0.35) 50%, transparent 80%)" }}
+        >
+          <DitherGradient to="primary" direction="left" cell={4} opacity={0.4} />
+        </div>
+        <p className="max-w-md text-sm leading-5 text-muted-foreground">
           Ask on the board. The team answers there, and if others need it too, it becomes a feature.
         </p>
+        <HelpAskButton className="shrink-0 self-start sm:self-auto" />
       </div>
-      <HelpAskButton className="shrink-0 self-start sm:self-auto" />
     </div>
   );
 }
