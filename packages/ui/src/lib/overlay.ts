@@ -47,6 +47,10 @@ export const imageInnerClass =
 export const raisedCardClass =
   "rounded-xl [corner-shape:squircle] border border-black/[0.08] bg-card bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_3%)] shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_4%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_2px_rgba(0,0,0,0.4)]"
 
+/** Selector surface (select triggers, picker buttons, segmented pill): the raised control with the faintest drop shadow. */
+export const selectorSurfaceClass =
+  "border border-black/[0.1] bg-card bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_7%)] shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.05),0_1px_1px_rgba(0,0,0,0.03)] [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*1.5)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_5%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_1px_1px_rgba(0,0,0,0.12)]"
+
 /** Small raised control (badges, count chips, search field, kbd): gradient, lit top edge, hairline shadow. */
 export const raisedSurfaceClass =
   "border border-black/[0.1] bg-card bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_7%)] shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.07)] [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*1.5)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_5%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_1px_1px_rgba(0,0,0,0.3)]"

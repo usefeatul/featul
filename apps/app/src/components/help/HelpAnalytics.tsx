@@ -20,7 +20,7 @@ import {
   modalShellClass,
   overlayRoundedClass,
   overlayRoundedInnerClass,
-  raisedSurfaceClass,
+  selectorSurfaceClass,
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import {
@@ -1245,7 +1245,7 @@ function AnalyticsSkeleton({
                   key={label}
                   className={cn(
                     "flex h-8 items-center gap-1.5 rounded-md border border-transparent px-3.5 text-xs font-medium",
-                    i === 0 ? cn(raisedSurfaceClass, "text-foreground") : "text-accent",
+                    i === 0 ? cn(selectorSurfaceClass, "text-foreground") : "text-accent",
                   )}
                 >
                   <span className="size-1.5 rounded-full bg-foreground/20" />

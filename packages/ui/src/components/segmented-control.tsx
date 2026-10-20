@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { MotionConfig, motion } from "framer-motion";
-import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
+import { selectorSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
 export type SegmentedOption<T extends string> = {
@@ -106,7 +106,7 @@ export function SegmentedControl<T extends string>({
                 <motion.span
                   layoutId={pillId}
                   aria-hidden
-                  className={cn(raisedSurfaceClass, "absolute inset-0 rounded-md", squircleClass)}
+                  className={cn(selectorSurfaceClass, "absolute inset-0 rounded-md", squircleClass)}
                   transition={{ type: "spring", stiffness: 520, damping: 40, mass: 0.8 }}
                 />
               ) : null}
