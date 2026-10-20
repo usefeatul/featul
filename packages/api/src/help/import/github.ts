@@ -7,6 +7,8 @@ export type HelpGithubConnection = {
   installationId: string;
   accountLogin: string | null;
   connectedAt: Date | null;
+  /** Repos the connecting user could access; null for connections saved before this was tracked. */
+  repos: string[] | null;
 };
 
 export async function getHelpGithubConnection(db: Db, workspaceId: string): Promise<HelpGithubConnection | null> {
@@ -15,6 +17,7 @@ export async function getHelpGithubConnection(db: Db, workspaceId: string): Prom
       installationId: helpCenter.githubInstallationId,
       accountLogin: helpCenter.githubAccountLogin,
       connectedAt: helpCenter.githubConnectedAt,
+      repos: helpCenter.githubRepos,
     })
     .from(helpCenter)
     .where(eq(helpCenter.workspaceId, workspaceId))
@@ -22,15 +25,19 @@ export async function getHelpGithubConnection(db: Db, workspaceId: string): Prom
   return row?.installationId ? (row as HelpGithubConnection) : null;
 }
 
-export async function getHelpGithubInstallationId(db: Db, workspaceId: string) {
-  return (await getHelpGithubConnection(db, workspaceId))?.installationId ?? null;
+/** The installation to scan `fullName` (lowercase `owner/name`) with, if the connecting user can access it. */
+export async function getHelpGithubInstallationFor(db: Db, workspaceId: string, fullName: string) {
+  const connection = await getHelpGithubConnection(db, workspaceId);
+  if (!connection?.repos?.includes(fullName.toLowerCase())) return null;
+  return connection.installationId;
 }
 
 export async function saveHelpGithubConnection(
   db: Db,
-  input: { workspaceId: string; installationId: string; accountLogin: string; userId: string },
+  input: { workspaceId: string; installationId: string; accountLogin: string; userId: string; repos: string[] },
 ) {
   const values = {
+    githubRepos: input.repos,
     githubInstallationId: input.installationId,
     githubAccountLogin: input.accountLogin,
     githubConnectedById: input.userId,
@@ -45,6 +52,13 @@ export async function saveHelpGithubConnection(
 export async function clearHelpGithubConnection(db: Db, workspaceId: string) {
   await db
     .update(helpCenter)
-    .set({ githubInstallationId: null, githubAccountLogin: null, githubConnectedById: null, githubConnectedAt: null, updatedAt: new Date() })
+    .set({
+      githubInstallationId: null,
+      githubAccountLogin: null,
+      githubConnectedById: null,
+      githubConnectedAt: null,
+      githubRepos: null,
+      updatedAt: new Date(),
+    })
     .where(eq(helpCenter.workspaceId, workspaceId));
 }

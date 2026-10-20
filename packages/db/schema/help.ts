@@ -33,6 +33,11 @@ export const helpCenter = pgTable("help_center", {
   githubAccountLogin: text("github_account_login"),
   githubConnectedById: text("github_connected_by_id"),
   githubConnectedAt: timestamp("github_connected_at"),
+  /**
+   * Repos (lowercase `owner/name`) the connecting user could access when they connected. The
+   * installation token reaches every repo the app was granted, so scans stay within this list.
+   */
+  githubRepos: json("github_repos").$type<string[]>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

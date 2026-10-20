@@ -253,6 +253,13 @@
       "when": 1792507619340,
       "tag": "0035_help_github",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1792510422186,
+      "tag": "0036_help_github_repos",
+      "breakpoints": true
     }
   ]
 }

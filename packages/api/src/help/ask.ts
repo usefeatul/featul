@@ -3,7 +3,7 @@ import { HTTPException } from "hono/http-exception";
 import { readBoundedJson } from "../request/json";
 import { getWorkspaceAccessPlan } from "../shared/access";
 import { getPlanLimits } from "../shared/plan";
-import { limitHelpAsk } from "../services/ratelimiter";
+import { limitHelpAsk, limitHelpAskDaily } from "../services/ratelimiter";
 import { streamOpenRouterChat } from "../services/openrouter";
 import { createSseStreamHeaders } from "../ai/sse";
 import { helpAskSchema } from "../validators/help";
@@ -39,7 +39,7 @@ function monthKey(workspaceId: string, now = new Date()) {
   return `help-ai:{${workspaceId}}:month:${now.getUTCFullYear()}-${now.getUTCMonth() + 1}`;
 }
 
-// Counts an answer before the model is called; a failed call still used provider tokens.
+// Counts an answer before the model is called; refunded when the call fails before any output.
 const RESERVE_ANSWER = `
 local used = tonumber(redis.call('GET', KEYS[1]) or '0')
 if used >= tonumber(ARGV[1]) then return -1 end
@@ -63,6 +63,19 @@ async function reserveHelpAnswer(workspaceId: string, limit: number) {
   if (result < 0) {
     throw new HTTPException(429, { message: "Ask AI has reached its limit for this month" });
   }
+}
+
+/** Gives an answer back when the model failed before producing anything. */
+async function refundHelpAnswer(workspaceId: string) {
+  const redis = getRedis();
+  if (!redis) return;
+  await redis
+    .eval(
+      "local used = tonumber(redis.call('GET', KEYS[1]) or '0') if used > 0 then redis.call('DECR', KEYS[1]) end return 0",
+      [monthKey(workspaceId)],
+      [],
+    )
+    .catch(() => {});
 }
 
 /** Answers used this month, or 0 when usage tracking isn't configured. */
@@ -126,6 +139,12 @@ export async function createHelpAskResponse(req: Request) {
 
   const { monthlyHelpAiAnswers } = getPlanLimits(await getWorkspaceAccessPlan(workspace.id));
   if (monthlyHelpAiAnswers <= 0) return json(403, { message: "Ask AI isn't available for this help center" });
+  if (!String(process.env.OPENROUTER_API_KEY || "").trim()) {
+    return json(503, { message: "Ask AI is unavailable right now" });
+  }
+
+  const daily = await limitHelpAskDaily(req, workspace.id);
+  if (!daily.success) return json(429, { message: "You've asked a lot today. Please try again tomorrow." });
 
   const sources: HelpAskSource[] = (
     await rankHelpArticles(db, workspace.id, input.question, { limit: MAX_SOURCES })
@@ -182,7 +201,8 @@ export async function createHelpAskResponse(req: Request) {
                 { role: "user", content: buildUserPrompt(input.question, sources, texts) },
               ],
               temperature: 0.2,
-              max_tokens: 500,
+              // Room for the 180-word answer in token-heavy languages; hitting the cap ends the stream as an error.
+              max_tokens: 1000,
             },
             (text) => {
               raw += text;
@@ -201,7 +221,10 @@ export async function createHelpAskResponse(req: Request) {
             upstream.signal,
           );
         } catch (error) {
-          if (!noAnswer) throw error;
+          if (!noAnswer) {
+            if (!raw) await refundHelpAnswer(workspace.id);
+            throw error;
+          }
         }
 
         if (noAnswer || NO_ANSWER.startsWith(raw.trim())) {

@@ -66,7 +66,9 @@ export function GithubRepoField({
 }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
+  const [active, setActive] = React.useState(-1);
   const [connecting, setConnecting] = React.useState(false);
+  const listboxId = React.useId();
   const statusKey = ["help-github-status", workspaceSlug];
 
   const { data: status } = useQuery<GithubStatus>({
@@ -97,13 +99,58 @@ export function GithubRepoField({
     .filter((r) => r.fullName.toLowerCase().includes(query))
     .slice(0, 8);
   const selected = repos.find((r) => r.fullName.toLowerCase() === query);
+  const listOpen = open && Boolean(status?.connected) && matches.length > 0;
+  const activeIndex = listOpen && active < matches.length ? active : -1;
+  const optionId = (index: number) => `${listboxId}-${index}`;
+
+  React.useEffect(() => {
+    if (activeIndex < 0) return;
+    document
+      .getElementById(`${listboxId}-${activeIndex}`)
+      ?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex, listboxId]);
+
+  const choose = (repo: GithubRepo) => {
+    onChange(repo.fullName);
+    setOpen(false);
+    setActive(-1);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!status?.connected) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      if (!matches.length) return;
+      e.preventDefault();
+      setOpen(true);
+      const step = e.key === "ArrowDown" ? 1 : -1;
+      setActive(
+        activeIndex < 0
+          ? step === 1
+            ? 0
+            : matches.length - 1
+          : (activeIndex + step + matches.length) % matches.length,
+      );
+    } else if (e.key === "Enter" && activeIndex >= 0) {
+      // Picks the option instead of submitting the surrounding form.
+      e.preventDefault();
+      choose(matches[activeIndex]!);
+    } else if (e.key === "Escape" && listOpen) {
+      e.preventDefault();
+      setOpen(false);
+      setActive(-1);
+    }
+  };
 
   const connect = async () => {
     setConnecting(true);
     try {
+      // Coming back must not auto-start another scan or replay an old connect result.
+      const back = new URL(window.location.href);
+      back.searchParams.delete("start");
+      back.searchParams.delete("github");
       const res = await client.help.githubConnectUrl.$post({
         slug: workspaceSlug,
-        returnTo: `${window.location.pathname}${window.location.search}`,
+        returnTo: `${back.pathname}${back.search}`,
       });
       await expectOk(res, "Couldn't start the GitHub connection");
       window.location.href = ((await res.json()) as { url: string }).url;
@@ -141,7 +188,9 @@ export function GithubRepoField({
           onChange={(e) => {
             onChange(e.target.value);
             setOpen(true);
+            setActive(-1);
           }}
+          onKeyDown={onKeyDown}
           onFocus={() => setOpen(true)}
           onBlur={() => window.setTimeout(() => setOpen(false), 120)}
           placeholder={
@@ -152,7 +201,12 @@ export function GithubRepoField({
           className={cn("flex-1 px-0", inputClassName)}
           aria-label="GitHub repository"
           role={status?.connected ? "combobox" : undefined}
-          aria-expanded={status?.connected ? open : undefined}
+          aria-expanded={status?.connected ? listOpen : undefined}
+          aria-controls={status?.connected ? listboxId : undefined}
+          aria-autocomplete={status?.connected ? "list" : undefined}
+          aria-activedescendant={
+            activeIndex >= 0 ? optionId(activeIndex) : undefined
+          }
         />
         {selected?.private ? (
           <span className="flex shrink-0 items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground dark:bg-white/[0.06]">
@@ -165,23 +219,28 @@ export function GithubRepoField({
         ) : null}
       </div>
 
-      {open && status?.connected && matches.length > 0 ? (
+      {listOpen ? (
         <ul
+          id={listboxId}
           role="listbox"
+          aria-label="GitHub repositories"
           className="mt-1.5 max-h-56 overflow-y-auto rounded-xl border border-border/80 bg-popover p-1 shadow-sm animate-in fade-in-0 dark:border-white/10"
         >
-          {matches.map((repo) => (
+          {matches.map((repo, index) => (
             <li key={repo.fullName}>
               <button
                 type="button"
+                id={optionId(index)}
                 role="option"
+                tabIndex={-1}
                 aria-selected={repo === selected}
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={() => {
-                  onChange(repo.fullName);
-                  setOpen(false);
-                }}
-                className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-left hover:bg-muted dark:hover:bg-white/[0.06]"
+                onMouseEnter={() => setActive(index)}
+                onClick={() => choose(repo)}
+                className={cn(
+                  "flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-left hover:bg-muted dark:hover:bg-white/[0.06]",
+                  index === activeIndex && "bg-muted dark:bg-white/[0.06]",
+                )}
               >
                 <GitHubIcon className="size-3.5 shrink-0 text-muted-foreground" />
                 <span className="min-w-0 flex-1">

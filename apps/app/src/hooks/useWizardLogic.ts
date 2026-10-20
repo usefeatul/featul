@@ -201,18 +201,20 @@ export function useWizardLogic(_options: UseWizardLogicOptions = {}) {
       }
 
       const isFirstWorkspace = Boolean(data?.isFirstWorkspace);
-      if (isFirstWorkspace) {
-        markPendingWelcomeTour();
-      }
-      const welcomeQuery = isFirstWorkspace ? "?welcome=1" : "";
 
       if (options?.helpImport) {
         const params = new URLSearchParams({ site: domain.trim(), start: "1", onboarding: "1" });
         if (options.helpImport.repo.trim()) params.set("repo", options.helpImport.repo.trim());
+        // Not marked pending here, so the tour can't open over the scan; the import page's
+        // dashboard links carry `?welcome=1` instead.
+        if (isFirstWorkspace) params.set("welcome", "1");
         router.push(`/workspaces/${createdSlug}/help/import?${params.toString()}`);
         return;
       }
-      router.push(`/workspaces/${createdSlug}${welcomeQuery}`);
+      if (isFirstWorkspace) {
+        markPendingWelcomeTour();
+      }
+      router.push(`/workspaces/${createdSlug}${isFirstWorkspace ? "?welcome=1" : ""}`);
     } catch (e: unknown) {
       const message = (e as { message?: string })?.message || "Failed to create workspace";
       toast.error(message);

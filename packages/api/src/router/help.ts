@@ -47,7 +47,8 @@ import {
 } from "../help/queries";
 import { getHelpAnalytics } from "../help/analytics";
 import { searchHelpCenter } from "../help/rank";
-import { bumpHelpArticleDaily, recordHelpSearch } from "../help/stats";
+import { bumpHelpArticleDaily, normalizeHelpQuery, recordHelpSearch } from "../help/stats";
+import { claimHelpSearchTrack } from "../services/ratelimiter";
 
 async function requireCollection(ctx: any, workspaceId: string, id: string) {
   const [row] = await ctx.db
@@ -61,25 +62,43 @@ async function requireCollection(ctx: any, workspaceId: string, id: string) {
   return row;
 }
 
-async function assertCollectionLimit(ctx: any, workspaceId: string) {
-  const { maxHelpCollections: max } = getPlanLimits(await getWorkspaceAccessPlan(workspaceId));
-  if (max === null) return;
+async function countHelpCollections(ctx: any, workspaceId: string) {
   const [row] = await ctx.db
     .select({ count: sql<number>`count(*)::int` })
     .from(helpCollection)
     .where(eq(helpCollection.workspaceId, workspaceId));
-  if (Number(row?.count || 0) >= max) {
-    throw new HTTPException(403, { message: `Help collections limit reached (${max})` });
-  }
+  return Number(row?.count || 0);
+}
+
+const collectionLimitError = (max: number) =>
+  new HTTPException(403, { message: `Help collections limit reached (${max})` });
+const publishLimitError = (max: number) =>
+  new HTTPException(403, { message: `Published articles limit reached (${max})` });
+
+async function assertCollectionLimit(ctx: any, workspaceId: string) {
+  const { maxHelpCollections: max } = getPlanLimits(await getWorkspaceAccessPlan(workspaceId));
+  if (max !== null && (await countHelpCollections(ctx, workspaceId)) >= max) throw collectionLimitError(max);
 }
 
 /** Only publishing counts toward the article cap, so drafts stay unlimited. */
 async function assertPublishLimit(ctx: any, workspaceId: string) {
   const { maxHelpArticles: max } = getPlanLimits(await getWorkspaceAccessPlan(workspaceId));
-  if (max === null) return;
-  if ((await countPublishedHelpArticles(ctx.db, workspaceId)) >= max) {
-    throw new HTTPException(403, { message: `Published articles limit reached (${max})` });
-  }
+  if (max !== null && (await countPublishedHelpArticles(ctx.db, workspaceId)) >= max) throw publishLimitError(max);
+}
+
+/*
+ * The checks above run before the write, so parallel requests can all pass them. Each write is
+ * re-counted after it lands and undone when the total went over; whichever requests count last
+ * see every write, so the total ends at or under the cap.
+ */
+async function collectionOverLimit(ctx: any, workspaceId: string) {
+  const { maxHelpCollections: max } = getPlanLimits(await getWorkspaceAccessPlan(workspaceId));
+  return max !== null && (await countHelpCollections(ctx, workspaceId)) > max ? max : null;
+}
+
+async function publishOverLimit(ctx: any, workspaceId: string) {
+  const { maxHelpArticles: max } = getPlanLimits(await getWorkspaceAccessPlan(workspaceId));
+  return max !== null && (await countPublishedHelpArticles(ctx.db, workspaceId)) > max ? max : null;
 }
 
 async function requireArticle(ctx: any, workspaceId: string, id: string) {
@@ -147,6 +166,9 @@ export function createHelpRouter() {
       .post(async ({ ctx, input, c }) => {
         const ws = await findPublicHelpWorkspace(ctx.db, input.slug);
         if (!ws) return c.superjson({ ok: true });
+        if (!(await claimHelpSearchTrack(c.req.raw, ws.id, normalizeHelpQuery(input.q)))) {
+          return c.superjson({ ok: true });
+        }
         // Re-run the search instead of trusting a client-reported result count.
         const results = await searchHelpCenter(ctx.db, ws.id, input.q, 8);
         await recordHelpSearch(ctx.db, {
@@ -180,12 +202,13 @@ export function createHelpRouter() {
             updatedAt: sql`${helpArticle.updatedAt}`,
           })
           .where(eq(helpArticle.id, article.id));
-        // Daily buckets count votes cast; a flipped vote isn't taken back from an earlier day.
+        // A changed vote moves within today's bucket too (never below zero, so a vote cast on an
+        // earlier day isn't taken from today's count).
         await bumpHelpArticleDaily(ctx.db, {
           workspaceId: article.workspaceId,
           articleId: article.id,
-          helpful: input.helpful ? 1 : 0,
-          notHelpful: input.helpful ? 0 : 1,
+          helpful: (input.helpful ? 1 : 0) - (input.previous === true ? 1 : 0),
+          notHelpful: (input.helpful ? 0 : 1) - (input.previous === false ? 1 : 0),
         });
         return c.superjson({ ok: true });
       }),
@@ -264,7 +287,7 @@ export function createHelpRouter() {
         const connection = await getHelpGithubConnection(ctx.db, ws.id);
         if (!connection) return c.superjson({ repos: [] });
         try {
-          return c.superjson({ repos: await listInstallationRepos(connection.installationId) });
+          return c.superjson({ repos: await listInstallationRepos(connection.installationId, connection.repos ?? []) });
         } catch (error) {
           // Uninstalled on GitHub's side: forget the stale connection.
           if (error instanceof HTTPException && error.status === 404) {
@@ -313,6 +336,10 @@ export function createHelpRouter() {
               position: await nextHelpPosition(ctx.db, helpCollection, eq(helpCollection.workspaceId, ws.id)),
             })
             .returning({ id: helpCollection.id });
+          if (maxHelpCollections !== null && (await collectionOverLimit(ctx, ws.id)) !== null) {
+            await ctx.db.delete(helpCollection).where(eq(helpCollection.id, created.id));
+            break;
+          }
           byName.set(key, created.id);
           collectionCount += 1;
           collectionsCreated += 1;
@@ -403,6 +430,11 @@ export function createHelpRouter() {
             position,
           })
           .returning();
+        const over = await collectionOverLimit(ctx, ws.id);
+        if (over !== null) {
+          await ctx.db.delete(helpCollection).where(eq(helpCollection.id, collection.id));
+          throw collectionLimitError(over);
+        }
         return c.superjson({ ok: true, collection });
       }),
 
@@ -515,6 +547,11 @@ export function createHelpRouter() {
             publishedAt: isPublished ? new Date() : null,
           })
           .returning();
+        const over = isPublished ? await publishOverLimit(ctx, ws.id) : null;
+        if (over !== null) {
+          await ctx.db.delete(helpArticle).where(eq(helpArticle.id, article.id));
+          throw publishLimitError(over);
+        }
         return c.superjson({ ok: true, article });
       }),
 
@@ -554,10 +591,9 @@ export function createHelpRouter() {
             )!,
           );
         }
+        const publishing = input.status === "published" && existing.status !== "published";
         if (input.status !== undefined) {
-          if (input.status === "published" && existing.status !== "published") {
-            await assertPublishLimit(ctx, ws.id);
-          }
+          if (publishing) await assertPublishLimit(ctx, ws.id);
           patch.status = input.status;
           if (input.status === "published" && !existing.publishedAt) {
             patch.publishedAt = new Date();
@@ -569,6 +605,15 @@ export function createHelpRouter() {
           .set(patch)
           .where(eq(helpArticle.id, existing.id))
           .returning();
+        const over = publishing ? await publishOverLimit(ctx, ws.id) : null;
+        if (over !== null) {
+          // Keep the edits, but not the publish.
+          await ctx.db
+            .update(helpArticle)
+            .set({ status: existing.status, publishedAt: existing.publishedAt })
+            .where(eq(helpArticle.id, existing.id));
+          throw publishLimitError(over);
+        }
         return c.superjson({ ok: true, article });
       }),
 

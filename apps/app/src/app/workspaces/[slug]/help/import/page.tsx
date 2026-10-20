@@ -9,7 +9,7 @@ export const metadata = createPageMetadata({
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ site?: string | string[]; repo?: string | string[]; start?: string | string[]; onboarding?: string | string[] }>;
+  searchParams?: Promise<{ site?: string | string[]; repo?: string | string[]; start?: string | string[]; onboarding?: string | string[]; welcome?: string | string[] }>;
 };
 
 const one = (v: string | string[] | undefined) => (typeof v === "string" ? v.slice(0, 300) : undefined);
@@ -25,6 +25,7 @@ export default async function HelpImportPage({ params, searchParams }: Props) {
         initialRepo={one(sp.repo)}
         autoStart={one(sp.start) === "1"}
         onboarding={one(sp.onboarding) === "1"}
+        welcome={one(sp.welcome) === "1"}
       />
     </section>
   );

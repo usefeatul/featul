@@ -16,11 +16,19 @@ const PREFER_FILE = /(getting.?started|quick.?start|install|usage|guide|faq|over
 
 const FILE_CHARS = 6_000;
 
-async function githubJson<T>(path: string, githubToken?: string): Promise<T | null> {
+// Repo files are cut to FILE_CHARS anyway; this only bounds the download.
+const FILE_BYTES = 300_000;
+
+async function githubJson<T>(
+  path: string,
+  githubToken?: string,
+  onStatus?: (status: number) => void,
+): Promise<T | null> {
   const res = await safeFetchText(`https://api.github.com${path}`, {
     accept: "application/vnd.github+json",
     maxBytes: 4_000_000,
     githubToken,
+    onStatus,
   });
   if (!res) return null;
   try {
@@ -28,6 +36,24 @@ async function githubJson<T>(path: string, githubToken?: string): Promise<T | nu
   } catch {
     return null;
   }
+}
+
+/** HTML comments removed in one pass; an unclosed comment drops the rest, as a browser would. */
+function stripComments(text: string) {
+  const parts: string[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const start = text.indexOf("<!--", i);
+    if (start < 0) {
+      parts.push(text.slice(i));
+      break;
+    }
+    parts.push(text.slice(i, start));
+    const end = text.indexOf("-->", start + 4);
+    if (end < 0) break;
+    i = end + 3;
+  }
+  return parts.join("");
 }
 
 /**
@@ -44,6 +70,7 @@ export async function readRepo(
   const parsed = parseGithubRepo(raw);
   if (!parsed) throw new ImportFetchError("Enter a GitHub repository like github.com/owner/repo");
   const { owner, repo } = parsed;
+  let metaStatus = 0;
   const meta = await githubJson<{
     full_name: string;
     description: string | null;
@@ -51,7 +78,10 @@ export async function readRepo(
     topics?: string[];
     default_branch: string;
     private: boolean;
-  }>(`/repos/${owner}/${repo}`, githubToken);
+  }>(`/repos/${owner}/${repo}`, githubToken, (status) => (metaStatus = status));
+  if (!meta && (metaStatus === 403 || metaStatus === 429)) {
+    throw new ImportFetchError("GitHub is rate limiting scans right now. Please try again in a few minutes.");
+  }
   if (!meta) {
     throw new ImportFetchError(
       githubToken
@@ -79,6 +109,11 @@ export async function readRepo(
     })
     .sort((a, b) => b.score - a.score)
     .slice(0, Math.max(1, maxFiles));
+  // Very large repos return a tree too big to read; the README is still worth having.
+  if (docs.length === 0) {
+    const readme = await githubJson<{ path?: string }>(`/repos/${owner}/${repo}/readme`, githubToken);
+    if (readme?.path) docs.push({ path: readme.path, score: 100 });
+  }
 
   // The contents API serves raw files and, unlike raw.githubusercontent.com, accepts the token.
   const ref = encodeURIComponent(meta.default_branch);
@@ -87,7 +122,7 @@ export async function readRepo(
       doc,
       res: await safeFetchText(
         `https://api.github.com/repos/${owner}/${repo}/contents/${doc.path.split("/").map(encodeURIComponent).join("/")}?ref=${ref}`,
-        { accept: "application/vnd.github.raw", githubToken },
+        { accept: "application/vnd.github.raw", githubToken, maxBytes: FILE_BYTES },
       ),
     })),
   );
@@ -98,10 +133,9 @@ export async function readRepo(
   const sources: ImportSource[] = [];
   files.forEach(({ doc, res }, index) => {
     if (!res) return;
-    const text = res.text
-      .replace(/<!--[\s\S]*?-->/g, "")
-      .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
-      .replace(/<img[^>]*>/gi, "")
+    const text = stripComments(res.text)
+      .replace(/!\[[^\]\n]{0,500}\]\([^)\n]{0,2000}\)/g, "")
+      .replace(/<img[^>]{0,2000}>/gi, "")
       .replace(/\n{3,}/g, "\n\n")
       .trim();
     const source: ImportSource = {

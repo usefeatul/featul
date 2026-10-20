@@ -75,7 +75,7 @@ const cardClass = cn(
  */
 export function HelpAnalytics({ workspaceSlug }: { workspaceSlug: string }) {
   const [days, setDays] = React.useState<Range>(30);
-  const { data, error } = useQuery<HelpAnalyticsData>({
+  const { data, error, refetch, isFetching } = useQuery<HelpAnalyticsData>({
     queryKey: ["help-analytics", workspaceSlug, days],
     queryFn: async () => {
       const res = await client.help.analytics.$get({
@@ -91,11 +91,31 @@ export function HelpAnalytics({ workspaceSlug }: { workspaceSlug: string }) {
 
   const billingHref = `/workspaces/${workspaceSlug}/settings/billing`;
 
-  if (error) {
+  if (error && !data) {
     return (
-      <p className="px-4 py-10 text-sm text-muted-foreground sm:px-6">
-        {error.message}
-      </p>
+      <div className="space-y-4 px-4 pb-14 sm:px-6">
+        <section className="relative isolate overflow-hidden rounded-3xl bg-primary px-6 py-6 text-primary-foreground ring-1 ring-inset ring-black/5 sm:px-8 sm:py-8 dark:ring-white/10">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-primary-foreground/75">
+                Help center · last {days} days
+              </p>
+              <p className="mt-3 text-sm text-primary-foreground/85">
+                {error.message}
+              </p>
+              <Button
+                size="sm"
+                onClick={() => void refetch()}
+                disabled={isFetching}
+                className="mt-4 rounded-full bg-white text-primary hover:bg-white/90"
+              >
+                {isFetching ? "Retrying…" : "Retry"}
+              </Button>
+            </div>
+            <RangePicker days={days} onDays={setDays} />
+          </div>
+        </section>
+      </div>
     );
   }
   if (!data) return <AnalyticsSkeleton />;
@@ -332,29 +352,7 @@ function Hero({
           </div>
         </div>
         {trends ? (
-          <div
-            role="radiogroup"
-            aria-label="Date range"
-            className="flex items-center gap-0.5 rounded-full bg-black/15 p-1 backdrop-blur-sm"
-          >
-            {RANGES.map((value) => (
-              <button
-                key={value}
-                type="button"
-                role="radio"
-                aria-checked={days === value}
-                onClick={() => onDays(value)}
-                className={cn(
-                  "h-7 cursor-pointer rounded-full px-3 text-xs font-medium tabular-nums transition-colors",
-                  days === value
-                    ? "bg-white text-primary shadow-sm"
-                    : "text-primary-foreground/80 hover:text-primary-foreground",
-                )}
-              >
-                {value} days
-              </button>
-            ))}
-          </div>
+          <RangePicker days={days} onDays={onDays} />
         ) : (
           <Button
             asChild
@@ -379,6 +377,41 @@ function Hero({
         />
       ) : null}
     </section>
+  );
+}
+
+/** Day-range switch on the brand banner. */
+function RangePicker({
+  days,
+  onDays,
+}: {
+  days: Range;
+  onDays: (days: Range) => void;
+}) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Date range"
+      className="flex items-center gap-0.5 rounded-full bg-black/15 p-1 backdrop-blur-sm"
+    >
+      {RANGES.map((value) => (
+        <button
+          key={value}
+          type="button"
+          role="radio"
+          aria-checked={days === value}
+          onClick={() => onDays(value)}
+          className={cn(
+            "h-7 cursor-pointer rounded-full px-3 text-xs font-medium tabular-nums transition-colors",
+            days === value
+              ? "bg-white text-primary shadow-sm"
+              : "text-primary-foreground/80 hover:text-primary-foreground",
+          )}
+        >
+          {value} days
+        </button>
+      ))}
+    </div>
   );
 }
 

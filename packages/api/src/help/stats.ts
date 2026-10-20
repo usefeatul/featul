@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { sql, type AnyColumn } from "drizzle-orm";
 import { helpArticleDaily, helpSearchDaily } from "@featul/db";
 
 type Db = any;
@@ -33,22 +33,23 @@ export async function bumpHelpArticleDaily(
   const views = input.views ?? 0;
   const helpful = input.helpful ?? 0;
   const notHelpful = input.notHelpful ?? 0;
+  const add = (col: AnyColumn, by: number) => sql`greatest(${col} + ${by}, 0)`;
   await db
     .insert(helpArticleDaily)
     .values({
       articleId: input.articleId,
       workspaceId: input.workspaceId,
       day: utcDay(),
-      views,
-      helpful,
-      notHelpful,
+      views: Math.max(views, 0),
+      helpful: Math.max(helpful, 0),
+      notHelpful: Math.max(notHelpful, 0),
     })
     .onConflictDoUpdate({
       target: [helpArticleDaily.articleId, helpArticleDaily.day],
       set: {
-        views: sql`${helpArticleDaily.views} + ${views}`,
-        helpful: sql`${helpArticleDaily.helpful} + ${helpful}`,
-        notHelpful: sql`${helpArticleDaily.notHelpful} + ${notHelpful}`,
+        views: add(helpArticleDaily.views, views),
+        helpful: add(helpArticleDaily.helpful, helpful),
+        notHelpful: add(helpArticleDaily.notHelpful, notHelpful),
       },
     })
     .catch(logStatError);

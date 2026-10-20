@@ -44,7 +44,8 @@ export async function getHelpImportUsage(db: Db, workspaceId: string, plan: stri
 
 /**
  * Atomically counts a scan against the plan and remembers its sources. Returns false when the
- * plan's allowance is used up. Counted before scanning, since a failed run still costs a model call.
+ * plan's allowance is used up. Counted before scanning so parallel scans can't overspend;
+ * `releaseHelpImport` gives it back when the scan ends without a draft.
  */
 export async function reserveHelpImport(
   db: Db,
@@ -61,8 +62,13 @@ export async function reserveHelpImport(
   const updated = await db
     .update(helpCenter)
     .set({
-      importsThisMonth: sql`case when ${helpCenter.importMonth} = ${month} then ${helpCenter.importsThisMonth} + 1 else 1 end`,
-      importMonth: month,
+      // The one-time free scan isn't charged to a month, so upgrading starts with a full allowance.
+      ...(monthly
+        ? {
+            importsThisMonth: sql`case when ${helpCenter.importMonth} = ${month} then ${helpCenter.importsThisMonth} + 1 else 1 end`,
+            importMonth: month,
+          }
+        : {}),
       importsTotal: sql`${helpCenter.importsTotal} + 1`,
       lastImportAt: new Date(),
       importSiteUrl: input.site,
@@ -72,4 +78,21 @@ export async function reserveHelpImport(
     .where(sql`${helpCenter.workspaceId} = ${input.workspaceId} and ${withinLimit}`)
     .returning({ workspaceId: helpCenter.workspaceId });
   return updated.length > 0;
+}
+
+/** Returns a reserved scan, e.g. when nothing could be read or drafting failed. */
+export async function releaseHelpImport(db: Db, input: { workspaceId: string; plan: string }) {
+  const monthly = getPlanLimits(input.plan).helpImportsPerMonth !== null;
+  const month = monthOf();
+  await db
+    .update(helpCenter)
+    .set({
+      importsTotal: sql`greatest(${helpCenter.importsTotal} - 1, 0)`,
+      ...(monthly
+        ? {
+            importsThisMonth: sql`case when ${helpCenter.importMonth} = ${month} then greatest(${helpCenter.importsThisMonth} - 1, 0) else ${helpCenter.importsThisMonth} end`,
+          }
+        : {}),
+    })
+    .where(eq(helpCenter.workspaceId, input.workspaceId));
 }

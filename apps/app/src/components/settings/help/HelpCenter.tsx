@@ -150,19 +150,21 @@ export default function HelpCenterSection({
                 ? ` · last scan ${relativeTime(new Date(usage.lastImportAt).toISOString())}`
                 : ""}
             </p>
-            <Button
-              asChild
-              size="sm"
-              className={cn(!canScan && "pointer-events-none opacity-50")}
-            >
-              <Link
-                href={`/workspaces/${slug}/help/import?${params.toString()}`}
-                aria-disabled={!canScan}
-              >
+            {canScan ? (
+              <Button asChild size="sm">
+                <Link
+                  href={`/workspaces/${slug}/help/import?${params.toString()}`}
+                >
+                  <SparklesIcon className="size-3.5" />
+                  Scan again
+                </Link>
+              </Button>
+            ) : (
+              <Button size="sm" disabled>
                 <SparklesIcon className="size-3.5" />
                 Scan again
-              </Link>
-            </Button>
+              </Button>
+            )}
           </div>
         </div>
       </SectionCard>

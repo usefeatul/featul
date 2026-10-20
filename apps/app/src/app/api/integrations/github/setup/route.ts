@@ -15,7 +15,8 @@ export const dynamic = "force-dynamic";
 /**
  * GitHub App setup URL. GitHub sends the user back here after they install the app.
  * Saves the installation only when the signed state matches the signed-in manager and the
- * user-authorization code proves they can access that installation.
+ * user-authorization code proves they can access that installation, along with the repos in it
+ * they can access, which are the only ones scans will read.
  */
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -42,13 +43,14 @@ export async function GET(req: Request) {
 
   try {
     const workspace = await requireBoardManagerBySlug({ db, session }, state.workspaceSlug);
-    await verifyInstallerAccess(code, installationId);
+    const repos = await verifyInstallerAccess(code, installationId);
     const installation = await getInstallation(installationId);
     await saveHelpGithubConnection(db, {
       workspaceId: workspace.id,
       installationId,
       accountLogin: installation.accountLogin,
       userId: session.user.id,
+      repos,
     });
     return back(state.returnTo, "connected");
   } catch (error) {

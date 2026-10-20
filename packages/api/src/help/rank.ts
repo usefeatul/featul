@@ -89,7 +89,13 @@ export async function helpArticleTexts(db: Db, workspaceId: string, ids: string[
   const rows: Array<{ id: string; content: unknown }> = await db
     .select({ id: helpArticle.id, content: helpArticle.content })
     .from(helpArticle)
-    .where(and(eq(helpArticle.workspaceId, workspaceId), inArray(helpArticle.id, ids)));
+    .where(
+      and(
+        eq(helpArticle.workspaceId, workspaceId),
+        eq(helpArticle.status, "published"),
+        inArray(helpArticle.id, ids),
+      ),
+    );
   return new Map(rows.map((row) => [row.id, extractTiptapPlainText(row.content)]));
 }
 

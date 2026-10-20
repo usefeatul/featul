@@ -6,13 +6,13 @@ import { authorizePrivateChangelogAiRequest, changelogAiJsonResponse } from "../
 import { createSseStreamHeaders } from "../../ai/sse";
 import { readBoundedJson } from "../../request/json";
 import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../../shared/access";
-import { ImportFetchError } from "./fetch";
+import { ImportFetchError, normalizeSiteUrl } from "./fetch";
 import { draftHelpCenter, type HelpProposal } from "./generate";
-import { readRepo } from "./repo";
+import { parseGithubRepo, readRepo } from "./repo";
 import { readSite, type ImportSource } from "./site";
-import { getHelpImportUsage, reserveHelpImport } from "./usage";
+import { getHelpImportUsage, releaseHelpImport, reserveHelpImport } from "./usage";
 import { createInstallationToken } from "../../services/github-app";
-import { getHelpGithubInstallationId } from "./github";
+import { clearHelpGithubConnection, getHelpGithubInstallationFor } from "./github";
 
 export type HelpImportStep = "site" | "repo" | "draft";
 
@@ -32,6 +32,9 @@ const inputSchema = z
   .refine((v) => Boolean(v.site || v.repo), { message: "Add a website or a GitHub repository" });
 
 const encode = (event: HelpImportEvent) => `data: ${JSON.stringify(event)}\n\n`;
+
+/** Only our own fetch errors are meant for users; anything else may carry internals like SQL. */
+const userMessage = (error: unknown, fallback: string) => (error instanceof ImportFetchError ? error.message : fallback);
 
 /** Scans a website and/or public GitHub repo and streams a draft help center proposal. */
 export async function createHelpImportResponse(req: Request) {
@@ -55,6 +58,19 @@ export async function createHelpImportResponse(req: Request) {
     return changelogAiJsonResponse(err instanceof HTTPException ? err.status : 403, {
       message: err instanceof HTTPException ? err.message : "Forbidden",
     });
+  }
+
+  // Reject bad links before a scan is counted.
+  const repo = input.repo ? parseGithubRepo(input.repo) : null;
+  if (input.repo && !repo) {
+    return changelogAiJsonResponse(400, { message: "Enter a GitHub repository like github.com/owner/repo" });
+  }
+  if (input.site) {
+    try {
+      normalizeSiteUrl(input.site);
+    } catch (error) {
+      return changelogAiJsonResponse(400, { message: userMessage(error, "Enter a full website address, like example.com") });
+    }
   }
 
   const plan = await getWorkspaceAccessPlan(workspace.id);
@@ -91,6 +107,9 @@ export async function createHelpImportResponse(req: Request) {
       const report = (source: ImportSource) =>
         send({ type: "source", source: { kind: source.kind, url: source.url, title: source.title } });
       const sources: ImportSource[] = [];
+      // The scan is given back unless a draft was delivered, or the visitor cancelled mid-draft.
+      let keepScan = false;
+      let drafting = false;
 
       try {
         if (input.site) {
@@ -100,8 +119,7 @@ export async function createHelpImportResponse(req: Request) {
             sources.push(...pages);
             send({ type: "step", step: "site", state: "done", detail: `${pages.length} pages` });
           } catch (error) {
-            const detail = error instanceof Error ? error.message : "Couldn't read the website";
-            send({ type: "step", step: "site", state: "error", detail });
+            send({ type: "step", step: "site", state: "error", detail: userMessage(error, "Couldn't read the website") });
           }
         } else send({ type: "step", step: "site", state: "skipped" });
 
@@ -109,17 +127,26 @@ export async function createHelpImportResponse(req: Request) {
           send({ type: "step", step: "repo", state: "running" });
           try {
             // A connected GitHub App lets the scan read private repos; public ones work without it.
-            const installationId = await getHelpGithubInstallationId(db, workspace.id);
-            const githubToken = installationId
-              ? await createInstallationToken(installationId).catch(() => undefined)
-              : undefined;
+            const installationId = repo
+              ? await getHelpGithubInstallationFor(db, workspace.id, `${repo.owner}/${repo.repo}`)
+              : null;
+            let githubToken: string | undefined;
+            if (installationId) {
+              try {
+                githubToken = await createInstallationToken(installationId);
+              } catch (error) {
+                // Uninstalled on GitHub's side: forget the stale connection.
+                if (error instanceof HTTPException && error.status === 404) {
+                  await clearHelpGithubConnection(db, workspace.id);
+                }
+                throw new ImportFetchError("Your GitHub connection needs attention. Reconnect GitHub, then try again.");
+              }
+            }
             const files = await readRepo(input.repo, Math.max(3, Math.round(usage.maxPages / 2)), report, githubToken);
             sources.push(...files);
             send({ type: "step", step: "repo", state: "done", detail: `${files.length} files` });
           } catch (error) {
-            const detail =
-              error instanceof ImportFetchError || error instanceof Error ? error.message : "Couldn't read the repository";
-            send({ type: "step", step: "repo", state: "error", detail });
+            send({ type: "step", step: "repo", state: "error", detail: userMessage(error, "Couldn't read the repository") });
           }
         } else send({ type: "step", step: "repo", state: "skipped" });
 
@@ -128,6 +155,8 @@ export async function createHelpImportResponse(req: Request) {
           return;
         }
 
+        if (cancelled) return;
+        drafting = true;
         send({ type: "step", step: "draft", state: "running" });
         const existing = await db
           .select({ title: helpArticle.title })
@@ -143,12 +172,21 @@ export async function createHelpImportResponse(req: Request) {
         });
         send({ type: "step", step: "draft", state: "done", detail: `${proposal.articles.length} articles` });
         send({ type: "proposal", proposal });
+        keepScan = true;
       } catch (error) {
-        console.error("[help-import] failed", error);
-        send({ type: "error", message: "Drafting failed. Please try again." });
+        if (!cancelled) {
+          console.error("[help-import] failed", error);
+          send({ type: "error", message: "Drafting failed. Please try again." });
+        }
       } finally {
         clearTimeout(timeout);
         if (!cancelled) controller.close();
+        // Cancelling during drafting still used a model call, so that scan counts.
+        if (!keepScan && !(cancelled && drafting)) {
+          await releaseHelpImport(db, { workspaceId: workspace.id, plan }).catch((error: unknown) =>
+            console.error("[help-import] couldn't release scan", error),
+          );
+        }
       }
     },
     cancel() {

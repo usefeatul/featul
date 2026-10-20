@@ -256,7 +256,7 @@ export default function WorkspaceShortcutsDrawer() {
                 placeholder="Search shortcuts"
                 aria-label="Search shortcuts"
                 className={cn(
-                  "h-10 bg-background pl-8 text-sm text-foreground",
+                  "h-10 bg-background bg-none pl-8 text-sm text-foreground",
                   "placeholder:text-muted-foreground",
                 )}
               />

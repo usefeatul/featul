@@ -260,3 +260,43 @@ export async function limitHelpAsk(req: Request): Promise<RateLimitResult> {
   if (!ratelimitHelpAsk) return createBypassRateLimitResult();
   return withEnabledResult(await ratelimitHelpAsk.limit(getIp(req)));
 }
+
+// The monthly answer quota is shared by every visitor, so one visitor can't spend it all.
+const ratelimitHelpAskDaily = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.fixedWindow(30, "1 d"),
+      analytics: false,
+      prefix: "rl:help-ask-day",
+    })
+  : null;
+
+export async function limitHelpAskDaily(req: Request, workspaceId: string): Promise<RateLimitResult> {
+  if (!ratelimitHelpAskDaily) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitHelpAskDaily.limit(`${workspaceId}:${getIp(req)}`));
+}
+
+const ratelimitHelpSearchTrack = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(30, "1 h"),
+      analytics: false,
+      prefix: "rl:help-search-track",
+    })
+  : null;
+
+/**
+ * Whether a visitor's search should count toward analytics: each query once per visitor per day,
+ * and a few dozen per hour at most, so one visitor can't flood top searches or content gaps.
+ */
+export async function claimHelpSearchTrack(req: Request, workspaceId: string, query: string): Promise<boolean> {
+  if (!redis || !ratelimitHelpSearchTrack) return true;
+  const visitor = `${workspaceId}:${getIp(req)}`;
+  try {
+    const fresh = await redis.set(`help-search-seen:${visitor}:${query}`, 1, { nx: true, ex: 86_400 });
+    if (fresh !== "OK") return false;
+    return (await ratelimitHelpSearchTrack.limit(visitor)).success;
+  } catch {
+    return true;
+  }
+}

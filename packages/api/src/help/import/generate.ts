@@ -28,6 +28,48 @@ export const proposalSchema = z.object({
 
 export type HelpProposal = z.infer<typeof proposalSchema>;
 
+const draftCollectionSchema = proposalSchema.shape.collections.element.extend({
+  description: z.string().trim().max(240).nullish().transform((v) => v ?? ""),
+});
+const draftArticleSchema = proposalSchema.shape.articles.element.extend({
+  title: z.string().trim().min(1).transform((v) => v.slice(0, 200)),
+  body: z.string().trim().min(1).transform((v) => v.slice(0, 20_000)),
+  summary: z.string().trim().nullish().transform((v) => (v ?? "").slice(0, 300)),
+  collection: z.string().trim().max(80).nullish().transform((v) => v ?? ""),
+  // Models often leave an empty "" from the template; keep only real URLs.
+  sources: z
+    .array(z.unknown())
+    .nullish()
+    .transform((list) =>
+      (list ?? []).filter((v): v is string => typeof v === "string" && z.string().url().safeParse(v).success).slice(0, 10),
+    ),
+});
+
+/**
+ * Keeps every collection and article that is valid on its own, so one malformed item from the
+ * model doesn't throw away the whole draft. Collection names are de-duplicated.
+ */
+function parseProposal(value: unknown): HelpProposal {
+  const root = (value ?? {}) as { collections?: unknown; articles?: unknown };
+  const seen = new Set<string>();
+  const collections = (Array.isArray(root.collections) ? root.collections : [])
+    .map((item) => draftCollectionSchema.safeParse(item))
+    .flatMap((result) => (result.success ? [result.data] : []))
+    .filter((col) => {
+      const key = col.name.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 8);
+  const articles = (Array.isArray(root.articles) ? root.articles : [])
+    .map((item) => draftArticleSchema.safeParse(item))
+    .flatMap((result) => (result.success ? [result.data] : []))
+    .slice(0, 30);
+  if (articles.length === 0) throw new Error("The draft came back empty. Please try again.");
+  return proposalSchema.parse({ collections, articles });
+}
+
 const SOURCE_BUDGET = 70_000;
 
 function buildPrompt(input: {
@@ -105,6 +147,6 @@ export async function draftHelpCenter(input: {
     },
     input.signal,
   );
-  const proposal = proposalSchema.parse(extractJson(raw));
+  const proposal = parseProposal(extractJson(raw));
   return { ...proposal, articles: proposal.articles.slice(0, input.maxArticles) };
 }

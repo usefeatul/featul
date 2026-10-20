@@ -1,4 +1,4 @@
-import { normalizeSiteUrl, safeFetchText } from "./fetch";
+import { ImportFetchError, normalizeSiteUrl, safeFetchText } from "./fetch";
 
 export type ImportSource = {
   kind: "site" | "repo";
@@ -13,26 +13,97 @@ function decodeEntities(text: string) {
   return text.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (match, code: string) => {
     if (code[0] === "#") {
       const n = code[1]?.toLowerCase() === "x" ? parseInt(code.slice(2), 16) : parseInt(code.slice(1), 10);
-      return Number.isFinite(n) ? String.fromCodePoint(n) : match;
+      return Number.isInteger(n) && n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : match;
     }
     return ENTITIES[code.toLowerCase()] ?? match;
   });
 }
 
+const SKIPPED_ELEMENTS = new Set([
+  "script", "style", "noscript", "svg", "template", "iframe", "nav", "footer", "header", "form", "button",
+]);
+const LINE_BREAK_TAGS = new Set(["p", "div", "section", "article", "li", "h1", "h2", "h3", "h4", "h5", "h6", "tr", "br"]);
+const MAX_HTML_CHARS = 1_000_000;
+
+/**
+ * Markup to plain lines in one pass. Written as a scanner rather than regexes so a page full of
+ * unclosed tags or comments costs linear time instead of rescanning the rest of the page per tag.
+ */
+function markupToText(html: string) {
+  const lower = html.toLowerCase();
+  const out: string[] = [];
+  // Where the next closing tag of each skipped element is, or -1 once none remain.
+  const nextClose = new Map<string, number>();
+  const tagName = /<(\/?)([a-z][a-z0-9-]*)/y;
+  let i = 0;
+  while (i < html.length) {
+    const lt = html.indexOf("<", i);
+    if (lt < 0) {
+      out.push(html.slice(i));
+      break;
+    }
+    out.push(html.slice(i, lt));
+    if (lower.startsWith("<!--", lt)) {
+      const end = lower.indexOf("-->", lt + 4);
+      if (end < 0) break;
+      out.push(" ");
+      i = end + 3;
+      continue;
+    }
+    tagName.lastIndex = lt;
+    const match = tagName.exec(lower);
+    if (!match) {
+      out.push("<");
+      i = lt + 1;
+      continue;
+    }
+    const gt = html.indexOf(">", lt);
+    if (gt < 0) break;
+    const closing = match[1] === "/";
+    const name = match[2]!;
+    i = gt + 1;
+    if (!closing && SKIPPED_ELEMENTS.has(name)) {
+      let close = nextClose.get(name);
+      if (close === undefined || (close >= 0 && close < i)) {
+        close = lower.indexOf(`</${name}`, i);
+        nextClose.set(name, close);
+      }
+      if (close >= 0) {
+        const closeEnd = html.indexOf(">", close);
+        i = closeEnd < 0 ? html.length : closeEnd + 1;
+        out.push(" ");
+        continue;
+      }
+    }
+    if (!closing && /^h[1-4]$/.test(name)) out.push(`\n\n${"#".repeat(Number(name[1]))} `);
+    else if (!closing && name === "li") out.push("\n- ");
+    else if ((closing && LINE_BREAK_TAGS.has(name)) || name === "br") out.push("\n");
+    else out.push(" ");
+  }
+  return out.join("");
+}
+
+/** The <main> element when there is one, else <body>, else the whole page. */
+function contentRegion(html: string) {
+  const lower = html.toLowerCase();
+  const mainStart = lower.indexOf("<main");
+  const mainEnd = mainStart >= 0 ? lower.lastIndexOf("</main>") : -1;
+  if (mainStart >= 0 && mainEnd > mainStart) return html.slice(mainStart, mainEnd + 7);
+  const bodyStart = lower.indexOf("<body");
+  const bodyEnd = lower.lastIndexOf("</body>");
+  if (bodyStart >= 0 && bodyEnd > bodyStart) return html.slice(bodyStart, bodyEnd + 7);
+  return html;
+}
+
 /** Readable text from an HTML page: drops scripts, chrome and markup, keeps headings and lists. */
-export function htmlToText(html: string) {
-  const title = decodeEntities(/<title[^>]*>([\s\S]*?)<\/title>/i.exec(html)?.[1]?.trim() ?? "");
+export function htmlToText(page: string) {
+  const html = page.slice(0, MAX_HTML_CHARS);
+  const head = html.slice(0, 200_000);
+  const title = decodeEntities(/<title[^>]{0,200}>([^<]{0,500})<\/title>/i.exec(head)?.[1]?.trim() ?? "");
   const description = decodeEntities(
-    /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i.exec(html)?.[1] ?? "",
+    /<meta[^>]{1,300}name=["']description["'][^>]{1,300}content=["']([^"']{0,1000})["']/i.exec(head)?.[1] ?? "",
   );
-  const body = (/<main[\s\S]*?<\/main>/i.exec(html)?.[0] ?? /<body[\s\S]*<\/body>/i.exec(html)?.[0] ?? html)
-    .replace(/<(script|style|noscript|svg|template|iframe|nav|footer|header|form|button)\b[\s\S]*?<\/\1>/gi, " ")
-    .replace(/<!--[\s\S]*?-->/g, " ")
-    .replace(/<h([1-4])[^>]*>/gi, (_, level: string) => `\n\n${"#".repeat(Number(level))} `)
-    .replace(/<li[^>]*>/gi, "\n- ")
-    .replace(/<\/(p|div|section|article|li|h[1-6]|tr|br)>|<br\s*\/?>/gi, "\n")
-    .replace(/<[^>]+>/g, " ");
-  const text = decodeEntities(body)
+  const text = decodeEntities(markupToText(contentRegion(html)))
     .split("\n")
     .map((line) => line.replace(/\s+/g, " ").trim())
     .filter((line) => line.length > 1 && line !== "-")
@@ -114,7 +185,7 @@ export async function readSite(
 ): Promise<ImportSource[]> {
   const home = normalizeSiteUrl(raw);
   const homePage = await safeFetchText(home.toString());
-  if (!homePage) throw new Error(`Couldn't open ${home.hostname}`);
+  if (!homePage) throw new ImportFetchError(`Couldn't open ${home.hostname}`);
   const finalHome = new URL(homePage.url);
 
   const sitemap = await safeFetchText(new URL("/sitemap.xml", finalHome).toString(), {
@@ -133,7 +204,13 @@ export async function readSite(
   );
   pages.forEach((page, index) => {
     if (!page || !/html/i.test(page.contentType || "text/html")) return;
-    const { title, description, text } = htmlToText(page.text);
+    let parsed: ReturnType<typeof htmlToText>;
+    try {
+      parsed = htmlToText(page.text);
+    } catch {
+      return;
+    }
+    const { title, description, text } = parsed;
     const body = [description, text].filter(Boolean).join("\n\n").slice(0, PAGE_CHARS);
     if (body.length < 200) return;
     const source: ImportSource = { kind: "site", url: urls[index]!, title: title || urls[index]!, text: body };

@@ -27,13 +27,16 @@ export function WelcomeTourGate({
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
+    // The help import page passes `?welcome=1` on to its dashboard links, so the tour
+    // opens after the scan instead of over it.
+    if (pathname.endsWith("/help/import")) return;
     const shouldWelcome =
       searchParams.get("welcome") === "1" || hasPendingWelcomeTour();
     if (!shouldWelcome || hasCompletedWelcomeTour(userId)) {
       return;
     }
     setOpen(true);
-  }, [searchParams, userId]);
+  }, [pathname, searchParams, userId]);
 
   const clearWelcomeParam = React.useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());

@@ -88,6 +88,8 @@ export function WidgetFeedbackCompose({
   const [created, setCreated] = React.useState<WidgetPost | null>(null);
   const [similar, setSimilar] = React.useState<SimilarPost[]>([]);
   const [helpArticles, setHelpArticles] = React.useState<WidgetHelpArticle[]>([]);
+  // Off for the rest of the session once the server says the plan or help center doesn't allow it.
+  const helpEnabledRef = React.useRef(true);
   const [uploadedImages, setUploadedImages] = React.useState<UploadedImage[]>([]);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const uploadedImagesRef = React.useRef<UploadedImage[]>([]);
@@ -131,16 +133,19 @@ export function WidgetFeedbackCompose({
         }
       })();
       // Empty unless the workspace's plan includes help articles in the widget.
-      void (async () => {
-        try {
-          const res = await client.widget.helpArticles.$get({ ...apiBase, q: q.slice(0, 128) });
-          if (!res.ok || canceled) return;
-          const data = await res.json();
-          if (!canceled) setHelpArticles(parseWidgetHelpArticles(data.articles));
-        } catch {
-          if (!canceled) setHelpArticles([]);
-        }
-      })();
+      if (helpEnabledRef.current) {
+        void (async () => {
+          try {
+            const res = await client.widget.helpArticles.$get({ ...apiBase, q: q.slice(0, 128) });
+            if (!res.ok || canceled) return;
+            const data = await res.json();
+            if ("enabled" in data && data.enabled === false) helpEnabledRef.current = false;
+            if (!canceled) setHelpArticles(parseWidgetHelpArticles(data.articles));
+          } catch {
+            if (!canceled) setHelpArticles([]);
+          }
+        })();
+      }
     }, 300);
     return () => {
       canceled = true;

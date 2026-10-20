@@ -12,7 +12,7 @@ const textareaVariants = cva(
         // Same raised surface as the portal and help-center search fields.
         default: cn(
           raisedSurfaceClass,
-          "rounded-lg transition-[filter,box-shadow,border-color] focus-visible:border-primary/40 focus-visible:ring-3 focus-visible:ring-primary/15 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/15",
+          "rounded-lg transition-[filter,box-shadow,border-color] focus-visible:border-primary/40 focus-visible:ring-3 focus-visible:ring-primary/15 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/15 dark:aria-invalid:border-destructive",
         ),
         plain: "bg-transparent border-none shadow-none focus-visible:ring-0 px-0",
       },

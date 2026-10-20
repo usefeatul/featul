@@ -14,7 +14,8 @@ export const widgetHelpArticles = publicProcedure
     const resolved = await resolveWidget(ctx, input.projectId, input.parentOrigin);
     const { allowHelpWidget } = getPlanLimits(await getWorkspaceAccessPlan(resolved.workspaceId));
     if (!allowHelpWidget || !(await isHelpCenterPublic(ctx.db, resolved.workspaceId))) {
-      return c.superjson({ articles: [] });
+      // Tells the widget to stop asking while it's open.
+      return c.superjson({ articles: [], enabled: false });
     }
     const origin = publicPortalOrigin(resolved.workspaceSlug, resolved.customDomain);
     const rows = await rankHelpArticles(ctx.db, resolved.workspaceId, input.q, {

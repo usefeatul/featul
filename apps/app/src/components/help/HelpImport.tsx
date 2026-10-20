@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { HelpProposal } from "@featul/api/help/import/generate";
 import type {
@@ -34,6 +35,7 @@ import {
   SparklesIcon,
   XMarkIcon,
 } from "@/components/global/icons";
+import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { expectOk, useRefreshHelpTree } from "@/hooks/useHelpTree";
 import { WebsiteFavicon } from "@/components/wizard/WebsiteFavicon";
 import { GithubRepoField, useGithubSetupToast } from "./GithubRepoField";
@@ -44,6 +46,8 @@ type Stage = "form" | "running" | "review" | "saving" | "done";
 type StepState = "idle" | "running" | "done" | "skipped" | "error";
 type SourceRef = { kind: "site" | "repo"; url: string; title: string };
 type LogEntry = {
+  /** Position in the log; a stable row key. */
+  id: number;
   at: number;
   text: string;
   kind: "step" | "source" | "article";
@@ -123,6 +127,7 @@ const hostOf = (url: string) => {
 /**
  * Draft a help center from a website and/or GitHub repo: scan, review, then save as drafts.
  * Used after workspace setup (with `autoStart`) and from Settings → Help Center.
+ * `welcome` hands the first-workspace welcome tour on to the dashboard links.
  */
 export function HelpImport({
   workspaceSlug,
@@ -130,13 +135,16 @@ export function HelpImport({
   initialRepo = "",
   autoStart = false,
   onboarding = false,
+  welcome = false,
 }: {
   workspaceSlug: string;
   initialSite?: string;
   initialRepo?: string;
   autoStart?: boolean;
   onboarding?: boolean;
+  welcome?: boolean;
 }) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const refreshTree = useRefreshHelpTree(workspaceSlug);
   useGithubSetupToast();
@@ -174,16 +182,34 @@ export function HelpImport({
 
   React.useEffect(() => {
     if (!usage) return;
-    if (!initialSite && usage.site) setSite(usage.site);
-    if (!initialRepo && usage.repo) setRepo(usage.repo);
+    // Only fill empty fields, so a refetch never replaces what was typed.
+    if (!initialSite) setSite((v) => v || usage.site || "");
+    if (!initialRepo) setRepo((v) => v || usage.repo || "");
   }, [usage, initialSite, initialRepo]);
+
+  // Stop the scan when leaving the page. Deferred a tick so Strict Mode's
+  // simulated unmount, which remounts straight away, doesn't cancel it.
+  const mounted = React.useRef(true);
+  React.useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      const controller = abortRef.current;
+      window.setTimeout(() => {
+        if (!mounted.current) controller?.abort();
+      });
+    };
+  }, []);
 
   const scan = React.useCallback(async () => {
     const controller = new AbortController();
     abortRef.current = controller;
     const begin = Date.now();
-    const note = (entry: Omit<LogEntry, "at">) =>
-      setLog((prev) => [...prev, { ...entry, at: Date.now() - begin }]);
+    const note = (entry: Omit<LogEntry, "id" | "at">) =>
+      setLog((prev) => [
+        ...prev,
+        { ...entry, id: prev.length, at: Date.now() - begin },
+      ]);
     setStartedAt(begin);
     setLog([]);
     setStage("running");
@@ -247,13 +273,9 @@ export function HelpImport({
       if (!gotProposal)
         throw new Error("The scan ended early. Please try again.");
     } catch (err) {
-      setError(
-        controller.signal.aborted
-          ? "Scan cancelled."
-          : err instanceof Error
-            ? err.message
-            : "Something went wrong",
-      );
+      // A cancel sets its own message.
+      if (!controller.signal.aborted)
+        setError(err instanceof Error ? err.message : "Something went wrong");
       setStage("form");
     } finally {
       abortRef.current = null;
@@ -267,8 +289,12 @@ export function HelpImport({
     if (autoStart && !started.current && (initialSite || initialRepo)) {
       started.current = true;
       void scan();
+      // Drop `start` so Back, a refresh or a GitHub round trip doesn't spend another scan.
+      const url = new URL(window.location.href);
+      url.searchParams.delete("start");
+      router.replace(`${url.pathname}${url.search}`, { scroll: false });
     }
-  }, [autoStart, initialRepo, initialSite, scan]);
+  }, [autoStart, initialRepo, initialSite, scan, router]);
 
   const save = async () => {
     if (!proposal) return;
@@ -301,6 +327,7 @@ export function HelpImport({
 
   const outOfScans = usage ? usage.remaining <= 0 : false;
   const canScan = Boolean(site.trim() || repo.trim()) && !outOfScans;
+  const dashboardHref = `/workspaces/${workspaceSlug}${welcome ? "?welcome=1" : ""}`;
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pb-16 sm:px-6">
@@ -317,6 +344,7 @@ export function HelpImport({
           onboarding={onboarding}
           usage={usage}
           workspaceSlug={workspaceSlug}
+          dashboardHref={dashboardHref}
         />
       ) : null}
 
@@ -330,7 +358,11 @@ export function HelpImport({
           log={log}
           onCancel={() => {
             abortRef.current?.abort();
-            setError("Scan cancelled.");
+            setError(
+              steps.draft.state === "idle"
+                ? "Scan cancelled."
+                : "Scan cancelled. Drafting had started, so it still counts as a scan.",
+            );
             setStage("form");
           }}
         />
@@ -344,6 +376,7 @@ export function HelpImport({
           setSelected={setSelected}
           saving={stage === "saving"}
           error={error}
+          outOfScans={outOfScans}
           onSave={() => void save()}
           onDiscard={() => setStage("form")}
         />
@@ -354,6 +387,7 @@ export function HelpImport({
           result={result}
           workspaceSlug={workspaceSlug}
           onboarding={onboarding}
+          dashboardHref={dashboardHref}
         />
       ) : null}
     </div>
@@ -401,6 +435,7 @@ function Review({
   setSelected,
   saving,
   error,
+  outOfScans,
   onSave,
   onDiscard,
 }: {
@@ -410,11 +445,21 @@ function Review({
   setSelected: React.Dispatch<React.SetStateAction<Set<number>>>;
   saving: boolean;
   error: string;
+  outOfScans: boolean;
   onSave: () => void;
   onDiscard: () => void;
 }) {
   const [open, setOpen] = React.useState<number | null>(null);
+  const [confirmDiscard, setConfirmDiscard] = React.useState(false);
+  // The model can repeat a collection name; keep the first so each group shows once.
+  const seen = new Set<string>();
   const groups = proposal.collections
+    .filter((collection) => {
+      const name = collection.name.trim().toLowerCase();
+      if (seen.has(name)) return false;
+      seen.add(name);
+      return true;
+    })
     .map((collection) => ({
       collection,
       items: proposal.articles
@@ -497,7 +542,11 @@ function Review({
         ...(loose.length ? [{ collection: null, items: loose }] : []),
       ].map((group) => (
         <section
-          key={group.collection?.name ?? "uncategorized"}
+          key={
+            group.collection
+              ? `collection:${group.collection.name.trim().toLowerCase()}`
+              : "uncategorized"
+          }
           className={cardClass}
         >
           <header className="flex items-center gap-3 border-b border-border/60 px-5 py-3.5 dark:border-white/[0.07]">
@@ -559,9 +608,9 @@ function Review({
                         <span className="text-[11px] text-muted-foreground">
                           Based on
                         </span>
-                        {article.sources.map((url) => (
+                        {article.sources.map((url, i) => (
                           <a
-                            key={url}
+                            key={`${i}-${url}`}
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -598,7 +647,7 @@ function Review({
           <div className="flex items-center gap-2">
             <Button
               variant="plain"
-              onClick={onDiscard}
+              onClick={() => setConfirmDiscard(true)}
               disabled={saving}
               className="text-muted-foreground hover:text-foreground"
             >
@@ -611,6 +660,23 @@ function Review({
           </div>
         </div>
       </div>
+
+      <DestructiveConfirmDialog
+        open={confirmDiscard}
+        onOpenChange={setConfirmDiscard}
+        isPending={false}
+        onConfirm={() => {
+          setConfirmDiscard(false);
+          onDiscard();
+        }}
+        title="Discard these drafts?"
+        description={`These ${proposal.articles.length} drafts aren't saved yet and will be lost.${
+          outOfScans
+            ? " You have no scans left, so you can't scan again to get them back."
+            : ""
+        }`}
+        confirmLabel="Discard drafts"
+      />
     </div>
   );
 }
@@ -740,6 +806,7 @@ function FormStage({
   onboarding,
   usage,
   workspaceSlug,
+  dashboardHref,
 }: {
   site: string;
   repo: string;
@@ -751,6 +818,7 @@ function FormStage({
   onboarding: boolean;
   usage?: HelpImportUsage;
   workspaceSlug: string;
+  dashboardHref: string;
 }) {
   return (
     <form
@@ -834,9 +902,7 @@ function FormStage({
                 variant="plain"
                 className="text-muted-foreground hover:text-foreground"
               >
-                <Link href={`/workspaces/${workspaceSlug}?welcome=1`}>
-                  Skip for now
-                </Link>
+                <Link href={dashboardHref}>Skip for now</Link>
               </Button>
             ) : null}
             <Button type="submit" disabled={!canScan}>
@@ -858,7 +924,8 @@ const formatElapsed = (ms: number) => {
 /**
  * Drafting progress in a dialog over the start form: a progress ring and the real milestones,
  * the item being worked on now, and a short timeline of what's been read and drafted.
- * Not dismissable by clicking outside; Cancel stops the scan.
+ * Not dismissable by clicking outside; Cancel (or Escape) stops the scan. Once drafting has
+ * started the scan is used either way, so Cancel asks once before stopping.
  */
 function RunningDialog({
   steps,
@@ -885,6 +952,11 @@ function RunningDialog({
 
   const writingPhase =
     steps.draft.state === "running" || steps.draft.state === "done";
+  const [confirmCancel, setConfirmCancel] = React.useState(false);
+  const requestCancel = () => {
+    if (writingPhase && !confirmCancel) setConfirmCancel(true);
+    else onCancel();
+  };
   const current = sources[sources.length - 1];
   const latest = drafting[drafting.length - 1];
   const status = writingPhase
@@ -949,7 +1021,12 @@ function RunningDialog({
         showCloseButton={false}
         className="w-[min(94vw,40rem)]"
         onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+          // Escape backs out of the "still uses the scan" prompt, otherwise it's Cancel.
+          if (confirmCancel) setConfirmCancel(false);
+          else requestCancel();
+        }}
       >
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
           <DialogTitle className="mt-0.5 flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
@@ -1093,7 +1170,7 @@ function RunningDialog({
                         : !writingPhase && i === 0;
                     return (
                       <li
-                        key={`${entry.at}-${i}`}
+                        key={entry.id}
                         className="grid grid-cols-[2.5rem_1rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-dashed border-border/70 px-5 py-2 text-[13px] last:border-0 animate-in fade-in-0 duration-300 dark:border-white/[0.07]"
                       >
                         <span className="text-[11px] tabular-nums text-muted-foreground">
@@ -1162,12 +1239,33 @@ function RunningDialog({
           </div>
         </DialogInner>
         <div className="flex items-center justify-between gap-3 px-3 pb-1 pt-2">
-          <span className="text-xs text-muted-foreground">
-            Usually under a minute · drafts are never published automatically
-          </span>
-          <button type="button" onClick={onCancel} className={button3dClass}>
-            Cancel
-          </button>
+          {confirmCancel ? (
+            <span className="text-xs text-foreground" role="alert">
+              Drafting has started, so cancelling now still uses this scan.
+            </span>
+          ) : (
+            <span className="text-xs text-muted-foreground">
+              Usually under a minute · drafts are never published automatically
+            </span>
+          )}
+          <div className="flex shrink-0 items-center gap-2">
+            {confirmCancel ? (
+              <button
+                type="button"
+                onClick={() => setConfirmCancel(false)}
+                className="h-9 cursor-pointer rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Keep going
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={requestCancel}
+              className={button3dClass}
+            >
+              {confirmCancel ? "Cancel anyway" : "Cancel"}
+            </button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -1178,10 +1276,12 @@ function DoneStage({
   result,
   workspaceSlug,
   onboarding,
+  dashboardHref,
 }: {
   result: SaveResult;
   workspaceSlug: string;
   onboarding: boolean;
+  dashboardHref: string;
 }) {
   const fan = result.titles.slice(0, 3);
   const angles =
@@ -1214,7 +1314,7 @@ function DoneStage({
         <div className="relative mx-auto h-40 max-w-sm" aria-hidden>
           {fan.map((title, i) => (
             <div
-              key={title}
+              key={`${i}-${title}`}
               className={cn(
                 "absolute left-1/2 top-5 h-32 w-64 rounded-xl bg-white p-4 text-left text-zinc-900 shadow-2xl shadow-black/25",
                 styles.fan,
@@ -1268,7 +1368,7 @@ function DoneStage({
           </Link>
           {onboarding ? (
             <Link
-              href={`/workspaces/${workspaceSlug}?welcome=1`}
+              href={dashboardHref}
               className="inline-flex h-9 items-center rounded-lg bg-white/15 px-4 text-sm font-medium text-white ring-1 ring-white/25 backdrop-blur-sm transition-colors hover:bg-white/25"
             >
               Go to dashboard

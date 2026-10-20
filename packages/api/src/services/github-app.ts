@@ -93,7 +93,9 @@ export async function createInstallationToken(installationId: string): Promise<s
 
 export type GithubRepo = { fullName: string; private: boolean; description: string | null; pushedAt: string | null };
 
-export async function listInstallationRepos(installationId: string): Promise<GithubRepo[]> {
+/** Repos granted to the installation, limited to `allowed` (lowercase `owner/name`) when given. */
+export async function listInstallationRepos(installationId: string, allowed?: string[] | null): Promise<GithubRepo[]> {
+  const allow = allowed ? new Set(allowed) : null;
   const token = await createInstallationToken(installationId);
   const repos: GithubRepo[] = [];
   for (let page = 1; page <= 5; page++) {
@@ -104,7 +106,9 @@ export async function listInstallationRepos(installationId: string): Promise<Git
     repos.push(...batch.map((r) => ({ fullName: r.full_name, private: r.private, description: r.description, pushedAt: r.pushed_at })));
     if (batch.length < 100) break;
   }
-  return repos.sort((a, b) => (b.pushedAt ?? "").localeCompare(a.pushedAt ?? ""));
+  return repos
+    .filter((r) => !allow || allow.has(r.fullName.toLowerCase()))
+    .sort((a, b) => (b.pushedAt ?? "").localeCompare(a.pushedAt ?? ""));
 }
 
 export function githubAppInstallUrl(state: string) {
@@ -114,12 +118,13 @@ export function githubAppInstallUrl(state: string) {
 }
 
 /**
- * Proves the person finishing the install can actually access `installationId`. The callback's
- * installation_id is just a query parameter, so without this anyone could attach another
- * account's installation (and its private repos) to their own workspace.
+ * Proves the person finishing the install can actually access `installationId`, and returns the
+ * repos in it they can access (lowercase `owner/name`). The callback's installation_id is just a
+ * query parameter, and an installation is listed for anyone with access to any one of its repos,
+ * while its token reads all of them; scans are kept to the returned repos.
  * Requires "Request user authorization (OAuth) during installation" on the GitHub App.
  */
-export async function verifyInstallerAccess(code: string, installationId: string): Promise<void> {
+export async function verifyInstallerAccess(code: string, installationId: string): Promise<string[]> {
   const res = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json" },
@@ -133,16 +138,28 @@ export async function verifyInstallerAccess(code: string, installationId: string
   if (!res.ok || !data.access_token) throw new HTTPException(403, { message: "GitHub authorization failed" });
   const userToken = data.access_token;
   try {
-    for (let page = 1; page <= 10; page++) {
+    let found = false;
+    for (let page = 1; page <= 10 && !found; page++) {
       const list = await github<{ installations?: Array<{ id: number }> }>(
         `/user/installations?per_page=100&page=${page}`,
         userToken,
       );
       const batch = list.installations ?? [];
-      if (batch.some((i) => String(i.id) === installationId)) return;
+      found = batch.some((i) => String(i.id) === installationId);
       if (batch.length < 100) break;
     }
-    throw new HTTPException(403, { message: "You don't have access to that GitHub installation" });
+    if (!found) throw new HTTPException(403, { message: "You don't have access to that GitHub installation" });
+    const repos: string[] = [];
+    for (let page = 1; page <= 10; page++) {
+      const list = await github<{ repositories?: Array<{ full_name: string }> }>(
+        `/user/installations/${encodeURIComponent(installationId)}/repositories?per_page=100&page=${page}`,
+        userToken,
+      );
+      const batch = list.repositories ?? [];
+      repos.push(...batch.map((r) => r.full_name.toLowerCase()));
+      if (batch.length < 100) break;
+    }
+    return repos;
   } finally {
     // The user token was only needed for this check; revoke it right away.
     await fetch(`${API}/applications/${encodeURIComponent(requireEnv("GITHUB_APP_CLIENT_ID"))}/token`, {
