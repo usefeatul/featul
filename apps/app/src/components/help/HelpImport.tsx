@@ -48,7 +48,6 @@ import { selectionCheckboxClassName } from "@/components/selection/SelectionCont
 import { GithubRepoField, useGithubSetupToast } from "./GithubRepoField";
 import { HelpCollectionTile, helpCollectionTileClass } from "./icons";
 import { HELP_IMPORT_PARAMS } from "./import-url";
-import styles from "./import.module.css";
 
 type Stage = "form" | "running" | "review" | "saving" | "done";
 type StepState = "idle" | "running" | "done" | "skipped" | "error";
@@ -1427,10 +1426,7 @@ function DoneStage({
             {shown.map((title, i) => (
               <li
                 key={`${i}-${title}`}
-                className={cn(
-                  "flex items-center gap-2.5 px-4 py-2.5",
-                  styles.rise,
-                )}
+                className="flex animate-rise items-center gap-2.5 px-4 py-2.5 motion-reduce:[animation-duration:0.01ms]"
                 style={{ animationDelay: `${0.1 + 0.08 * i}s` }}
               >
                 <ArticleIcon className="size-3.5 shrink-0 text-muted-foreground" />

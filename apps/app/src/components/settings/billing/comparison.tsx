@@ -6,7 +6,7 @@ import {
   type DitherGradientProps,
 } from "@featul/ui/components/gradient";
 import Counter from "./counter";
-import styles from "./plans.module.css";
+import { planCardClass, planComparisonTableClass, planPatternClass } from "./styles";
 import { getPlanLimits } from "@featul/api/shared/plan";
 import {
   AccountIcon,
@@ -216,7 +216,7 @@ export default function Comparison({
           return (
             <section
               key={key}
-              className={styles.plan}
+              className={planCardClass}
               aria-label={`${plan.label} plan`}
             >
               <DitherGradient
@@ -226,7 +226,7 @@ export default function Comparison({
                 cell={3}
                 bloom="low"
                 opacity={0.45}
-                className={styles.pattern}
+                className={planPatternClass}
               />
               <div className="relative z-10 flex flex-1 flex-col">
                 <div className="flex min-h-5 items-center justify-between gap-2">
@@ -273,12 +273,12 @@ export default function Comparison({
         })}
       </div>
       <div
-        className={`mt-6 overflow-x-auto ${styles.scroll}`}
+        className="mt-6 overflow-x-auto"
         tabIndex={0}
         role="region"
         aria-label="Plan feature comparison"
       >
-        <table className={styles.comparison}>
+        <table className={planComparisonTableClass}>
           <caption className="sr-only">
             Features and limits included in each plan
           </caption>

@@ -12,7 +12,7 @@ import type { PlanKey } from "@/lib/plan";
 import type { BillingUsage } from "@/types/billing";
 import { cn } from "@featul/ui/lib/utils";
 import SectionCard from "../global/SectionCard";
-import styles from "./usage.module.css";
+import { usageFillClass, usageTrackClass } from "./styles";
 
 /** One usage row: label on the left, a dotted meter with "used / included" on the right. */
 export function UsageMeter({
@@ -51,16 +51,16 @@ export function UsageMeter({
             aria-valuemax={limit}
             aria-valuenow={Math.min(used, limit)}
             aria-valuetext={`${used} of ${limit} ${unit}${atLimit ? ", limit reached" : ""}`}
-            className={styles.track}
+            className={usageTrackClass}
           >
             <div
               key={`${used}-${limit}`}
-              className={cn(styles.fill, atLimit ? "bg-amber-500" : "bg-primary")}
+              className={cn(usageFillClass, atLimit ? "bg-amber-500" : "bg-primary")}
               style={{ width: `${percentage}%` }}
             />
           </div>
         ) : (
-          <div className={styles.track} />
+          <div className={usageTrackClass} />
         )}
       </div>
     </div>
