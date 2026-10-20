@@ -2,7 +2,18 @@ import { cn } from "@featul/ui/lib/utils";
 import { generateHTML } from "@tiptap/html";
 import type { JSONContent } from "@tiptap/react";
 import { useMemo } from "react";
+import { StaticCodeBlock } from "../extensions/code-block/code-block";
 import { ExtensionKit } from "../extensions/extension-kit";
+
+let staticExtensions: ReturnType<typeof ExtensionKit> | undefined;
+
+/** The editor's schema, with code blocks highlighted at render time instead of by a plugin. */
+function getStaticExtensions() {
+	staticExtensions ??= ExtensionKit().map((extension) =>
+		extension.name === "codeBlock" ? StaticCodeBlock : extension,
+	);
+	return staticExtensions;
+}
 
 export type EditorStaticContentProps = {
 	content: JSONContent | null;
@@ -18,7 +29,7 @@ export function EditorStaticContent({ content, className }: EditorStaticContentP
 	const html = useMemo(() => {
 		if (!content) return "";
 		try {
-			return generateHTML(content, ExtensionKit());
+			return generateHTML(content, getStaticExtensions());
 		} catch {
 			// Unknown nodes etc.: the editor still renders once it mounts.
 			return "";

@@ -418,6 +418,78 @@ mark[style] > strong {
 	--code-removed: #ffdcd7;
 }
 
+/*
+ * Reading view: the create-post dialog frame (DialogContent's modalShellClass around a
+ * DialogInner, @featul/ui lib/overlay) minus the outer drop shadow. The pre is the shell with
+ * an icon + language header row; its code is the inner card.
+ */
+.ProseMirror[contenteditable="false"] pre {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	padding: 0.25rem;
+	overflow: hidden;
+	border-color: rgba(0, 0, 0, 0.08);
+	border-radius: 1rem;
+	background: linear-gradient(to bottom, var(--sidebar), color-mix(in oklab, var(--sidebar), var(--foreground) 3%));
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* Header row: same type and spacing as the dialog title (icon, gap-2, px-2 py-1.5, text-sm). */
+.ProseMirror[contenteditable="false"] pre::before {
+	content: attr(data-language);
+	padding: 0.25rem 0.5rem 0.125rem 1.875rem;
+	color: var(--foreground);
+	font-family: var(--font-sans);
+	font-size: 0.8125rem;
+	line-height: 1.25rem;
+}
+
+.ProseMirror[contenteditable="false"] pre::after {
+	content: "";
+	position: absolute;
+	top: 0.5625rem;
+	left: 0.875rem;
+	width: 0.875rem;
+	height: 0.875rem;
+	background: var(--muted-foreground);
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16 18 6-6-6-6M8 6l-6 6 6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.ProseMirror[contenteditable="false"] pre code {
+	display: block;
+	padding: 0.875em 1.1em;
+	overflow-x: auto;
+	scrollbar-width: thin;
+	border-radius: 0.75rem;
+	background: var(--card);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+@supports (corner-shape: squircle) {
+	.ProseMirror[contenteditable="false"] pre {
+		corner-shape: squircle;
+		border-radius: calc(var(--radius) * 4);
+	}
+
+	.ProseMirror[contenteditable="false"] pre code {
+		corner-shape: squircle;
+		border-radius: calc(var(--radius) * 3.5);
+	}
+}
+
+.dark .ProseMirror[contenteditable="false"] pre {
+	border-color: rgba(255, 255, 255, 0.08);
+	background: linear-gradient(to bottom, color-mix(in oklab, var(--sidebar), white 2%), var(--sidebar));
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.dark .ProseMirror[contenteditable="false"] pre code {
+	background: linear-gradient(to bottom, color-mix(in oklab, var(--card), white 3%), var(--card));
+	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
 .ProseMirror pre code {
 	padding: 0;
 	border: 0;
