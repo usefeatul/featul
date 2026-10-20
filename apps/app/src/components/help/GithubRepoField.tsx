@@ -4,8 +4,7 @@ import React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { client } from "@featul/api/client";
-import { Input } from "@featul/ui/components/input";
-import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
+import { Input, InputGroup } from "@featul/ui/components/input";
 import { cn } from "@featul/ui/lib/utils";
 import { GitHubIcon, LoaderIcon, LockIcon } from "@/components/global/icons";
 import { expectOk } from "@/hooks/useHelpTree";
@@ -56,13 +55,14 @@ export function GithubRepoField({
   value,
   onChange,
   className,
-  inputClassName = "h-10",
+  fieldClassName = "h-10",
 }: {
   workspaceSlug: string;
   value: string;
   onChange: (value: string) => void;
   className?: string;
-  inputClassName?: string;
+  /** Classes for the field itself, such as its height. */
+  fieldClassName?: string;
 }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
@@ -175,13 +175,8 @@ export function GithubRepoField({
 
   return (
     <div className={cn("relative", className)}>
-      <div
-        className={cn(
-          raisedSurfaceClass,
-          "flex items-center gap-2.5 rounded-lg px-3 focus-within:border-primary/40 focus-within:ring-3 focus-within:ring-primary/15",
-        )}
-      >
-        <GitHubIcon className="size-4 shrink-0 text-muted-foreground" />
+      <InputGroup className={fieldClassName}>
+        <GitHubIcon className="size-4 shrink-0" />
         <Input
           variant="plain"
           value={value}
@@ -198,7 +193,6 @@ export function GithubRepoField({
               ? "Search your repositories"
               : "github.com/your-org/your-repo"
           }
-          className={cn("flex-1 px-0", inputClassName)}
           aria-label="GitHub repository"
           role={status?.connected ? "combobox" : undefined}
           aria-expanded={status?.connected ? listOpen : undefined}
@@ -217,7 +211,7 @@ export function GithubRepoField({
         {isFetching ? (
           <LoaderIcon className="size-3.5 shrink-0 text-muted-foreground" />
         ) : null}
-      </div>
+      </InputGroup>
 
       {listOpen ? (
         <ul

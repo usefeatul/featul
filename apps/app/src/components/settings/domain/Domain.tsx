@@ -14,8 +14,6 @@ import { ArrowIcon } from "@/components/global/icons";
 import { normalizePlan } from "@/lib/plan";
 import { useCanEditDomain } from "@/hooks/useWorkspaceAccess";
 import { LoadingButton } from "@/components/global/LoadingButton";
-import { toolbarItemClass } from "@featul/ui/components/toolbar";
-import { cn } from "@featul/ui/lib/utils";
 export default function DomainSection({
   slug,
   initialPlan,
@@ -124,21 +122,13 @@ export default function DomainSection({
                   href={`https://${currentHost}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={cn(
-                    toolbarItemClass,
-                    "inline-flex shrink-0 items-center gap-1 border-l border-border/50 px-3 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring last:rounded-r-xl dark:border-white/[0.07]",
-                  )}
+                  className="inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   Visit
                   <ArrowIcon className="size-3.5" />
                 </a>
                 {info?.host ? (
-                  <span
-                    className={cn(
-                      toolbarItemClass,
-                      "inline-flex items-center px-1 hover:bg-transparent",
-                    )}
-                  >
+                  <span className="inline-flex items-center">
                     <DomainActions
                       verifying={verifyMutation.isPending}
                       deleting={deleteMutation.isPending}

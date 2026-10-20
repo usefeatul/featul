@@ -13,7 +13,7 @@ import type { HelpImportUsage } from "@featul/api/help/import/usage";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
 import { Checkbox } from "@featul/ui/components/checkbox";
-import { Input } from "@featul/ui/components/input";
+import { Input, InputGroup } from "@featul/ui/components/input";
 import { DitherClouds } from "@featul/ui/components/clouds";
 import {
   Dialog,
@@ -23,7 +23,6 @@ import {
   DialogInner,
   DialogTitle,
 } from "@featul/ui/components/dialog";
-import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import {
   ArrowRight,
@@ -953,24 +952,19 @@ function FormStage({
         </Banner>
 
         <div className="space-y-4 p-5 sm:p-6">
-          <label className="block space-y-1.5">
+          <div className="space-y-1.5">
             <span className="text-xs font-medium text-foreground">Website</span>
-            <span
-              className={cn(
-                raisedSurfaceClass,
-                "flex items-center gap-2.5 rounded-lg px-3 focus-within:border-primary/40 focus-within:ring-3 focus-within:ring-primary/15",
-              )}
-            >
-              <WebsiteFavicon domain={site} className="size-4 rounded-sm" />
+            <InputGroup className="h-10">
+              <WebsiteFavicon domain={site} className="size-4 shrink-0 rounded-sm" />
               <Input
                 variant="plain"
                 value={site}
                 onChange={(e) => setSite(e.target.value)}
                 placeholder="example.com"
-                className="h-10 flex-1 px-0"
+                aria-label="Website"
               />
-            </span>
-          </label>
+            </InputGroup>
+          </div>
           <div className="space-y-1.5">
             <span className="text-xs font-medium text-foreground">
               GitHub repository{" "}

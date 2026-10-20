@@ -7,9 +7,7 @@ import type { HelpImportUsage } from "@featul/api/help/import/usage";
 import { client } from "@featul/api/client";
 import { getPlanLimits } from "@featul/api/shared/plan";
 import { Button } from "@featul/ui/components/button";
-import { Input } from "@featul/ui/components/input";
-import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
-import { cn } from "@featul/ui/lib/utils";
+import { Input, InputGroup } from "@featul/ui/components/input";
 import {
   AnalyticsIcon,
   ArticleIcon,
@@ -70,10 +68,6 @@ export default function HelpCenterSection({
   const billingHref = `/workspaces/${slug}/settings/billing`;
 
   const sourceRow = "flex items-center gap-3 px-5 py-3";
-  const field = cn(
-    raisedSurfaceClass,
-    "flex min-w-0 flex-1 items-center gap-2.5 rounded-lg px-3 focus-within:border-primary/40 focus-within:ring-3 focus-within:ring-primary/15",
-  );
 
   return (
     <div className="space-y-8">
@@ -113,17 +107,16 @@ export default function HelpCenterSection({
             <span className="w-28 shrink-0 text-sm text-muted-foreground">
               Website
             </span>
-            <label className={field}>
-              <WebsiteFavicon domain={site} className="size-4 rounded-sm" />
+            <InputGroup className="flex-1">
+              <WebsiteFavicon domain={site} className="size-4 shrink-0 rounded-sm" />
               <Input
                 variant="plain"
                 value={site}
                 onChange={(e) => setSite(e.target.value)}
                 placeholder="example.com"
-                className="h-9 flex-1 px-0"
                 aria-label="Website"
               />
-            </label>
+            </InputGroup>
           </div>
           <div className={sourceRow}>
             <span className="w-28 shrink-0 text-sm text-muted-foreground">
@@ -134,7 +127,7 @@ export default function HelpCenterSection({
               value={repo}
               onChange={setRepo}
               className="min-w-0 flex-1"
-              inputClassName="h-9"
+              fieldClassName="h-9"
             />
           </div>
           <UsageMeter

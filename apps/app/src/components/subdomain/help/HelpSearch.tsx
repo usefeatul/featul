@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { client } from "@featul/api/client";
-import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
+import { inputSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { ArticleIcon, LoaderIcon, SearchIcon, SparklesIcon } from "@/components/global/icons";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -113,8 +113,8 @@ export function HelpSearch({
       <div
         className={cn(
           // Same raised surface and keycaps as the portal header's search field.
-          raisedSurfaceClass,
-          "flex items-center gap-2.5 rounded-lg transition-[filter,box-shadow] hover:brightness-[0.98] focus-within:ring-3 focus-within:ring-primary/15 dark:hover:brightness-125",
+          inputSurfaceClass,
+          "flex items-center gap-2.5 rounded-lg transition-[filter,box-shadow] hover:brightness-[0.98] focus-within:border-primary/15 dark:focus-within:border-primary/15 dark:hover:brightness-125",
           large ? "h-12 px-4" : "h-10 px-3.5",
         )}
       >

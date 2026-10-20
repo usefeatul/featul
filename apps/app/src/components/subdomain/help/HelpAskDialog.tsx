@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import type { HelpAskEvent, HelpAskSource } from "@featul/api/help/ask";
 import { Button } from "@featul/ui/components/button";
+import { Input } from "@featul/ui/components/input";
 import {
   Dialog,
   DialogContent,
@@ -138,13 +139,13 @@ export function HelpAskDialog({
             }}
             className="flex items-center gap-2"
           >
-            <input
+            <Input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               maxLength={300}
               placeholder="Ask a question"
               aria-label="Your question"
-              className="h-10 min-w-0 flex-1 rounded-lg border border-border bg-background px-3 text-base outline-none focus:ring-3 focus:ring-primary/15 sm:text-sm dark:border-white/10"
+              className="h-10 flex-1"
             />
             <Button type="submit" size="sm" disabled={busy || question.trim().length < 3} className="h-10">
               {busy ? <LoaderIcon className="size-4" /> : <ArrowRight className="size-4" />}
