@@ -29,6 +29,8 @@ export function EditorStaticContent({ content, className }: EditorStaticContentP
 		<div className="min-w-0 max-w-full">
 			<div
 				className={cn("tiptap ProseMirror", className)}
+				// The reading-view styles (tables etc.) key off this, same as the read-only editor.
+				contentEditable={false}
 				// Server and browser serialize the same JSON; minor markup differences are expected.
 				suppressHydrationWarning
 				dangerouslySetInnerHTML={{ __html: html }}
