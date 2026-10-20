@@ -135,7 +135,7 @@ export function HelpArticleView({ data, slug }: { data: HelpArticlePageData; slu
   );
 }
 
-function StillStuck() {
+export function StillStuck() {
   return (
     <div className={settingsSectionClass}>
       <header className={settingsSurfaceHeaderClass}>
