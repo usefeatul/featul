@@ -105,7 +105,7 @@ export default function RoadmapColumn({
               </span>
             </div>
             <div className="min-h-2 flex-1" />
-            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-md bg-muted px-1.5 text-[10px] tabular-nums text-muted-foreground dark:bg-white/[0.055]">
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-lg bg-muted px-1.5 text-[10px] tabular-nums text-muted-foreground dark:bg-white/[0.055]">
               {count}
             </span>
           </>
@@ -129,7 +129,7 @@ export default function RoadmapColumn({
                   type="button"
                   variant="plain"
                   size="icon-sm"
-                  className="group h-6 w-6 rounded-md border-0 !bg-transparent px-0 text-accent shadow-none hover:!bg-transparent hover:text-foreground"
+                  className="group h-6 w-6 rounded-lg border-0 !bg-transparent px-0 text-accent shadow-none hover:!bg-transparent hover:text-foreground"
                   aria-label={`Create post in ${label}`}
                   title={`Create post in ${label}`}
                   onClick={(e) => {
@@ -141,7 +141,7 @@ export default function RoadmapColumn({
                   <FillPlusIcon className="size-4" size={16} />
                 </Button>
               ) : null}
-              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-md bg-muted px-1.5 text-[10px] tabular-nums text-muted-foreground dark:bg-white/[0.055]">
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-lg bg-muted px-1.5 text-[10px] tabular-nums text-muted-foreground dark:bg-white/[0.055]">
                 {count}
               </span>
               <MoveVerticalIcon

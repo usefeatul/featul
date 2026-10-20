@@ -117,8 +117,8 @@ export default function InviteMemberModal({
 
         <Popover open={roleOpen} onOpenChange={setRoleOpen}>
           <PopoverTrigger asChild>
-            <Button type="button" variant="nav">
-              <span className="rounded-md px-2 py-0.5 capitalize">{role}</span>
+            <Button type="button" variant="selector">
+              <span className="rounded-lg px-2 py-0.5 capitalize">{role}</span>
               <DropdownIcon className="ml-1 size-3 opacity-100" />
             </Button>
           </PopoverTrigger>

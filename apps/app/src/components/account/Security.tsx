@@ -21,8 +21,8 @@ export default function Security({ initialSessions, twoFactorEnabled, initialAcc
   }, [router, pathname])
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:auto-rows-fr md:items-stretch">
+    <div className="space-y-8">
+      <div className="flex flex-col gap-8">
         <SettingsCard
           icon={<KeyIcon className="size-5 text-primary" />}
           title="Password"

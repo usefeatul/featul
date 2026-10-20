@@ -1,15 +1,82 @@
+/* The emoji picker emits its CSS into `epr` (see `cssLayer` in comments/picker.tsx):
+   above preflight so its own resets win, below utilities so ours can restyle it. */
+@layer theme, base, epr, components, utilities;
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "@featul/ui/globals.css";
 
-/* Hide scrollbar while keeping scroll functionality */
-.scrollbar-hide,
-[data-widget-scroll] {
+/* Keep shared UI and editor components on the app's lg radius (8px).
+   These overrides are local to this app; other shared-package consumers retain
+   their own radius scale. Zero-radius joins and inherited corners stay intact. */
+@theme inline {
+  --radius-xs: var(--radius);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
+}
+
+@theme {
+  /* Help import: new drafts land on the page one after another. */
+  --animate-rise: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* Billing usage: a glint passes over the meter fill. */
+  --animate-sweep: sweep 1.6s ease-out both;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(6px); }
+  }
+
+  @keyframes sweep {
+    from { transform: translateX(-100%); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+}
+
+@utility rounded {
+  border-radius: var(--radius-lg);
+}
+
+@utility rounded-full {
+  /* Tailwind also emits its built-in infinity radius for this utility. */
+  border-radius: var(--radius-lg) !important;
+}
+
+/* Fixed radii in shared checkbox, tooltip, chart, and overlay components. */
+@layer utilities {
+  .rounded-\[2px\],
+  .rounded-\[4px\],
+  .rounded-\[6px\] {
+    border-radius: var(--radius-lg);
+  }
+}
+
+/* The editor also ships plain CSS outside Tailwind's utility layer. */
+body .color-picker .react-colorful__saturation,
+body .color-picker .react-colorful__hue,
+body .color-picker .react-colorful__pointer,
+body .ProseMirror table,
+body .drag-handle::before,
+body .drag-handle::after {
+  border-radius: var(--radius-lg);
+}
+
+/* Hide native scrollbars app-wide without changing scroll behavior. */
+* {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
 
-.scrollbar-hide::-webkit-scrollbar,
-[data-widget-scroll]::-webkit-scrollbar {
+*::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
+}
+
+/* Shared scroll areas render their own scrollbar in addition to the viewport. */
+[data-slot="scroll-area-scrollbar"] {
+  display: none;
 }

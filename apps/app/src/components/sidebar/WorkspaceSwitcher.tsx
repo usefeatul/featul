@@ -84,7 +84,7 @@ export default function WorkspaceSwitcher({
             <span
               className={cn(
                 sidebarLeadSlotClassName,
-                "overflow-hidden rounded-md",
+                "overflow-hidden rounded-lg",
                 collapsed && "size-6",
               )}
             >
@@ -148,7 +148,7 @@ export default function WorkspaceSwitcher({
                         )}
                       >
                         {logoUrl ? (
-                          <div className="relative w-8 h-8 shrink-0 rounded-md bg-muted border ring-1 ring-border overflow-hidden">
+                          <div className="relative w-8 h-8 shrink-0 rounded-lg bg-muted border ring-1 ring-border overflow-hidden">
                             <Image
                               key={logoUrl}
                               src={logoUrl}
@@ -160,7 +160,7 @@ export default function WorkspaceSwitcher({
                             />
                           </div>
                         ) : (
-                          <div className="flex w-8 h-8 shrink-0 items-center justify-center rounded-md bg-muted border ring-1 ring-border">
+                          <div className="flex w-8 h-8 shrink-0 items-center justify-center rounded-lg bg-muted border ring-1 ring-border">
                             <FeatulLogoIcon className="size-5 text-primary" />
                           </div>
                         )}

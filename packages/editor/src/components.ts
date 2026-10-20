@@ -9,6 +9,10 @@ export {
 
 } from "./components/editor-provider";
 export { EditorTableMenus } from "./components/editor-table-menus";
+export {
+    EditorStaticContent,
+    type EditorStaticContentProps,
+} from "./components/static-content";
 
 export { EditorBubbleMenu, type EditorBubbleMenuProps } from "./components/menus/bubble-menu";
 

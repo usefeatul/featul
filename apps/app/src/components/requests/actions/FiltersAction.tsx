@@ -38,6 +38,7 @@ import { getSlugFromPath } from "@/config/nav";
 import { buildRequestsUrl } from "@/utils/request";
 import { parseRequestFiltersFromSearchParams } from "@/utils/request/filters";
 import { cn } from "@featul/ui/lib/utils";
+import { filterToolbarButtonClass } from "@/utils/filter/toolbar";
 import {
   fetchWorkspaceStatusCounts,
   workspaceQueryKeys,
@@ -82,11 +83,14 @@ export default function FiltersAction({
   query,
   onQueryChange,
   showClear = false,
+  plain = false,
 }: {
   className?: string;
   query?: string;
   onQueryChange?: (query: string) => void;
   showClear?: boolean;
+  /** Flat icon trigger with no raised surface or active tint (request queue sidebar). */
+  plain?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname() || "/";
@@ -329,15 +333,18 @@ export default function FiltersAction({
       <PopoverTrigger asChild>
         <Button
           type="button"
-          variant="card"
+          variant={plain ? "plain" : "card"}
           size="icon-sm"
           aria-label={isActive ? "Filter and sort requests, filters active" : "Filter and sort requests"}
           title="Filter and sort requests"
           aria-pressed={isActive}
-          className={cn(
-            className,
-            "text-accent hover:text-foreground focus-visible:text-foreground dark:text-accent dark:hover:text-foreground dark:focus-visible:text-foreground",
-            isActive && "ring-0",
+          className={filterToolbarButtonClass(
+            isActive && !plain,
+            cn(
+              !plain &&
+                "text-accent hover:text-foreground focus-visible:text-foreground dark:text-accent dark:hover:text-foreground dark:focus-visible:text-foreground",
+              className,
+            ),
           )}
         >
           <FilterIcon className="size-4" size={16} />
@@ -452,7 +459,7 @@ export default function FiltersAction({
                   id: item.id,
                   label: item.name,
                   value: item.slug,
-                  icon: <span className="size-1.5 rounded-full bg-primary" />,
+                  icon: <span className="size-1.5 rounded-lg bg-primary" />,
                 }))}
                 selected={boardFilter.selected}
                 isAllSelected={boardFilter.isAllSelected}

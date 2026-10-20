@@ -59,7 +59,7 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className, panel = f
                 <div className="flex min-h-20 items-center gap-3 px-4 py-4 transition-colors hover:bg-black/[0.06] focus-within:bg-black/[0.06] dark:hover:bg-white/[0.03] dark:focus-within:bg-white/[0.03]">
                   <Link
                     href={`/workspaces/${slug}/requests/${p.slug}`}
-                    className="flex min-w-0 flex-1 items-start gap-2 rounded-sm text-sm font-medium leading-5 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="flex min-w-0 flex-1 items-start gap-2 rounded-lg text-sm font-medium leading-5 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     title={p.title}
                   >
                     <span aria-hidden="true" className="mr-1 w-4 shrink-0 text-[11px] font-medium tabular-nums text-muted-foreground/70">
@@ -73,7 +73,7 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className, panel = f
                   <UpvoteButton
                     postId={p.id}
                     upvotes={Number(p.upvotes || 0)}
-                    className="min-h-8 min-w-14 shrink-0 justify-center rounded-md border border-border/60 px-2 text-xs tabular-nums hover:bg-black/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-white/10 dark:hover:bg-white/[0.03]"
+                    className="min-h-8 min-w-14 shrink-0 justify-center px-2 text-xs tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                 </div>
               </li>

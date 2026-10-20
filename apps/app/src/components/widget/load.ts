@@ -4,6 +4,7 @@ import type {
   IdentifiedUser,
   Section,
   SimilarPost,
+  WidgetHelpArticle,
   WidgetComment,
   WidgetLayoutStyle,
   WidgetPost,
@@ -292,6 +293,30 @@ export function parseWidgetRoadmapItems(value: unknown): WidgetRoadmapItem[] {
         return post ? [post] : [];
       })
     : [];
+}
+
+/** Help article suggestions for compose; only http(s) links are kept. */
+export function parseWidgetHelpArticles(value: unknown): WidgetHelpArticle[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (
+      !isRecord(item) ||
+      typeof item.id !== "string" ||
+      typeof item.title !== "string" ||
+      typeof item.url !== "string" ||
+      !/^https?:\/\//.test(item.url)
+    ) {
+      return [];
+    }
+    return [
+      {
+        id: item.id,
+        title: item.title,
+        summary: typeof item.summary === "string" ? item.summary : null,
+        url: item.url,
+      },
+    ];
+  });
 }
 
 /** Similar-post hits for compose. Missing core fields are skipped. */

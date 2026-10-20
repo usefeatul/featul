@@ -52,7 +52,7 @@ export default function InviteActionState({
               : transition
         }
         className={cn(
-          "flex items-center justify-center rounded-md border",
+          "flex items-center justify-center rounded-lg border",
           isPending ? "size-14" : "size-16",
           isAccepting && "border-primary/20 bg-primary/8 text-primary",
           screen === "declining" && "border-border/70 bg-muted/50 text-foreground",

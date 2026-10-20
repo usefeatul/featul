@@ -14,25 +14,27 @@ type Props = {
   initialIntegrations?: Integration[];
 };
 
-/**
- * Integrations settings section with webhook and GitHub sync integrations
- */
-export default function IntegrationsSection({ slug, plan, initialIntegrations }: Props) {
-  const [pendingIntegration, setPendingIntegration] = React.useState<string | null>(null);
+export default function IntegrationsSection({
+  slug,
+  plan,
+  initialIntegrations,
+}: Props) {
+  const [pendingIntegration, setPendingIntegration] = React.useState<
+    string | null
+  >(null);
   const allowIntegrations = isIntegrationsAllowed(plan ?? "free");
+  const upgradeHref = allowIntegrations
+    ? undefined
+    : `/workspaces/${slug}/settings/billing`;
 
-  const {
-    isLoading,
-    connect,
-    disconnect,
-    test,
-    getIntegration,
-  } = useIntegrations({ workspaceSlug: slug, initialData: initialIntegrations });
+  const { isLoading, connect, disconnect, test, getIntegration } =
+    useIntegrations({ workspaceSlug: slug, initialData: initialIntegrations });
 
   const slackIntegration = getIntegration("slack");
   const discordIntegration = getIntegration("discord");
   const slackActionsEnabled = allowIntegrations || Boolean(slackIntegration);
-  const discordActionsEnabled = allowIntegrations || Boolean(discordIntegration);
+  const discordActionsEnabled =
+    allowIntegrations || Boolean(discordIntegration);
 
   const handleConnectDiscord = async (webhookUrl: string) => {
     setPendingIntegration("discord");
@@ -89,35 +91,46 @@ export default function IntegrationsSection({ slug, plan, initialIntegrations }:
   };
 
   return (
-    <div className="space-y-4">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <SlackCard
-        integration={slackIntegration}
-        onConnect={handleConnectSlack}
-        onDisconnect={handleDisconnectSlack}
-        onTest={allowIntegrations ? handleTestSlack : undefined}
-        isPending={pendingIntegration === "slack"}
-        disabled={
-          isLoading
-          || (pendingIntegration !== null && pendingIntegration !== "slack")
-          || !slackActionsEnabled
-        }
-      />
-      <DiscordCard
-        integration={discordIntegration}
-        onConnect={handleConnectDiscord}
-        onDisconnect={handleDisconnectDiscord}
-        onTest={allowIntegrations ? handleTestDiscord : undefined}
-        isPending={pendingIntegration === "discord"}
-        disabled={
-          isLoading
-          || (pendingIntegration !== null && pendingIntegration !== "discord")
-          || !discordActionsEnabled
-        }
-      />
+    <div className="space-y-8">
+      <section aria-labelledby="workspace-connections" className="space-y-4">
+        <h2
+          id="workspace-connections"
+          className="px-1 text-sm font-medium leading-6 text-foreground"
+        >
+          Workspace connections
+        </h2>
+        <div className="space-y-4">
+          <SlackCard
+            upgradeHref={upgradeHref}
+            integration={slackIntegration}
+            onConnect={handleConnectSlack}
+            onDisconnect={handleDisconnectSlack}
+            onTest={allowIntegrations ? handleTestSlack : undefined}
+            isPending={pendingIntegration === "slack"}
+            disabled={
+              isLoading ||
+              (pendingIntegration !== null && pendingIntegration !== "slack") ||
+              !slackActionsEnabled
+            }
+          />
+          <DiscordCard
+            upgradeHref={upgradeHref}
+            integration={discordIntegration}
+            onConnect={handleConnectDiscord}
+            onDisconnect={handleDisconnectDiscord}
+            onTest={allowIntegrations ? handleTestDiscord : undefined}
+            isPending={pendingIntegration === "discord"}
+            disabled={
+              isLoading ||
+              (pendingIntegration !== null &&
+                pendingIntegration !== "discord") ||
+              !discordActionsEnabled
+            }
+          />
+        </div>
+      </section>
       <SuggestIntegrationCard />
-    </div>
-    <PlanNotice slug={slug} plan={plan} feature="integrations" />
+      <PlanNotice slug={slug} plan={plan} feature="integrations" />
     </div>
   );
 }

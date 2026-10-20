@@ -17,7 +17,7 @@ export default function BoardSettings({
   initialBoards?: FeedbackBoardSettings[]
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <AllowAnonymousToggle slug={slug} initialBoards={initialBoards} />
       <AllowCommentsToggle slug={slug} initialBoards={initialBoards} />
       <HidePublicMemberIdentityToggle slug={slug} initialBoards={initialBoards} />

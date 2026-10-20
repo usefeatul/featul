@@ -1,0 +1,1 @@
+ALTER TABLE "help_center" ADD COLUMN "github_repos" json;

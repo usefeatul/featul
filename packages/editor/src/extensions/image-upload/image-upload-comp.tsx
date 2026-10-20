@@ -2,7 +2,7 @@ import { Button } from "@featul/ui/components/button";
 import { Input } from "@featul/ui/components/input";
 import { LoaderIcon } from "@featul/ui/icons/loader";
 import { ImageIcon } from "@featul/ui/icons/image";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { CheckIcon, XIcon } from "lucide-react";
 import type { ChangeEvent } from "react";
@@ -156,13 +156,13 @@ export const ImageUploadComp = ({
 	};
 
 	return (
-		<div className={cn(overlayDialogClass, "flex flex-col gap-2")}>
+		<div className={cn(overlayDialogClass, overlayRoundedClass, "flex flex-col gap-2")}>
 			<div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
 				<ImageIcon className="size-3.5 text-primary" />
 				Upload or embed an image
 			</div>
 
-			<div className={cn(overlayInnerClass, "px-4 py-3")}>
+			<div className={cn(overlayInnerClass, overlayRoundedInnerClass, "px-4 py-3")}>
 				{/* Dropzone or Uploading state */}
 				{loading ? (
 					<div className="flex min-h-[120px] flex-1 flex-col items-center justify-center">
@@ -212,10 +212,8 @@ export const ImageUploadComp = ({
 					{showEmbedInput ? (
 						<div className="flex flex-1 items-center gap-2">
 							<Input
-								className={cn(
-									"flex-1 h-8 text-sm placeholder:text-accent dark:placeholder:text-accent",
-									urlError && "border-destructive",
-								)}
+								aria-invalid={urlError ? true : undefined}
+								className="flex-1 h-8 text-sm placeholder:text-accent dark:placeholder:text-accent"
 								disabled={isValidatingUrl || loading}
 								onChange={({ target }) => {
 									setEmbedUrl(target.value);

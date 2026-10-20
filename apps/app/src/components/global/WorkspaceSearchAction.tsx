@@ -1,5 +1,6 @@
 "use client";
 
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { ShortcutKey } from "./keys";
 
 import React from "react";
@@ -106,7 +107,7 @@ function SearchResultItem({
             title={result.boardName}
           >
             <span
-              className="size-1.5 shrink-0 rounded-full bg-primary"
+              className="size-1.5 shrink-0 rounded-lg bg-primary"
               aria-hidden
             />
             <span className="truncate uppercase tracking-wide">
@@ -132,7 +133,7 @@ function useIsMac() {
 function KeyboardHint({ keys, label }: { keys: string; label: string }) {
   return (
     <span className="flex items-center gap-1.5">
-      <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-border bg-muted px-2 py-1 font-heading text-[11px] leading-none text-foreground">
+      <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded-lg border border-border bg-muted px-2 py-1 font-heading text-[11px] leading-none text-foreground">
         {keys}
       </kbd>
       <span>{label}</span>
@@ -152,7 +153,7 @@ function HighlightMatch({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, index)}
-      <mark className="rounded-sm bg-primary/15 px-0.5 text-inherit">
+      <mark className="rounded-lg bg-primary/15 px-0.5 text-inherit">
         {text.slice(index, index + trimmed.length)}
       </mark>
       {text.slice(index + trimmed.length)}
@@ -328,6 +329,11 @@ export function WorkspaceSearchAction({
             title={compact ? undefined : searchLabel}
             aria-pressed={isSearchActive}
             className={cn(
+              !compact &&
+                cn(
+                  raisedSurfaceClass,
+                  "hover:brightness-[0.98] dark:hover:brightness-125",
+                ),
               filterToolbarButtonClass(isSearchActive && !compact),
               compact &&
                 "group border-0 bg-transparent text-neutral-400 shadow-none ring-0 before:hidden hover:bg-muted/60 hover:text-primary dark:bg-transparent dark:text-neutral-300 dark:hover:bg-white/[0.05] dark:hover:text-primary",
@@ -361,10 +367,7 @@ export function WorkspaceSearchAction({
                 )}
               >
                 {[platformKey, "K"].map((key) => (
-                  <ShortcutKey
-                    key={key}
-                    className="bg-muted text-muted-foreground dark:bg-black/30 dark:text-muted-foreground"
-                  >
+                  <ShortcutKey key={key}>
                     {key}
                   </ShortcutKey>
                 ))}
@@ -424,7 +427,8 @@ export function WorkspaceSearchAction({
           onValueChange={setValue}
           placeholder={placeholder}
           aria-label={placeholder}
-          wrapperClassName="px-6 [&>svg]:size-4"
+          showIcon={false}
+          wrapperClassName="px-4"
           className="px-0 text-sm"
           onKeyDown={(event) => {
             if (event.key === "Enter") {

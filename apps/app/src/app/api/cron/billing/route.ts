@@ -1,5 +1,6 @@
 import { reconcileBilling } from "@featul/auth/billing/reconcile"
 import { checkStorageCleanup } from "@featul/api/storage/health"
+import { reconcileWebhooks } from "@featul/api/services/delivery"
 import * as Sentry from "@sentry/nextjs"
 
 export const runtime = "nodejs"
@@ -12,11 +13,17 @@ export async function GET(request: Request) {
   }
   try {
     const result = await Sentry.withMonitor("billing-reconciliation", async () => {
-      const result = await reconcileBilling()
+      const [billing, deliveries] = await Promise.allSettled([reconcileBilling(), reconcileWebhooks()])
+      if (billing.status === "rejected") throw billing.reason
+      if (deliveries.status === "rejected") throw deliveries.reason
+      const result = { ...billing.value, notifications: deliveries.value }
       // Reconcile first so a cleanup outage never prevents billing retries.
       await checkStorageCleanup()
       if (result.failures || result.overdueEvents) {
         throw new Error(`Billing reconciliation: ${result.failures} failures, ${result.overdueEvents} overdue events`)
+      }
+      if (result.notifications.failures || result.notifications.overdue) {
+        throw new Error(`Webhook delivery: ${result.notifications.failures} failures, ${result.notifications.overdue} overdue`)
       }
       return result
     }, { schedule: { type: "crontab", value: "*/5 * * * *" }, checkinMargin: 5, maxRuntime: 2, timezone: "UTC" })

@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { Container } from "@/components/global/container";
 import { DomainHeader } from "@/components/subdomain/DomainHeader";
 import BrandVarsEffect from "@/components/global/BrandVarsEffect";
 import SubdomainThemeProvider from "@/components/subdomain/SubdomainThemeProvider";
 import { DomainBrandingProvider } from "@/components/subdomain/DomainBrandingProvider";
-import { PoweredBy } from "@/components/subdomain/PoweredBy";
-import { SubdomainBackground } from "./SubdomainBackground";
+import { PortalDataProvider } from "@/components/subdomain/PortalDataProvider";
+import { Container } from "@/components/global/container";
 import type { AuthUser } from "@/types/auth";
+import type { PortalBoard, PortalStatusCounts } from "@/app/[subdomain]/data";
 
 type BrandingInfo = {
   primary: string;
@@ -31,19 +31,26 @@ type SubdomainLayoutShellProps = {
   branding: BrandingInfo;
   changelogVisible: boolean;
   roadmapVisible: boolean;
+  helpVisible: boolean;
+  boards: PortalBoard[];
+  statusCounts: PortalStatusCounts;
+  totalPosts: number;
+  changelogCount: number;
   initialUser?: AuthUser | null;
 };
 
+export type PortalMaxWidth = "6xl" | "7xl" | "8xl";
+
 /** Container max-width token from compact / comfortable / spacious. */
-function layoutMaxWidth(layoutStyle: BrandingInfo["layoutStyle"]) {
-  if (layoutStyle === "compact") return "4xl";
-  if (layoutStyle === "spacious") return "6xl";
-  return "5xl";
+export function layoutMaxWidth(layoutStyle: BrandingInfo["layoutStyle"]): PortalMaxWidth {
+  if (layoutStyle === "compact") return "6xl";
+  if (layoutStyle === "spacious") return "8xl";
+  return "7xl";
 }
 
-/** Inject workspace primary into --primary, --ring, and --sidebar-primary. */
+/** Inject workspace primary into --primary, --ring, and --sidebar-primary; pin the page so it never rubber-bands. */
 function buildThemeVars(primary: string) {
-  return `:root{--primary:${primary};--ring:${primary};--sidebar-primary:${primary};}`;
+  return `:root{--primary:${primary};--ring:${primary};--sidebar-primary:${primary};}html,body{overscroll-behavior:none;}`;
 }
 
 export function SubdomainLayoutShell({
@@ -53,6 +60,11 @@ export function SubdomainLayoutShell({
   branding,
   changelogVisible,
   roadmapVisible,
+  helpVisible,
+  boards,
+  statusCounts,
+  totalPosts,
+  changelogCount,
   initialUser,
 }: SubdomainLayoutShellProps) {
   const hidePoweredBy = Boolean(branding.hidePoweredBy);
@@ -66,22 +78,41 @@ export function SubdomainLayoutShell({
         sidebarPosition={branding.sidebarPosition}
         subdomain={subdomain}
       >
-        <style>{themeVars}</style>
-        <BrandVarsEffect primary={branding.primary} />
-        <SubdomainBackground />
-        <Container maxWidth={maxWidth} className="w-full min-h-screen flex flex-col">
-          <DomainHeader
-            workspace={workspace}
-            subdomain={subdomain}
-            changelogVisible={changelogVisible}
-            roadmapVisible={roadmapVisible}
-            initialUser={initialUser ?? null}
-          />
-          <div className="mt-6 min-w-0 w-full pb-10 md:pb-0 flex-1 has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-col">{children}</div>
-          <div className="pb-6 mt-4">
-            <PoweredBy />
+        <PortalDataProvider
+          value={{
+            subdomain,
+            workspaceName: workspace.name,
+            boards,
+            statusCounts,
+            totalPosts,
+            changelogCount,
+            roadmapVisible,
+            changelogVisible,
+            helpVisible,
+          }}
+        >
+          <style>{themeVars}</style>
+          <BrandVarsEffect primary={branding.primary} />
+          <div className="flex min-h-screen flex-col bg-background text-foreground">
+            <DomainHeader
+              workspace={workspace}
+              subdomain={subdomain}
+              changelogVisible={changelogVisible}
+              roadmapVisible={roadmapVisible}
+              helpVisible={helpVisible}
+              initialUser={initialUser ?? null}
+              maxWidth={maxWidth}
+            />
+            <main className="flex flex-1 flex-col">
+              <Container
+                maxWidth={maxWidth}
+                className="flex w-full flex-1 flex-col py-6 sm:py-8 has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-col"
+              >
+                {children}
+              </Container>
+            </main>
           </div>
-        </Container>
+        </PortalDataProvider>
       </DomainBrandingProvider>
     </SubdomainThemeProvider>
   );

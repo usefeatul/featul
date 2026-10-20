@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
 import { getInitials } from "@/utils/user"
 import { relativeTime } from "@/lib/time"
-import { overlayInnerClass, overlayShellClass } from "@featul/ui/lib/overlay"
+import { modalInnerClass, modalShellClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay"
 import { cn } from "@featul/ui/lib/utils"
 import { motion, type HTMLMotionProps } from "framer-motion"
 
@@ -64,8 +64,10 @@ const NotificationsPanel = React.forwardRef<
       ref={ref}
       {...props}
       className={cn(
-        overlayShellClass,
+        modalShellClass,
+        overlayRoundedClass,
         "z-50 w-80 max-h-[36rem] max-w-[90vw] overflow-y-auto p-1 text-popover-foreground",
+        linkMode === "workspace" && "flex h-80 max-h-[calc(100dvh-2rem)] flex-col overflow-hidden",
       )}
       role="dialog"
       aria-label="Notifications"
@@ -74,7 +76,7 @@ const NotificationsPanel = React.forwardRef<
       exit={{ opacity: 0, y: -6, scale: 0.98 }}
       transition={{ type: "tween", ease: [0.22, 1, 0.36, 1], duration: 0.2 }}
     >
-      <header className="flex items-center justify-between gap-3 px-1 py-2">
+      <header className="flex shrink-0 items-center justify-between gap-3 px-1 py-2">
         <span className="text-sm font-medium">Notifications</span>
         {onMarkAllRead ? (
           <button
@@ -86,9 +88,9 @@ const NotificationsPanel = React.forwardRef<
           </button>
         ) : null}
       </header>
-      <div className={cn(overlayInnerClass, "p-0")}>
+      <div className={cn(modalInnerClass, overlayRoundedInnerClass, "p-0", linkMode === "workspace" && "flex min-h-0 flex-1 flex-col overflow-y-auto")}>
         {notifications.length === 0 ? (
-          <div className="px-5 py-5 text-sm text-muted-foreground flex justify-center">
+          <div className={cn("px-5 py-5 text-sm text-muted-foreground flex justify-center", linkMode === "workspace" && "flex-1 items-center")}>
             No notifications
           </div>
         ) : (
@@ -97,7 +99,7 @@ const NotificationsPanel = React.forwardRef<
               <li key={n.id} className="px-1.5 py-1">
                 <Link
                   href={resolveNotificationHref(n, linkMode)}
-                  className="px-2 py-1.5 flex items-center gap-2 rounded-md hover:bg-muted/40"
+                  className="px-2 py-1.5 flex items-center gap-2 rounded-[0.625rem] [corner-shape:squircle] transition-colors hover:bg-foreground/[0.05] dark:hover:bg-foreground/[0.07]"
                   onClick={() => markRead(n.id)}
                 >
                   <div className="relative">
@@ -108,7 +110,7 @@ const NotificationsPanel = React.forwardRef<
                       </AvatarFallback>
                     </Avatar>
                     {!n.isRead && (
-                      <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-orange-500" />
+                      <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-lg bg-orange-500" />
                     )}
                   </div>
                   <div className="flex-1">

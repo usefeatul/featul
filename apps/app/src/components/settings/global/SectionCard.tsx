@@ -1,17 +1,70 @@
 import React from "react";
 import { cn } from "@featul/ui/lib/utils";
+import {
+  modalCardInnerClass,
+  modalCardShellClass,
+} from "@featul/ui/lib/overlay";
+import {
+  AlertCircle,
+  CheckCircle,
+  InfoIcon,
+  LockIcon,
+} from "@/components/global/icons";
+
+export type SectionCardStatus = {
+  tone: "warning" | "info" | "success" | "neutral";
+  label: string;
+  message?: React.ReactNode;
+};
+
+const statusStyles = {
+  neutral: {
+    footer: "bg-linear-to-r from-muted/50 to-muted/20",
+    text: "text-muted-foreground",
+    badge: "bg-muted text-muted-foreground",
+    icon: LockIcon,
+  },
+  warning: {
+    footer:
+      "bg-linear-to-r from-orange-500/[0.12] to-orange-500/[0.05] dark:from-orange-400/[0.16] dark:to-orange-400/[0.06]",
+    text: "text-orange-700 dark:text-orange-300",
+    badge: "bg-orange-500/10 text-orange-700 dark:text-orange-300",
+    icon: AlertCircle,
+  },
+  info: {
+    footer:
+      "bg-linear-to-r from-blue-500/[0.12] to-blue-500/[0.05] dark:from-blue-400/[0.16] dark:to-blue-400/[0.06]",
+    text: "text-blue-700 dark:text-blue-300",
+    badge: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
+    icon: InfoIcon,
+  },
+  success: {
+    footer:
+      "bg-linear-to-r from-emerald-500/[0.12] to-emerald-500/[0.05] dark:from-emerald-400/[0.16] dark:to-emerald-400/[0.06]",
+    text: "text-emerald-700 dark:text-emerald-300",
+    badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+    icon: CheckCircle,
+  },
+};
 
 export const settingsPlanCardCurrentClass =
   "border-primary dark:border-primary/80";
 
 export const settingsTableShellClass =
-  "overflow-hidden rounded-lg border border-border/80 bg-card dark:border-white/[0.08] dark:bg-black/30";
+  "overflow-hidden rounded-lg border border-border/50 bg-background/50";
 
-export const settingsCardShellClass =
-  "flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card px-2 pt-2 pb-2 text-foreground dark:border-white/[0.07] dark:bg-black";
+/** Section frame: the create-post dialog's `p-1` shell with the header inside it. */
+export const settingsSectionClass = `${modalCardShellClass} flex min-w-0 flex-col`;
 
-export const settingsCardInnerClass =
-  "flex flex-1 flex-col rounded-lg bg-muted/60 px-4 py-3 ring-1 ring-border/45 dark:bg-background dark:ring-white/[0.055]";
+/** Section header row inside `settingsSurfaceShellClass`, aligned like the dialog title. */
+export const settingsSurfaceHeaderClass =
+  "flex flex-wrap items-center justify-between gap-3 px-2.5 py-1.5";
+
+export const settingsSurfaceClass = `${modalCardInnerClass} min-w-0 px-5 py-4`;
+
+export const settingsCardShellClass = `${modalCardShellClass} flex flex-col`;
+
+export const settingsCardInnerClass = `${modalCardInnerClass} flex flex-1 flex-col px-4 py-3`;
 
 export default function SectionCard({
   title,
@@ -20,6 +73,8 @@ export default function SectionCard({
   action,
   icon,
   className,
+  contentClassName,
+  status,
 }: {
   title: string;
   description?: React.ReactNode;
@@ -27,35 +82,69 @@ export default function SectionCard({
   action?: React.ReactNode;
   icon?: React.ReactNode;
   className?: string;
+  contentClassName?: string;
+  status?: SectionCardStatus;
 }) {
+  const statusStyle = status ? statusStyles[status.tone] : undefined;
+  const StatusIcon = statusStyle?.icon;
+
   return (
-    <section className={cn(settingsCardShellClass, className)}>
-      <header className="flex flex-col gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 items-center gap-3">
+    <section className={cn(settingsSectionClass, className)}>
+      <header className={settingsSurfaceHeaderClass}>
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
           {icon ? (
-            <div className="flex size-5 shrink-0 items-center justify-center">{icon}</div>
-          ) : null}
-          <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">{title}</h2>
-        </div>
-        {action ? (
-          <div className="flex w-full shrink-0 items-center justify-end sm:w-auto sm:pl-4">
-            {action}
-          </div>
-        ) : null}
-      </header>
-      {description || children ? (
-        <div className={settingsCardInnerClass}>
-          {description ? (
-            <div
-              className={cn(
-                "text-sm leading-relaxed text-accent wrap-break-word",
-                children ? "mb-3" : "",
-              )}
-            >
-              {description}
+            <div className="flex size-5 shrink-0 items-center justify-center">
+              {icon}
             </div>
           ) : null}
-          {children}
+          <h2 className="text-sm font-medium leading-6 text-foreground">
+            {title}
+          </h2>
+          {status ? (
+            <span
+              className={cn(
+                "rounded px-1.5 py-0.5 text-xs font-medium",
+                statusStyle?.badge,
+              )}
+            >
+              {status.label}
+            </span>
+          ) : null}
+        </div>
+        {action ? (
+          <div className="flex shrink-0 items-center justify-end">{action}</div>
+        ) : null}
+      </header>
+      {description || children || status?.message ? (
+        <div className={cn(modalCardInnerClass, "min-w-0")}>
+          <div className={cn("min-w-0 px-5 py-4", contentClassName)}>
+            {description ? (
+              <div
+                className={cn(
+                  "text-sm leading-relaxed text-accent wrap-break-word",
+                  children ? "mb-3" : "",
+                )}
+              >
+                {description}
+              </div>
+            ) : null}
+            {children}
+          </div>
+          {status?.message && StatusIcon ? (
+            <div
+              role="status"
+              className={cn(
+                "flex items-start gap-2 border-t border-border/30 px-5 py-3 text-xs leading-5 text-muted-foreground",
+                statusStyle?.footer,
+              )}
+            >
+              <StatusIcon
+                className={cn("mt-0.5 size-4 shrink-0", statusStyle?.text)}
+                aria-hidden
+              />
+              <div className="min-w-0 wrap-break-word">{status.message}</div>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </section>

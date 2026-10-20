@@ -15,12 +15,13 @@ export const metadata: Metadata = createPageMetadata({
   indexable: false,
 })
 
-export default async function SignInPage({ searchParams }: { searchParams?: { redirect?: string } }) {
+export default async function SignInPage({ searchParams }: { searchParams: Promise<{ redirect?: string }> }) {
   const session = await getServerSession()
   if (session?.user) {
     const userId = session.user.id
     if (!userId) redirect("/start")
-    redirect(await resolveAuthenticatedAppPath(userId, searchParams?.redirect || ""))
+    const params = await searchParams
+    redirect(await resolveAuthenticatedAppPath(userId, params.redirect || ""))
   }
   return <SignIn />
 }

@@ -3,7 +3,7 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { cn } from "@featul/ui/lib/utils"
-import { overlayDialogClass, overlayDialogInnerClass } from "@featul/ui/lib/overlay"
+import { modalShellClass, modalInnerClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay"
 import { XMarkIcon } from '@featul/ui/icons/xmark';
 
 function Dialog({
@@ -50,7 +50,7 @@ function DialogInner({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-inner"
-      className={cn(overlayDialogInnerClass, "rounded-lg px-4 py-3", className)}
+      className={cn(modalInnerClass, overlayRoundedInnerClass, "px-5 py-6", className)}
       {...props}
     />
   )
@@ -74,11 +74,12 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          overlayDialogClass,
-          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl duration-200 outline-none",
+          modalShellClass,
+          overlayRoundedClass,
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-2 duration-200 outline-none",
           fluid
             ? "w-auto max-w-none sm:max-w-none"
-            : "w-full max-w-[calc(100%-2rem)] sm:max-w-md",
+            : "w-full max-w-[calc(100%-2rem)] sm:max-w-lg",
           className
         )}
         {...props}

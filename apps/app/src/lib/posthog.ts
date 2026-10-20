@@ -1,6 +1,7 @@
 "use client"
 
 import posthog from "posthog-js"
+import { readAnalyticsConsent, subscribeAnalyticsConsent } from "@featul/ui/lib/consent"
 
 /** Canonical PostHog event names for product analytics. */
 export const analyticsEvents = {
@@ -60,36 +61,65 @@ function cleanProperties(properties?: AnalyticsProperties) {
   )
 }
 
-function isPostHogConfigured() {
-  return Boolean(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN)
+let initialized = false
+let optedIn = false
+let currentUserId: string | null = null
+let unsubscribe: (() => void) | undefined
+
+/** No SDK initialization or collection occurs until an explicit, current consent exists. */
+export function synchronizeAnalyticsConsent() {
+  const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
+  const allowed = Boolean(token) && readAnalyticsConsent() === "granted"
+  if (!allowed) {
+    if (initialized && optedIn) posthog.opt_out_capturing()
+    optedIn = false
+    return false
+  }
+  if (!initialized) {
+    posthog.init(token!, {
+      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
+      defaults: "2026-01-30",
+      opt_out_capturing_by_default: true,
+      persistence: "memory",
+      autocapture: false,
+      capture_pageview: false,
+      capture_pageleave: false,
+      disable_session_recording: true,
+      advanced_disable_flags: true,
+      ip: false,
+      // Recheck each event so another tab's withdrawal is honored before the next poll.
+      before_send: event => readAnalyticsConsent() === "granted" ? event : null,
+    })
+    initialized = true
+  }
+  if (!optedIn) {
+    posthog.opt_in_capturing({ captureEventName: false })
+    optedIn = true
+    if (currentUserId) posthog.identify(currentUserId)
+  }
+  return true
 }
 
-/** Captures an event; no-ops when PostHog is unconfigured. */
-export function captureAnalyticsEvent(
-  event: AnalyticsEventName,
-  properties?: AnalyticsProperties,
-) {
-  if (!isPostHogConfigured()) return
-  posthog.capture(event, cleanProperties(properties))
+export function startAnalyticsConsent() {
+  synchronizeAnalyticsConsent()
+  unsubscribe ??= subscribeAnalyticsConsent(synchronizeAnalyticsConsent)
 }
 
-/** Identifies the current user; no-ops when PostHog is unconfigured. */
-export function identifyAnalyticsUser(user: {
-  id: string
-  email?: string | null
-  name?: string | null
-}) {
-  if (!isPostHogConfigured() || !user.id) return
-
-  posthog.identify(
-    user.id,
-    cleanProperties({
-    }),
-  )
+export function captureAnalyticsEvent(event: AnalyticsEventName, properties?: AnalyticsProperties) {
+  if (synchronizeAnalyticsConsent()) posthog.capture(event, cleanProperties(properties))
 }
 
-/** Clears the PostHog identity on sign-out. */
+export function identifyAnalyticsUser(user: { id: string; email?: string | null; name?: string | null }) {
+  const wasOptedIn = optedIn
+  currentUserId = user.id || null
+  if (synchronizeAnalyticsConsent() && wasOptedIn && currentUserId) posthog.identify(currentUserId)
+}
+
 export function resetAnalyticsUser() {
-  if (!isPostHogConfigured()) return
-  posthog.reset()
+  currentUserId = null
+  if (initialized) {
+    posthog.reset()
+    optedIn = false
+    synchronizeAnalyticsConsent()
+  }
 }

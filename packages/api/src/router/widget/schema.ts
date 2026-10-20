@@ -141,6 +141,10 @@ export const similarSchema = projectInput.extend({
   boardId: z.string().min(1).max(128).optional(),
 });
 
+export const helpSuggestSchema = projectInput.extend({
+  q: z.string().min(2).max(128),
+});
+
 export const viewerSchema = z.object({
   identity: widgetIdentitySchema.optional(),
   fingerprint: z.string().min(1).max(256).optional(),

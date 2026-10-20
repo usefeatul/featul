@@ -3,15 +3,31 @@
 import React from "react"
 import Link from "next/link"
 import { UpvoteButton } from "@/components/upvote/UpvoteButton"
-import { CommentsIcon } from "@/components/global/icons"
+import { CommentsIcon, PinIcon } from "@/components/global/icons"
 import type { RequestItemData } from "@/types/request"
-import StatusIcon from "@/components/requests/StatusIcon"
 import { Avatar, AvatarImage, AvatarFallback } from "@featul/ui/components/avatar"
 import { getInitials, getPrivacySafeDisplayUser } from "@/utils/user"
-import { statusLabel } from "@/lib/roadmap"
 import RoleBadge from "@/components/global/RoleBadge"
-import { FlagRibbon } from "@/components/global/FlagRibbon"
+import { StatusChip } from "./StatusChip"
 import { subdomainListItemClassName } from "./subdomainListItemStyles"
+
+/** Locale-stable "3d ago" / "Sep 5" label so server and client markup agree. */
+function postedLabel(value?: string | null): string {
+  if (!value) return ""
+  const past = new Date(value)
+  const ts = past.getTime()
+  if (Number.isNaN(ts)) return ""
+  const days = Math.floor((Date.now() - ts) / 86_400_000)
+  if (days < 1) return "today"
+  if (days < 7) return `${days}d ago`
+  const sameYear = past.getUTCFullYear() === new Date().getUTCFullYear()
+  return past.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    ...(sameYear ? {} : { year: "numeric" }),
+    timeZone: "UTC",
+  })
+}
 
 /** Strip HTML tags. Collapse whitespace. Empty in → empty out. */
 function toPlain(s?: string | null): string {
@@ -23,16 +39,17 @@ function PostCardBase({
   item,
   onVoteChange,
   linkPrefix = "/p",
-  hidePublicMemberIdentity = false
+  hidePublicMemberIdentity = false,
+  showBoard = true,
 }: {
   item: RequestItemData;
   onVoteChange?: (id: string, upvotes: number, hasVoted: boolean) => void;
   linkPrefix?: string;
   hidePublicMemberIdentity?: boolean;
+  showBoard?: boolean;
 }) {
   const href = `${linkPrefix}/${item.slug}`
 
-  // Determine display values based on hidePublicMemberIdentity setting
   const displayUser = getPrivacySafeDisplayUser(
     {
       name: item.authorName || "Guest",
@@ -40,70 +57,68 @@ function PostCardBase({
       email: ""
     },
     hidePublicMemberIdentity,
-    item.id || item.slug // Fallback seed
+    item.id || item.slug
   )
 
   const showHiddenIdentity = hidePublicMemberIdentity && !item.isAnonymous
   const displayName = displayUser.name
   const displayImage = displayUser.image
+  const excerpt = toPlain(item.content)
+  const when = postedLabel(item.publishedAt ?? item.createdAt)
 
   return (
-    <div className={`${subdomainListItemClassName} relative group overflow-hidden`}>
-      <FlagRibbon isPinned={item.isPinned} isFeatured={item.isFeatured} isLocked={item.isLocked} />
+    <article className={`${subdomainListItemClassName} group relative flex gap-4 overflow-hidden sm:gap-5`}>
       <Link href={href} className="absolute inset-0 focus:outline-none" aria-label={item.title}>
         <span className="sr-only">View post</span>
       </Link>
-      <div className="inline-flex items-center gap-2">
-        <StatusIcon status={item.roadmapStatus || undefined} className="size-5 text-foreground/80" />
-        <span className="text-sm text-accent">{statusLabel(String(item.roadmapStatus || "pending"))}</span>
-      </div>
-      <div className="mt-2">
-        <h3 className="text-lg font-semibold text-foreground">
-          {item.title}
+
+      <div className="min-w-0 flex-1">
+        <h3 className="flex items-start gap-1.5 text-[15px] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+          {item.isPinned ? (
+            <PinIcon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-label="Pinned" />
+          ) : null}
+          <span>{item.title}</span>
         </h3>
-      </div>
-      {item.content ? (
-        <p className="mt-3 text-sm text-accent  whitespace-normal line-clamp-2">{toPlain(item.content)}</p>
-      ) : null}
-      <div className="mt-3 flex items-end justify-between">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Avatar className="size-8 relative overflow-visible">
-              <AvatarImage src={displayImage || undefined} alt={displayName} />
-              <AvatarFallback className="text-xs bg-muted text-muted-foreground">{getInitials(displayName)}</AvatarFallback>
-              {!showHiddenIdentity && <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} className="bg-card" />}
-            </Avatar>
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-xs font-medium text-foreground whitespace-nowrap max-w-[180px] truncate">
-              {displayName}
+        {excerpt ? (
+          <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{excerpt}</p>
+        ) : null}
+
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+          <StatusChip status={item.roadmapStatus} />
+          {showBoard && item.boardName ? (
+            <span className="inline-flex items-center gap-1.5">
+              <span className="text-muted-foreground/50">·</span>
+              <span className="truncate">{item.boardName}</span>
             </span>
-            <span className="text-xs text-muted-foreground leading-tight">
-              {new Date(item.publishedAt ?? item.createdAt ?? new Date()).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-3 text-xs text-accent">
-          <div className="inline-flex items-center gap-2 relative z-10">
-            <UpvoteButton
-              postId={item.id}
-              upvotes={item.upvotes}
-              hasVoted={item.hasVoted}
-              className="text-xs"
-              onChange={(v) => onVoteChange?.(item.id, v.upvotes, v.hasVoted)}
-            />
-          </div>
-          <div className="inline-flex items-center gap-1">
+          ) : null}
+          <span className="inline-flex items-center gap-1 tabular-nums">
             <CommentsIcon aria-hidden className="size-3.5" />
-            <span className="tabular-nums">{item.commentCount}</span>
-          </div>
+            {item.commentCount}
+          </span>
+          <span className="ml-auto inline-flex min-w-0 items-center gap-1.5">
+            <Avatar className="relative size-5 overflow-visible">
+              <AvatarImage src={displayImage || undefined} alt={displayName} />
+              <AvatarFallback className="bg-muted text-[9px] text-muted-foreground">{getInitials(displayName)}</AvatarFallback>
+              {!showHiddenIdentity ? (
+                <RoleBadge role={item.role} isOwner={item.isOwner} isFeatul={item.isFeatul} className="bg-card" />
+              ) : null}
+            </Avatar>
+            <span className="max-w-[140px] truncate font-medium text-foreground/80">{displayName}</span>
+            {when ? <span className="text-muted-foreground/70" suppressHydrationWarning>· {when}</span> : null}
+          </span>
         </div>
       </div>
-    </div>
+
+      <div className="relative z-10 shrink-0 self-start">
+        <UpvoteButton
+          postId={item.id}
+          upvotes={item.upvotes}
+          hasVoted={item.hasVoted}
+          orientation="vertical"
+          onChange={(v) => onVoteChange?.(item.id, v.upvotes, v.hasVoted)}
+        />
+      </div>
+    </article>
   )
 }
 

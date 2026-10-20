@@ -1,3 +1,5 @@
+import { getBillingUsage } from "@/lib/billing";
+import type { BillingUsage } from "@/types/billing";
 import {
   db,
   workspace,
@@ -749,6 +751,32 @@ export async function getPlannedRoadmapPosts(
     publicOnly: true,
   });
 }
+/** Public posts in one roadmap column when the roadmap board is visible. */
+export async function getRoadmapColumnPosts(
+  slug: string,
+  status: "planned" | "progress" | "completed",
+  opts?: { limit?: number; search?: string },
+) {
+  const ws = await getWorkspaceBySlug(slug);
+  if (!ws) return [];
+
+  const [rb] = await db
+    .select({ isVisible: board.isVisible, isPublic: board.isPublic })
+    .from(board)
+    .where(and(eq(board.workspaceId, ws.id), eq(board.systemType, "roadmap")))
+    .limit(1);
+  if (!rb?.isVisible || !rb?.isPublic) return [];
+
+  const search = (opts?.search || "").trim();
+  return getWorkspacePosts(slug, {
+    statuses: [status],
+    limit: opts?.limit ?? 30,
+    order: "likes",
+    search: search || undefined,
+    publicOnly: true,
+  });
+}
+
 /** Non-system board by workspace and board slug. */
 export async function getBoardByWorkspaceSlug(
   slug: string,
@@ -780,6 +808,7 @@ export async function getSettingsInitialData(
   initialWorkspaceId?: string;
   initialWorkspaceOwnerId?: string;
   initialTrialEligible?: boolean;
+  initialBillingUsage?: BillingUsage;
   initialBillingSubscription?: {
     id: string;
     plan: string;
@@ -835,6 +864,7 @@ export async function getSettingsInitialData(
     feedbackTagsRows,
     integrationsRows,
     billingSubscriptions,
+    billingUsage,
     effectivePlan,
     branding,
   ] = await Promise.all([
@@ -953,6 +983,7 @@ export async function getSettingsInitialData(
       .where(eq(subscription.referenceId, ws.id))
       .orderBy(sql`case when ${subscription.plan} = ${verifiedPlan} then 0 else 1 end`, desc(subscription.createdAt))
       : Promise.resolve([]),
+    needs("billing") ? getBillingUsage(ws.id) : Promise.resolve(undefined),
     Promise.resolve(verifiedPlan),
     needs("branding") ? getBrandingBySlug(slug) : Promise.resolve(null),
   ]);
@@ -967,6 +998,7 @@ export async function getSettingsInitialData(
 
   return {
     initialPlan: effectivePlan,
+    initialBillingUsage: billingUsage,
     initialWorkspaceId: ws.id,
     initialWorkspaceOwnerId: ws.ownerId,
     initialTrialEligible: needs("billing") && isWorkspaceTrialEligible(billingSubscriptions)

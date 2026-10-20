@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server"
+import { isIP } from "node:net"
 import { reroute } from "./reroute"
 
 /** Subdomains that must stay on the main app, not tenant public sites. */
@@ -8,11 +9,12 @@ export const reservedSubdomains = new Set(["www", "app", "featul", "feedgot", "s
 export function getHostInfo(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   const host = req.headers.get("host") || ""
-  const hostNoPort = host.replace(/:\d+$/, "")
+  const hostNoPort = host.replace(/:\d+$/, "").toLowerCase()
   const parts = hostNoPort.split(".")
-  const isLocal = parts[parts.length - 1] === "localhost"
-  const isMainDomain = hostNoPort.endsWith(".featul.com")
-  const hasSub = (isLocal && parts.length >= 2) || (isMainDomain && parts.length >= 3)
+  const isLocalhost = parts[parts.length - 1] === "localhost"
+  const isLocal = isLocalhost || isIP(hostNoPort.replace(/^\[|\]$/g, "")) !== 0
+  const isMainDomain = hostNoPort === "featul.com" || hostNoPort.endsWith(".featul.com")
+  const hasSub = (isLocalhost && parts.length >= 2) || (isMainDomain && parts.length >= 3)
   const subdomain = hasSub ? parts[0] : ""
   return { pathname, hostNoPort, isLocal, isMainDomain, subdomain }
 }

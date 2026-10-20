@@ -87,7 +87,7 @@ export function WidgetVoteButton({
       className={cn(
         "group/vote relative z-10 inline-flex cursor-pointer items-center gap-1.5 text-xs transition-colors disabled:cursor-not-allowed",
         variant === "boxed" &&
-          "rounded-md border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.03)] px-2 py-1",
+          "rounded-lg border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-fg)/0.03)] px-2 py-1",
         hasVoted ? "text-orange-500" : "text-[rgb(var(--widget-fg)/0.55)] hover:text-orange-500/80",
         hasVoted && variant === "boxed" && "border-orange-500/30",
         className,

@@ -178,7 +178,7 @@ function CommentComposer({
   autoFocus?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-[rgb(var(--widget-fg)/0.12)] bg-[rgb(var(--widget-fg)/0.03)] p-3">
+    <div className="rounded-lg border border-[rgb(var(--widget-fg)/0.12)] bg-[rgb(var(--widget-fg)/0.03)] p-3">
       <textarea
         value={draft}
         onChange={(event) => onDraftChange(event.target.value)}
@@ -197,7 +197,7 @@ function CommentComposer({
           <button
             type="button"
             onClick={onRemoveImage}
-            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md ring-1 ring-[rgb(var(--widget-surface))] hover:bg-destructive/90"
+            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-lg bg-destructive text-destructive-foreground shadow-md ring-1 ring-[rgb(var(--widget-surface))] hover:bg-destructive/90"
             aria-label="Remove image"
           >
             <X className="size-2.5" />

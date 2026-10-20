@@ -6,6 +6,7 @@ import type { Integration } from "@/hooks/useIntegrations";
 import WebhookIntegrationCard from "./WebhookIntegrationCard";
 
 interface DiscordCardProps {
+  upgradeHref?: string;
   integration?: Integration;
   onConnect?: (webhookUrl: string) => Promise<boolean>;
   onDisconnect?: () => Promise<boolean>;
@@ -18,6 +19,7 @@ interface DiscordCardProps {
  * Discord integration card with connect/disconnect functionality
  */
 export default function DiscordCard({
+  upgradeHref,
   integration,
   onConnect,
   onDisconnect,
@@ -27,6 +29,7 @@ export default function DiscordCard({
 }: DiscordCardProps) {
   return (
     <WebhookIntegrationCard
+      upgradeHref={upgradeHref}
       type="discord"
       title="Discord"
       icon={<DiscordIcon className="w-5 h-5" />}

@@ -91,7 +91,7 @@ export function WidgetImageStrip({
                 type="button"
                 onClick={() => onRemove(index)}
                 disabled={removeDisabled}
-                className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md ring-1 ring-[rgb(var(--widget-surface))] hover:bg-destructive/90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-lg bg-destructive text-destructive-foreground shadow-md ring-1 ring-[rgb(var(--widget-surface))] hover:bg-destructive/90 disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label={`Remove image ${index + 1}`}
               >
                 <X className="size-2.5" />

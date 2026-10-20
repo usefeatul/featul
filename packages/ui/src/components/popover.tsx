@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { LayoutGroup, motion, useReducedMotion } from "framer-motion";
 
 import { cn } from "@featul/ui/lib/utils";
 import { subtleOverlayInnerClass, subtleOverlayShellClass } from "@featul/ui/lib/overlay";
@@ -69,16 +70,65 @@ function PopoverContent({
   );
 }
 
-function PopoverList({ className, ...props }: React.ComponentProps<"div">) {
+const PopoverListContext = React.createContext<string | null | undefined>(undefined);
+
+function getPopoverItem(event: React.SyntheticEvent<HTMLDivElement>) {
+  if (!(event.target instanceof Element)) return null;
+  const item = event.target.closest<HTMLElement>("[data-popover-item-id]");
+  if (
+    !item ||
+    item.closest('[data-slot="popover-list"]') !== event.currentTarget ||
+    item.matches(':disabled, [aria-disabled="true"]')
+  ) return null;
+  return item.dataset.popoverItemId ?? null;
+}
+
+function PopoverList({
+  className,
+  children,
+  onPointerMoveCapture,
+  onPointerLeave,
+  onFocusCapture,
+  onBlurCapture,
+  ...props
+}: React.ComponentProps<typeof motion.div>) {
+  const id = React.useId();
+  const [hoveredId, setHoveredId] = React.useState<string | null>(null);
+  const [focusedId, setFocusedId] = React.useState<string | null>(null);
+
   return (
-    <div
-      data-slot="popover-list"
-      className={cn(
-        "inline-flex w-max max-h-[50vh] flex-col overflow-y-auto sm:max-h-64",
-        className,
-      )}
-      {...props}
-    />
+    <LayoutGroup id={id}>
+      <PopoverListContext.Provider value={hoveredId ?? focusedId}>
+        <motion.div
+          layoutScroll
+          data-slot="popover-list"
+          className={cn(
+            "inline-flex w-max max-h-[50vh] flex-col overflow-y-auto sm:max-h-64",
+            className,
+          )}
+          {...props}
+          onPointerMoveCapture={(event) => {
+            onPointerMoveCapture?.(event);
+            if (event.pointerType !== "touch") setHoveredId(getPopoverItem(event));
+          }}
+          onPointerLeave={(event) => {
+            onPointerLeave?.(event);
+            setHoveredId(null);
+          }}
+          onFocusCapture={(event) => {
+            onFocusCapture?.(event);
+            setHoveredId(null);
+            setFocusedId(getPopoverItem(event));
+          }}
+          onBlurCapture={(event) => {
+            onBlurCapture?.(event);
+            if (!event.currentTarget.contains(event.relatedTarget)) setFocusedId(null);
+          }}
+        >
+          {children}
+        </motion.div>
+      </PopoverListContext.Provider>
+    </LayoutGroup>
   );
 }
 
@@ -91,24 +141,41 @@ function PopoverListItem({
 }: (React.ComponentProps<"button"> | React.ComponentProps<"div">) & {
   accent?: string;
   as?: "button" | "div";
+  "data-selected"?: boolean | "true" | "false";
 }) {
-  const style = accent
-    ? { background: accent }
-    : { background: "var(--primary)" };
+  const id = React.useId();
+  const activeId = React.useContext(PopoverListContext);
+  const reducedMotion = useReducedMotion();
+  const selected = [props["aria-selected"], props["aria-checked"], props["aria-pressed"], props["data-selected"]]
+    .some((value) => value === true || value === "true");
+  const disabled = ("disabled" in props && props.disabled) || props["aria-disabled"] === true || props["aria-disabled"] === "true";
+  const active = activeId === id;
+  const showAccent = !disabled && (active || (activeId == null && selected));
+  const accentStyle = { borderColor: accent ?? "var(--primary)" };
   return (
     <Component
       data-slot="popover-list-item"
+      data-popover-item-id={id}
       className={cn(
-        "relative group flex cursor-pointer items-center gap-2 rounded-none px-3 py-2 text-left whitespace-nowrap hover:bg-muted/40 dark:hover:bg-muted/30",
+        "relative group group/popover-item flex cursor-pointer items-center gap-2 rounded-none first:rounded-t-md last:rounded-b-md px-3 py-2 text-left whitespace-nowrap transition-colors duration-150 motion-reduce:transition-none hover:bg-foreground/[0.05] dark:hover:bg-foreground/[0.07]",
         className,
       )}
       {...(props as any)}
     >
-      <span
-        aria-hidden
-        className="absolute bottom-0 left-0 top-0 w-[2px] opacity-0 group-hover:opacity-100"
-        style={style}
-      />
+      {!disabled && (showAccent || activeId === undefined) && (
+        <motion.span
+          aria-hidden
+          layoutId={active && !reducedMotion ? "accent" : undefined}
+          initial={false}
+          animate={{ opacity: 1 }}
+          transition={{ duration: reducedMotion ? 0 : 0.16, ease: [0.22, 1, 0.36, 1] }}
+          className={cn(
+            "pointer-events-none absolute inset-y-0 left-0 w-[var(--radius)] border-l-2 group-first/popover-item:rounded-tl-md group-first/popover-item:border-t-2 group-last/popover-item:rounded-bl-md group-last/popover-item:border-b-2",
+            activeId === undefined && !selected && "invisible group-hover/popover-item:visible group-focus-visible/popover-item:visible",
+          )}
+          style={accentStyle}
+        />
+      )}
       {children}
     </Component>
   );
@@ -124,7 +191,7 @@ function PopoverListBack({
       type="button"
       data-slot="popover-list-back"
       className={cn(
-        "flex w-full cursor-pointer items-center gap-2 border-b border-border/60 px-3 py-2 text-left text-sm hover:bg-muted/40 dark:hover:bg-muted/30",
+        "flex w-full cursor-pointer items-center gap-2 border-b border-border/60 px-3 py-2 text-left text-sm hover:bg-foreground/[0.05] dark:hover:bg-foreground/[0.07]",
         className,
       )}
       {...props}

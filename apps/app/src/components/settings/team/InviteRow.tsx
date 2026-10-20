@@ -121,7 +121,7 @@ export default function InviteRow({
       </TableCell>
       <TableCell className="px-4 w-48">
         <div className="grid min-h-8 grid-cols-[2rem_1fr_2rem] items-center">
-          <span className={cn("col-start-2 text-xs px-2 py-0.5 rounded-sm capitalize justify-self-center", roleBadgeClass(i.role))}>{i.role}</span>
+          <span className={cn("col-start-2 text-xs px-2 py-0.5 rounded-lg capitalize justify-self-center", roleBadgeClass(i.role))}>{i.role}</span>
           <div className="col-start-3 justify-self-end">
             <Popover open={menuFor === i.id} onOpenChange={(v) => setMenuFor(v ? i.id : null)}>
               <PopoverTrigger asChild>

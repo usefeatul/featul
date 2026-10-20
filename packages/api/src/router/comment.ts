@@ -1,6 +1,7 @@
-import { createCommentAtomically } from "../post/comments";
+import { createCommentAtomically, deleteCommentAtomically } from "../post/comments";
 import { requireImageReferenceAccess } from "../storage/delivery";
 import { toggleCommentVote } from "../post/voting";
+import { listCommentReactions, setCommentReaction } from "../post/reactions";
 import { requireCommentAccess, requirePostAccess } from "../post/access";
 import { eq, and, sql, desc, or, isNull } from "drizzle-orm";
 import { j, privateProcedure, publicProcedure } from "../jstack";
@@ -26,6 +27,7 @@ import {
   deleteCommentInputSchema,
   listCommentsInputSchema,
   voteCommentInputSchema,
+  reactCommentInputSchema,
   reportCommentInputSchema,
   pinCommentInputSchema,
   setCommentVisibilityInputSchema,
@@ -322,6 +324,9 @@ export function createCommentRouter() {
             userVotes.set(v.commentId, v.type as "upvote" | "downvote"),
           );
         }
+        const emojiReactions = await listCommentReactions(ctx.db, comments.map((row: { id: string }) => row.id), {
+          userId, fingerprint: anonymousFingerprint,
+        });
         const toAvatar = (seed?: string | null) =>
           `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(
             (seed || "anonymous").trim() || "anonymous",
@@ -346,6 +351,7 @@ export function createCommentRouter() {
               authorImage: row.userImage || toAvatar(avatarSeed),
               authorName: row.userName || row.authorName || "Anonymous",
               userVote: userVotes.get(row.id) || null,
+              reactions: emojiReactions.get(row.id) || [],
               role: isOwner ? null : row.memberRole || null, // null means owner (handled separately)
               isOwner: Boolean(isOwner),
               reportCount: canViewInternal && row.reportCount ? Number(row.reportCount) : 0,
@@ -844,56 +850,21 @@ export function createCommentRouter() {
           });
         }
 
-        // Hard delete
-        await ctx.db.delete(comment).where(eq(comment.id, commentId));
-
-        await deleteUnreferencedImageUrls(
-          ctx.db,
-          listCommentImageUrls(existingComment.metadata),
-        );
-
-        // Recalculate post comment count
-        const [{ count }] = await ctx.db
-          .select({ count: sql<number>`count(*)` })
-          .from(comment)
-          .where(
-            and(
-              eq(comment.postId, existingComment.postId),
-              eq(comment.status, "published"),
-            ),
-          );
-
-        await ctx.db
-          .update(post)
-          .set({
-            commentCount: count,
-          })
-          .where(eq(post.id, existingComment.postId));
-
-        // Update parent reply count if this was a reply
-        if (existingComment.parentId) {
-          await ctx.db
-            .update(comment)
-            .set({
-              replyCount: sql`greatest(0, ${comment.replyCount} - 1)`,
-            })
-            .where(eq(comment.id, existingComment.parentId));
-        }
-
-        await ctx.db.insert(activityLog).values({
-          workspaceId: postInfo.workspaceId,
-          userId,
-          action: ACTIVITY_ACTIONS.COMMENT_DELETED,
-          actionType: "delete",
-          entity: "comment",
-          entityId: String(commentId),
-          title: postInfo.postTitle,
-          metadata: {
-            postId: existingComment.postId,
-            postTitle: postInfo.postTitle,
-            roadmapStatus: postInfo.roadmapStatus,
+        const deleted = await deleteCommentAtomically(ctx.db, {
+          commentId, postId: existingComment.postId, parentId: existingComment.parentId,
+          activity: {
+            workspaceId: postInfo.workspaceId, userId,
+            action: ACTIVITY_ACTIONS.COMMENT_DELETED, actionType: "delete",
+            entity: "comment", title: postInfo.postTitle,
+            metadata: {
+              postId: existingComment.postId, postTitle: postInfo.postTitle,
+              roadmapStatus: postInfo.roadmapStatus,
+            },
           },
         });
+        if (!deleted) throw new HTTPException(404, { message: "Comment not found" });
+        // Object cleanup cannot roll back content; the daily GC retries leftovers.
+        await deleteUnreferencedImageUrls(ctx.db, listCommentImageUrls(existingComment.metadata));
 
         return c.superjson({ success: true });
       }),
@@ -914,6 +885,17 @@ export function createCommentRouter() {
         return c.superjson(await toggleCommentVote(ctx.db, commentId, voteType, { userId, fingerprint: anonymousFingerprint }, {
           workspaceId: access.workspaceId, title: access.title,
           metadata: { postId: access.postId, roadmapStatus: access.roadmapStatus, voteType },
+        }));
+      }),
+
+    react: publicProcedure
+      .input(reactCommentInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw);
+        const userId = await getSessionUserId(c.req.raw.headers);
+        return c.superjson(await setCommentReaction(ctx.db, input, {
+          userId,
+          fingerprint: userId ? null : getRequestFingerprint(c.req.raw),
         }));
       }),
 

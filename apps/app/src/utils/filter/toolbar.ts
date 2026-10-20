@@ -1,10 +1,10 @@
 import { cn } from "@featul/ui/lib/utils";
 
-/** Active-state classes for filter toolbar buttons. */
+/** Active filter buttons keep the raised surface; only the icon picks up the primary colour. */
 export function filterToolbarButtonClass(isActive: boolean, className?: string) {
   return cn(
     className,
     isActive &&
-      "bg-muted text-foreground shadow-none ring-1 ring-border/70 dark:bg-muted/40",
+      "text-primary hover:text-primary dark:text-primary dark:hover:text-primary",
   );
 }

@@ -1,25 +1,17 @@
 import React from "react";
 import { UpvoteButton } from "../../upvote/UpvoteButton";
-import CommentList from "../../comments/CommentList";
-import CommentCounter from "../../comments/CommentCounter";
+import Discussion from "@/components/requests/discussion";
 import type { CommentData } from "../../../types/comment";
-import StatusIcon from "@/components/requests/StatusIcon";
-import { statusLabel } from "@/lib/roadmap";
+import { StatusChip } from "../StatusChip";
 import { getDisplayUser } from "@/utils/user";
 import type { SubdomainRequestDetailData } from "../../../types/subdomain";
 import { PostImageGallery } from "@/components/post/PostImageGallery";
 import { RequestActions } from "./RequestActions";
 import { isOnboardingPost } from "@/lib/onboarding/post";
 import { OnboardingPostContent } from "@/components/requests/OnboardingPostContent";
-import {
-  settingsCardInnerClass,
-  settingsCardShellClass,
-} from "@/components/settings/global/SectionCard";
-import { cn } from "@featul/ui/lib/utils";
 import { MergeSubmissionSection } from "@/components/requests/MergeSubmission";
-import { Linkify } from "@/components/post/linkify";
-
-
+import { PostBody } from "./PostBody";
+import { relativeTime } from "@/lib/time";
 
 interface RequestContentProps {
   post: SubdomainRequestDetailData;
@@ -34,100 +26,93 @@ export function RequestContent({
   initialComments,
   initialCollapsedIds,
 }: RequestContentProps) {
-  const visibleCommentCount = initialComments?.length ?? post.commentCount
-  const showOnboardingContent = isOnboardingPost(post.metadata)
+  const visibleCommentCount = initialComments?.length ?? post.commentCount;
+  const showOnboardingContent = isOnboardingPost(post.metadata);
   const normalizedContent = showOnboardingContent
     ? post.content
-    : post.content?.replace(/\n{2,}/g, "\n")
+    : post.content?.replace(/\n{2,}/g, "\n");
 
   const rawDisplayAuthor = getDisplayUser(
     post.author
       ? {
-        name: post.author.name ?? undefined,
-        image: post.author.image ?? undefined,
-        email: post.author.email ?? undefined,
-      }
-      : undefined
+          name: post.author.name ?? undefined,
+          image: post.author.image ?? undefined,
+          email: post.author.email ?? undefined,
+        }
+      : undefined,
   );
 
   // Apply hidePublicMemberIdentity - only hide if it's enabled AND user is not a guest
-  const isGuest = !post.author?.name || rawDisplayAuthor.name === "Guest"
-  const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest
+  const isGuest = !post.author?.name || rawDisplayAuthor.name === "Guest";
+  const showHiddenIdentity = post.hidePublicMemberIdentity && !isGuest;
 
   return (
-    <div className="min-w-0 space-y-4">
-      <article className={settingsCardShellClass}>
-        <header className="flex items-center justify-between py-2">
-          <div className="inline-flex items-center gap-2">
-            <StatusIcon
-              status={post.roadmapStatus || undefined}
-              className="size-5 text-foreground/80"
-            />
-            <span className="text-sm text-accent">
-              {statusLabel(String(post.roadmapStatus || "pending"))}
-            </span>
-          </div>
-          <RequestActions post={post} workspaceSlug={workspaceSlug} />
-        </header>
-        <div className={cn(settingsCardInnerClass)}>
-
-      {/* Post Title */}
-      <h1 className="text-xl font-semibold text-foreground mb-4">
-        {post.title}
-      </h1>
-
-      {/* Image */}
-
-      {normalizedContent ? (
-        showOnboardingContent ? (
-          <OnboardingPostContent content={normalizedContent} className="mb-6" />
-        ) : (
-          <div className="prose dark:prose-invert text-sm text-accent mb-6 wrap-break-word whitespace-pre-wrap leading-6">
-            <Linkify content={normalizedContent} />
-          </div>
-        )
-      ) : null}
-
-      {/* Content */}
-      <PostImageGallery
-        image={post.image}
-        metadata={post.metadata}
-        alt={post.title}
-        className="mb-4"
-      />
-      <MergeSubmissionSection
-        className="mb-4"
-        mergedInto={post.mergedInto}
-        mergedIntoHref={
-          post.mergedInto ? `/board/p/${post.mergedInto.slug}` : undefined
-        }
-        mergedSources={post.mergedSources}
-        mergedCount={post.mergedCount}
-        sourceHref={(slug) => `/board/p/${slug}`}
-        hidePublicMemberIdentity={post.hidePublicMemberIdentity}
-      />
-      {/* Footer: Author & Upvotes */}
-      <div className="flex items-center justify-end pt-2">
-        <div className="flex items-center gap-3 text-xs text-accent">
-          <UpvoteButton
-            postId={post.id}
-            upvotes={post.upvotes}
-            hasVoted={post.hasVoted}
-            className="text-xs"
-          />
-          <CommentCounter
-            postId={post.id}
-            initialCount={visibleCommentCount}
-            surface="public"
-            className="hover:text-foreground transition-colors"
-          />
+    <div className="min-w-0">
+      <article className="pb-8">
+        <div className="mb-5">
+          <h1 className="text-2xl font-semibold leading-tight tracking-tight text-foreground">
+            {post.title}
+          </h1>
+          {/* Board and date live in the sidebar on desktop. */}
+          <p
+            className="mt-1.5 text-sm text-muted-foreground md:hidden"
+            suppressHydrationWarning
+          >
+            {post.boardName} ·{" "}
+            {relativeTime(post.publishedAt ?? post.createdAt)}
+          </p>
         </div>
-      </div>
 
+        {normalizedContent ? (
+          showOnboardingContent ? (
+            <OnboardingPostContent
+              content={normalizedContent}
+              className="mb-6"
+            />
+          ) : (
+            <PostBody content={normalizedContent} className="mb-6" />
+          )
+        ) : null}
+
+        <PostImageGallery
+          image={post.image}
+          metadata={post.metadata}
+          alt={post.title}
+          className="mb-4"
+        />
+        <MergeSubmissionSection
+          className="mb-4"
+          mergedInto={post.mergedInto}
+          mergedIntoHref={
+            post.mergedInto ? `/board/p/${post.mergedInto.slug}` : undefined
+          }
+          mergedSources={post.mergedSources}
+          mergedCount={post.mergedCount}
+          sourceHref={(slug) => `/board/p/${slug}`}
+          hidePublicMemberIdentity={post.hidePublicMemberIdentity}
+        />
+
+        {/* Footer: roadmap status on the left, upvote on the right. */}
+        <div className="flex items-center justify-between gap-3">
+          <StatusChip status={post.roadmapStatus} className="text-sm" />
+          <div className="flex items-center gap-2 text-xs text-accent">
+            {/* Desktop actions live in the sidebar. */}
+            <div className="md:hidden">
+              <RequestActions post={post} workspaceSlug={workspaceSlug} />
+            </div>
+            <UpvoteButton
+              postId={post.id}
+              upvotes={post.upvotes}
+              hasVoted={post.hasVoted}
+              className="text-xs"
+            />
+          </div>
         </div>
       </article>
 
-      <CommentList
+      <div>
+        <Discussion
+          key={post.id}
           postId={post.id}
           initialCount={visibleCommentCount}
           workspaceSlug={workspaceSlug}
@@ -136,7 +121,9 @@ export function RequestContent({
           initialComments={initialComments}
           initialCollapsedIds={initialCollapsedIds}
           hidePublicMemberIdentity={showHiddenIdentity}
+          plain
         />
+      </div>
     </div>
   );
 }

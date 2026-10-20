@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { raisedCardClass } from "@featul/ui/lib/overlay";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 import RoadmapRequestItem from "@/components/roadmap/RoadmapRequestItem";
@@ -12,7 +13,7 @@ import RoadmapDraggable from "@/components/roadmap/RoadmapDraggable";
 import RoadmapKeyboardShortcuts from "@/components/roadmap/RoadmapKeyboardShortcuts";
 import { CreatePostModal } from "@/components/post/CreatePostModal";
 import { RequestItemContextMenu } from "@/components/requests/RequestItemContextMenu";
-import { ROADMAP_STATUSES, statusLabel } from "@/lib/roadmap";
+import { ROADMAP_COLUMN_ORDER, statusLabel } from "@/lib/roadmap";
 import {
   toRoadmapCardItem,
   useRoadmapBoardState,
@@ -39,7 +40,7 @@ export default function RoadmapBoard({
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const [createPostStatus, setCreatePostStatus] = React.useState("pending");
   const { boardScrollRef, setColumnRef, jumpToStatus, getCurrentStatusIndex } =
-    useRoadmapCanvasNavigation(ROADMAP_STATUSES);
+    useRoadmapCanvasNavigation(ROADMAP_COLUMN_ORDER);
   const {
     sensors,
     items,
@@ -65,7 +66,7 @@ export default function RoadmapBoard({
 
   const jumpToStatusIndex = React.useCallback(
     (index: number) => {
-      const target = ROADMAP_STATUSES[index];
+      const target = ROADMAP_COLUMN_ORDER[index];
       if (!target) return;
       jumpToStatus(target);
     },
@@ -85,7 +86,7 @@ export default function RoadmapBoard({
         onDragEnd={({ over }) => handleDragEnd(over?.id as string | undefined)}
       >
         <RoadmapKeyboardShortcuts
-          columnCount={ROADMAP_STATUSES.length}
+          columnCount={ROADMAP_COLUMN_ORDER.length}
           getCurrentIndex={getCurrentStatusIndex}
           onJumpToIndex={jumpToStatusIndex}
         />
@@ -94,7 +95,7 @@ export default function RoadmapBoard({
           className="scrollbar-hide min-h-0 w-full min-w-0 flex-1 touch-pan-x snap-x snap-mandatory scroll-px-4 overflow-x-auto overflow-y-hidden overscroll-contain bg-transparent px-4 py-2 sm:scroll-px-6 sm:px-6 md:snap-none"
         >
           <div className="flex h-full min-h-0 min-w-max items-start gap-2 md:min-w-full md:flex-row">
-            {(ROADMAP_STATUSES as readonly string[]).map((s) => {
+            {ROADMAP_COLUMN_ORDER.map((s) => {
               const itemsForStatus = grouped[s];
               return (
                 <div
@@ -149,7 +150,10 @@ export default function RoadmapBoard({
         <DragOverlay dropAnimation={null}>
           {activeItem ? (
             <motion.div
-              className="pointer-events-none h-[108px] w-[min(300px,85vw)] overflow-hidden rounded-lg border border-border/70 bg-card shadow-lg dark:border-white/10"
+              className={cn(
+                raisedCardClass,
+                "pointer-events-none h-[108px] w-[min(300px,85vw)] overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,1),0_8px_20px_-6px_rgba(0,0,0,0.18)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_24px_-6px_rgba(0,0,0,0.55)]",
+              )}
               initial={{ scale: 0.995, opacity: 0.97 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 180, damping: 32 }}

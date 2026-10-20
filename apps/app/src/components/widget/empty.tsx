@@ -23,7 +23,7 @@ export function WidgetEmpty({
     >
       {icon ? (
         <div
-          className={`flex items-center justify-center rounded-full bg-[rgb(var(--widget-fg)/0.06)] text-[rgb(var(--widget-fg)/0.5)] ${
+          className={`flex items-center justify-center rounded-lg bg-[rgb(var(--widget-fg)/0.06)] text-[rgb(var(--widget-fg)/0.5)] ${
             compact ? "mb-2 size-9" : "mb-3 size-11"
           }`}
         >
@@ -65,10 +65,10 @@ export function WidgetEmptyPlaceholders() {
       {rows.map((row) => (
         <div
           key={row.title}
-          className="rounded-md bg-[rgb(var(--widget-fg)/0.04)] px-3 py-2.5 text-left"
+          className="rounded-lg bg-[rgb(var(--widget-fg)/0.04)] px-3 py-2.5 text-left"
         >
-          <div className={`h-2 rounded-full bg-[rgb(var(--widget-fg)/0.1)] ${row.meta}`} />
-          <div className={`mt-2 h-2.5 rounded-full bg-[rgb(var(--widget-fg)/0.08)] ${row.title}`} />
+          <div className={`h-2 rounded-lg bg-[rgb(var(--widget-fg)/0.1)] ${row.meta}`} />
+          <div className={`mt-2 h-2.5 rounded-lg bg-[rgb(var(--widget-fg)/0.08)] ${row.title}`} />
         </div>
       ))}
     </div>

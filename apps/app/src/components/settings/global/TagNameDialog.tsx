@@ -50,7 +50,7 @@ export function TagNameDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-          <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-0.5 text-sm font-normal">
+          <DialogTitle className="flex items-center gap-2 px-2 mt-0.5 py-1.5 text-sm font-normal">
             <TagIcon className="size-3.5" />
             {title}
           </DialogTitle>

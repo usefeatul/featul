@@ -27,7 +27,7 @@ export function LowInteractionMark({ days, className }: LowInteractionMarkProps)
           onClick={(e) => e.stopPropagation()}
           className={cn(requestBadgeClass, "whitespace-nowrap uppercase tracking-[0.06em]", className)}
         >
-          <span className="size-1.5 shrink-0 rounded-full bg-violet-500" aria-hidden />
+          <span className="size-1.5 shrink-0 rounded-lg bg-violet-500" aria-hidden />
           Low Traction
         </button>
       </TooltipTrigger>

@@ -88,7 +88,7 @@ export default function OnboardingUserMenu({
           <button
             suppressHydrationWarning
             type="button"
-            className="inline-flex cursor-pointer items-center rounded-md p-0 text-accent"
+            className="inline-flex cursor-pointer items-center rounded-lg p-0 text-accent"
             aria-label="Account menu"
           >
             <Avatar className="relative size-6 overflow-visible bg-muted ring-1 ring-border">
@@ -118,7 +118,7 @@ export default function OnboardingUserMenu({
             <DropdownMenuItem
               onSelect={() => router.push(`/workspaces/${workspaceSlug}`)}
               className={cn(
-                "group flex h-9 items-center gap-2 rounded-md px-2.5",
+                "group flex h-9 items-center gap-2 rounded-lg px-2.5",
                 MENU_HOVER_ITEM_CLASS,
               )}
             >
@@ -129,7 +129,7 @@ export default function OnboardingUserMenu({
           <DropdownMenuItem
             onSelect={onSignOut}
             className={cn(
-              "group flex h-9 items-center gap-2 rounded-md px-2.5",
+              "group flex h-9 items-center gap-2 rounded-lg px-2.5",
               MENU_HOVER_ITEM_CLASS,
             )}
             aria-disabled={loading}
@@ -143,7 +143,7 @@ export default function OnboardingUserMenu({
           <DropdownMenuItem
             onSelect={() => setDeleteDialogOpen(true)}
             className={cn(
-              "group flex h-9 items-center gap-2 rounded-md px-2.5",
+              "group flex h-9 items-center gap-2 rounded-lg px-2.5",
               MENU_HOVER_ITEM_CLASS,
             )}
           >

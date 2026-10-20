@@ -123,7 +123,7 @@ export default function ReserveForm() {
               </div>
               <div className="flex items-center gap-2">
                 {checking ? (
-                  <div className="mt-1 h-4 w-24 bg-muted rounded animate-pulse" />
+                  <div className="mt-1 h-4 w-24 bg-muted rounded-lg animate-pulse" />
                 ) : available === true ? (
                   <div className="mt-1 text-xs text-emerald-600">Available</div>
                 ) : available === false ? (

@@ -1,38 +1,33 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState, useRef } from "react"
-import MentionList from "./MentionList"
-import { MentionTextarea } from "./MentionTextarea"
-import { Button } from "@featul/ui/components/button"
-import {
-  LoaderIcon,
-  ImageIcon,
-  LockIcon,
-  XMarkIcon,
-} from "@/components/global/icons";
+import React, { useEffect, useState, useRef } from "react";
+import Emoji from "./emoji";
+import Visibility from "./visibility";
+import MentionList from "./MentionList";
+import { MentionTextarea } from "./MentionTextarea";
+import { Button } from "@featul/ui/components/button";
+import { LoaderIcon, ImageIcon, XMarkIcon } from "@/components/global/icons";
 
-import { Tooltip, TooltipContent, TooltipTrigger } from "@featul/ui/components/tooltip"
-import { Toolbar, ToolbarSeparator, toolbarItemClass } from "@featul/ui/components/toolbar"
-import { cn } from "@featul/ui/lib/utils"
-import ContentImage from "@/components/global/ContentImage"
+import { commentActionIconClass } from "./styles";
+import ContentImage from "@/components/global/ContentImage";
 
-import { useImageUpload } from "../../hooks/useImageUpload"
-import { useMentions } from "../../hooks/useMentions"
-import { useCommentSubmit } from "../../hooks/useCommentSubmit"
-import type { CommentSurface } from "@/lib/comment/shared"
+import { useImageUpload } from "../../hooks/useImageUpload";
+import { useMentions } from "../../hooks/useMentions";
+import { useCommentSubmit } from "../../hooks/useCommentSubmit";
+import type { CommentSurface } from "@/lib/comment/shared";
 
 interface CommentFormProps {
-  postId: string
-  parentId?: string
-  onSuccess?: () => void
-  onBusyChange?: (busy: boolean) => void
-  placeholder?: string
-  autoFocus?: boolean
-  buttonText?: string
-  workspaceSlug?: string
-  surface?: CommentSurface
-  defaultInternal?: boolean
-  compact?: boolean
+  postId: string;
+  parentId?: string;
+  onSuccess?: () => void;
+  onBusyChange?: (busy: boolean) => void;
+  placeholder?: string;
+  autoFocus?: boolean;
+  buttonText?: string;
+  workspaceSlug?: string;
+  surface?: CommentSurface;
+  defaultInternal?: boolean;
+  compact?: boolean;
 }
 
 export default function CommentForm({
@@ -48,11 +43,11 @@ export default function CommentForm({
   defaultInternal = false,
   compact = false,
 }: CommentFormProps) {
-  const [content, setContent] = useState("")
-  const [isInternal, setIsInternal] = useState(defaultInternal)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const canMarkInternal = surface === "workspace" && Boolean(workspaceSlug)
-  const internalForced = Boolean(parentId && defaultInternal)
+  const [content, setContent] = useState("");
+  const [isInternal, setIsInternal] = useState(defaultInternal);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const canMarkInternal = surface === "workspace" && Boolean(workspaceSlug);
+  const internalForced = Boolean(parentId && defaultInternal);
 
   const {
     uploadedImage,
@@ -62,7 +57,7 @@ export default function CommentForm({
     handleFileSelect,
     handleRemoveImage,
     ALLOWED_IMAGE_TYPES,
-  } = useImageUpload(postId)
+  } = useImageUpload(postId);
 
   const {
     mentionOpen,
@@ -72,17 +67,17 @@ export default function CommentForm({
     handleKeyDown,
     insertMention,
     members,
-  } = useMentions(workspaceSlug, content, setContent, textareaRef)
+  } = useMentions(workspaceSlug, content, setContent, textareaRef);
   const mentionNames = React.useMemo(
     () => members.map((member) => member.name).filter(Boolean),
     [members],
-  )
+  );
 
   const resetForm = () => {
-    setContent("")
-    setUploadedImage(null)
-    setIsInternal(defaultInternal)
-  }
+    setContent("");
+    setUploadedImage(null);
+    setIsInternal(defaultInternal);
+  };
 
   const { isPending, handleSubmit } = useCommentSubmit({
     postId,
@@ -90,13 +85,16 @@ export default function CommentForm({
     surface,
     onSuccess,
     resetForm,
-  })
+  });
 
-  const isBusy = isPending || uploadingImage
+  const isBusy = isPending || uploadingImage;
+  const canSubmit = Boolean(content.trim() || uploadedImage) && !isBusy;
+  const submitLabel =
+    internalForced || isInternal ? "Add internal note" : buttonText;
   useEffect(() => {
-    onBusyChange?.(isBusy)
-    return () => onBusyChange?.(false)
-  }, [isBusy, onBusyChange])
+    onBusyChange?.(isBusy);
+    return () => onBusyChange?.(false);
+  }, [isBusy, onBusyChange]);
 
   return (
     <form
@@ -111,10 +109,10 @@ export default function CommentForm({
           value={content}
           mentionNames={mentionNames}
           onChange={(e) => {
-            const next = e.target.value
-            setContent(next)
-            const caret = e.target.selectionStart || next.length
-            checkForMention(next, caret)
+            const next = e.target.value;
+            setContent(next);
+            const caret = e.target.selectionStart || next.length;
+            checkForMention(next, caret);
           }}
           placeholder={placeholder}
           compact={compact}
@@ -123,19 +121,21 @@ export default function CommentForm({
           onKeyDown={handleKeyDown}
         />
 
-        {mentionOpen && filteredCandidates.length > 0 && textareaRef.current && (
-          <MentionList
-            candidates={filteredCandidates.map((u) => ({
-              id: u.userId,
-              name: u.name,
-              email: u.email,
-              image: u.image,
-            }))}
-            selectedIndex={mentionIndex}
-            onSelect={(user) => insertMention(user.name)}
-            className="left-2 top-full mt-1"
-          />
-        )}
+        {mentionOpen &&
+          filteredCandidates.length > 0 &&
+          textareaRef.current && (
+            <MentionList
+              candidates={filteredCandidates.map((u) => ({
+                id: u.userId,
+                name: u.name,
+                email: u.email,
+                image: u.image,
+              }))}
+              selectedIndex={mentionIndex}
+              onSelect={(user) => insertMention(user.name)}
+              className="left-2 top-full mt-1"
+            />
+          )}
       </div>
 
       {/* Image Preview */}
@@ -149,7 +149,7 @@ export default function CommentForm({
           <button
             type="button"
             onClick={() => handleRemoveImage()}
-            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md ring-1 ring-background hover:bg-destructive/90"
+            className="absolute -top-1.5 -right-1.5 z-20 flex size-4 cursor-pointer items-center justify-center rounded-lg bg-destructive text-destructive-foreground shadow-md ring-1 ring-background hover:bg-destructive/90"
             disabled={isPending || uploadingImage}
             aria-label="Remove image"
           >
@@ -159,7 +159,7 @@ export default function CommentForm({
       )}
 
       <div className="flex items-center justify-between gap-2">
-        <Toolbar variant="soft" size="sm" className="w-fit">
+        <div className="flex items-center gap-2">
           <input
             ref={fileInputRef}
             type="file"
@@ -170,12 +170,9 @@ export default function CommentForm({
           />
           <Button
             type="button"
-            size="xs"
+            size="icon-sm"
             variant="plain"
-            className={cn(
-              toolbarItemClass,
-              "w-8 px-0 text-foreground hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/15",
-            )}
+            className={commentActionIconClass}
             onClick={() => fileInputRef.current?.click()}
             disabled={isPending || uploadingImage || !!uploadedImage}
             aria-label="Add image"
@@ -187,67 +184,36 @@ export default function CommentForm({
             )}
           </Button>
 
+          <Emoji
+            value={content}
+            onChange={setContent}
+            textareaRef={textareaRef}
+            disabled={isBusy}
+          />
           {canMarkInternal && (
-            <>
-              <ToolbarSeparator className="self-stretch bg-border/40 dark:bg-white/10" />
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    size="xs"
-                    variant="plain"
-                    onClick={() => setIsInternal((prev) => !prev)}
-                    className={cn(
-                      toolbarItemClass,
-                      "w-8 px-0",
-                      isInternal && "bg-primary/10 text-primary dark:bg-primary/10",
-                    )}
-                    disabled={isPending || uploadingImage || internalForced}
-                    aria-label={
-                      isInternal
-                        ? "Disable internal comment"
-                        : "Enable internal comment"
-                    }
-                    aria-pressed={isInternal}
-                  >
-                    <LockIcon
-                      className={cn(
-                        "size-4",
-                        isInternal && "text-primary"
-                      )}
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top" sideOffset={4} className="w-auto whitespace-nowrap px-2 py-1 text-xs">
-                  {internalForced
-                    ? "Internal reply"
-                    : isInternal
-                      ? "Internal only"
-                      : "Make internal"}
-                </TooltipContent>
-              </Tooltip>
-            </>
+            <Visibility
+              internal={isInternal}
+              onChange={setIsInternal}
+              disabled={isBusy}
+              forced={internalForced}
+            />
           )}
-        </Toolbar>
+        </div>
 
         <div className="flex items-center gap-2">
           <Button
             type="submit"
             size="xs"
-            variant="outline"
-            className="h-8 bg-black/5 px-4 dark:bg-white/5"
-            disabled={
-              (!content.trim() && !uploadedImage) || isPending || uploadingImage
-            }
+            variant="default"
+            className="h-8 px-4"
+            disabled={!canSubmit}
+            aria-label={submitLabel}
+            aria-busy={isPending}
           >
-            {isPending ? (
-              <LoaderIcon className="h-3 w-3" />
-            ) : (
-              buttonText
-            )}
+            {isPending ? <LoaderIcon className="h-3 w-3" /> : submitLabel}
           </Button>
         </div>
       </div>
     </form>
-  )
+  );
 }

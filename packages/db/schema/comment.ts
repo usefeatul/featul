@@ -8,7 +8,9 @@ import {
   uuid,
   uniqueIndex,
   foreignKey,
+  check,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import { post } from "./post";
 import { user } from "./auth";
@@ -100,6 +102,24 @@ export const commentReaction = pgTable(
         "comment_reaction_comment_widget_user_type_unique",
       ).on(table.commentId, table.widgetUserId, table.type),
     }) as const,
+);
+
+// Emoji reactions are independent of the existing upvote/downvote records.
+export const commentEmojiReaction = pgTable(
+  "comment_emoji_reaction",
+  {
+    id: text("id").primaryKey().$defaultFn(() => createId()),
+    commentId: text("comment_id").notNull().references(() => comment.id, { onDelete: "cascade" }),
+    userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
+    fingerprint: text("fingerprint"),
+    emoji: text("emoji").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("comment_emoji_user_unique").on(table.commentId, table.userId, table.emoji),
+    uniqueIndex("comment_emoji_fingerprint_unique").on(table.commentId, table.fingerprint, table.emoji),
+    check("comment_emoji_actor_check", sql`(${table.userId} is not null) <> (${table.fingerprint} is not null)`),
+  ],
 );
 
 // Comment mentions for notifications

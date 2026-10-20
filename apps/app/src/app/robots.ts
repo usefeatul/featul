@@ -9,7 +9,7 @@ const RESERVED_SUBDOMAINS = new Set([
   "staging",
 ])
 
-const PUBLIC_ALLOW = ["/", "/roadmap", "/changelog", "/board/", "/p/"]
+const PUBLIC_ALLOW = ["/", "/roadmap", "/changelog", "/help", "/board/", "/p/"]
 const PUBLIC_DISALLOW = [
   "/api/",
   "/auth/",

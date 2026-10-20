@@ -29,6 +29,9 @@ type Props = {
   signatureName?: string
   brand?: Brand
   addressLines?: string[]
+  /** Footer opt-out link for subscription emails. */
+  unsubscribeUrl?: string
+  unsubscribeText?: string
 }
 
 const FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
@@ -208,6 +211,14 @@ export function BrandedEmail(props: Props) {
               app.featul.com
             </Link>
           </Text>
+          {props.unsubscribeUrl ? (
+            <Text className="email-muted" style={{ color: muted, fontSize: 12, lineHeight: "18px", margin: "8px 0 0 0" }}>
+              {props.unsubscribeText || "Don't want these emails?"}{" "}
+              <Link className="email-muted" href={props.unsubscribeUrl} style={{ color: muted, textDecoration: "underline", textUnderlineOffset: "3px" }}>
+                Unsubscribe
+              </Link>
+            </Text>
+          ) : null}
           {props.addressLines?.map((line, index) => (
             <Text key={index} className="email-muted" style={{ color: muted, fontSize: 12, lineHeight: "18px", margin: "4px 0 0 0" }}>
               {line}

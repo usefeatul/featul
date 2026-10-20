@@ -6,7 +6,7 @@ import {
   PopoverListItem,
 } from "@featul/ui/components/popover";
 import { AspectIcon } from "@featul/ui/icons/aspect";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import type { EditorSlashMenuProps } from "../../types";
@@ -100,7 +100,8 @@ export const EditorSlashMenu = ({
         onOpenAutoFocus={(e) => e.preventDefault()}
         className={cn(
           overlayDialogClass,
-          "z-50 flex w-80 flex-col gap-2 text-popover-foreground outline-hidden",
+          overlayRoundedClass,
+          "z-50 flex w-max max-w-80 flex-col gap-2 text-popover-foreground outline-hidden",
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2",
         )}
       >
@@ -108,7 +109,7 @@ export const EditorSlashMenu = ({
           <AspectIcon className="size-3.5 text-primary" />
           Commands
         </div>
-        <div className={cn(overlayInnerClass, "p-1")}>
+        <div className={cn(overlayInnerClass, overlayRoundedInnerClass, "p-1")}>
           {items.length === 0 ? (
             <div className="flex w-full items-center justify-center px-3 py-4 text-sm text-accent">
               No results

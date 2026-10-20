@@ -6,6 +6,7 @@ import {
   BoardIcon as WorkspaceBoardIcon,
   ChangelogIcon as WorkspaceChangelogIcon,
   DocsIcon as WorkspaceDocsIcon,
+  HelpCenterIcon as WorkspaceHelpIcon,
   DomainIcon as WorkspaceDomainIcon,
   ExportIcon as WorkspaceExportIcon,
   CollectIcon as WorkspaceFeedbackIcon,
@@ -15,6 +16,7 @@ import {
   RoadmapIcon as WorkspaceRoadmapIcon,
   ShieldIcon as WorkspaceSecurityIcon,
   SettingIcon as WorkspaceSettingsIcon,
+  ShareIcon,
   PlannedIcon,
   ProgressIcon,
   ReviewIcon,
@@ -33,7 +35,7 @@ function w(slug: string, p: string) {
 }
 
 /** Public board origin: custom domain if set, else `{slug}.featul.com`. */
-function publicBoardUrlForWorkspace(
+export function publicBoardUrlForWorkspace(
   slug: string,
   customDomain?: string | null,
 ) {
@@ -74,16 +76,16 @@ export function buildTopNav(slug: string): NavItem[] {
     );
   }
   return [
+    { label: "Pending", href: buildHref(["PENDING"]), icon: PendingIcon },
+    { label: "Review", href: buildHref(["REVIEW"]), icon: ReviewIcon },
     { label: "Planned", href: buildHref(["PLANNED"]), icon: PlannedIcon },
     { label: "Progress", href: buildHref(["PROGRESS"]), icon: ProgressIcon },
-    { label: "Review", href: buildHref(["REVIEW"]), icon: ReviewIcon },
     { label: "Completed", href: buildHref(["COMPLETED"]), icon: CompletedIcon },
-    { label: "Pending", href: buildHref(["PENDING"]), icon: PendingIcon },
     { label: "Closed", href: buildHref(["CLOSED"]), icon: ClosedIcon },
   ];
 }
 
-/** Roadmap, changelog, members, public board, and settings links. */
+/** Roadmap, changelog, help center, members, public board, and settings links. */
 export function buildMiddleNav(
   slug: string,
   customDomain?: string | null,
@@ -95,7 +97,9 @@ export function buildMiddleNav(
       href: w(slug, "/changelog"),
       icon: WorkspaceChangelogIcon,
     },
+    { label: "Help Center", href: w(slug, "/help"), icon: WorkspaceHelpIcon },
     { label: "Members", href: w(slug, "/members"), icon: WorkspaceMembersIcon },
+    { label: "Share", href: w(slug, "/share"), icon: ShareIcon },
     {
       label: "My Board",
       href: publicBoardUrlForWorkspace(slug, customDomain),
@@ -128,6 +132,7 @@ const SETTINGS_ICONS: Record<string, NavItem["icon"]> = {
   team: WorkspaceMembersIcon,
   feedback: WorkspaceFeedbackIcon,
   changelog: WorkspaceChangelogIcon,
+  help: WorkspaceHelpIcon,
   board: WorkspaceBoardIcon,
   billing: WorkspaceBillingIcon,
   domain: WorkspaceDomainIcon,
@@ -144,6 +149,30 @@ export function buildSettingsNav(slug: string): NavItem[] {
     icon: SETTINGS_ICONS[section.value] || WorkspaceSettingsIcon,
     replace: true,
   }));
+}
+
+/** Named groups for the settings sidebar, keeping the flat navigation API available. */
+export function buildSettingsNavGroups(
+  slug: string,
+): { title: string; items: NavItem[] }[] {
+  const items = buildSettingsNav(slug);
+  return [
+    {
+      title: "Personal",
+      items: [
+        {
+          label: "Account",
+          href: w(slug, "/account/profile"),
+          icon: WorkspaceAccountIcon,
+          match: w(slug, "/account"),
+        },
+      ],
+    },
+    ...(["Workspace", "Product", "Connections"] as const).map((title) => ({
+      title,
+      items: items.filter((_, index) => SECTIONS[index]?.group === title),
+    })),
+  ];
 }
 
 const ACCOUNT_ICONS: Record<string, NavItem["icon"]> = {

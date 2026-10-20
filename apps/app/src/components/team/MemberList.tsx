@@ -70,7 +70,7 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
                     ) : null}
                     <span
                       className={cn(
-                        "hidden h-5 rounded-md px-2 text-sm capitalize leading-5 sm:inline-block",
+                        "hidden h-5 rounded-lg px-2 text-sm capitalize leading-5 sm:inline-block",
                         member.isOwner
                           ? "bg-muted text-primary"
                           : roleBadgeClass(member.role, member.isOwner),

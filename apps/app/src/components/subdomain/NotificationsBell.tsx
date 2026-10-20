@@ -164,7 +164,7 @@ export default function NotificationsBell({
             {unread > 0 ? (
               <OverlayChip
                 className="pointer-events-none absolute top-0 right-0 translate-x-[35%] -translate-y-[35%] rounded-lg p-px"
-                innerClassName="h-3 min-h-3 min-w-3 rounded-md bg-primary px-0.5 text-[9px] font-semibold leading-none text-primary-foreground dark:bg-primary"
+                innerClassName="h-3 min-h-3 min-w-3 rounded-lg bg-primary px-0.5 text-[9px] font-semibold leading-none text-primary-foreground dark:bg-primary"
               >
                 {unread > 99 ? "99+" : unread}
               </OverlayChip>
@@ -176,7 +176,7 @@ export default function NotificationsBell({
         unstyled
         side={side}
         align={align}
-        sideOffset={8}
+        sideOffset={linkMode === "workspace" ? 24 : 8}
         className="w-auto border-0 bg-transparent p-0 shadow-none"
       >
         <NotificationsPanel

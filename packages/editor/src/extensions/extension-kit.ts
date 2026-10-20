@@ -67,38 +67,15 @@ export const ExtensionKit = ({
     // Markdown extension for parsing and serializing markdown
     Markdown,
 
-    // StarterKit with customizations
+    // StarterKit with customizations. Node styling lives in styles/editor.css (the content
+    // design), so these configs carry behaviour only, not utility classes.
     StarterKit.configure({
       codeBlock: false, // Using custom CodeBlock with syntax highlighting
       heading: {
         levels: [1, 2, 3],
-        HTMLAttributes: {
-          class: "font-bold",
-        },
-      },
-      bulletList: {
-        HTMLAttributes: {
-          class: cn("list-outside list-disc pl-4"),
-        },
-      },
-      orderedList: {
-        HTMLAttributes: {
-          class: cn("list-outside list-decimal pl-4"),
-        },
-      },
-      listItem: {
-        HTMLAttributes: {
-          class: cn("leading-normal"),
-        },
-      },
-      blockquote: {
-        HTMLAttributes: {
-          class: cn("border-l border-l-2 pl-2"),
-        },
       },
       code: {
         HTMLAttributes: {
-          class: cn("rounded-md  bg-muted px-1.5 py-1 font-medium font-mono"),
           spellcheck: "false",
         },
       },
@@ -111,11 +88,6 @@ export const ExtensionKit = ({
           target: "_blank",
         },
         openOnClick: false,
-      },
-      horizontalRule: {
-        HTMLAttributes: {
-          class: cn("mt-4 mb-6 border-muted-foreground border-t"),
-        },
       },
       dropcursor: {
         color: "var(--border)",
@@ -266,16 +238,9 @@ export const ExtensionKit = ({
     }),
 
     // Task list
-    TaskList.configure({
-      HTMLAttributes: {
-        class: "list-none p-0",
-      },
-    }),
+    TaskList,
     TaskItem.configure({
       nested: true,
-      HTMLAttributes: {
-        class: "flex",
-      },
     }),
 
     // Text styling kit (Tiptap v3)

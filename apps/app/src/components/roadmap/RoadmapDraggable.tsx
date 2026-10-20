@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { raisedCardClass } from "@featul/ui/lib/overlay";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@featul/ui/lib/utils";
@@ -34,7 +35,8 @@ export default function RoadmapDraggable({
         transform: transform ? CSS.Translate.toString(transform) : undefined,
       }}
       className={cn(
-        "h-[108px] cursor-grab overflow-hidden rounded-lg border border-border/70 bg-card shadow-none transition-[background-color,border-color,opacity] hover:border-border active:cursor-grabbing dark:border-white/[0.08] dark:hover:border-white/[0.14]",
+        raisedCardClass,
+        "h-[108px] cursor-grab overflow-hidden transition-[border-color,opacity,filter] hover:border-black/[0.14] active:cursor-grabbing dark:hover:border-white/[0.14] dark:hover:brightness-110",
         isSaving && "border-primary/60 opacity-80",
         isDragging && "opacity-0",
         className,

@@ -250,6 +250,13 @@ export const activityLog = pgTable(
         table.entity,
         table.entityId,
       ),
+      activityPostTimelineIdx: index("activity_post_timeline_idx").on(
+        table.workspaceId,
+        table.entity,
+        table.entityId,
+        table.createdAt.desc(),
+        table.id.desc(),
+      ),
       activityCreatedAtIdx: index("activity_created_at_idx").on(
         table.createdAt,
       ),

@@ -9,6 +9,9 @@ export type DitherColor =
   | "red"
   | "grey";
 
+/** The kit's light purple, shared by the contour artwork and app patterns. */
+export const LIGHT_PURPLE: Rgb = [169, 165, 242];
+
 export type Seed = { fill: Rgb; line: Rgb; star: Rgb };
 
 export const PALETTE: Record<DitherColor, Seed> = {

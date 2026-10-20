@@ -5,6 +5,9 @@ export const ROADMAP_STATUSES = ["planned", "progress", "review", "completed", "
 
 export type RoadmapStatus = (typeof ROADMAP_STATUSES)[number]
 
+/** Board column order, matching the sidebar request nav. Display only; persisted flags still use ROADMAP_STATUSES. */
+export const ROADMAP_COLUMN_ORDER: readonly RoadmapStatus[] = ["pending", "review", "planned", "progress", "completed", "closed"]
+
 const ROADMAP_STATUS_ALIASES: Record<string, RoadmapStatus> = {
   pending: "pending",
   review: "review",

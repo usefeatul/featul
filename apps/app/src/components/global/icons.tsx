@@ -12,6 +12,8 @@ import {
   IconPuzzleFilled,
   IconSettingsFilled,
   IconBellFilled,
+  IconMoonFilled,
+  IconSunFilled,
   IconCircleCheckFilled,
   IconClockFilled,
   IconCopyFilled,
@@ -19,6 +21,8 @@ import {
   IconTagFilled,
   IconTrashFilled,
   IconPhotoFilled,
+  IconMoodSmileFilled,
+  IconThumbUpFilled,
   IconLockFilled,
   IconFlagFilled,
   IconSquareRoundedPlusFilled,
@@ -35,15 +39,19 @@ import {
   IconSortDescending2Filled,
   IconListCheckFilled,
   IconInfoCircleFilled,
+  IconHelpCircleFilled,
+  IconBookFilled,
+  IconBoltFilled,
+  IconSparklesFilled,
+  IconBulbFilled,
+  IconThumbDownFilled,
+  IconFileTextFilled,
+  IconChartAreaFilled,
+  IconEyeFilled,
   type Icon as TablerIcon,
   type IconProps as TablerIconProps,
 } from "@tabler/icons-react";
-import {
-  LogoutIcon,
-  ShareIcon,
-  LowTractionIcon,
-  FilterIcon,
-} from "./artwork";
+import { LogoutIcon, ShareIcon, LowTractionIcon, FilterIcon, NoCollectionIcon } from "./artwork";
 export {
   LogoutIcon,
   RoadmapIcon,
@@ -51,6 +59,7 @@ export {
   ShareIcon,
   LowTractionIcon,
   FilterIcon,
+  NoCollectionIcon,
 };
 export { HomeIcon } from "@featul/ui/icons/home";
 import {
@@ -64,6 +73,8 @@ import {
   ArrowRight as LucideArrowRight,
   ArrowUp as LucideArrowUp,
   ArrowUpRight as LucideArrowUpRight,
+  TrendingUp as LucideTrendingUp,
+  TrendingDown as LucideTrendingDown,
   CalendarCheck2 as LucideCalendarCheck2,
   Camera as LucideCamera,
   Check as LucideCheck,
@@ -86,6 +97,7 @@ import {
   Fingerprint as LucideFingerprint,
   GitMerge as LucideGitMerge,
   GripVertical as LucideGripVertical,
+  Headset as LucideHeadset,
   History as LucideHistory,
   KeyRound as LucideKeyRound,
   Lightbulb as LucideLightbulb,
@@ -95,6 +107,7 @@ import {
   Mail as LucideMail,
   Maximize2 as LucideMaximize2,
   Menu as LucideMenu,
+  Rss as LucideRss,
   MessageCircle as LucideMessageCircle,
   MessageSquareText as LucideMessageSquareText,
   MoreHorizontal as LucideMoreHorizontal,
@@ -108,6 +121,7 @@ import {
   Undo2 as LucideUndo2,
   Upload as LucideUpload,
   UserRoundPlus as LucideUserRoundPlus,
+  UsersRound as LucideUsersRound,
   Wand2 as LucideWand2,
   X as LucideX,
 } from "lucide-react";
@@ -176,6 +190,15 @@ export const ArchiveIcon = solid(IconArchiveFilled);
 export const BillingIcon = solid(IconCreditCardFilled);
 export const DocsIcon = solid(IconFolderFilled);
 export const ExportIcon = solid(IconDatabaseFilled);
+export const HelpCenterIcon = solid(IconHelpCircleFilled);
+export const BookIcon = solid(IconBookFilled);
+export const BoltIcon = solid(IconBoltFilled);
+export const SparklesIcon = solid(IconSparklesFilled);
+export const BulbIcon = solid(IconBulbFilled);
+export const DislikeIcon = solid(IconThumbDownFilled);
+export const ArticleIcon = solid(IconFileTextFilled);
+export const AnalyticsIcon = solid(IconChartAreaFilled);
+export const EyeIcon = solid(IconEyeFilled);
 const LeftPanelIcon = solid(IconLayoutSidebarFilled);
 const RightPanelIcon = solid(IconLayoutSidebarRightFilled);
 
@@ -207,6 +230,9 @@ export const ArrowBigUp = outline(LucideArrowBigUp);
 export const ArrowLeft = outline(LucideArrowLeft);
 export const ArrowRight = outline(LucideArrowRight);
 export const ArrowUp = outline(LucideArrowUp);
+export const MoonIcon = solid(IconMoonFilled);
+export const SunIcon = solid(IconSunFilled);
+export const RssIcon = outline(LucideRss);
 export const CalendarCheck2 = outline(LucideCalendarCheck2);
 export const CalendarDays = solid(IconCalendarFilled);
 export const Camera = outline(LucideCamera);
@@ -222,6 +248,7 @@ export const Code2 = outline(LucideCode2);
 export const EllipsisVertical = outline(LucideEllipsisVertical);
 export const FileText = outline(LucideFileText);
 export const FingerprintIcon = outline(LucideFingerprint);
+export const Headset = outline(LucideHeadset);
 export const History = outline(LucideHistory);
 export const Link2 = outline(LucideLink2);
 export const ListChecks = outline(LucideListChecks);
@@ -241,6 +268,7 @@ export const Square = outline(LucideSquare);
 export const Undo2 = outline(LucideUndo2);
 export const Upload = outline(LucideUpload);
 export const UserRoundPlus = outline(LucideUserRoundPlus);
+export const UsersRound = outline(LucideUsersRound);
 export const Wand2 = outline(LucideWand2);
 export const X = outline(LucideX);
 
@@ -249,6 +277,8 @@ export const SearchIcon = WorkspaceSearchIcon;
 
 export const ArrowLeftIcon = ArrowLeft;
 export const ArrowIcon = outline(LucideArrowUpRight);
+export const TrendUpIcon = outline(LucideTrendingUp);
+export const TrendDownIcon = outline(LucideTrendingDown);
 export const AiIcon = Sparkles;
 export const AvatarIcon = outline(LucideCircleUserRound);
 export const CalendarIcon = CalendarDays;
@@ -318,3 +348,14 @@ export const MoreIcon = MenuIcon;
 export const ArrowBackIcon = ArrowLeft;
 export { WorkspaceSwitcherIcon } from "@featul/ui/icons/workspace";
 export { SelectBoxIcon } from "@featul/ui/icons/select-box";
+
+export const EmojiIcon = solid(IconMoodSmileFilled);
+export const LikeIcon = solid(IconThumbUpFilled);
+
+/** Brand marks used by workspace sharing actions. */
+export {
+  IconBrandX as XBrandIcon,
+  IconBrandLinkedin as LinkedInBrandIcon,
+  IconBrandFacebook as FacebookBrandIcon,
+  IconBrandReddit as RedditBrandIcon,
+} from "@tabler/icons-react";

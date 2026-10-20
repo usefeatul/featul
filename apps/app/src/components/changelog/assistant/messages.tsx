@@ -44,7 +44,7 @@ export function Messages({
             className={cn(
               "min-w-0 text-sm leading-relaxed",
               message.role === "user"
-                ? "max-w-[88%] rounded-xl bg-black/5 px-3 py-2.5 dark:bg-white/[0.06]"
+                ? "max-w-[88%] rounded-lg bg-black/5 px-3 py-2.5 dark:bg-white/[0.06]"
                 : "flex-1 pt-0.5",
               message.status === "error" && "text-destructive",
             )}
@@ -79,7 +79,7 @@ export function Messages({
                 {message.attachedTitles.map((title) => (
                   <span
                     key={title}
-                    className="inline-flex max-w-full truncate rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary"
+                    className="inline-flex max-w-full truncate rounded-lg bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary"
                   >
                     @{title}
                   </span>
@@ -92,7 +92,7 @@ export function Messages({
                 {message.suggestedTags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-md bg-black/5 px-2 py-1 text-[11px] font-medium text-muted-foreground dark:bg-white/[0.06]"
+                    className="rounded-lg bg-black/5 px-2 py-1 text-[11px] font-medium text-muted-foreground dark:bg-white/[0.06]"
                   >
                     {tag}
                   </span>

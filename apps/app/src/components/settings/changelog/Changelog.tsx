@@ -19,7 +19,7 @@ export default function ChangelogSection({
   customDomain?: string | null;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <ChangelogVisibility slug={slug} initialIsVisible={initialIsVisible} />
       <ChangelogRssFeed slug={slug} customDomain={customDomain} />
       <ChangelogTags slug={slug} initialPlan={initialPlan} initialTags={initialTags} />

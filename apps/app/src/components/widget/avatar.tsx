@@ -11,10 +11,10 @@ type Props = {
 };
 
 const widgetAvatarShellClass =
-  "relative inline-flex shrink-0 overflow-visible rounded-full border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-shell))] after:pointer-events-none after:absolute after:inset-px after:rounded-full after:ring-1 after:ring-[rgb(var(--widget-fg)/0.1)] after:ring-inset";
+  "relative inline-flex shrink-0 overflow-visible rounded-lg border border-[rgb(var(--widget-fg)/0.1)] bg-[rgb(var(--widget-shell))] after:pointer-events-none after:absolute after:inset-px after:rounded-lg after:ring-1 after:ring-[rgb(var(--widget-fg)/0.1)] after:ring-inset";
 
 const widgetAvatarInnerClass =
-  "size-full overflow-hidden rounded-full bg-[rgb(var(--widget-fg)/0.08)]";
+  "size-full overflow-hidden rounded-lg bg-[rgb(var(--widget-fg)/0.08)]";
 
 export function WidgetAuthorAvatar({ name, image, className = "size-6" }: Props) {
   const [failed, setFailed] = React.useState(false);

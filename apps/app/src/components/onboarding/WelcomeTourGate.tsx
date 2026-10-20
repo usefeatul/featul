@@ -27,13 +27,15 @@ export function WelcomeTourGate({
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
+    // Never over the help import dialog; a pending tour opens once it closes instead.
+    if (searchParams.get("import") === "1") return;
     const shouldWelcome =
       searchParams.get("welcome") === "1" || hasPendingWelcomeTour();
     if (!shouldWelcome || hasCompletedWelcomeTour(userId)) {
       return;
     }
     setOpen(true);
-  }, [searchParams, userId]);
+  }, [pathname, searchParams, userId]);
 
   const clearWelcomeParam = React.useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());

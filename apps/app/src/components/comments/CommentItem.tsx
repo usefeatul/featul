@@ -13,7 +13,7 @@ import { getInitials, getPrivacySafeDisplayUser } from "@/utils/user"
 import CommentHeader from "./CommentHeader"
 import CommentContent from "./CommentContent"
 import CommentEditor from "./CommentEditor"
-import CommentVote from "./CommentVote"
+import Reactions from "./reactions"
 import CommentReplyButton from "./actions/CommentReplyAction"
 import CommentActions from "./actions/CommentActions"
 import { useCommentEdit } from "../../hooks/useCommentEdit"
@@ -148,15 +148,8 @@ export default function CommentItem({
             </div>
 
             {!isEditing ? (
-              <div className="mt-2">
-                <CommentVote
-                  commentId={comment.id}
-                  postId={comment.postId}
-                  surface={surface}
-                  initialUpvotes={comment.upvotes}
-                  initialDownvotes={comment.downvotes}
-                  initialUserVote={comment.userVote}
-                />
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <Reactions commentId={comment.id} postId={comment.postId} surface={surface} reactions={comment.reactions} />
               </div>
             ) : null}
           </div>

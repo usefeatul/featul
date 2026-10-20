@@ -46,7 +46,7 @@ export default function UserDropdownQuickSwitch({
         size="icon-sm"
         onClick={onOpenMenu}
         disabled={isBusy}
-        className="size-6 rounded-md bg-background px-1 text-[10px] font-medium text-accent ring-1 ring-border/70 transition-colors hover:bg-muted hover:text-foreground hover:ring-primary focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+        className="size-6 rounded-lg bg-background px-1 text-[10px] font-medium text-accent ring-1 ring-border/70 transition-colors hover:bg-muted hover:text-foreground hover:ring-primary focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
         aria-label={`View ${quickAccounts.length} switchable accounts`}
         title={`View ${quickAccounts.length} switchable accounts`}
       >
@@ -74,7 +74,7 @@ export default function UserDropdownQuickSwitch({
               onOpenAccountActions(event, account);
             }}
             disabled={isBusy}
-            className="size-5.5 rounded-full p-0 bg-background ring-1 ring-border/70 transition-colors hover:ring-primary hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+            className="size-5.5 rounded-lg p-0 bg-background ring-1 ring-border/70 transition-colors hover:ring-primary hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
             aria-label={`Switch to ${account.name}`}
             title={`${account.name} (right-click for actions)`}
           >

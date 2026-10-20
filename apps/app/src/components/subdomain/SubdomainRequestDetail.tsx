@@ -1,5 +1,6 @@
 "use client";
 
+
 import React from "react";
 import type { CommentData } from "../../types/comment";
 import PostSidebar from "./PostSidebar";
@@ -30,23 +31,21 @@ export default function SubdomainRequestDetail({
 
   return (
     <section className="min-w-0 mb-12">
-      <RequestHeader sidebarPosition={sidebarPosition} backLink={backLink} />
-
-      {/* Main Content Grid */}
-      <div
-        className={subdomainColumns(sidebarPosition)}
-      >
+      <div className={subdomainColumns(sidebarPosition)}>
         {/* Left Sidebar */}
         {sidebarPosition === "left" ? (
           <PostSidebar post={post} workspaceSlug={workspaceSlug} />
         ) : null}
 
-        <RequestContent
-          post={post}
-          workspaceSlug={workspaceSlug}
-          initialComments={initialComments}
-          initialCollapsedIds={initialCollapsedIds}
-        />
+        <div className="flex min-w-0 flex-col">
+          <RequestHeader backLink={backLink} />
+          <RequestContent
+            post={post}
+            workspaceSlug={workspaceSlug}
+            initialComments={initialComments}
+            initialCollapsedIds={initialCollapsedIds}
+          />
+        </div>
 
         {/* Right Sidebar */}
         {sidebarPosition === "right" ? (

@@ -195,10 +195,10 @@ export function Home({
               className={`flex flex-col gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] ${px} py-3.5 last:border-b-0`}
             >
               <div className="flex items-center gap-2">
-                <Bone className="h-2.5 w-14 rounded-full" />
-                <Bone className="h-2.5 w-16 rounded-full" />
+                <Bone className="h-2.5 w-14 rounded-lg" />
+                <Bone className="h-2.5 w-16 rounded-lg" />
               </div>
-              <Bone className="mt-1 h-3.5 w-[82%] rounded-full" />
+              <Bone className="mt-1 h-3.5 w-[82%] rounded-lg" />
             </div>
           ))}
         </div>
@@ -209,7 +209,7 @@ export function Home({
               key={entry.id}
               type="button"
               onClick={() => onOpenChangelog(entry.id)}
-              className={`flex w-full flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] ${px} py-3.5 text-left last:border-b-0`}
+              className={`flex w-full cursor-pointer flex-col items-start gap-1.5 border-b border-[rgb(var(--widget-fg)/0.1)] ${px} py-3.5 text-left transition-colors last:border-b-0 hover:bg-[rgb(var(--widget-fg)/0.03)]`}
             >
               <span className="min-w-0 text-sm font-medium leading-snug text-[rgb(var(--widget-fg))]">
                 {entry.title}
@@ -290,7 +290,21 @@ export function Home({
           onClick={() => onOpenChangelog(featured.id)}
           className={`group w-full cursor-pointer border-b border-dashed border-[rgb(var(--widget-fg)/0.14)] ${px} pb-6 text-left`}
         >
-          <h2 className="text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))]">
+          <span
+            className="mb-2.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold"
+            style={{
+              color: accent,
+              backgroundColor: `color-mix(in srgb, ${accent} 12%, transparent)`,
+            }}
+          >
+            <span
+              aria-hidden
+              className="size-1.5 rounded-full"
+              style={{ backgroundColor: accent }}
+            />
+            Latest update
+          </span>
+          <h2 className="text-[22px] font-semibold leading-snug tracking-tight text-[rgb(var(--widget-fg))] transition-colors group-hover:text-[rgb(var(--widget-fg)/0.85)]">
             {featured.title}
           </h2>
           <UpdateByline entry={featured} accent={accent} />
@@ -301,7 +315,7 @@ export function Home({
           ) : null}
           <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-[rgb(var(--widget-fg)/0.5)] transition-colors group-hover:text-primary">
             Read update
-            <ChevronRight className="size-3.5" />
+            <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />
           </span>
         </button>
       ) : null}

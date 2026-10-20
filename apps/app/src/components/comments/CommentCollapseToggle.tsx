@@ -24,7 +24,7 @@ export default function CommentCollapseToggle({
     <button
       type="button"
       onClick={onToggle}
-      className={cn(commentBadgeClass, "cursor-pointer hover:bg-black/[0.08] focus-visible:outline-2 focus-visible:outline-ring dark:hover:bg-[#303030]", className)}
+      className={cn(commentBadgeClass, "cursor-pointer hover:bg-black/[0.08] focus-visible:outline-2 focus-visible:outline-ring dark:hover:bg-muted", className)}
       aria-expanded={!isCollapsed}
       aria-label={isCollapsed ? "Expand replies" : "Collapse replies"}
     >

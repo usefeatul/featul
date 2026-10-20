@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import { useId, type SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement> & { size?: number };
 
@@ -50,20 +50,43 @@ export function LogoutIcon({ size = 20, ...props }: IconProps) {
 }
 
 
-export function ShareIcon(props: SVGProps<SVGSVGElement>) {
+export function ShareIcon({ size = 18, ...props }: IconProps) {
   return (
     <svg
-      width={24}
-      height={24}
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="currentColor"
-      aria-hidden="true"
+      aria-hidden={props["aria-label"] ? undefined : true}
       {...props}
     >
-      <path d="m6 11 12-6 .9 1.8-12 6L6 11Zm0 2 12 6 .9-1.8-12-6L6 13Z" />
-      <circle cx={6} cy={12} r={3.5} />
-      <circle cx={18} cy={6} r={3.5} />
-      <circle cx={18} cy={18} r={3.5} />
+      <path d="M11.3 2.7a1 1 0 0 1 1.4 0l3.6 3.6a1 1 0 0 1-.7 1.7H13v6a1 1 0 0 1-2 0V8H8.4a1 1 0 0 1-.7-1.7l3.6-3.6Z" />
+      <path d="M4 13a3 3 0 0 1 3-3h2.5v4a2.5 2.5 0 0 0 5 0v-4H17a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-5Z" />
+    </svg>
+  );
+}
+
+const BOOK_PATH =
+  "M21.5 5.134a1 1 0 0 1 .493 .748l.007 .118v13a1 1 0 0 1 -1.5 .866a8 8 0 0 0 -7.5 -.266v-15.174a10 10 0 0 1 8.5 .708m-10.5 -.707l.001 15.174a8 8 0 0 0 -7.234 .117l-.327 .18l-.103 .044l-.049 .016l-.11 .026l-.061 .01l-.117 .006h-.042l-.11 -.012l-.077 -.014l-.108 -.032l-.126 -.056l-.095 -.056l-.089 -.067l-.06 -.056l-.073 -.082l-.064 -.089l-.022 -.036l-.032 -.06l-.044 -.103l-.016 -.049l-.026 -.11l-.01 -.061l-.004 -.049l-.002 -13.068a1 1 0 0 1 .5 -.866a10 10 0 0 1 8.5 -.707";
+
+/** "No collection": the filled book (the default collection icon) with a slash cut through it. */
+export function NoCollectionIcon({ size = 18, ...props }: IconProps) {
+  const cut = useId();
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden={props["aria-label"] ? undefined : true}
+      {...props}
+    >
+      <mask id={cut}>
+        <rect width="24" height="24" fill="#fff" />
+        <path d="M3 3l18 18" stroke="#000" strokeWidth="5" strokeLinecap="round" />
+      </mask>
+      <path d={BOOK_PATH} mask={`url(#${cut})`} />
+      <path d="M3 3l18 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }

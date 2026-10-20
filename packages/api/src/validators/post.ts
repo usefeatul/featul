@@ -32,6 +32,11 @@ const postImagesSchema = z
 
 export const byIdSchema = z.object({ postId: z.string().min(1) })
 
+export const postActivitySchema = byIdSchema.extend({
+  surface: z.enum(["workspace", "public"]).default("public"),
+  offset: z.coerce.number().int().min(0).max(100000).default(0),
+})
+
 export const updatePostMetaSchema = z.object({
   postId: z.string().min(1),
   roadmapStatus: z.string().min(1).max(64).optional(),

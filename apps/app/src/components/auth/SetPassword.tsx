@@ -108,9 +108,8 @@ export default function SetPassword() {
                 return;
             }
 
-            toast.success("Password set successfully! You can now enable 2FA.");
-            // Redirect back to security settings (or /start if no redirect param)
-            router.push(redirectUrl);
+            toast.success("Password set. Please sign in again.");
+            window.location.replace(`/auth/signin?redirect=${encodeURIComponent(redirectUrl)}`);
         } catch (e: unknown) {
             const msg = e instanceof Error ? e.message : "Failed to set password";
             setError(msg);
@@ -155,7 +154,6 @@ export default function SetPassword() {
                             id="email"
                             value={email}
                             disabled
-                            className="bg-muted"
                         />
                         <p className={styles.mutedTextCls}>
                             This is the email associated with your account

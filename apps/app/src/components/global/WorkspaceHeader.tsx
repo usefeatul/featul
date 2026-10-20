@@ -6,10 +6,7 @@ import { Button } from "@featul/ui/components/button";
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 
 import { Switch } from "@featul/ui/components/switch";
-import {
-  ChevronLeftIcon,
-  Plus,
-} from "@/components/global/icons";
+import { ChevronLeftIcon, Plus } from "@/components/global/icons";
 import { SECTIONS, WORKSPACE_TITLES, getSectionMeta } from "@/config/sections";
 import { getAccountSectionMeta } from "@/config/account/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
@@ -21,6 +18,8 @@ import {
   type EditorAction,
 } from "@/components/changelog/EditorHeaderContext";
 import ImportNotraDialog from "@/components/changelog/ImportNotraDialog";
+import { HelpHeaderActions } from "@/components/help/HelpHeaderActions";
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import {
   Tooltip,
@@ -38,8 +37,11 @@ function resolveTitle(segment: string): string {
   return found ? found.label : "";
 }
 
-const compactActionButtonClass =
-  "size-8 rounded-md border-0 bg-black/5 p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground data-[state=open]:bg-black/[0.06] dark:bg-[#292929] dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
+// Matches the requests/roadmap header buttons.
+const compactActionButtonClass = cn(
+  raisedSurfaceClass,
+  "size-8 rounded-lg p-0 text-accent ring-0 before:hidden hover:text-foreground hover:brightness-[0.98] data-[state=open]:brightness-[0.98] dark:hover:brightness-125 dark:data-[state=open]:brightness-125",
+);
 
 function EditorActionButton({ action }: { action: EditorAction }) {
   const label = action.label || "Back to changelog";
@@ -58,7 +60,7 @@ function EditorActionButton({ action }: { action: EditorAction }) {
       title={action.shortcut ? undefined : label}
       className={cn(
         compactActionButtonClass,
-        action.active && "bg-black/[0.08] text-foreground dark:bg-[#303030]",
+        action.active && "text-primary hover:text-primary dark:text-primary",
       )}
     >
       {action.icon}
@@ -103,6 +105,14 @@ export default function WorkspaceHeader({
   const showRoadmapActions = rest[0] === "roadmap" && rest.length === 1;
   const showChangelogActions = rest[0] === "changelog" && rest.length === 1;
   const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2;
+  const showHelpActions = rest[0] === "help" && rest.length === 1;
+  // Help Center sub-pages that get a breadcrumb instead of the article editor chrome.
+  const helpSubpage =
+    rest[0] === "help" ? ({ analytics: "Analytics" } as Record<string, string>)[rest[1] ?? ""] : undefined;
+  const isHelpAnalytics = Boolean(helpSubpage);
+  const showHelpEditActions =
+    rest[0] === "help" && rest.length >= 2 && !isHelpAnalytics;
+  const showEditorActions = showChangelogEditActions || showHelpEditActions;
   const isMembersSection = rest[0] === "members";
   const isMemberDetail = isMembersSection && rest.length > 1;
   const isSettingsSection = rest[0] === "settings";
@@ -116,7 +126,8 @@ export default function WorkspaceHeader({
   const editorContext = useEditorHeaderActionsOptional();
   const actions = editorActions ?? editorContext?.actions ?? [];
   const hasEmbeddedEditorHeader =
-    rest[0] === "changelog" && (rest[1] === "new" || rest[2] === "edit");
+    (rest[0] === "changelog" || rest[0] === "help") &&
+    (rest[1] === "new" || rest[2] === "edit");
   let title = rest.length === 0 ? "Requests" : "";
   if (isSettingsSection) {
     title = settingsMeta?.label || "Settings";
@@ -129,6 +140,10 @@ export default function WorkspaceHeader({
   if (showChangelogEditActions) {
     title = rest[1] === "new" ? "New changelog" : "Edit changelog";
   }
+  if (showHelpEditActions) {
+    title = rest[1] === "new" ? "New article" : "Edit article";
+  }
+  if (helpSubpage) title = helpSubpage;
 
   const pageActions = isMemberDetail ? (
     <Toolbar size="sm">
@@ -173,13 +188,21 @@ export default function WorkspaceHeader({
         </Link>
       </Button>
     </div>
-  ) : showChangelogEditActions && actions.length > 0 ? (
+  ) : showHelpActions ? (
+    <HelpHeaderActions
+      workspaceSlug={workspaceSlug}
+      buttonClassName={compactActionButtonClass}
+    />
+  ) : showEditorActions && actions.length > 0 ? (
     <div className="ml-auto flex shrink-0 items-center gap-1">
       {actions.map((action) =>
         action.type === "switch" ? (
           <div
             key={action.key}
-            className="flex h-8 items-center gap-2 rounded-md bg-black/5 px-2.5 text-xs font-medium text-muted-foreground dark:bg-[#292929]"
+            className={cn(
+              raisedSurfaceClass,
+              "flex h-8 items-center gap-2 rounded-lg px-2.5 text-xs font-medium text-muted-foreground",
+            )}
           >
             <span>{action.label}</span>
             <Switch checked={action.checked} onCheckedChange={action.onClick} />
@@ -205,28 +228,53 @@ export default function WorkspaceHeader({
 
   const isCompactListHeader =
     isRequestList ||
+    rest[0] === "share" ||
     showRoadmapActions ||
     showChangelogActions ||
-    showChangelogEditActions ||
+    showEditorActions ||
+    showHelpActions ||
+    isHelpAnalytics ||
     (isMembersSection && !isMemberDetail);
   const showHeaderUtilityRow =
     showFilterSummary || Boolean(pageActions) || !showPageHeading;
 
   if (isCompactListHeader) {
-    const changelogTitle = editorTitle?.trim() || "Untitled changelog";
+    const editorSection = showHelpEditActions
+      ? { label: "Help Center", href: `/workspaces/${workspaceSlug}/help`, untitled: "Untitled article" }
+      : { label: "Changelog", href: `/workspaces/${workspaceSlug}/changelog`, untitled: "Untitled changelog" };
+    const changelogTitle = editorTitle?.trim() || editorSection.untitled;
     return (
       <header className="relative z-40 shrink-0 bg-background px-4 sm:px-6">
         <div className="flex min-h-12 min-w-0 items-center justify-between gap-2 sm:gap-3">
-          {embeddedInEditor && showChangelogEditActions ? (
-            <nav aria-label="Changelog navigation" className="min-w-0 flex-1">
+          {isHelpAnalytics ? (
+            <nav aria-label="Help Center navigation" className="min-w-0 flex-1">
               <ol className="flex min-w-0 items-center gap-2 text-sm">
                 <li className="shrink-0">
                   <Link
-                    href={`/workspaces/${workspaceSlug}/changelog`}
-                    aria-label="Back to changelog"
-                    className="flex items-center rounded-md py-1 text-accent transition-colors hover:text-foreground"
+                    href={`/workspaces/${workspaceSlug}/help`}
+                    className="flex items-center rounded-lg py-1 text-accent transition-colors hover:text-foreground"
                   >
-                    Changelog
+                    Help Center
+                  </Link>
+                </li>
+                <li aria-hidden="true" className="shrink-0 text-accent/50">
+                  /
+                </li>
+                <li aria-current="page" className="min-w-0 truncate font-medium">
+                  {helpSubpage}
+                </li>
+              </ol>
+            </nav>
+          ) : embeddedInEditor && showEditorActions ? (
+            <nav aria-label={`${editorSection.label} navigation`} className="min-w-0 flex-1">
+              <ol className="flex min-w-0 items-center gap-2 text-sm">
+                <li className="shrink-0">
+                  <Link
+                    href={editorSection.href}
+                    aria-label={`Back to ${editorSection.label.toLowerCase()}`}
+                    className="flex items-center rounded-lg py-1 text-accent transition-colors hover:text-foreground"
+                  >
+                    {editorSection.label}
                   </Link>
                 </li>
                 <li aria-hidden="true" className="shrink-0 text-accent/50">
@@ -260,7 +308,7 @@ export default function WorkspaceHeader({
       <div className="flex min-h-12 items-center gap-2 px-4 text-sm sm:px-6">
         <Link
           href={`/workspaces/${workspaceSlug}`}
-          className="max-w-48 truncate rounded-md px-1.5 py-1 text-accent transition-colors hover:bg-muted dark:hover:bg-white/5"
+          className="max-w-48 truncate rounded-lg px-1.5 py-1 text-accent transition-colors hover:bg-muted dark:hover:bg-white/5"
         >
           {workspaceName}
         </Link>
@@ -293,7 +341,8 @@ export default function WorkspaceHeader({
             className={cn(
               "flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2",
               !showPageHeading && "mb-5",
-              (isSettingsSection || isAccountSection) && "mx-auto w-full max-w-5xl",
+              (isSettingsSection || isAccountSection) &&
+                "mx-auto w-full max-w-4xl",
             )}
           >
             {showFilterSummary ? (

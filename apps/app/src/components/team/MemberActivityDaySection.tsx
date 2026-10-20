@@ -23,12 +23,12 @@ const headingClassName =
   "px-2 pt-1 font-heading text-[12px] font-semibold uppercase leading-none tracking-[0.16em] text-foreground"
 
 const groupButtonClassName =
-  "block w-full rounded-md px-2 py-2.5 text-left hover:bg-muted/40"
+  "block w-full rounded-lg px-2 py-2.5 text-left hover:bg-muted/40"
 
 const groupRowClassName = "text-sm text-accent flex items-center gap-2 min-w-0"
 
 const counterClassName =
-  "inline-flex shrink-0 items-center rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] text-accent"
+  "inline-flex shrink-0 items-center rounded-lg border border-border bg-muted px-2 py-0.5 text-[11px] text-accent"
 
 function GroupSummaryRow({
   createdAt,

@@ -23,6 +23,7 @@ import { EditorHeaderProvider } from "@/components/changelog/EditorHeaderContext
 import { WelcomeTourGate } from "@/components/onboarding/WelcomeTourGate";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
+import { parseSidebarPins, sidebarPinsCookieName } from "@/lib/sidebar/pins";
 
 export const revalidate = 30;
 
@@ -37,6 +38,9 @@ export default async function WorkspaceLayout({
   const cookieStore = await cookies();
   const initialSidebarCollapsed =
     cookieStore.get("featul_sidebar_collapsed")?.value === "true";
+  const initialSidebarPins = parseSidebarPins(
+    cookieStore.get(sidebarPinsCookieName(slug))?.value,
+  );
   const session = await getServerSession();
   const userId = session?.user?.id || null;
   if (!userId) {
@@ -77,6 +81,7 @@ export default async function WorkspaceLayout({
       <WorkspaceEvents slug={slug} />
       <Sidebar
         initialCollapsed={initialSidebarCollapsed}
+        initialPins={initialSidebarPins}
         initialCounts={counts}
         initialTimezone={timezone}
         initialServerNow={serverNow}

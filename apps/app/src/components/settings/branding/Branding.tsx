@@ -2,6 +2,7 @@
 
 import React from "react";
 import SectionCard from "../global/SectionCard";
+import SettingRow from "../global/row";
 import PlanNotice from "../global/PlanNotice";
 import { LoadingButton } from "@/components/global/LoadingButton";
 import {
@@ -21,8 +22,6 @@ import LayoutStylePicker from "./LayoutStylePicker";
 import SidebarPositionPicker from "./SidebarPositionPicker";
 import { setLiveWorkspaceName, setWorkspaceLogo } from "@/lib/branding/store";
 import { Input } from "@featul/ui/components/input";
-import { cn } from "@featul/ui/lib/utils";
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCanEditBranding } from "@/hooks/useWorkspaceAccess";
 import { getPlanLimits, normalizePlan, type PlanKey } from "@/lib/plan";
@@ -273,46 +272,39 @@ export default function BrandingSection({
   };
 
   return (
-    <div className="space-y-4">
-    <SectionCard title="Branding" description="Change your brand settings.">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between ">
-          <div className="text-sm font-medium text-muted-foreground">Workspace Name</div>
-          <div className="w-full max-w-md flex items-center justify-end">
-            <Toolbar size="sm" className="w-fit">
-              <Input
-                variant="plain"
-                value={workspaceName}
-                onChange={(e) => setWorkspaceName(e.target.value)}
-                onBlur={() => {
-                  const nextName = workspaceName.trim();
-                  if (nextName === originalNameRef.current) return;
-                  void persistWorkspaceName(nextName)
-                    .then((updated) => {
-                      if (updated) toast.success("Saved");
-                    })
-                    .catch((error: unknown) => {
-                      const message =
-                        error instanceof Error && error.message
-                          ? error.message
-                          : "Failed to update name";
-                      toast.error(message);
-                    });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") e.currentTarget.blur();
-                }}
-                className={cn(toolbarItemClass, "h-8 w-auto min-w-[4ch] px-2.5 text-right text-xs font-medium")}
-                size={workspaceNameInputSize}
-                maxLength={15}
-                disabled={!canEditBranding}
-              />
-            </Toolbar>
-          </div>
-        </div>
-        <div className="flex items-center justify-between ">
-          <div className="text-sm font-medium text-muted-foreground">Logo</div>
-          <div className="w-full max-w-md flex items-center justify-end">
+    <div className="space-y-8">
+      <SectionCard title="Brand">
+        <div className="-mx-5 -my-4 divide-y divide-border/50 [&>*]:px-5">
+          <SettingRow label="Workspace name" description="The name shown across your workspace and public board.">
+            <Input
+              aria-label="Workspace name"
+              value={workspaceName}
+              onChange={(e) => setWorkspaceName(e.target.value)}
+              onBlur={() => {
+                const nextName = workspaceName.trim();
+                if (nextName === originalNameRef.current) return;
+                void persistWorkspaceName(nextName)
+                  .then((updated) => {
+                    if (updated) toast.success("Saved");
+                  })
+                  .catch((error: unknown) => {
+                    const message =
+                      error instanceof Error && error.message
+                        ? error.message
+                        : "Failed to update name";
+                    toast.error(message);
+                  });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.currentTarget.blur();
+              }}
+              className="h-8 w-auto min-w-[4ch] px-2.5 text-right text-xs font-medium md:text-xs"
+              size={workspaceNameInputSize}
+              maxLength={15}
+              disabled={!canEditBranding}
+            />
+          </SettingRow>
+          <SettingRow label="Logo" description="Your workspace identity on the public board.">
             <LogoUploader
               slug={slug}
               value={logoUrl}
@@ -322,11 +314,12 @@ export default function BrandingSection({
               }}
               disabled={!getPlanLimits(plan).allowBranding || !canEditBranding}
             />
-          </div>
+          </SettingRow>
         </div>
-        <div className="flex items-center justify-between ">
-          <div className="text-sm font-medium text-muted-foreground">Primary Color</div>
-          <div className="w-full max-w-md flex items-center justify-end">
+      </SectionCard>
+      <SectionCard title="Appearance">
+        <div className="-mx-5 -my-4 divide-y divide-border/50 [&>*]:px-5">
+          <SettingRow label="Primary color" description="The accent used across your public board.">
             <ColorPicker
               valueHex={primaryColor}
               onSelect={(c) => {
@@ -335,63 +328,40 @@ export default function BrandingSection({
               }}
               disabled={!getPlanLimits(plan).allowBranding || !canEditBranding}
             />
-          </div>
+          </SettingRow>
+          <SettingRow label="Theme" description="Choose light, dark, or follow the visitor’s system preference.">
+            <ThemePicker value={theme} onSelect={setTheme} disabled={!canEditBranding} />
+          </SettingRow>
         </div>
-        <div className="flex items-center justify-between ">
-          <div className="text-sm font-medium text-muted-foreground">Sidebar Position</div>
-          <div className="w-full max-w-md flex items-center justify-end">
-            <SidebarPositionPicker value={sidebarPosition} onSelect={(p) => setSidebarPosition(p)} disabled={!canEditBranding} />
-
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between ">
-          <div className="text-sm font-medium text-muted-foreground">Theme</div>
-          <div className="w-full max-w-md flex items-center justify-end">
-
-                 <ThemePicker value={theme} onSelect={(t) => setTheme(t)} disabled={!canEditBranding} />
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between ">
-          <div className="text-sm font-medium text-muted-foreground">Layout Style</div>
-          <div className="w-full max-w-md flex items-center justify-end">
-
-            <LayoutStylePicker value={layoutStyle} onSelect={(l) => setLayoutStyle(l)} disabled={!canEditBranding} />
-
-
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between ">
-          <div className="text-sm font-medium text-muted-foreground">
-            Hide "Powered by" Branding
-          </div>
-          <div className="w-full max-w-md flex items-center justify-end">
+      </SectionCard>
+      <SectionCard title="Public board">
+        <div className="-mx-5 -my-4 divide-y divide-border/50 [&>*]:px-5">
+          <SettingRow label="Sidebar position" description="Choose which side holds your board navigation.">
+            <SidebarPositionPicker value={sidebarPosition} onSelect={setSidebarPosition} disabled={!canEditBranding} />
+          </SettingRow>
+          <SettingRow label="Layout style" description="Set how much space appears between posts.">
+            <LayoutStylePicker value={layoutStyle} onSelect={setLayoutStyle} disabled={!canEditBranding} />
+          </SettingRow>
+          <SettingRow label={'Hide "Powered by" branding'} description="Remove the featul attribution from your public board.">
             <Switch
               checked={hidePoweredBy}
               onCheckedChange={(v) => setHidePoweredBy(Boolean(v))}
               aria-label="Hide Powered by"
               disabled={!getPlanLimits(plan).allowHidePoweredBy || !canEditBranding}
             />
-          </div>
+          </SettingRow>
         </div>
-
-        <div className="pt-2 space-y-2">
-          <div className="mt-2 flex items-center justify-start">
-            <LoadingButton
-              onClick={handleSave}
-              loading={saving}
-              disabled={loading || brandingAccessLoading || !canEditBranding}
-            >
-              Save
-            </LoadingButton>
-          </div>
-        </div>
+      </SectionCard>
+      <div className="flex justify-end">
+        <LoadingButton
+          onClick={handleSave}
+          loading={saving}
+          disabled={loading || brandingAccessLoading || !canEditBranding}
+        >
+          Save changes
+        </LoadingButton>
       </div>
-
-    </SectionCard>
-    <PlanNotice slug={slug} feature="branding" plan={plan} />
+      <PlanNotice slug={slug} feature="branding" plan={plan} />
     </div>
   );
 }

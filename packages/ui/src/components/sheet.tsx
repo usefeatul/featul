@@ -5,7 +5,7 @@ import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
 
 import { cn } from "@featul/ui/lib/utils"
-import { overlayDialogClass, overlayDialogInnerClass } from "@featul/ui/lib/overlay"
+import { modalShellClass, modalInnerClass } from "@featul/ui/lib/overlay"
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
@@ -59,7 +59,7 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          overlayDialogClass,
+          modalShellClass,
           "data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-2 rounded-xl shadow-none transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
           side === "right" &&
             "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
@@ -73,7 +73,7 @@ function SheetContent({
         )}
         {...props}
       >
-        <div className={cn(overlayDialogInnerClass, "flex min-h-0 flex-1 flex-col")}>
+        <div className={cn(modalInnerClass, "flex min-h-0 flex-1 flex-col")}>
           {children}
         </div>
         <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-3 right-3 z-10 rounded-md opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">

@@ -1,4 +1,5 @@
 import type { Transition } from "framer-motion";
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 
 export const FILTER_ISLAND_EASE = [0.32, 0.72, 0, 1] as const;
 
@@ -7,13 +8,12 @@ export const FILTER_ISLAND_MAX_WIDTH_CLASS =
 
 export const FILTER_ISLAND_EXPANDED_MIN_WIDTH_CLASS = "w-80 min-w-0";
 
-export const FILTER_ISLAND_SHELL_CLASS =
-  "isolate cursor-pointer overflow-hidden rounded-md border border-border/60 bg-secondary text-foreground dark:border-white/10";
+export const FILTER_ISLAND_SHELL_CLASS = `${raisedSurfaceClass} isolate cursor-pointer overflow-hidden rounded-lg text-foreground transition-[filter] hover:brightness-[0.99] dark:hover:brightness-110`;
 
 export const FILTER_ISLAND_MUTED_ICON_CLASS = "text-muted-foreground";
 
 export const FILTER_ISLAND_BUTTON_HOVER_CLASS =
-  "cursor-pointer transition-colors hover:bg-muted/20 hover:text-accent-foreground dark:hover:bg-black/30";
+  "cursor-pointer transition-colors hover:bg-foreground/[0.05] hover:text-foreground dark:hover:bg-foreground/[0.07]";
 
 export const FILTER_ISLAND_CLEAR_ALL_CLASS =
   "inline-flex h-full cursor-pointer items-center justify-center whitespace-nowrap px-2 text-[11px] font-medium";
@@ -21,14 +21,13 @@ export const FILTER_ISLAND_CLEAR_ALL_CLASS =
 export const FILTER_ISLAND_CHIP_CLASS =
   "inline-flex h-full min-w-fit cursor-pointer items-center gap-1.5 whitespace-nowrap px-2 text-[11px] font-medium";
 
-export const FILTER_ISLAND_CHIP_SHELL_CLASS =
-  "flex w-fit min-w-0 max-w-full items-stretch rounded-md bg-black/5 text-foreground dark:bg-white/5";
+export const FILTER_ISLAND_CHIP_SHELL_CLASS = `${raisedSurfaceClass} flex w-fit min-w-0 max-w-full items-stretch rounded-md text-foreground`;
 
 export const FILTER_ISLAND_CHIP_INNER_CLASS =
-  "flex h-6 min-h-6 min-w-0 items-stretch overflow-hidden rounded-md";
+  "flex h-6 min-h-6 min-w-0 items-stretch overflow-hidden rounded-[inherit]";
 
 export const FILTER_ISLAND_CONTENT_CLASS =
-  "inline-flex w-max min-w-0 max-w-full flex-col overflow-hidden rounded-md";
+  "inline-flex w-max min-w-0 max-w-full flex-col overflow-hidden rounded-[inherit]";
 
 export const FILTER_ISLAND_INSET_X_CLASS = "px-2.5";
 
@@ -36,7 +35,7 @@ export const FILTER_ISLAND_CHIPS_ROW_CLASS =
   "flex flex-wrap items-center gap-2 px-2 pb-2 pt-1.5";
 
 export const FILTER_ISLAND_DIVIDER_CLASS =
-  "h-px w-full bg-border dark:bg-white/10";
+  "mx-2 h-px bg-border/70 dark:bg-white/[0.07]";
 
 export type FilterIslandTransitions = {
   layout: Transition;

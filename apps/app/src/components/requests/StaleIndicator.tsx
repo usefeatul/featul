@@ -25,7 +25,7 @@ export function StaleMark({ days, className }: StaleMarkProps) {
           aria-label={label}
           onClick={(e) => e.stopPropagation()}
           className={cn(
-            "relative z-10 h-5 shrink-0 items-center rounded bg-amber-400 px-1.5 text-[10px] font-semibold uppercase tracking-wide text-amber-950",
+            "relative z-10 h-5 shrink-0 items-center rounded-lg bg-amber-400 px-1.5 text-[10px] font-semibold uppercase tracking-wide text-amber-950",
             className,
           )}
         >

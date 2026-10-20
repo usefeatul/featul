@@ -35,7 +35,7 @@ export function getInviteRoleBadgeClass(role?: InviteRole | null) {
   if (!role) return undefined;
 
   return cn(
-    "inline-flex items-center rounded-md border px-2.5 py-1 text-[11px] font-medium tracking-[0.02em]",
+    "inline-flex items-center rounded-lg border px-2.5 py-1 text-[11px] font-medium tracking-[0.02em]",
     role === "admin" &&
       "border-emerald-500/25 bg-emerald-500/8 text-emerald-700 dark:text-emerald-300",
     role === "member" && "border-border/70 bg-muted/40 text-foreground",

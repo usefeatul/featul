@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@featul/ui/components/popover";
 import { ImageIcon } from "@featul/ui/icons/image";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import type { NodeViewProps } from "@tiptap/core";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
@@ -253,7 +253,7 @@ export const FigureView = ({
           >
             <img
               alt={altValue}
-              className="h-auto w-full rounded-md  border border-muted"
+              className="h-auto w-full"
               src={src}
             />
 
@@ -279,7 +279,7 @@ export const FigureView = ({
 
             {/* Caption - only shown when it has content */}
             {captionValue && (
-              <figcaption className="mt-2 text-center text-muted-foreground text-sm italic">
+              <figcaption>
                 <p>{captionValue}</p>
               </figcaption>
             )}
@@ -296,6 +296,7 @@ export const FigureView = ({
             sideOffset={12}
             className={cn(
               overlayDialogClass,
+              overlayRoundedClass,
               "z-50 flex w-80 flex-col gap-2 text-popover-foreground outline-hidden",
               "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
             )}
@@ -305,7 +306,7 @@ export const FigureView = ({
               Image Settings
             </div>
 
-            <div className={cn(overlayInnerClass, "flex flex-col gap-3 px-4 py-3")}>
+            <div className={cn(overlayInnerClass, overlayRoundedInnerClass, "flex flex-col gap-3 px-4 py-3")}>
               <div className="space-y-1">
                 <Label
                   className="font-normal text-xs text-muted-foreground"

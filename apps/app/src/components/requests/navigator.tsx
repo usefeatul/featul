@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Search, X, SidebarPanelIcon, LoaderIcon } from "@/components/global/icons";
 
 import { Button } from "@featul/ui/components/button";
+import { Input, InputGroup } from "@featul/ui/components/input";
 import {
   Tooltip,
   TooltipTrigger,
@@ -13,7 +14,7 @@ import {
 import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
 import { PanelShortcutKeys } from "@/components/global/keys";
 import { cn } from "@featul/ui/lib/utils";
-import { sidebarHeaderActionClassName, sidebarSearchBackgroundClassName } from "@/components/sidebar/styles";
+import { sidebarHeaderActionClassName } from "@/components/sidebar/styles";
 import {
   keepPreviousData,
   useInfiniteQuery,
@@ -28,6 +29,10 @@ import { motion } from "framer-motion";
 import { usePanelResize } from "@/hooks/usePanelResize";
 import { Resizer } from "@/components/global/resizer";
 import type { RequestItemData } from "@/types/request";
+
+// Search, filter, and hide-panel icons in the queue header share one flat look.
+const queueIconButtonClass =
+  "size-8 rounded-lg border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground focus-visible:text-foreground dark:bg-transparent dark:text-accent dark:hover:bg-white/[0.03] dark:hover:text-foreground [&_svg]:size-5";
 
 export type RequestNavigatorPage = {
   items: RequestItemData[];
@@ -182,7 +187,7 @@ export default function Navigator({
         aria-hidden={!open}
         inert={!open}
         className={cn(
-          "absolute inset-x-0 bottom-0 z-30 h-[min(78dvh,44rem)] overflow-hidden rounded-t-2xl bg-background shadow-2xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none",
+          "absolute inset-x-0 bottom-0 z-30 h-[min(78dvh,44rem)] overflow-hidden rounded-t-lg bg-background shadow-2xl transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none",
           "md:relative md:inset-auto md:z-10 md:h-full md:shrink-0 md:rounded-none md:bg-transparent md:shadow-none md:transition-[width,opacity] md:duration-200",
           open
             ? "translate-y-0 opacity-100 md:w-[var(--resizable-panel-width)] md:translate-y-0"
@@ -199,13 +204,13 @@ export default function Navigator({
         <div className="flex h-full w-full flex-col overflow-hidden border-t border-border/70 bg-background md:w-[var(--resizable-panel-width)] md:rounded-none md:border-0 md:border-r md:border-border/60 md:shadow-none dark:border-sidebar-border">
           <div
             aria-hidden
-            className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-border md:hidden"
+            className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-lg bg-border md:hidden"
           />
           <div className="flex min-h-13 shrink-0 items-center justify-between px-3">
             <div className="flex min-w-0 items-center gap-2">
               <h2 className="truncate text-sm font-semibold">Request queue</h2>
               {data ? (
-                <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
+                <span className="shrink-0 rounded-lg bg-muted px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
                   {positionLabel}
                 </span>
               ) : null}
@@ -220,8 +225,8 @@ export default function Navigator({
                 }
                 aria-expanded={searchOpen}
                 className={cn(
-                  "size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] hover:text-foreground focus-visible:text-foreground dark:bg-transparent dark:hover:bg-white/[0.03]",
-                  search && "text-primary",
+                  queueIconButtonClass,
+                  search && "text-primary dark:text-primary",
                 )}
               >
                 <Search className="size-5" />
@@ -230,7 +235,8 @@ export default function Navigator({
                 query={query}
                 onQueryChange={setFilterQuery}
                 showClear
-                className="size-8 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] hover:text-foreground focus-visible:text-foreground data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03] [&_svg]:size-[18px]"
+                plain
+                className={queueIconButtonClass}
               />
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -261,27 +267,27 @@ export default function Navigator({
 
           {searchOpen ? (
             <div className="px-3 pb-2 pt-1">
-              <label className={cn("flex h-9 items-center gap-2 rounded-md border border-border/60 px-3 text-muted-foreground focus-within:border-ring/40 focus-within:ring-1 focus-within:ring-ring dark:border-white/10", sidebarSearchBackgroundClassName)}>
-                <Search className="size-5 shrink-0 text-neutral-600 dark:text-neutral-300" />
-                <input
+              <InputGroup className="gap-2">
+                <Search className="size-5 shrink-0" />
+                <Input
+                  variant="plain"
                   autoFocus
                   aria-label="Search request queue"
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search requests…"
-                  className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 />
                 {search ? (
                   <button
                     type="button"
                     onClick={() => setSearch("")}
                     aria-label="Clear request search"
-                    className="rounded p-0.5 hover:text-foreground"
+                    className="rounded-lg p-0.5 hover:text-foreground"
                   >
                     <X className="size-3" />
                   </button>
                 ) : null}
-              </label>
+              </InputGroup>
             </div>
           ) : null}
 
@@ -292,7 +298,7 @@ export default function Navigator({
                   key={chip.key}
                   type="button"
                   onClick={() => clearFilter(chip.key)}
-                  className="inline-flex h-6 shrink-0 cursor-pointer items-center gap-1 rounded-md bg-black/5 px-2 text-[10px] font-medium capitalize text-muted-foreground transition-colors hover:bg-black/10 hover:text-foreground dark:bg-white/[0.05] dark:hover:bg-white/[0.08]"
+                  className="inline-flex h-6 shrink-0 cursor-pointer items-center gap-1 rounded-lg bg-black/5 px-2 text-[10px] font-medium capitalize text-muted-foreground transition-colors hover:bg-black/10 hover:text-foreground dark:bg-white/[0.05] dark:hover:bg-white/[0.08]"
                   aria-label={`Remove ${chip.label} filter`}
                 >
                   {chip.label}

@@ -95,7 +95,7 @@ function FeedEditorMenus({ onAiSelection }: { onAiSelection?: () => void }) {
 						type="button"
 						variant="plain"
 						size="sm"
-						className="h-8.5 gap-1.5 rounded-md px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+						className="h-8.5 gap-1.5 rounded-lg px-2.5 text-xs font-medium text-muted-foreground hover:text-foreground"
 						onMouseDown={(event) => event.preventDefault()}
 						onClick={onAiSelection}
 						aria-label="Edit selection with AI"
@@ -107,7 +107,7 @@ function FeedEditorMenus({ onAiSelection }: { onAiSelection?: () => void }) {
 				) : null}
 			</EditorBubbleMenu>
 
-			<div className="prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-[200px] [&_a]:cursor-pointer [&_a]:text-primary [&_a]:font-medium [&_a]:underline [&_a]:decoration-primary/40 [&_a:hover]:decoration-primary [&_a[href*='github.com']]:rounded [&_a[href*='github.com']]:bg-primary/5 [&_a[href*='github.com']]:px-1 [&_a[href*='github.com']]:py-0.5 [&_a[href*='github.com']]:font-semibold">
+			<div className="prose prose-neutral dark:prose-invert max-w-none focus:outline-none min-h-[200px] [&_a]:cursor-pointer">
 				<TiptapEditorContent editor={contentEditor} />
 			</div>
 

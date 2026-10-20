@@ -4,7 +4,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@featul/ui/components/popover";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { useCurrentEditor, useEditorState } from "@tiptap/react";
 import { ChevronDownIcon, Highlighter } from "lucide-react";
@@ -102,6 +102,7 @@ export const EditorMarkHighlight = ({
 					align="start"
 					className={cn(
 						overlayDialogClass,
+						overlayRoundedClass,
 						"z-[100] flex w-80 flex-col gap-2 text-popover-foreground outline-hidden",
 						"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
 					)}
@@ -121,7 +122,7 @@ export const EditorMarkHighlight = ({
 						<Highlighter className="size-3.5 text-primary" />
 						Highlight
 					</div>
-					<div className={cn(overlayInnerClass, "px-4 py-3")}>
+					<div className={cn(overlayInnerClass, overlayRoundedInnerClass, "px-4 py-3")}>
 						<ColorPicker
 							color={currentHighlight}
 							onChange={handleColorChange}
@@ -176,6 +177,7 @@ export const EditorMarkHighlight = ({
 				align="start"
 				className={cn(
 					overlayDialogClass,
+					overlayRoundedClass,
 					"z-[100] flex w-80 flex-col gap-2 text-popover-foreground outline-hidden",
 					"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
 				)}
@@ -195,7 +197,7 @@ export const EditorMarkHighlight = ({
 					<Highlighter className="size-3.5 text-primary" />
 					Highlight
 				</div>
-				<div className={cn(overlayInnerClass, "px-4 py-3")}>
+				<div className={cn(overlayInnerClass, overlayRoundedInnerClass, "px-4 py-3")}>
 					<ColorPicker
 						color={currentHighlight}
 						onChange={handleColorChange}

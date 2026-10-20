@@ -2,6 +2,9 @@
 
 import React from "react"
 import { DomainSidebar } from "./DomainSidebar"
+import { PortalPageHeader } from "./PortalPageHeader"
+import { PoweredBy } from "./PoweredBy"
+import { ShareIdeaButton } from "./ShareIdeaButton"
 import { subdomainColumns } from "./layout"
 
 type SubdomainListLayoutProps = {
@@ -11,57 +14,50 @@ type SubdomainListLayoutProps = {
   children: React.ReactNode
   hideSubmitButton?: boolean
   hideBoards?: boolean
+  /** Single full-width column with no navigation rail (changelog list). */
+  hideSidebar?: boolean
   initialBoards?: Array<{ id: string; name: string; slug: string; postCount?: number }>
   selectedBoard?: string
   sortBasePath?: string
   sortKeepParams?: string[]
 }
 
+/** Two-column portal list: page heading and content beside a sticky navigation rail. */
 export function SubdomainListLayout({
-  subdomain,
-  slug,
   sidebarPosition = "right",
   children,
-  hideSubmitButton,
   hideBoards,
-  initialBoards,
+  hideSidebar,
   selectedBoard,
-  sortBasePath,
-  sortKeepParams,
 }: SubdomainListLayoutProps) {
+  if (hideSidebar) {
+    return (
+      <section className="flex flex-1 flex-col">
+        <PortalPageHeader />
+        <div className="flex flex-1 flex-col">{children}</div>
+        <PoweredBy className="mt-auto pt-10" />
+      </section>
+    )
+  }
   const grid = subdomainColumns(sidebarPosition)
+  const rail = (
+    <aside className="hidden min-w-0 md:block md:pt-1">
+      <DomainSidebar selectedBoard={selectedBoard} hideBoards={hideBoards} />
+    </aside>
+  )
   return (
-    <section className="has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-1 has-[[data-page-empty]]:flex-col">
-      <div className={`${grid} has-[[data-page-empty]]:flex-1`}>
-        {sidebarPosition === "left" ? (
-          <aside className="hidden min-w-0 md:block">
-            <DomainSidebar
-              subdomain={subdomain}
-              slug={slug}
-              initialBoards={initialBoards}
-              selectedBoard={selectedBoard}
-              hideSubmitButton={hideSubmitButton}
-              hideBoards={hideBoards}
-              sortBasePath={sortBasePath}
-              sortKeepParams={sortKeepParams}
-            />
-          </aside>
-        ) : null}
-        <div className="min-w-0 self-stretch has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-col [&>div:has([data-page-empty])]:flex [&>div:has([data-page-empty])]:flex-1 [&>div:has([data-page-empty])]:flex-col">{children}</div>
-        {sidebarPosition === "right" ? (
-          <aside className="hidden min-w-0 md:block">
-            <DomainSidebar
-              subdomain={subdomain}
-              slug={slug}
-              initialBoards={initialBoards}
-              selectedBoard={selectedBoard}
-              hideSubmitButton={hideSubmitButton}
-              hideBoards={hideBoards}
-              sortBasePath={sortBasePath}
-              sortKeepParams={sortKeepParams}
-            />
-          </aside>
-        ) : null}
+    <section className="flex flex-1 flex-col">
+      <div className={`${grid} flex-1`}>
+        {sidebarPosition === "left" ? rail : null}
+        <div className="flex min-w-0 flex-col self-stretch">
+          <PortalPageHeader />
+          <ShareIdeaButton className="mb-4 w-full md:hidden" />
+          <div className="flex flex-1 flex-col has-[[data-page-empty]]:flex-1 [&>div:has([data-page-empty])]:flex [&>div:has([data-page-empty])]:flex-1 [&>div:has([data-page-empty])]:flex-col">
+            {children}
+          </div>
+          <PoweredBy className="md:hidden" />
+        </div>
+        {sidebarPosition === "right" ? rail : null}
       </div>
     </section>
   )

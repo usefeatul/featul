@@ -1,44 +1,20 @@
 import React from "react";
 import Link from "next/link";
 import { ChevronLeft } from "@/components/global/icons";
-import { Button } from "@featul/ui/components/button";
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
-import { cn } from "@featul/ui/lib/utils";
-import { subdomainColumns } from "../layout";
 
 interface ChangelogHeaderProps {
-    sidebarPosition: "left" | "right";
     backLink?: string;
 }
 
-export function ChangelogHeader({ sidebarPosition, backLink = "/changelog" }: ChangelogHeaderProps) {
+/** Plain back link above the entry, inside the content column. */
+export function ChangelogHeader({ backLink = "/changelog" }: ChangelogHeaderProps) {
     return (
-        <div
-            className={cn(subdomainColumns(sidebarPosition), "mb-4")}
+        <Link
+            href={backLink}
+            className="-ml-1 mb-5 inline-flex w-fit items-center gap-1 rounded-md px-1 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-            {/* Left Spacer for Sidebar */}
-            {sidebarPosition === "left" ? (
-                <div className="hidden md:block" />
-            ) : null}
-
-            {/* Header Content */}
-            <div
-                className="flex min-h-10 min-w-0 items-center gap-3"
-            >
-                <Toolbar size="sm" className="w-fit">
-                    <Button variant="plain" size="icon" asChild className={cn(toolbarItemClass, "px-2.5")}>
-                        <Link href={backLink} aria-label="Back to changelog">
-                            <ChevronLeft className="size-4" />
-                        </Link>
-                    </Button>
-                </Toolbar>
-                <h1 className="text-xl font-semibold text-foreground">Changelog</h1>
-            </div>
-
-            {/* Right Spacer for Sidebar */}
-            {sidebarPosition === "right" ? (
-                <div className="hidden md:block" />
-            ) : null}
-        </div>
+            <ChevronLeft className="size-4" />
+            Back to changelog
+        </Link>
     );
 }

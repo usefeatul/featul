@@ -1,15 +1,10 @@
 "use client";
 
 import React from "react";
-import { Input } from "@featul/ui/components/input";
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
+import { Input, InputGroup } from "@featul/ui/components/input";
 import { cn } from "@featul/ui/lib/utils";
 import { XMarkIcon } from "@/components/global/icons";
-
-const fieldInputClass = cn(
-  toolbarItemClass,
-  "h-8 min-w-0 flex-1 px-2.5 text-xs font-medium placeholder:text-accent hover:bg-transparent md:text-sm",
-);
+import { WebsiteFavicon } from "@/components/wizard/WebsiteFavicon";
 
 export default function DomainHostField({
   id,
@@ -33,17 +28,14 @@ export default function DomainHostField({
   onSubmit?: () => void;
 }) {
   return (
-    <Toolbar size="sm" className="w-full">
-      <span className="inline-flex h-full shrink-0 items-center self-stretch rounded-l-md border-r border-border bg-card px-3 text-xs font-medium tracking-wide text-accent dark:bg-black dark:text-accent">
-        HTTPS
-      </span>
+    <InputGroup
+      invalid={invalid}
+      className={cn("h-10 gap-0", readOnly && "cursor-default")}
+    >
+      <WebsiteFavicon domain={value} className="mr-2.5 size-4 shrink-0 rounded-sm" />
+      <span className="shrink-0 text-base text-muted-foreground md:text-sm">https://</span>
       {readOnly ? (
-        <span
-          className={cn(
-            fieldInputClass,
-            "inline-flex items-center truncate text-foreground",
-          )}
-        >
+        <span className="min-w-0 flex-1 truncate text-base text-foreground md:text-sm">
           {value}
         </span>
       ) : (
@@ -52,9 +44,9 @@ export default function DomainHostField({
           variant="plain"
           type="text"
           value={value}
+          aria-invalid={invalid || undefined}
           onChange={(event) => onChange?.(event.target.value)}
           placeholder={placeholder}
-          className={fieldInputClass}
           autoFocus={autoFocus}
           spellCheck={false}
           autoComplete="off"
@@ -66,17 +58,10 @@ export default function DomainHostField({
           }}
         />
       )}
-      {invalid ? (
-        <span
-          className={cn(
-            toolbarItemClass,
-            "inline-flex items-center px-2 hover:bg-transparent",
-          )}
-        >
-          <XMarkIcon className="size-4 text-destructive" />
-        </span>
+      {invalid ? <XMarkIcon className="ml-2.5 size-4 shrink-0 text-destructive" /> : null}
+      {trailing ? (
+        <span className="ml-2.5 flex shrink-0 items-center gap-1">{trailing}</span>
       ) : null}
-      {trailing}
-    </Toolbar>
+    </InputGroup>
   );
 }

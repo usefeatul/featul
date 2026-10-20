@@ -113,7 +113,7 @@ export default function MemberDetail({
               <li className="shrink-0">
                 <Link
                   href={`/workspaces/${slug}/members`}
-                  className="rounded-md py-1 text-accent transition-colors hover:text-foreground"
+                  className="rounded-lg py-1 text-accent transition-colors hover:text-foreground"
                 >
                   Members
                 </Link>

@@ -32,14 +32,18 @@ export function getStripeClient() {
 }
 
 function getStripePlanPriceIds() {
+  // Retired prices still identify existing subscriptions; checkout uses only
+  // the current monthly/yearly IDs configured in auth.ts.
   return {
     starter: [
       (process.env.STRIPE_PRICE_ID_STARTER_MONTHLY || "").trim(),
       (process.env.STRIPE_PRICE_ID_STARTER_YEARLY || "").trim(),
+      ...(process.env.STRIPE_LEGACY_PRICE_IDS_STARTER || "").split(",").map((id) => id.trim()),
     ].filter(Boolean),
     professional: [
       (process.env.STRIPE_PRICE_ID_PROFESSIONAL_MONTHLY || "").trim(),
       (process.env.STRIPE_PRICE_ID_PROFESSIONAL_YEARLY || "").trim(),
+      ...(process.env.STRIPE_LEGACY_PRICE_IDS_PROFESSIONAL || "").split(",").map((id) => id.trim()),
     ].filter(Boolean),
   } satisfies Record<StripeBillingPlanName, string[]>
 }

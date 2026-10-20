@@ -64,7 +64,7 @@ export function Header({
           <button
             type="button"
             onClick={onClose}
-            className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
+            className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-transparent text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
             aria-label="Close widget"
           >
             <X className="size-4" />
@@ -76,14 +76,14 @@ export function Header({
             <button
               type="button"
               onClick={onBack}
-              className="flex size-8 cursor-pointer items-center justify-center rounded-md bg-transparent text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
+              className="flex size-8 cursor-pointer items-center justify-center rounded-lg bg-transparent text-[rgb(var(--widget-fg)/0.55)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
               aria-label="Back"
             >
               <ChevronLeft className="size-5" />
             </button>
           ) : (
             <div
-              className={`flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md ${
+              className={`flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg ${
                 workspaceLogo ? "" : "bg-[rgb(var(--widget-fg)/0.06)]"
               }`}
             >
@@ -128,7 +128,7 @@ export function Header({
           <button
             type="button"
             onClick={onClose}
-            className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
+            className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-transparent text-[rgb(var(--widget-fg)/0.45)] transition-colors hover:bg-[rgb(var(--widget-fg)/0.06)] hover:text-[rgb(var(--widget-fg))]"
             aria-label="Close widget"
           >
             <X className="size-4" />

@@ -5,9 +5,12 @@ import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog"
 
 import { cn } from "@featul/ui/lib/utils"
 import { buttonVariants } from "@featul/ui/components/button"
+import type { VariantProps } from "class-variance-authority"
 import {
-  overlayDialogClass,
-  overlayDialogInnerClass,
+  modalShellClass,
+  modalInnerClass,
+  overlayRoundedClass,
+  overlayRoundedInnerClass,
 } from "@featul/ui/lib/overlay"
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 
@@ -53,7 +56,7 @@ function AlertDialogInner({ className, ...props }: React.ComponentProps<"div">) 
   return (
     <div
       data-slot="alert-dialog-inner"
-      className={cn(overlayDialogInnerClass, "px-4 py-3", className)}
+      className={cn(modalInnerClass, overlayRoundedInnerClass, "px-5 py-6", className)}
       {...props}
     />
   )
@@ -73,8 +76,9 @@ function AlertDialogContent({
       <BaseAlertDialog.Popup
         data-slot="alert-dialog-content"
         className={cn(
-          overlayDialogClass,
-          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 rounded-xl duration-200 outline-none sm:max-w-sm",
+          modalShellClass,
+          overlayRoundedClass,
+          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-2 duration-200 outline-none sm:max-w-md",
           className
         )}
         {...props}
@@ -151,11 +155,13 @@ function AlertDialogDescription({
 
 function AlertDialogAction({
   className,
+  variant,
   ...props
-}: React.ComponentProps<typeof BaseAlertDialog.Close>) {
+}: React.ComponentProps<typeof BaseAlertDialog.Close> &
+  Pick<VariantProps<typeof buttonVariants>, "variant">) {
   return (
     <BaseAlertDialog.Close
-      className={cn(buttonVariants(), "rounded-md", className)}
+      className={cn(buttonVariants({ variant }), className)}
       {...props}
     />
   )
@@ -167,7 +173,7 @@ function AlertDialogCancel({
 }: React.ComponentProps<typeof BaseAlertDialog.Close>) {
   return (
     <BaseAlertDialog.Close
-      className={cn(buttonVariants({ variant: "card" }), "rounded-md", className)}
+      className={cn(buttonVariants({ variant: "card" }), className)}
       {...props}
     />
   )

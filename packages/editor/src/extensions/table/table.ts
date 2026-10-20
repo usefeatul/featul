@@ -4,7 +4,8 @@ import "../../styles/table.css";
 export const Table = TiptapTable.extend({
   renderHTML(props) {
     const table = this.parent!(props);
-    if (!this.editor || this.editor.isEditable) return table;
+    // No editor means a static render (EditorStaticContent), which is always read-only.
+    if (this.editor?.isEditable) return table;
 
     return [
       "div",

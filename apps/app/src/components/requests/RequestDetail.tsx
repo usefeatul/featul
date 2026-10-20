@@ -1,5 +1,8 @@
 "use client";
 
+import type { InitialActivity } from "@/types/activity";
+
+
 import { useEffect, useState } from "react";
 import { PostImageGallery } from "@/components/post/PostImageGallery";
 import Header from "./header";
@@ -8,7 +11,7 @@ import { useRequestPanel } from "@/hooks/useRequestPanel";
 import { useRequestNavigation } from "@/hooks/useRequestNavigation";
 import { buildRequestsUrl } from "@/utils/request";
 import { UpvoteButton } from "../upvote/UpvoteButton";
-import CommentList from "../comments/CommentList";
+import Discussion from "./discussion";
 import Properties from "./properties";
 import type { CommentData } from "../../types/comment";
 import { Button } from "@featul/ui/components/button";
@@ -38,6 +41,7 @@ type RequestDetailProps = {
   initialNavigatorPage?: RequestNavigatorPage;
   readonly?: boolean;
   initialComments?: CommentData[];
+  initialActivity?: InitialActivity;
   initialCollapsedIds?: string[];
   navigation?: {
     prev: { slug: string; title: string } | null;
@@ -53,6 +57,7 @@ export default function RequestDetail({
   initialPanelWidth,
   initialNavigatorPage,
   initialComments,
+  initialActivity,
   initialCollapsedIds,
   navigation,
 }: RequestDetailProps) {
@@ -206,12 +211,13 @@ export default function RequestDetail({
                       postId={post.id}
                       upvotes={post.upvotes}
                       hasVoted={post.hasVoted}
-                      className="h-8 rounded-md border border-border/50 bg-muted px-2.5 hover:bg-muted/80 dark:border-white/[0.08] dark:bg-[#242424] dark:hover:bg-[#2c2c2c]"
+                      className="h-8 px-2.5"
                     />
                   </div>
                 </div>
               </article>
-              <CommentList
+              <Discussion
+                key={post.id}
                 plain
                 postId={post.id}
                 initialCount={post.commentCount}
@@ -219,6 +225,7 @@ export default function RequestDetail({
                 surface="workspace"
                 allowComments={post.allowComments}
                 initialComments={initialComments}
+          initialActivity={initialActivity}
                 initialCollapsedIds={initialCollapsedIds}
               />
             </div>

@@ -54,12 +54,12 @@ export function Timeline({
                 ?.querySelectorAll<HTMLButtonElement>("button");
               buttons?.[Math.max(0, Math.min(sections.length - 1, next))]?.focus();
             }}
-            className="group flex h-2.5 w-9 cursor-pointer items-center rounded-sm pl-1.5 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+            className="group flex h-2.5 w-9 cursor-pointer items-center rounded-lg pl-1.5 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
           >
             <span
               aria-hidden
               className={cn(
-                "h-0.5 rounded-full transition-[width,background-color] duration-150 motion-reduce:transition-none",
+                "h-0.5 rounded-lg transition-[width,background-color] duration-150 motion-reduce:transition-none",
                 active === index
                   ? "w-6 bg-foreground"
                   : hovered !== null && Math.abs(hovered - index) === 1

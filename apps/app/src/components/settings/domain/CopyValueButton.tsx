@@ -33,7 +33,7 @@ export default function CopyValueButton({
       variant="nav"
       size="icon-sm"
       className={
-        className || "size-6 rounded-sm border border-border/60 p-0 hover:bg-muted/70"
+        className || "size-6 rounded-lg border border-border/60 p-0 hover:bg-muted/70"
       }
       onClick={handleCopy}
     >

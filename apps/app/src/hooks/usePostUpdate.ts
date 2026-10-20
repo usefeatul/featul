@@ -70,6 +70,7 @@ export function usePostUpdate({ postId, onSuccess }: UsePostUpdateProps) {
           try {
             queryClient.invalidateQueries({ queryKey: ["member-stats"] })
             queryClient.invalidateQueries({ queryKey: ["member-activity"] })
+            queryClient.invalidateQueries({ queryKey: ["post-activity", postId] })
           } catch {
             // ignore
           }

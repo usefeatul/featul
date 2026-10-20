@@ -4,10 +4,11 @@ import * as React from "react";
 import { ThemeProvider, useTheme } from "next-themes";
 import { postToParent, useParentOrigin } from "./messaging";
 
-export const WIDGET_SURFACE_DARK = "#202020";
+/** Mirrors the app palette: surface = --card, ink = --foreground. */
+export const WIDGET_SURFACE_DARK = "#1c1c1c";
 export const WIDGET_SURFACE_LIGHT = "#ffffff";
-export const WIDGET_SHELL_DARK = "#121212";
-export const WIDGET_SHELL_LIGHT = "#eeeeeb";
+export const WIDGET_INK_DARK = "#ededed";
+export const WIDGET_INK_LIGHT = "#202020";
 export const WIDGET_ACCENT_FALLBACK = "#4d96e8";
 
 export type WidgetThemeMode = "light" | "dark" | "auto";
@@ -68,19 +69,19 @@ export function resolveWidgetTheme(mode: WidgetThemeMode): WidgetResolvedTheme {
 export function widgetThemeVars(theme: WidgetResolvedTheme): Record<string, string> {
   if (theme === "light") {
     return {
-      "--widget-shell": "244 244 245",
+      "--widget-shell": "243 243 243",
       "--widget-surface": "255 255 255",
-      "--widget-fg": "23 23 23",
-      "--widget-cta": "23 23 23",
+      "--widget-fg": "32 32 32",
+      "--widget-cta": "32 32 32",
       "--widget-cta-fg": "255 255 255",
     };
   }
   return {
-    "--widget-shell": "0 0 0",
-    "--widget-surface": "26 26 28",
-    "--widget-fg": "250 250 250",
-    "--widget-cta": "250 250 250",
-    "--widget-cta-fg": "26 26 28",
+    "--widget-shell": "17 17 17",
+    "--widget-surface": "28 28 28",
+    "--widget-fg": "237 237 237",
+    "--widget-cta": "237 237 237",
+    "--widget-cta-fg": "28 28 28",
   };
 }
 
@@ -88,8 +89,8 @@ export function widgetSurfaceHex(theme: WidgetResolvedTheme) {
   return theme === "light" ? WIDGET_SURFACE_LIGHT : WIDGET_SURFACE_DARK;
 }
 
-export function widgetShellHex(theme: WidgetResolvedTheme) {
-  return theme === "light" ? WIDGET_SHELL_LIGHT : WIDGET_SHELL_DARK;
+export function widgetInkHex(theme: WidgetResolvedTheme) {
+  return theme === "light" ? WIDGET_INK_LIGHT : WIDGET_INK_DARK;
 }
 
 /** Push resolved theme to the document and parent frame. */
@@ -100,12 +101,8 @@ function ThemeSync({
   mode: WidgetThemeMode;
   children: React.ReactNode;
 }) {
-  const { setTheme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const parentOrigin = useParentOrigin();
-
-  React.useEffect(() => {
-    setTheme(mode === "auto" ? "system" : mode);
-  }, [mode, setTheme]);
 
   React.useEffect(() => {
     const resolved = mode === "light" || mode === "dark"
@@ -121,7 +118,7 @@ function ThemeSync({
       root.style.setProperty(key, value);
     }
     document.body.style.background =
-      resolved === "light" ? WIDGET_SHELL_LIGHT : WIDGET_SHELL_DARK;
+      resolved === "light" ? WIDGET_SURFACE_LIGHT : WIDGET_SURFACE_DARK;
     postToParent(parentOrigin, "theme", { theme: resolved, mode });
   }, [resolvedTheme, mode, parentOrigin]);
 
@@ -138,10 +135,12 @@ export function Theme({
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme={mode === "auto" ? "system" : mode}
+      // Never call setTheme: it writes localStorage, and the storage event
+      // would flip every other same-origin widget frame to this theme.
+      defaultTheme="system"
       forcedTheme={mode === "auto" ? undefined : mode}
-      enableSystem={mode === "auto"}
-      storageKey="featul-widget-theme"
+      enableSystem
+      storageKey="featul-widget-theme-v2"
       disableTransitionOnChange
     >
       <ThemeSync mode={mode}>{children}</ThemeSync>

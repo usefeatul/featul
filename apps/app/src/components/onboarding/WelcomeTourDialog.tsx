@@ -36,7 +36,7 @@ function StepContent({ step }: { step: WelcomeTourStep }) {
     <div className="flex flex-col items-center px-2 py-5 text-center sm:px-4 sm:py-6">
       <div
         className={cn(
-          "mb-5 flex size-16 items-center justify-center rounded-xl border border-border/60",
+          "mb-5 flex size-16 items-center justify-center rounded-lg border border-border/60",
           step.accentClassName,
         )}
       >
@@ -167,7 +167,7 @@ export function WelcomeTourDialog({
               aria-current={index === stepIndex ? "step" : undefined}
               onClick={() => setStepIndex(index)}
               className={cn(
-                "h-1.5 rounded-full transition-all duration-300",
+                "h-1.5 rounded-lg transition-all duration-300",
                 index === stepIndex
                   ? "w-6 bg-primary"
                   : index < stepIndex

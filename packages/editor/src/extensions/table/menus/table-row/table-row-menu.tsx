@@ -1,5 +1,5 @@
 import { Button } from "@featul/ui/components/button";
-import { overlayDialogClass, overlayInnerClass } from "@featul/ui/lib/overlay";
+import { overlayDialogClass, overlayInnerClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import type { EditorState } from "@tiptap/pm/state";
 import type { EditorView } from "@tiptap/pm/view";
@@ -49,7 +49,7 @@ function TableRowMenuComponent({ editor, appendTo }: MenuProps): JSX.Element {
   return (
     <TiptapBubbleMenu
       appendTo={() => appendTo?.current ?? document.body}
-      className={cn(overlayDialogClass, "flex flex-col gap-2")}
+      className={cn(overlayDialogClass, overlayRoundedClass, "z-50 flex flex-col gap-2")}
       editor={editor}
       options={{
         placement: "left",
@@ -62,7 +62,7 @@ function TableRowMenuComponent({ editor, appendTo }: MenuProps): JSX.Element {
       <div className="flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
         Row
       </div>
-      <div className={cn(overlayInnerClass, "flex flex-col p-1")}>
+      <div className={cn(overlayInnerClass, overlayRoundedInnerClass, "flex flex-col p-1")}>
       <Button
         className="justify-start gap-2"
         onClick={onAddRowBefore}

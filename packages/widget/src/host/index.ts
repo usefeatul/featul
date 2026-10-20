@@ -21,14 +21,12 @@ import {
 const PANEL_RADIUS = "12px";
 const BUTTON_RADIUS = "12px";
 const LAUNCHER_SIZE = 40;
-const LAUNCHER_PAD = 3;
-const LAUNCHER_INNER_RADIUS = "9px";
 const PANEL_WIDTH = 420;
-const PANEL_WIDTH_EXPANDED = 500;
-const PANEL_HEIGHT = 800;
-const PANEL_HEIGHT_EXPANDED = 880;
-const PANEL_HEIGHT_RATIO = 0.74;
-const PANEL_HEIGHT_EXPANDED_RATIO = 0.75;
+const PANEL_WIDTH_EXPANDED = 540;
+const PANEL_HEIGHT = 820;
+const PANEL_HEIGHT_EXPANDED = 960;
+const PANEL_HEIGHT_RATIO = 0.8;
+const PANEL_HEIGHT_EXPANDED_RATIO = 0.9;
 const PANEL_EXPAND_MS = 520;
 const PANEL_EXPAND_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const FULLSCREEN_MAX_WIDTH = 768;
@@ -135,27 +133,13 @@ function boot() {
   }
 
   function panelBackground() {
-    return state.theme === "light" ? "#ffffff" : "#202020";
-  }
-
-  function shellBackground() {
-    return state.theme === "light" ? "#eeeeeb" : "#121212";
-  }
-
-  function launcherForeground() {
-    return state.theme === "light" ? "#171717" : "#fafafa";
+    return state.theme === "light" ? "#ffffff" : "#1c1c1c";
   }
 
   function launcherBorder() {
     return state.theme === "light"
-      ? "1px solid rgba(23, 23, 23, 0.1)"
-      : "1px solid rgba(250, 250, 250, 0.1)";
-  }
-
-  function launcherInnerRing() {
-    return state.theme === "light"
-      ? "inset 0 0 0 1px rgba(23, 23, 23, 0.1)"
-      : "inset 0 0 0 1px rgba(250, 250, 250, 0.1)";
+      ? "1px solid rgba(0, 0, 0, 0.14)"
+      : "1px solid rgba(255, 255, 255, 0.14)";
   }
 
   function applyLauncherChrome() {
@@ -164,11 +148,11 @@ function boot() {
     button.style.boxSizing = "border-box";
     button.style.width = `${LAUNCHER_SIZE}px`;
     button.style.height = `${LAUNCHER_SIZE}px`;
-    button.style.padding = `${LAUNCHER_PAD}px`;
+    button.style.padding = "0";
     button.style.border = launcherBorder();
     button.style.borderRadius = BUTTON_RADIUS;
-    button.style.background = shellBackground();
-    button.style.color = launcherForeground();
+    button.style.background = panelBackground();
+    button.style.color = state.accent;
     const face = button.querySelector("[data-featul-widget='launcher-face']");
     if (face instanceof HTMLElement) {
       face.style.display = "flex";
@@ -176,9 +160,9 @@ function boot() {
       face.style.justifyContent = "center";
       face.style.width = "100%";
       face.style.height = "100%";
-      face.style.borderRadius = LAUNCHER_INNER_RADIUS;
-      face.style.background = panelBackground();
-      face.style.boxShadow = launcherInnerRing();
+      face.style.borderRadius = "inherit";
+      face.style.background = "transparent";
+      face.style.boxShadow = "none";
       face.style.pointerEvents = "none";
     }
   }
@@ -186,7 +170,7 @@ function boot() {
   function syncLauncherTheme() {
     applyLauncherChrome();
     if (state.shell && !state.open)
-      state.shell.style.background = shellBackground();
+      state.shell.style.background = panelBackground();
   }
 
   function syncTheme() {
@@ -194,11 +178,12 @@ function boot() {
     if (mode !== "auto" || !state.themeReady) state.theme = resolveTheme(mode);
     if (mode !== "auto") state.themeReady = true;
     if (state.iframe) {
-      state.iframe.style.background = shellBackground();
+      state.iframe.style.background = panelBackground();
+      state.iframe.style.boxShadow = panelShadow();
       state.iframe.style.colorScheme = state.theme;
     }
     if (state.shell && state.open)
-      state.shell.style.background = shellBackground();
+      state.shell.style.background = panelBackground();
     syncLauncherTheme();
   }
 
@@ -251,7 +236,10 @@ function boot() {
   }
 
   function panelShadow() {
-    return "none";
+    if (state.overlay || isFullscreenPanel()) return "none";
+    return state.theme === "light"
+      ? "0 0 0 1px rgba(0, 0, 0, 0.14), 0 16px 40px -16px rgba(0, 0, 0, 0.16), 0 4px 10px -6px rgba(0, 0, 0, 0.08)"
+      : "0 0 0 1px rgba(255, 255, 255, 0.14), 0 16px 40px -16px rgba(0, 0, 0, 0.55), 0 4px 10px -6px rgba(0, 0, 0, 0.35)";
   }
 
   function syncFrameLayout() {
@@ -301,11 +289,8 @@ function boot() {
     const heightRatio = state.expanded
       ? PANEL_HEIGHT_EXPANDED_RATIO
       : PANEL_HEIGHT_RATIO;
-    const viewportCap = Math.round(view.height * heightRatio);
-    const height = Math.min(
-      preferredHeight,
-      Math.max(360, viewportCap - heightPad),
-    );
+    const viewportCap = Math.round(view.height * heightRatio) - heightPad;
+    const height = Math.min(preferredHeight, Math.max(360, viewportCap));
     const gutter = PANEL_GUTTER;
     return {
       left:
@@ -512,7 +497,7 @@ function boot() {
     applyRect(state.shell, getPanelRect(state.position));
     if (!state.shell) return;
     state.shell.style.borderRadius = panelCornerRadius();
-    state.shell.style.background = shellBackground();
+    state.shell.style.background = panelBackground();
     state.shell.style.boxShadow = panelShadow();
   }
 
@@ -520,7 +505,7 @@ function boot() {
     applyRect(state.shell, getLauncherRect(state.position));
     if (!state.shell) return;
     state.shell.style.borderRadius = BUTTON_RADIUS;
-    state.shell.style.background = shellBackground();
+    state.shell.style.background = panelBackground();
     state.shell.style.boxShadow = "none";
   }
 
@@ -715,12 +700,12 @@ function boot() {
       "display:flex;align-items:stretch;overflow:hidden;border-radius:10px;padding:2px;border:1px solid " +
       (dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)") +
       ";background:" +
-      (dark ? "#252525" : "#eeeeeb") +
+      (dark ? "#111111" : "#f3f3f3") +
       ";";
     const inner = document.createElement("span");
     inner.style.cssText =
       "display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;background:" +
-      (dark ? "#121212" : "#ffffff") +
+      (dark ? "#1c1c1c" : "#ffffff") +
       ";box-shadow:inset 0 0 0 1px " +
       (dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)") +
       ";";
@@ -782,12 +767,12 @@ function boot() {
     dialog.style.cssText =
       "position:relative;z-index:1;width:min(calc(100vw - 8rem),1400px);height:min(88dvh,860px);max-height:92dvh;box-sizing:border-box;padding:8px;border-radius:16px;display:flex;flex-direction:column;outline:none;flex:0 1 auto;" +
       (dark
-        ? "background:#252525;color:#f3f3f3;border:1px solid rgba(255,255,255,0.12);"
-        : "background:#eeeeeb;color:#202020;border:1px solid rgba(0,0,0,0.1);");
+        ? "background:#111111;color:#ededed;border:1px solid rgba(255,255,255,0.12);"
+        : "background:#f3f3f3;color:#202020;border:1px solid rgba(0,0,0,0.1);");
     const stage = document.createElement("div");
     stage.style.cssText =
       "flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:8px;" +
-      (dark ? "background:#121212;" : "background:#ffffff;");
+      (dark ? "background:#1c1c1c;" : "background:#ffffff;");
     const img = document.createElement("img");
     img.style.cssText =
       "max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain;display:block;";
@@ -867,7 +852,7 @@ function boot() {
     iframe.style.zIndex = "2147483647";
     iframe.style.display = "none";
     iframe.style.opacity = "0";
-    iframe.style.background = shellBackground();
+    iframe.style.background = panelBackground();
     iframe.style.colorScheme = state.theme;
     document.body.appendChild(iframe);
     state.iframe = iframe;
@@ -1097,9 +1082,13 @@ function boot() {
       if (theme !== "light" && theme !== "dark") return;
       state.theme = theme;
       state.themeReady = true;
-      if (state.iframe) state.iframe.style.colorScheme = state.theme;
+      if (state.iframe) {
+        state.iframe.style.colorScheme = state.theme;
+        state.iframe.style.background = panelBackground();
+        state.iframe.style.boxShadow = panelShadow();
+      }
       if (state.shell && state.open)
-        state.shell.style.background = shellBackground();
+        state.shell.style.background = panelBackground();
       syncLauncherTheme();
       syncButtonVisibility();
     }

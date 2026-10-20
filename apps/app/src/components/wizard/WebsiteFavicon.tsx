@@ -6,7 +6,7 @@ import { faviconUrlForDomain, hostFromDomain } from "@/utils/domain"
 
 export function WebsiteFavicon({
   domain,
-  className = "size-4 rounded-[3px]",
+  className = "size-4 rounded-lg",
 }: {
   domain: string
   className?: string

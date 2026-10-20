@@ -34,8 +34,8 @@ export default function Attributes({ item }: { item: RequestItemData }) {
         <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
           <span className="max-w-20 truncate font-medium">{author}</span>
           <span aria-hidden className="text-border">·</span>
-          <span title={item.boardName} className="inline-flex h-5 min-w-0 max-w-24 items-center gap-1.5 rounded-md bg-muted/70 px-1.5 dark:bg-white/[0.055]">
-            <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-primary" />
+          <span title={item.boardName} className="inline-flex h-5 min-w-0 max-w-24 items-center gap-1.5 rounded-lg bg-muted/70 px-1.5 dark:bg-white/[0.055]">
+            <span aria-hidden className="size-1.5 shrink-0 rounded-lg bg-primary" />
             <span className="truncate">{item.boardName}</span>
           </span>
         </div>
@@ -45,10 +45,10 @@ export default function Attributes({ item }: { item: RequestItemData }) {
             postId={item.id}
             upvotes={item.upvotes}
             hasVoted={item.hasVoted}
-            className="relative z-10 h-5 gap-1 rounded-md bg-muted/70 px-1.5 text-[10px] hover:bg-muted dark:bg-white/[0.055] dark:hover:bg-white/[0.08]"
+            className="relative z-10 h-5 gap-1 px-1.5 text-[10px]"
           />
           {flags.length > 0 ? (
-            <span className="flex h-5 items-center gap-1 rounded-md bg-muted/70 px-1.5 dark:bg-white/[0.055]">
+            <span className="flex h-5 items-center gap-1 rounded-lg bg-muted/70 px-1.5 dark:bg-white/[0.055]">
             {flags.map(({ key, label, Icon, iconClass }) => (
               <span key={key} title={label} aria-label={label} className="pointer-events-auto inline-flex items-center justify-center">
                 <Icon className={cn("size-3", iconClass)} />
@@ -59,7 +59,7 @@ export default function Attributes({ item }: { item: RequestItemData }) {
           {staleDays != null ? (
             <StaleMark
               days={staleDays}
-              className="h-5 rounded-md bg-muted/70 px-1.5 text-[10px] font-medium tracking-normal text-amber-700 dark:bg-white/[0.055] dark:text-amber-400"
+              className="h-5 rounded-lg bg-muted/70 px-1.5 text-[10px] font-medium tracking-normal text-amber-700 dark:bg-white/[0.055] dark:text-amber-400"
             />
           ) : null}
         </div>

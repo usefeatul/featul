@@ -159,7 +159,7 @@ export default function MobileDrawerContent({
               />
             </SidebarSection>
             <SidebarSection
-              title={isSettings ? "SETTINGS" : "ACCOUNT"}
+              title={isSettings ? undefined : "Account"}
               className="mt-4"
             >
               {isSettings ? (
@@ -213,7 +213,7 @@ export default function MobileDrawerContent({
             initialUser={initialUser}
             initialDeviceAccounts={initialDeviceAccounts}
           />
-          <WorkspaceNotificationsAction className="size-8 shrink-0 rounded-md border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.05]" />
+          <WorkspaceNotificationsAction className="size-8 shrink-0 rounded-lg border-0 bg-transparent p-0 text-accent shadow-none ring-0 before:hidden hover:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.05]" />
         </div>
       </div>
     </DrawerContent>
