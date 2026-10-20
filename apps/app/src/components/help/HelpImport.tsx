@@ -15,6 +15,7 @@ import { Button } from "@featul/ui/components/button";
 import { Checkbox } from "@featul/ui/components/checkbox";
 import { Input, InputGroup } from "@featul/ui/components/input";
 import { DitherClouds } from "@featul/ui/components/clouds";
+import { DitherGradient } from "@featul/ui/components/gradient";
 import {
   Dialog,
   DialogContent,
@@ -32,9 +33,11 @@ import {
   ChevronDown,
   EditIcon,
   ExternalLink,
+  EyeIcon,
   GitHubIcon,
   LoaderIcon,
   LockIcon,
+  MessageSquareText,
   SparklesIcon,
   XMarkIcon,
 } from "@/components/global/icons";
@@ -43,7 +46,7 @@ import { expectOk, useRefreshHelpTree } from "@/hooks/useHelpTree";
 import { WebsiteFavicon } from "@/components/wizard/WebsiteFavicon";
 import { selectionCheckboxClassName } from "@/components/selection/SelectionControl";
 import { GithubRepoField, useGithubSetupToast } from "./GithubRepoField";
-import { HelpCollectionTile } from "./icons";
+import { HelpCollectionTile, helpCollectionTileClass } from "./icons";
 import { HELP_IMPORT_PARAMS } from "./import-url";
 import styles from "./import.module.css";
 
@@ -1364,38 +1367,52 @@ function DoneStage({
   const more = result.created - shown.length;
   // The drafts are on the help page behind this dialog, so the first two steps just close it.
   const next: Array<{
+    icon: React.ComponentType<{ className?: string }>;
     title: string;
     body: string;
-    art: React.ReactNode;
     href?: string;
   }> = [
     {
+      icon: EditIcon,
       title: "Read and edit each draft",
       body: "Fix anything that's off and add screenshots.",
-      art: <EditArt />,
     },
     {
+      icon: EyeIcon,
       title: "Publish the ones you're happy with",
       body: "Drafts stay private until you switch them on.",
-      art: <PublishArt />,
     },
     {
+      icon: MessageSquareText,
       title: "Show articles where people ask",
       body: "Turn on help articles in your widget and Ask AI.",
-      art: <WidgetArt />,
       href: `/workspaces/${workspaceSlug}/settings/help`,
     },
   ];
   const stepClass =
     // Raised surface like the other cards (gradient, lit top edge), with only the hairline drop shadow.
-    "group/next flex h-full w-full cursor-pointer flex-col rounded-2xl [corner-shape:squircle] border border-black/[0.08] bg-card bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_4%)] p-1.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.03)] transition-transform duration-200 hover:-translate-y-0.5 dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_4%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_1px_rgba(0,0,0,0.12)]";
+    "group/next flex h-full w-full cursor-pointer flex-col rounded-xl [corner-shape:squircle] border border-black/[0.08] bg-card bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_4%)] p-3.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.03)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_4%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_1px_rgba(0,0,0,0.12)]";
   return (
     <DialogInner className="p-0">
       {/* A cropped look at the help page with the new drafts on it, fading into the dialog. */}
       <div
         aria-hidden
-        className="relative overflow-hidden bg-muted/60 bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] bg-size-[12px_12px] px-6 pt-8 sm:px-10 dark:bg-white/[0.02] dark:bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)]"
+        className="relative isolate overflow-hidden px-6 pt-8 sm:px-10"
       >
+        <div
+          className="absolute inset-0 -z-10"
+          style={{
+            maskImage:
+              "radial-gradient(ellipse 85% 100% at 50% 0%, black 0%, rgba(0,0,0,0.45) 55%, transparent 95%)",
+          }}
+        >
+          <DitherGradient
+            to="primary"
+            direction="down"
+            cell={3}
+            opacity={0.45}
+          />
+        </div>
         <div className="mx-auto max-w-md rounded-t-xl [corner-shape:squircle] border border-b-0 border-black/[0.08] bg-card shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_1px_rgba(0,0,0,0.03)] dark:border-white/[0.08] dark:bg-[color-mix(in_oklab,var(--card),white_3%)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
           <div className="flex items-center gap-2 border-b border-border/60 px-4 py-2.5 dark:border-white/[0.07]">
             <BookIcon className="size-3.5 text-primary" />
@@ -1432,10 +1449,10 @@ function DoneStage({
             ) : null}
           </ul>
         </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-card to-transparent dark:from-background" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-card to-transparent dark:from-[color-mix(in_oklab,var(--card),white_2%)]" />
       </div>
 
-      <div className="flex flex-wrap items-end justify-between gap-4 px-5 pt-4 sm:px-6">
+      <div className="flex flex-wrap items-end justify-between gap-4 px-5 pb-5 pt-4 sm:px-6">
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
             <CheckIcon className="size-3.5" />
@@ -1467,128 +1484,39 @@ function DoneStage({
         </div>
       </div>
 
-      <div className="p-5 sm:p-6">
-        <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-          Next steps
-        </p>
-        <ol className="mt-3 grid gap-2.5 sm:grid-cols-3">
-          {next.map((item, i) => {
-            const content = (
-              <>
-                <span
-                  aria-hidden
-                  className="relative flex h-24 items-center justify-center overflow-hidden rounded-[11px] [corner-shape:squircle] bg-muted/70 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)] bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] bg-size-[10px_10px] dark:bg-white/[0.03] dark:bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)]"
-                >
-                  <span className="transition-transform duration-300 group-hover/next:-translate-y-0.5 group-hover/next:scale-[1.03]">
-                    {item.art}
-                  </span>
+      <ol className="grid gap-2.5 px-5 pb-5 sm:grid-cols-3 sm:px-6 sm:pb-6">
+        {next.map((item) => {
+          const content = (
+            <>
+              <span className="flex items-center justify-between">
+                <span className={cn(helpCollectionTileClass, "size-8")}>
+                  <item.icon className="size-4" />
                 </span>
-                <span className="flex flex-1 flex-col px-2 pb-2 pt-3">
-                  <span className="flex items-center justify-between text-[11px] font-medium tabular-nums text-muted-foreground">
-                    Step {i + 1}
-                    <ArrowRight className="size-3.5 transition-[translate,color] group-hover/next:translate-x-0.5 group-hover/next:text-primary" />
-                  </span>
-                  <span className="mt-1 text-sm font-medium leading-snug text-foreground">
-                    {item.title}
-                  </span>
-                  <span className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                    {item.body}
-                  </span>
-                </span>
-              </>
-            );
-            return (
-              <li key={item.title}>
-                {item.href ? (
-                  <Link
-                    href={item.href}
-                    onClick={onClose}
-                    className={stepClass}
-                  >
-                    {content}
-                  </Link>
-                ) : (
-                  <button type="button" onClick={onClose} className={stepClass}>
-                    {content}
-                  </button>
-                )}
-              </li>
-            );
-          })}
-        </ol>
-      </div>
+                <ArrowRight className="size-3.5 text-muted-foreground transition-[translate,color] group-hover/next:translate-x-0.5 group-hover/next:text-foreground" />
+              </span>
+              <span className="mt-3 text-sm font-medium leading-snug text-foreground">
+                {item.title}
+              </span>
+              <span className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                {item.body}
+              </span>
+            </>
+          );
+          return (
+            <li key={item.title}>
+              {item.href ? (
+                <Link href={item.href} onClick={onClose} className={stepClass}>
+                  {content}
+                </Link>
+              ) : (
+                <button type="button" onClick={onClose} className={stepClass}>
+                  {content}
+                </button>
+              )}
+            </li>
+          );
+        })}
+      </ol>
     </DialogInner>
-  );
-}
-
-/** Mini UI scenes for the next-step cards. Purely decorative. */
-const artSurface =
-  "rounded-lg bg-card shadow-sm ring-1 ring-border/70 dark:bg-zinc-900 dark:ring-white/10";
-
-function EditArt() {
-  return (
-    <span className="relative block w-32">
-      <span className={cn("block p-2.5", artSurface)}>
-        <span className="block h-1.5 w-3/5 rounded-full bg-foreground/70" />
-        <span className="mt-2 block h-1 w-full rounded-full bg-muted-foreground/20" />
-        <span className="mt-1.5 flex items-center">
-          <span className="block h-1 w-1/3 rounded-full bg-muted-foreground/20" />
-          <span className="ml-1 block h-2 w-8 rounded-[2px] bg-primary/25" />
-          <span className={cn("block h-2.5 w-px bg-primary", styles.caret)} />
-        </span>
-        <span className="mt-1.5 block h-1 w-4/5 rounded-full bg-muted-foreground/20" />
-      </span>
-      <span className="absolute -right-2.5 -top-2.5 flex size-6 items-center justify-center rounded-full bg-primary text-white shadow-md ring-2 ring-card">
-        <EditIcon className="size-3" />
-      </span>
-    </span>
-  );
-}
-
-function PublishArt() {
-  return (
-    <span className="flex w-36 flex-col gap-1.5">
-      <span
-        className={cn(
-          "flex items-center gap-2 px-2 py-1.5 opacity-60",
-          artSurface,
-        )}
-      >
-        <span className="block h-1 flex-1 rounded-full bg-muted-foreground/25" />
-        <span className="flex h-3 w-5 items-center rounded-full bg-muted-foreground/25 p-0.5">
-          <span className="size-2 rounded-full bg-white" />
-        </span>
-      </span>
-      <span className={cn("flex items-center gap-2 px-2 py-1.5", artSurface)}>
-        <span className="block h-1 flex-1 rounded-full bg-foreground/50" />
-        <span className="rounded-full bg-emerald-500/15 px-1.5 text-[8px] font-semibold leading-3 text-emerald-600 dark:text-emerald-400">
-          Live
-        </span>
-        <span className="flex h-3 w-5 items-center justify-end rounded-full bg-emerald-500 p-0.5">
-          <span className="size-2 rounded-full bg-white" />
-        </span>
-      </span>
-    </span>
-  );
-}
-
-function WidgetArt() {
-  return (
-    <span className="flex w-36 flex-col gap-1.5">
-      <span className="self-end rounded-xl rounded-br-sm bg-primary px-2 py-1 text-[9px] font-medium leading-none text-white shadow-sm">
-        How do I start?
-      </span>
-      <span
-        className={cn("flex items-center gap-1.5 self-start p-1.5", artSurface)}
-      >
-        <span className="flex size-5 items-center justify-center rounded-md bg-primary/10 text-primary">
-          <BookIcon className="size-3" />
-        </span>
-        <span className="flex flex-col gap-1">
-          <span className="block h-1 w-14 rounded-full bg-foreground/60" />
-          <span className="block h-1 w-10 rounded-full bg-muted-foreground/25" />
-        </span>
-      </span>
-    </span>
   );
 }

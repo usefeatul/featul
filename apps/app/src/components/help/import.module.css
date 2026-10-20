@@ -7,19 +7,7 @@
   from { opacity: 0; transform: translateY(6px); }
 }
 
-/* Text caret in the "edit" next-step scene. */
-.caret {
-  animation: caret 1s steps(1) infinite;
-}
-
-@keyframes caret {
-  50% { opacity: 0; }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .caret {
-    animation: none;
-  }
   .rise {
     animation-duration: 0.01ms;
   }
