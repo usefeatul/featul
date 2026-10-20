@@ -12,6 +12,7 @@ import {
 } from "../lib/validators";
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog";
 import { markPendingWelcomeTour } from "@/lib/welcome/tour";
+import { helpImportHref } from "@/components/help/import-url";
 
 /** Capitalizes the first DNS label of a domain as a workspace name. */
 function extractNameFromDomain(domain: string): string {
@@ -201,16 +202,15 @@ export function useWizardLogic(_options: UseWizardLogicOptions = {}) {
       }
 
       const isFirstWorkspace = Boolean(data?.isFirstWorkspace);
-      // The gate never opens the tour on the help import page, so it starts on whichever page
-      // comes next, not over the scan.
+      // The gate never opens the tour over the help import dialog, so it starts once that closes.
       if (isFirstWorkspace) {
         markPendingWelcomeTour();
       }
 
       if (options?.helpImport) {
-        const params = new URLSearchParams({ site: domain.trim(), start: "1", onboarding: "1" });
-        if (options.helpImport.repo.trim()) params.set("repo", options.helpImport.repo.trim());
-        router.push(`/workspaces/${createdSlug}/help/import?${params.toString()}`);
+        const params: Record<string, string> = { site: domain.trim(), start: "1", onboarding: "1" };
+        if (options.helpImport.repo.trim()) params.repo = options.helpImport.repo.trim();
+        router.push(helpImportHref(createdSlug, params));
         return;
       }
       router.push(`/workspaces/${createdSlug}${isFirstWorkspace ? "?welcome=1" : ""}`);

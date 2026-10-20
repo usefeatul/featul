@@ -18,6 +18,7 @@ import {
   SparklesIcon,
 } from "@/components/global/icons";
 import { WebsiteFavicon } from "@/components/wizard/WebsiteFavicon";
+import { helpImportHref } from "@/components/help/import-url";
 import {
   GithubRepoField,
   useGithubSetupToast,
@@ -63,9 +64,9 @@ export default function HelpCenterSection({
   const monthly = usage?.window === "month";
   const outOfScans = usage ? usage.remaining <= 0 : false;
   const canScan = !outOfScans && Boolean(site.trim() || repo.trim());
-  const params = new URLSearchParams({ start: "1" });
-  if (site.trim()) params.set("site", site.trim());
-  if (repo.trim()) params.set("repo", repo.trim());
+  const params: Record<string, string> = { start: "1" };
+  if (site.trim()) params.site = site.trim();
+  if (repo.trim()) params.repo = repo.trim();
   const billingHref = `/workspaces/${slug}/settings/billing`;
 
   const sourceRow = "flex items-center gap-3 px-5 py-3";
@@ -153,7 +154,7 @@ export default function HelpCenterSection({
             {canScan ? (
               <Button asChild size="sm">
                 <Link
-                  href={`/workspaces/${slug}/help/import?${params.toString()}`}
+                  href={helpImportHref(slug, params)}
                 >
                   <SparklesIcon className="size-3.5" />
                   Scan again

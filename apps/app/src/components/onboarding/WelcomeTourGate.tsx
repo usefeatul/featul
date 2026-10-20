@@ -27,8 +27,8 @@ export function WelcomeTourGate({
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    // Never over the help import scan; a pending tour opens on the next page instead.
-    if (pathname.endsWith("/help/import")) return;
+    // Never over the help import dialog; a pending tour opens once it closes instead.
+    if (searchParams.get("import") === "1") return;
     const shouldWelcome =
       searchParams.get("welcome") === "1" || hasPendingWelcomeTour();
     if (!shouldWelcome || hasCompletedWelcomeTour(userId)) {

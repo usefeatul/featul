@@ -13,6 +13,7 @@ import { AnalyticsIcon, BookIcon, ExternalLink, Plus, SparklesIcon } from "@/com
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { expectOk } from "@/hooks/useHelpTree";
 import { CollectionDialog } from "./CollectionDialog";
+import { openHelpImport } from "./HelpImport";
 
 type HelpSettings = { isVisible: boolean; publishedCount: number };
 
@@ -83,10 +84,15 @@ export function HelpHeaderActions({
           </Link>
         </Button>
       ) : null}
-      <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
-        <Link href={`/workspaces/${workspaceSlug}/help/import`} aria-label="Draft from website" title="Draft from website">
-          <SparklesIcon className="size-4" />
-        </Link>
+      <Button
+        variant="plain"
+        size="icon-sm"
+        className={buttonClassName}
+        aria-label="Draft from website"
+        title="Draft from website"
+        onClick={openHelpImport}
+      >
+        <SparklesIcon className="size-4" />
       </Button>
       <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
         <Link href={`/workspaces/${workspaceSlug}/help/analytics`} aria-label="Analytics" title="Analytics">

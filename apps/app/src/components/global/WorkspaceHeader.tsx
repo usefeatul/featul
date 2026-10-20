@@ -108,7 +108,7 @@ export default function WorkspaceHeader({
   const showHelpActions = rest[0] === "help" && rest.length === 1;
   // Help Center sub-pages that get a breadcrumb instead of the article editor chrome.
   const helpSubpage =
-    rest[0] === "help" ? ({ analytics: "Analytics", import: "Draft from website" } as Record<string, string>)[rest[1] ?? ""] : undefined;
+    rest[0] === "help" ? ({ analytics: "Analytics" } as Record<string, string>)[rest[1] ?? ""] : undefined;
   const isHelpAnalytics = Boolean(helpSubpage);
   const showHelpEditActions =
     rest[0] === "help" && rest.length >= 2 && !isHelpAnalytics;

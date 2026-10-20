@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { HelpProposal } from "@featul/api/help/import/generate";
 import type {
@@ -18,11 +18,12 @@ import { DitherClouds } from "@featul/ui/components/clouds";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogInner,
   DialogTitle,
 } from "@featul/ui/components/dialog";
-import { raisedCardClass, raisedSurfaceClass } from "@featul/ui/lib/overlay";
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import {
   ArrowRight,
@@ -40,6 +41,7 @@ import { expectOk, useRefreshHelpTree } from "@/hooks/useHelpTree";
 import { WebsiteFavicon } from "@/components/wizard/WebsiteFavicon";
 import { GithubRepoField, useGithubSetupToast } from "./GithubRepoField";
 import { HelpCollectionIcon } from "./icons";
+import { HELP_IMPORT_PARAMS } from "./import-url";
 import styles from "./import.module.css";
 
 type Stage = "form" | "running" | "review" | "saving" | "done";
@@ -64,8 +66,6 @@ const STEP_LABELS: Record<HelpImportStep, string> = {
   repo: "Reading your GitHub repository",
   draft: "Writing draft articles",
 };
-
-const cardClass = cn(raisedCardClass, "rounded-2xl");
 
 /** Raised 3D button: lit top edge, gradient body, a darker bottom lip that presses in on click. */
 const button3dClass =
@@ -125,23 +125,57 @@ const hostOf = (url: string) => {
 };
 
 /**
- * Draft a help center from a website and/or GitHub repo: scan, review, then save as drafts.
- * Used after workspace setup (with `autoStart`) and from Settings → Help Center.
+ * "Draft from website" on the help page, opened by `?import=1` (see `helpImportHref`).
+ * Mounted once on the help page; the dialog reads its prefill from the URL.
  */
-export function HelpImport({
+export function HelpImportDialog({ workspaceSlug }: { workspaceSlug: string }) {
+  const searchParams = useSearchParams();
+  if (searchParams.get("import") !== "1") return null;
+  const param = (key: string) => searchParams.get(key)?.slice(0, 300) || "";
+  return (
+    <HelpImport
+      workspaceSlug={workspaceSlug}
+      initialSite={param("site")}
+      initialRepo={param("repo")}
+      autoStart={param("start") === "1"}
+      onboarding={param("onboarding") === "1"}
+      onClose={closeHelpImport}
+    />
+  );
+}
+
+/** Opens the dialog in place: no server round trip, and no history entry for Back to replay. */
+export function openHelpImport() {
+  const url = new URL(window.location.href);
+  url.searchParams.set("import", "1");
+  window.history.replaceState(null, "", url.toString());
+}
+
+function closeHelpImport() {
+  const url = new URL(window.location.href);
+  for (const key of HELP_IMPORT_PARAMS) url.searchParams.delete(key);
+  window.history.replaceState(null, "", url.toString());
+}
+
+/**
+ * Draft a help center from a website and/or GitHub repo: scan, review, then save as drafts,
+ * all in one dialog. Used after workspace setup (with `autoStart`) and from the help page.
+ */
+function HelpImport({
   workspaceSlug,
   initialSite = "",
   initialRepo = "",
   autoStart = false,
   onboarding = false,
+  onClose,
 }: {
   workspaceSlug: string;
   initialSite?: string;
   initialRepo?: string;
   autoStart?: boolean;
   onboarding?: boolean;
+  onClose: () => void;
 }) {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const refreshTree = useRefreshHelpTree(workspaceSlug);
   useGithubSetupToast();
@@ -174,6 +208,12 @@ export function HelpImport({
   const [result, setResult] = React.useState<SaveResult | null>(null);
   const [log, setLog] = React.useState<LogEntry[]>([]);
   const [startedAt, setStartedAt] = React.useState(0);
+  // Once drafting has started the scan is used either way, so Cancel asks once first.
+  const [confirmCancel, setConfirmCancel] = React.useState(false);
+  // Unsaved drafts ask before they're dropped, whether by Start over or by closing.
+  const [discard, setDiscard] = React.useState<"restart" | "close" | null>(
+    null,
+  );
   const abortRef = React.useRef<AbortController | null>(null);
   const started = React.useRef(false);
 
@@ -184,7 +224,7 @@ export function HelpImport({
     if (!initialRepo) setRepo((v) => v || usage.repo || "");
   }, [usage, initialSite, initialRepo]);
 
-  // Stop the scan when leaving the page. Deferred a tick so Strict Mode's
+  // Stop the scan when the dialog goes away. Deferred a tick so Strict Mode's
   // simulated unmount, which remounts straight away, doesn't cancel it.
   const mounted = React.useRef(true);
   React.useEffect(() => {
@@ -209,6 +249,7 @@ export function HelpImport({
       ]);
     setStartedAt(begin);
     setLog([]);
+    setConfirmCancel(false);
     setStage("running");
     setError("");
     setSources([]);
@@ -286,12 +327,12 @@ export function HelpImport({
     if (autoStart && !started.current && (initialSite || initialRepo)) {
       started.current = true;
       void scan();
-      // Drop `start` so Back, a refresh or a GitHub round trip doesn't spend another scan.
+      // Drop `start` so a refresh or a GitHub round trip doesn't spend another scan.
       const url = new URL(window.location.href);
       url.searchParams.delete("start");
-      router.replace(`${url.pathname}${url.search}`, { scroll: false });
+      window.history.replaceState(null, "", url.toString());
     }
-  }, [autoStart, initialRepo, initialSite, scan, router]);
+  }, [autoStart, initialRepo, initialSite, scan]);
 
   const save = async () => {
     if (!proposal) return;
@@ -322,72 +363,156 @@ export function HelpImport({
     }
   };
 
+  const cancelScan = () => {
+    const writing =
+      steps.draft.state === "running" || steps.draft.state === "done";
+    if (writing && !confirmCancel) return setConfirmCancel(true);
+    abortRef.current?.abort();
+    setConfirmCancel(false);
+    setError(
+      steps.draft.state === "idle"
+        ? "Scan cancelled."
+        : "Scan cancelled. Drafting had started, so it still counts as a scan.",
+    );
+    setStage("form");
+  };
+
+  /** X, Escape and clicks outside all come through here; only the form and done close straight away. */
+  const requestClose = () => {
+    if (stage === "running") cancelScan();
+    else if (stage === "review") setDiscard("close");
+    else if (stage === "form" || stage === "done") onClose();
+  };
+
   const outOfScans = usage ? usage.remaining <= 0 : false;
   const canScan = Boolean(site.trim() || repo.trim()) && !outOfScans;
   const dashboardHref = `/workspaces/${workspaceSlug}`;
+  const busy = stage === "running" || stage === "saving";
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 pb-16 sm:px-6">
-      {/* The form stays behind the progress dialog, so cancelling lands back where you were. */}
-      {stage === "form" || stage === "running" ? (
-        <FormStage
-          site={site}
-          repo={repo}
-          setSite={setSite}
-          setRepo={setRepo}
-          error={error}
-          canScan={canScan && stage === "form"}
-          onScan={() => void scan()}
-          onboarding={onboarding}
-          usage={usage}
-          workspaceSlug={workspaceSlug}
-          dashboardHref={dashboardHref}
-        />
-      ) : null}
+    <Dialog open onOpenChange={(open) => !open && requestClose()}>
+      <DialogContent
+        fluid
+        showCloseButton={!busy}
+        className={cn(
+          "max-h-[calc(100dvh-2rem)]",
+          stage === "review" || stage === "saving"
+            ? "w-[min(94vw,46rem)]"
+            : stage === "form"
+              ? "w-[min(94vw,36rem)]"
+              : "w-[min(94vw,40rem)]",
+        )}
+        // Work in progress never vanishes on a stray click.
+        onInteractOutside={(e) => {
+          if (stage !== "form" && stage !== "done") e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          // Escape closes the repo suggestions first, then backs out of the "still uses the scan" prompt.
+          const target = e.target as HTMLElement | null;
+          if (target?.getAttribute("aria-expanded") === "true")
+            return e.preventDefault();
+          if (stage === "running" && confirmCancel) {
+            e.preventDefault();
+            setConfirmCancel(false);
+          }
+        }}
+      >
+        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+          <DialogTitle className="mt-0.5 flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
+            <SparklesIcon className="size-3.5 text-primary" />
+            {stage === "running"
+              ? "Drafting your help center"
+              : "Draft from website"}
+          </DialogTitle>
+          {stage === "running" ? <Elapsed startedAt={startedAt} /> : null}
+        </DialogHeader>
 
-      {stage === "running" ? (
-        <RunningDialog
-          steps={steps}
-          sources={sources}
-          drafting={drafting}
-          maxArticles={usage?.maxArticles ?? 6}
-          startedAt={startedAt}
-          log={log}
-          onCancel={() => {
-            abortRef.current?.abort();
-            setError(
-              steps.draft.state === "idle"
-                ? "Scan cancelled."
-                : "Scan cancelled. Drafting had started, so it still counts as a scan.",
-            );
-            setStage("form");
-          }}
-        />
-      ) : null}
+        {stage === "form" ? (
+          <FormStage
+            site={site}
+            repo={repo}
+            setSite={setSite}
+            setRepo={setRepo}
+            error={error}
+            canScan={canScan}
+            onScan={() => void scan()}
+            onboarding={onboarding}
+            usage={usage}
+            workspaceSlug={workspaceSlug}
+            dashboardHref={dashboardHref}
+          />
+        ) : null}
 
-      {(stage === "review" || stage === "saving") && proposal ? (
-        <Review
-          proposal={proposal}
-          sources={sources}
-          selected={selected}
-          setSelected={setSelected}
-          saving={stage === "saving"}
-          error={error}
-          outOfScans={outOfScans}
-          onSave={() => void save()}
-          onDiscard={() => setStage("form")}
-        />
-      ) : null}
+        {stage === "running" ? (
+          <RunningStage
+            steps={steps}
+            sources={sources}
+            drafting={drafting}
+            maxArticles={usage?.maxArticles ?? 6}
+            log={log}
+            confirmCancel={confirmCancel}
+            onKeepGoing={() => setConfirmCancel(false)}
+            onCancel={cancelScan}
+          />
+        ) : null}
 
-      {stage === "done" && result ? (
-        <DoneStage
-          result={result}
-          workspaceSlug={workspaceSlug}
-          onboarding={onboarding}
-          dashboardHref={dashboardHref}
-        />
-      ) : null}
-    </div>
+        {(stage === "review" || stage === "saving") && proposal ? (
+          <Review
+            proposal={proposal}
+            sources={sources}
+            selected={selected}
+            setSelected={setSelected}
+            saving={stage === "saving"}
+            error={error}
+            onSave={() => void save()}
+            onStartOver={() => setDiscard("restart")}
+          />
+        ) : null}
+
+        {stage === "done" && result ? (
+          <DoneStage
+            result={result}
+            workspaceSlug={workspaceSlug}
+            onboarding={onboarding}
+            dashboardHref={dashboardHref}
+            onClose={onClose}
+          />
+        ) : null}
+      </DialogContent>
+
+      <DestructiveConfirmDialog
+        open={discard !== null}
+        onOpenChange={(open) => !open && setDiscard(null)}
+        isPending={false}
+        onConfirm={() => {
+          const intent = discard;
+          setDiscard(null);
+          if (intent === "close") onClose();
+          else setStage("form");
+        }}
+        title="Discard these drafts?"
+        description={`These ${proposal?.articles.length ?? 0} drafts aren't saved yet and will be lost.${
+          outOfScans
+            ? " You have no scans left, so you can't scan again to get them back."
+            : ""
+        }`}
+        confirmLabel="Discard drafts"
+      />
+    </Dialog>
+  );
+}
+
+/** Ticks once a second; kept apart so the rest of the dialog doesn't re-render with it. */
+function Elapsed({ startedAt }: { startedAt: number }) {
+  const [now, setNow] = React.useState(() => Date.now());
+  React.useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+  return (
+    <span className="px-2 text-xs tabular-nums text-muted-foreground">
+      {formatElapsed(now - startedAt)}
+    </span>
   );
 }
 
@@ -432,9 +557,8 @@ function Review({
   setSelected,
   saving,
   error,
-  outOfScans,
   onSave,
-  onDiscard,
+  onStartOver,
 }: {
   proposal: HelpProposal;
   sources: SourceRef[];
@@ -442,12 +566,10 @@ function Review({
   setSelected: React.Dispatch<React.SetStateAction<Set<number>>>;
   saving: boolean;
   error: string;
-  outOfScans: boolean;
   onSave: () => void;
-  onDiscard: () => void;
+  onStartOver: () => void;
 }) {
   const [open, setOpen] = React.useState<number | null>(null);
-  const [confirmDiscard, setConfirmDiscard] = React.useState(false);
   // The model can repeat a collection name; keep the first so each group shows once.
   const seen = new Set<string>();
   const groups = proposal.collections
@@ -481,9 +603,9 @@ function Review({
     });
 
   return (
-    <div className="space-y-4">
-      <section className={cn(cardClass, "relative isolate overflow-hidden")}>
-        <div className="relative isolate overflow-hidden bg-primary px-6 py-6 text-white sm:px-7">
+    <>
+      <DialogInner className="flex min-h-0 flex-col p-0">
+        <div className="relative isolate shrink-0 overflow-hidden bg-primary px-5 py-5 text-white sm:px-6">
           <div className="absolute inset-0 -z-10 opacity-80">
             <DitherClouds primary fit="cover" />
           </div>
@@ -496,10 +618,10 @@ function Review({
               <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-white/75">
                 Ready for review
               </p>
-              <h1 className="mt-1.5 text-2xl font-semibold tracking-tight">
+              <h2 className="mt-1.5 text-xl font-semibold tracking-tight">
                 {proposal.articles.length} drafts, {groups.length}{" "}
                 {groups.length === 1 ? "collection" : "collections"}
-              </h1>
+              </h2>
               <p className="mt-1 text-sm text-white/80">
                 Untick anything you don&apos;t want. Everything is saved as a
                 draft.
@@ -523,7 +645,7 @@ function Review({
           </div>
         </div>
         {sources.length ? (
-          <div className="flex flex-wrap items-center gap-1.5 px-6 py-3 sm:px-7">
+          <div className="flex shrink-0 flex-wrap items-center gap-1.5 border-b border-border/60 px-5 py-3 sm:px-6 dark:border-white/[0.07]">
             <span className="mr-1 text-xs text-muted-foreground">
               Written from {sources.length} sources
             </span>
@@ -532,149 +654,127 @@ function Review({
             ))}
           </div>
         ) : null}
-      </section>
 
-      {[
-        ...groups,
-        ...(loose.length ? [{ collection: null, items: loose }] : []),
-      ].map((group) => (
-        <section
-          key={
-            group.collection
-              ? `collection:${group.collection.name.trim().toLowerCase()}`
-              : "uncategorized"
-          }
-          className={cardClass}
-        >
-          <header className="flex items-center gap-3 border-b border-border/60 px-5 py-3.5 dark:border-white/[0.07]">
-            <span className="flex size-8 items-center justify-center rounded-lg border border-border/70 text-muted-foreground dark:border-white/10">
-              <HelpCollectionIcon
-                icon={group.collection?.icon ?? "book"}
-                className="size-4"
-              />
-            </span>
-            <div className="min-w-0">
-              <h2 className="truncate text-sm font-semibold text-foreground">
-                {group.collection?.name ?? "Uncategorized"}
-              </h2>
-              {group.collection?.description ? (
-                <p className="truncate text-xs text-muted-foreground">
-                  {group.collection.description}
-                </p>
-              ) : null}
-            </div>
-          </header>
-          <ul className="divide-y divide-border/50 dark:divide-white/[0.06]">
-            {group.items.map(({ article, index }) => (
-              <li key={index} className="px-5 py-3.5">
-                <div className="flex items-start gap-3">
-                  <Checkbox
-                    checked={selected.has(index)}
-                    onCheckedChange={() => toggle(index)}
-                    aria-label={`Include ${article.title}`}
-                    className="mt-0.5"
+        <div className="max-h-[min(52dvh,32rem)] min-h-0 overflow-y-auto">
+          {[
+            ...groups,
+            ...(loose.length ? [{ collection: null, items: loose }] : []),
+          ].map((group) => (
+            <section
+              key={
+                group.collection
+                  ? `collection:${group.collection.name.trim().toLowerCase()}`
+                  : "uncategorized"
+              }
+              className="border-b border-border/60 last:border-0 dark:border-white/[0.07]"
+            >
+              <header className="sticky top-0 z-[1] flex items-center gap-3 border-b border-border/60 bg-card px-5 py-3 sm:px-6 dark:border-white/[0.07]">
+                <span className="flex size-7 items-center justify-center rounded-lg border border-border/70 text-muted-foreground dark:border-white/10">
+                  <HelpCollectionIcon
+                    icon={group.collection?.icon ?? "book"}
+                    className="size-3.5"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setOpen(open === index ? null : index)}
-                    className="min-w-0 flex-1 cursor-pointer text-left"
-                  >
-                    <span className="flex items-center gap-2">
-                      <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
-                        {article.title}
-                      </span>
-                      <ChevronDown
-                        className={cn(
-                          "size-4 shrink-0 text-muted-foreground transition-transform",
-                          open === index && "rotate-180",
-                        )}
-                      />
-                    </span>
-                    {article.summary ? (
-                      <span className="mt-0.5 block text-xs text-muted-foreground">
-                        {article.summary}
-                      </span>
-                    ) : null}
-                  </button>
+                </span>
+                <div className="min-w-0">
+                  <h3 className="truncate text-sm font-semibold text-foreground">
+                    {group.collection?.name ?? "Uncategorized"}
+                  </h3>
+                  {group.collection?.description ? (
+                    <p className="truncate text-xs text-muted-foreground">
+                      {group.collection.description}
+                    </p>
+                  ) : null}
                 </div>
-                {open === index ? (
-                  <div className="ml-7 mt-3 rounded-xl bg-muted/50 p-4 dark:bg-white/[0.03]">
-                    <MarkdownPreview text={article.body} />
-                    {article.sources.length ? (
-                      <div className="mt-4 flex flex-wrap items-center gap-1.5 border-t border-border/60 pt-3 dark:border-white/[0.07]">
-                        <span className="text-[11px] text-muted-foreground">
-                          Based on
+              </header>
+              <ul className="divide-y divide-border/50 dark:divide-white/[0.06]">
+                {group.items.map(({ article, index }) => (
+                  <li key={index} className="px-5 py-3.5 sm:px-6">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        checked={selected.has(index)}
+                        onCheckedChange={() => toggle(index)}
+                        aria-label={`Include ${article.title}`}
+                        className="mt-0.5"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setOpen(open === index ? null : index)}
+                        className="min-w-0 flex-1 cursor-pointer text-left"
+                      >
+                        <span className="flex items-center gap-2">
+                          <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+                            {article.title}
+                          </span>
+                          <ChevronDown
+                            className={cn(
+                              "size-4 shrink-0 text-muted-foreground transition-transform",
+                              open === index && "rotate-180",
+                            )}
+                          />
                         </span>
-                        {article.sources.map((url, i) => (
-                          <a
-                            key={`${i}-${url}`}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex max-w-64 items-center gap-1 truncate rounded-full bg-background px-2 py-0.5 text-[11px] text-muted-foreground ring-1 ring-border/70 hover:text-foreground dark:ring-white/10"
-                          >
-                            {hostOf(url)}
-                            <ExternalLink className="size-2.5 shrink-0" />
-                          </a>
-                        ))}
+                        {article.summary ? (
+                          <span className="mt-0.5 block text-xs text-muted-foreground">
+                            {article.summary}
+                          </span>
+                        ) : null}
+                      </button>
+                    </div>
+                    {open === index ? (
+                      <div className="ml-7 mt-3 rounded-xl bg-muted/50 p-4 dark:bg-white/[0.03]">
+                        <MarkdownPreview text={article.body} />
+                        {article.sources.length ? (
+                          <div className="mt-4 flex flex-wrap items-center gap-1.5 border-t border-border/60 pt-3 dark:border-white/[0.07]">
+                            <span className="text-[11px] text-muted-foreground">
+                              Based on
+                            </span>
+                            {article.sources.map((url, i) => (
+                              <a
+                                key={`${i}-${url}`}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex max-w-64 items-center gap-1 truncate rounded-full bg-background px-2 py-0.5 text-[11px] text-muted-foreground ring-1 ring-border/70 hover:text-foreground dark:ring-white/10"
+                              >
+                                {hostOf(url)}
+                                <ExternalLink className="size-2.5 shrink-0" />
+                              </a>
+                            ))}
+                          </div>
+                        ) : null}
                       </div>
                     ) : null}
-                  </div>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </DialogInner>
 
-      <div className="sticky bottom-4 z-10">
-        <div
-          className={cn(
-            cardClass,
-            "flex flex-wrap items-center justify-between gap-3 px-5 py-3 shadow-lg",
+      <div className="flex flex-wrap items-center justify-between gap-3 px-3 pb-1 pt-2">
+        <p className="text-sm text-muted-foreground">
+          {error ? (
+            <span className="text-destructive">{error}</span>
+          ) : (
+            `${selected.size} of ${proposal.articles.length} selected`
           )}
-        >
-          <p className="text-sm text-muted-foreground">
-            {error ? (
-              <span className="text-destructive">{error}</span>
-            ) : (
-              `${selected.size} of ${proposal.articles.length} selected`
-            )}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="plain"
-              onClick={() => setConfirmDiscard(true)}
-              disabled={saving}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Start over
-            </Button>
-            <Button onClick={onSave} disabled={saving || selected.size === 0}>
-              {saving ? <LoaderIcon className="size-4" /> : null}
-              Add {selected.size} {selected.size === 1 ? "draft" : "drafts"}
-            </Button>
-          </div>
+        </p>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="plain"
+            onClick={onStartOver}
+            disabled={saving}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Start over
+          </Button>
+          <Button onClick={onSave} disabled={saving || selected.size === 0}>
+            {saving ? <LoaderIcon className="size-4" /> : null}
+            Add {selected.size} {selected.size === 1 ? "draft" : "drafts"}
+          </Button>
         </div>
       </div>
-
-      <DestructiveConfirmDialog
-        open={confirmDiscard}
-        onOpenChange={setConfirmDiscard}
-        isPending={false}
-        onConfirm={() => {
-          setConfirmDiscard(false);
-          onDiscard();
-        }}
-        title="Discard these drafts?"
-        description={`These ${proposal.articles.length} drafts aren't saved yet and will be lost.${
-          outOfScans
-            ? " You have no scans left, so you can't scan again to get them back."
-            : ""
-        }`}
-        confirmLabel="Discard drafts"
-      />
-    </div>
+    </>
   );
 }
 
@@ -776,10 +876,10 @@ function SourceIcon({
   );
 }
 
-/** Brand banner on top of a raised card, shared by the form and progress stages. */
+/** Brand banner at the top of the form. */
 function Banner({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative isolate overflow-hidden bg-primary px-6 pb-7 pt-6 text-white sm:px-8">
+    <div className="relative isolate overflow-hidden bg-primary px-5 pb-6 pt-5 text-white sm:px-6">
       <div className="absolute inset-0 -z-10 opacity-90">
         <DitherClouds primary fit="cover" />
       </div>
@@ -819,94 +919,93 @@ function FormStage({
 }) {
   return (
     <form
-      className={cn(cardClass, "overflow-hidden")}
+      className="contents"
       onSubmit={(e) => {
         e.preventDefault();
         if (canScan) onScan();
       }}
     >
-      <Banner>
-        <span className="flex size-11 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/25 backdrop-blur-sm">
-          <SparklesIcon className="size-5" />
-        </span>
-        <h1 className="mt-4 text-2xl font-semibold tracking-tight">
-          {onboarding
-            ? "Let's draft your help center"
-            : "Draft articles from your website"}
-        </h1>
-        <p className="mt-1.5 max-w-xl text-sm text-white/85">
-          We read your site and docs, then write first drafts of the articles
-          your customers will need. Nothing is published until you publish it.
-        </p>
-        <ul className="mt-5 flex flex-wrap gap-2 text-xs text-white/90">
-          {[
-            "Reads up to " + (usage?.maxPages ?? 6) + " pages",
-            "Writes up to " + (usage?.maxArticles ?? 6) + " drafts",
-            "You review everything",
-          ].map((item) => (
-            <li
-              key={item}
-              className="flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 backdrop-blur-sm"
-            >
-              <CheckIcon className="size-3" />
-              {item}
-            </li>
-          ))}
-        </ul>
-      </Banner>
-
-      <div className="space-y-4 p-6 sm:p-8">
-        <label className="block space-y-1.5">
-          <span className="text-xs font-medium text-foreground">Website</span>
-          <span
-            className={cn(
-              raisedSurfaceClass,
-              "flex items-center gap-2.5 rounded-lg px-3 focus-within:border-primary/40 focus-within:ring-3 focus-within:ring-primary/15",
-            )}
-          >
-            <WebsiteFavicon domain={site} className="size-4 rounded-sm" />
-            <Input
-              variant="plain"
-              value={site}
-              onChange={(e) => setSite(e.target.value)}
-              placeholder="example.com"
-              className="h-10 flex-1 px-0"
-            />
-          </span>
-        </label>
-        <div className="space-y-1.5">
-          <span className="text-xs font-medium text-foreground">
-            GitHub repository{" "}
-            <span className="font-normal text-muted-foreground">
-              (optional)
-            </span>
-          </span>
-          <GithubRepoField
-            workspaceSlug={workspaceSlug}
-            value={repo}
-            onChange={setRepo}
-          />
-        </div>
-
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
-
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-          <UsageNote usage={usage} workspaceSlug={workspaceSlug} />
-          <div className="flex items-center gap-2">
-            {onboarding ? (
-              <Button
-                asChild
-                variant="plain"
-                className="text-muted-foreground hover:text-foreground"
+      <DialogInner className="p-0">
+        <Banner>
+          <h2 className="text-xl font-semibold tracking-tight">
+            {onboarding
+              ? "Let's draft your help center"
+              : "Get a head start on your help center"}
+          </h2>
+          <DialogDescription className="mt-1.5 max-w-xl text-sm text-white/85">
+            We read your site and docs, then write first drafts of the articles
+            your customers will need. Nothing is published until you publish it.
+          </DialogDescription>
+          <ul className="mt-4 flex flex-wrap gap-2 text-xs text-white/90">
+            {[
+              "Reads up to " + (usage?.maxPages ?? 6) + " pages",
+              "Writes up to " + (usage?.maxArticles ?? 6) + " drafts",
+              "You review everything",
+            ].map((item) => (
+              <li
+                key={item}
+                className="flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 backdrop-blur-sm"
               >
-                <Link href={dashboardHref}>Skip for now</Link>
-              </Button>
-            ) : null}
-            <Button type="submit" disabled={!canScan}>
-              Scan and draft
-              <ArrowRight className="size-4" />
-            </Button>
+                <CheckIcon className="size-3" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </Banner>
+
+        <div className="space-y-4 p-5 sm:p-6">
+          <label className="block space-y-1.5">
+            <span className="text-xs font-medium text-foreground">Website</span>
+            <span
+              className={cn(
+                raisedSurfaceClass,
+                "flex items-center gap-2.5 rounded-lg px-3 focus-within:border-primary/40 focus-within:ring-3 focus-within:ring-primary/15",
+              )}
+            >
+              <WebsiteFavicon domain={site} className="size-4 rounded-sm" />
+              <Input
+                variant="plain"
+                value={site}
+                onChange={(e) => setSite(e.target.value)}
+                placeholder="example.com"
+                className="h-10 flex-1 px-0"
+              />
+            </span>
+          </label>
+          <div className="space-y-1.5">
+            <span className="text-xs font-medium text-foreground">
+              GitHub repository{" "}
+              <span className="font-normal text-muted-foreground">
+                (optional)
+              </span>
+            </span>
+            <GithubRepoField
+              workspaceSlug={workspaceSlug}
+              value={repo}
+              onChange={setRepo}
+            />
           </div>
+
+          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        </div>
+      </DialogInner>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 px-3 pb-1 pt-2">
+        <UsageNote usage={usage} workspaceSlug={workspaceSlug} />
+        <div className="flex items-center gap-2">
+          {onboarding ? (
+            <Button
+              asChild
+              variant="plain"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Link href={dashboardHref}>Skip for now</Link>
+            </Button>
+          ) : null}
+          <Button type="submit" disabled={!canScan}>
+            Scan and draft
+            <ArrowRight className="size-4" />
+          </Button>
         </div>
       </div>
     </form>
@@ -919,41 +1018,31 @@ const formatElapsed = (ms: number) => {
 };
 
 /**
- * Drafting progress in a dialog over the start form: a progress ring and the real milestones,
- * the item being worked on now, and a short timeline of what's been read and drafted.
- * Not dismissable by clicking outside; Cancel (or Escape) stops the scan. Once drafting has
- * started the scan is used either way, so Cancel asks once before stopping.
+ * Drafting progress: a progress ring and the real milestones, the item being worked on now,
+ * and a short timeline of what's been read and drafted. Cancel (or Escape) stops the scan;
+ * once drafting has started the scan is used either way, so Cancel asks once before stopping.
  */
-function RunningDialog({
+function RunningStage({
   steps,
   sources,
   drafting,
   maxArticles,
-  startedAt,
   log,
+  confirmCancel,
+  onKeepGoing,
   onCancel,
 }: {
   steps: Record<HelpImportStep, { state: StepState; detail?: string }>;
   sources: SourceRef[];
   drafting: string[];
   maxArticles: number;
-  startedAt: number;
   log: LogEntry[];
+  confirmCancel: boolean;
+  onKeepGoing: () => void;
   onCancel: () => void;
 }) {
-  const [now, setNow] = React.useState(() => Date.now());
-  React.useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, []);
-
   const writingPhase =
     steps.draft.state === "running" || steps.draft.state === "done";
-  const [confirmCancel, setConfirmCancel] = React.useState(false);
-  const requestCancel = () => {
-    if (writingPhase && !confirmCancel) setConfirmCancel(true);
-    else onCancel();
-  };
   const current = sources[sources.length - 1];
   const latest = drafting[drafting.length - 1];
   const status = writingPhase
@@ -1012,260 +1101,233 @@ function RunningDialog({
   React.useEffect(() => updateFade(), [timeline.length, updateFade]);
 
   return (
-    <Dialog open onOpenChange={() => {}}>
-      <DialogContent
-        fluid
-        showCloseButton={false}
-        className="w-[min(94vw,40rem)]"
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => {
-          e.preventDefault();
-          // Escape backs out of the "still uses the scan" prompt, otherwise it's Cancel.
-          if (confirmCancel) setConfirmCancel(false);
-          else requestCancel();
-        }}
-      >
-        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-          <DialogTitle className="mt-0.5 flex items-center gap-2 px-2 py-0.5 text-sm font-normal">
-            <SparklesIcon className="size-3.5 text-primary" />
-            Drafting your help center
-          </DialogTitle>
-          <span className="px-2 text-xs tabular-nums text-muted-foreground">
-            {formatElapsed(now - startedAt)}
-          </span>
-        </DialogHeader>
-        <DialogInner className="p-0" aria-live="polite">
-          {/* Pattern banner: the ring and what's being worked on right now. */}
-          <div className="relative isolate overflow-hidden bg-primary px-5 py-6 text-white sm:px-6">
-            <div className="absolute inset-0 -z-10">
-              <DitherClouds primary fit="cover" />
-            </div>
+    <>
+      <DialogInner className="p-0" aria-live="polite">
+        {/* Pattern banner: the ring and what's being worked on right now. */}
+        <div className="relative isolate overflow-hidden bg-primary px-5 py-6 text-white sm:px-6">
+          <div className="absolute inset-0 -z-10">
+            <DitherClouds primary fit="cover" />
+          </div>
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-linear-to-r from-[var(--primary)] via-[color-mix(in_oklab,var(--primary)_55%,transparent)] to-transparent"
+          />
+          <div className="flex items-center gap-5">
             <div
-              aria-hidden
-              className="absolute inset-0 -z-10 bg-linear-to-r from-[var(--primary)] via-[color-mix(in_oklab,var(--primary)_55%,transparent)] to-transparent"
-            />
-            <div className="flex items-center gap-5">
-              <div
-                role="progressbar"
-                aria-label="Drafting progress"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={percent}
-                className="flex size-24 shrink-0 items-center justify-center rounded-[50%] shadow-lg shadow-black/15 transition-[background] duration-500"
-                style={{
-                  background: `conic-gradient(#fff ${percent * 3.6}deg, rgba(255,255,255,0.25) 0)`,
-                }}
-              >
-                <span className="flex size-[4.75rem] items-center justify-center rounded-[50%] bg-[var(--primary)] text-xl font-semibold tabular-nums">
-                  {percent}%
-                </span>
-              </div>
-              <div className="min-w-0">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-medium backdrop-blur-sm">
-                  <LoaderIcon className="size-3" />
-                  {writingPhase
-                    ? latest
-                      ? `Writing · article ${drafting.length} of up to ${maxArticles}`
-                      : "Planning"
-                    : "Reading"}
-                </span>
-                <p
-                  key={status}
-                  className="mt-2 line-clamp-2 text-lg font-semibold leading-snug tracking-tight animate-in fade-in-0 duration-300"
-                >
-                  {writingPhase
-                    ? (latest ?? "Planning your collections")
-                    : (current?.title.split(/ [|·–-] /)[0] ??
-                      "Finding your most helpful pages")}
-                </p>
-                <p className="mt-0.5 truncate text-xs text-white/80">
-                  {writingPhase
-                    ? "Drafted from your pages and docs"
-                    : current
-                      ? hostOf(current.url)
-                      : "Connecting…"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Milestones */}
-          <ol className="grid grid-cols-2 border-b border-border/60 sm:grid-cols-4 dark:border-white/[0.07]">
-            {checklist.map((step, i) => (
-              <li
-                key={step.key}
-                className={cn(
-                  "flex items-center gap-2.5 px-4 py-3",
-                  i > 0 &&
-                    "sm:border-l border-border/60 dark:border-white/[0.07]",
-                  step.state === "skipped" && "opacity-50",
-                )}
-              >
-                <span
-                  className={cn(
-                    "flex size-[18px] shrink-0 items-center justify-center rounded-[50%]",
-                    step.state === "done" &&
-                      "bg-primary text-primary-foreground",
-                    step.state === "running" && "text-primary",
-                    step.state === "error" &&
-                      "bg-rose-500/15 text-rose-600 dark:text-rose-400",
-                    (step.state === "idle" || step.state === "skipped") &&
-                      "border border-border dark:border-white/15",
-                  )}
-                >
-                  {step.state === "done" ? (
-                    <CheckIcon className="size-2.5" />
-                  ) : step.state === "running" ? (
-                    <LoaderIcon className="size-3.5" />
-                  ) : step.state === "error" ? (
-                    <XMarkIcon className="size-2.5" />
-                  ) : null}
-                </span>
-                <span className="min-w-0">
-                  <span
-                    className={cn(
-                      "block truncate text-[13px] font-medium",
-                      step.state === "idle"
-                        ? "text-muted-foreground"
-                        : "text-foreground",
-                    )}
-                  >
-                    {step.label}
-                  </span>
-                  <span className="block truncate text-[11px] text-muted-foreground">
-                    {step.state === "skipped"
-                      ? "Skipped"
-                      : (step.detail ??
-                        (step.state === "done"
-                          ? "Done"
-                          : step.state === "running"
-                            ? "In progress"
-                            : "Up next"))}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ol>
-
-          {/* Timeline */}
-          <div>
-            {timeline.length === 0 ? (
-              <p className="px-5 py-4 text-sm text-muted-foreground">
-                Getting started…
-              </p>
-            ) : (
-              <div className="relative">
-                <ol
-                  ref={listRef}
-                  onScroll={updateFade}
-                  className="max-h-56 overflow-y-auto"
-                >
-                  {timeline.map((entry, i) => {
-                    const live =
-                      entry.kind === "article"
-                        ? i === lastArticleAt && steps.draft.state === "running"
-                        : !writingPhase && i === 0;
-                    return (
-                      <li
-                        key={entry.id}
-                        className="grid grid-cols-[2.5rem_1rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-dashed border-border/70 px-5 py-2 text-[13px] last:border-0 animate-in fade-in-0 duration-300 dark:border-white/[0.07]"
-                      >
-                        <span className="text-[11px] tabular-nums text-muted-foreground">
-                          {formatElapsed(entry.at)}
-                        </span>
-                        <span className="flex justify-center">
-                          {entry.kind === "article" ? (
-                            live ? (
-                              <LoaderIcon className="size-3.5 text-primary" />
-                            ) : (
-                              <span className="flex size-3.5 items-center justify-center rounded-[50%] bg-primary text-primary-foreground">
-                                <CheckIcon className="size-2" />
-                              </span>
-                            )
-                          ) : entry.source ? (
-                            <SourceIcon
-                              source={entry.source}
-                              className="size-3.5"
-                            />
-                          ) : null}
-                        </span>
-                        <span
-                          className={cn(
-                            "truncate",
-                            live
-                              ? "font-medium text-foreground"
-                              : "text-foreground/85",
-                          )}
-                        >
-                          {entry.kind === "article"
-                            ? live
-                              ? `Writing “${entry.text}”`
-                              : `Drafted “${entry.text}”`
-                            : `Read ${entry.text}`}
-                        </span>
-                        <span
-                          className={cn(
-                            "rounded-full px-1.5 py-0.5 text-[10px] font-medium",
-                            live
-                              ? "bg-primary/10 text-primary"
-                              : "bg-muted text-muted-foreground dark:bg-white/[0.06]",
-                          )}
-                        >
-                          {entry.kind === "article"
-                            ? live
-                              ? "Writing"
-                              : "Draft"
-                            : entry.source?.kind === "repo"
-                              ? "GitHub"
-                              : "Website"}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ol>
-                {/* Fades the bottom edge while there are more rows to scroll to. */}
-                <div
-                  aria-hidden
-                  className={cn(
-                    "pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-card to-transparent transition-opacity duration-200 dark:from-background",
-                    moreBelow ? "opacity-100" : "opacity-0",
-                  )}
-                />
-              </div>
-            )}
-          </div>
-        </DialogInner>
-        <div className="flex items-center justify-between gap-3 px-3 pb-1 pt-2">
-          {confirmCancel ? (
-            <span className="text-xs text-foreground" role="alert">
-              Drafting has started, so cancelling now still uses this scan.
-            </span>
-          ) : (
-            <span className="text-xs text-muted-foreground">
-              Usually under a minute · drafts are never published automatically
-            </span>
-          )}
-          <div className="flex shrink-0 items-center gap-2">
-            {confirmCancel ? (
-              <button
-                type="button"
-                onClick={() => setConfirmCancel(false)}
-                className="h-9 cursor-pointer rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Keep going
-              </button>
-            ) : null}
-            <button
-              type="button"
-              onClick={requestCancel}
-              className={button3dClass}
+              role="progressbar"
+              aria-label="Drafting progress"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={percent}
+              className="flex size-24 shrink-0 items-center justify-center rounded-[50%] shadow-lg shadow-black/15 transition-[background] duration-500"
+              style={{
+                background: `conic-gradient(#fff ${percent * 3.6}deg, rgba(255,255,255,0.25) 0)`,
+              }}
             >
-              {confirmCancel ? "Cancel anyway" : "Cancel"}
-            </button>
+              <span className="flex size-[4.75rem] items-center justify-center rounded-[50%] bg-[var(--primary)] text-xl font-semibold tabular-nums">
+                {percent}%
+              </span>
+            </div>
+            <div className="min-w-0">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-medium backdrop-blur-sm">
+                <LoaderIcon className="size-3" />
+                {writingPhase
+                  ? latest
+                    ? `Writing · article ${drafting.length} of up to ${maxArticles}`
+                    : "Planning"
+                  : "Reading"}
+              </span>
+              <p
+                key={status}
+                className="mt-2 line-clamp-2 text-lg font-semibold leading-snug tracking-tight animate-in fade-in-0 duration-300"
+              >
+                {writingPhase
+                  ? (latest ?? "Planning your collections")
+                  : (current?.title.split(/ [|·–-] /)[0] ??
+                    "Finding your most helpful pages")}
+              </p>
+              <p className="mt-0.5 truncate text-xs text-white/80">
+                {writingPhase
+                  ? "Drafted from your pages and docs"
+                  : current
+                    ? hostOf(current.url)
+                    : "Connecting…"}
+              </p>
+            </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        {/* Milestones */}
+        <ol className="grid grid-cols-2 border-b border-border/60 sm:grid-cols-4 dark:border-white/[0.07]">
+          {checklist.map((step, i) => (
+            <li
+              key={step.key}
+              className={cn(
+                "flex items-center gap-2.5 px-4 py-3",
+                i > 0 &&
+                  "sm:border-l border-border/60 dark:border-white/[0.07]",
+                step.state === "skipped" && "opacity-50",
+              )}
+            >
+              <span
+                className={cn(
+                  "flex size-[18px] shrink-0 items-center justify-center rounded-[50%]",
+                  step.state === "done" && "bg-primary text-primary-foreground",
+                  step.state === "running" && "text-primary",
+                  step.state === "error" &&
+                    "bg-rose-500/15 text-rose-600 dark:text-rose-400",
+                  (step.state === "idle" || step.state === "skipped") &&
+                    "border border-border dark:border-white/15",
+                )}
+              >
+                {step.state === "done" ? (
+                  <CheckIcon className="size-2.5" />
+                ) : step.state === "running" ? (
+                  <LoaderIcon className="size-3.5" />
+                ) : step.state === "error" ? (
+                  <XMarkIcon className="size-2.5" />
+                ) : null}
+              </span>
+              <span className="min-w-0">
+                <span
+                  className={cn(
+                    "block truncate text-[13px] font-medium",
+                    step.state === "idle"
+                      ? "text-muted-foreground"
+                      : "text-foreground",
+                  )}
+                >
+                  {step.label}
+                </span>
+                <span className="block truncate text-[11px] text-muted-foreground">
+                  {step.state === "skipped"
+                    ? "Skipped"
+                    : (step.detail ??
+                      (step.state === "done"
+                        ? "Done"
+                        : step.state === "running"
+                          ? "In progress"
+                          : "Up next"))}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ol>
+
+        {/* Timeline */}
+        <div>
+          {timeline.length === 0 ? (
+            <p className="px-5 py-4 text-sm text-muted-foreground">
+              Getting started…
+            </p>
+          ) : (
+            <div className="relative">
+              <ol
+                ref={listRef}
+                onScroll={updateFade}
+                className="max-h-56 overflow-y-auto"
+              >
+                {timeline.map((entry, i) => {
+                  const live =
+                    entry.kind === "article"
+                      ? i === lastArticleAt && steps.draft.state === "running"
+                      : !writingPhase && i === 0;
+                  return (
+                    <li
+                      key={entry.id}
+                      className="grid grid-cols-[2.5rem_1rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-dashed border-border/70 px-5 py-2 text-[13px] last:border-0 animate-in fade-in-0 duration-300 dark:border-white/[0.07]"
+                    >
+                      <span className="text-[11px] tabular-nums text-muted-foreground">
+                        {formatElapsed(entry.at)}
+                      </span>
+                      <span className="flex justify-center">
+                        {entry.kind === "article" ? (
+                          live ? (
+                            <LoaderIcon className="size-3.5 text-primary" />
+                          ) : (
+                            <span className="flex size-3.5 items-center justify-center rounded-[50%] bg-primary text-primary-foreground">
+                              <CheckIcon className="size-2" />
+                            </span>
+                          )
+                        ) : entry.source ? (
+                          <SourceIcon
+                            source={entry.source}
+                            className="size-3.5"
+                          />
+                        ) : null}
+                      </span>
+                      <span
+                        className={cn(
+                          "truncate",
+                          live
+                            ? "font-medium text-foreground"
+                            : "text-foreground/85",
+                        )}
+                      >
+                        {entry.kind === "article"
+                          ? live
+                            ? `Writing “${entry.text}”`
+                            : `Drafted “${entry.text}”`
+                          : `Read ${entry.text}`}
+                      </span>
+                      <span
+                        className={cn(
+                          "rounded-full px-1.5 py-0.5 text-[10px] font-medium",
+                          live
+                            ? "bg-primary/10 text-primary"
+                            : "bg-muted text-muted-foreground dark:bg-white/[0.06]",
+                        )}
+                      >
+                        {entry.kind === "article"
+                          ? live
+                            ? "Writing"
+                            : "Draft"
+                          : entry.source?.kind === "repo"
+                            ? "GitHub"
+                            : "Website"}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+              {/* Fades the bottom edge while there are more rows to scroll to. */}
+              <div
+                aria-hidden
+                className={cn(
+                  "pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-card to-transparent transition-opacity duration-200 dark:from-background",
+                  moreBelow ? "opacity-100" : "opacity-0",
+                )}
+              />
+            </div>
+          )}
+        </div>
+      </DialogInner>
+      <div className="flex items-center justify-between gap-3 px-3 pb-1 pt-2">
+        {confirmCancel ? (
+          <span className="text-xs text-foreground" role="alert">
+            Drafting has started, so cancelling now still uses this scan.
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground">
+            Usually under a minute · drafts are never published automatically
+          </span>
+        )}
+        <div className="flex shrink-0 items-center gap-2">
+          {confirmCancel ? (
+            <button
+              type="button"
+              onClick={onKeepGoing}
+              className="h-9 cursor-pointer rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Keep going
+            </button>
+          ) : null}
+          <button type="button" onClick={onCancel} className={button3dClass}>
+            {confirmCancel ? "Cancel anyway" : "Cancel"}
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -1274,25 +1336,26 @@ function DoneStage({
   workspaceSlug,
   onboarding,
   dashboardHref,
+  onClose,
 }: {
   result: SaveResult;
   workspaceSlug: string;
   onboarding: boolean;
   dashboardHref: string;
+  onClose: () => void;
 }) {
   const fan = result.titles.slice(0, 3);
   const angles =
     fan.length === 1 ? [0] : fan.length === 2 ? [-6, 6] : [-9, 0, 9];
-  const next = [
+  // The drafts are on the help page behind this dialog, so the first two steps just close it.
+  const next: Array<{ title: string; body: string; href?: string }> = [
     {
       title: "Read and edit each draft",
       body: "Fix anything that's off and add screenshots.",
-      href: `/workspaces/${workspaceSlug}/help`,
     },
     {
       title: "Publish the ones you're happy with",
       body: "Drafts stay private until you switch them on.",
-      href: `/workspaces/${workspaceSlug}/help`,
     },
     {
       title: "Show articles where people ask",
@@ -1300,9 +1363,11 @@ function DoneStage({
       href: `/workspaces/${workspaceSlug}/settings/help`,
     },
   ];
+  const stepClass =
+    "group/next flex h-full w-full cursor-pointer flex-col rounded-xl border border-border/70 p-3.5 text-left transition-colors hover:border-primary/40 hover:bg-primary/[0.03] dark:border-white/[0.08]";
   return (
-    <section className={cn(cardClass, "overflow-hidden")}>
-      <div className="relative isolate overflow-hidden bg-primary px-6 pb-9 pt-10 text-center text-white sm:px-10">
+    <DialogInner className="p-0">
+      <div className="relative isolate overflow-hidden bg-primary px-6 pb-8 pt-8 text-center text-white sm:px-10">
         <div className="absolute inset-0 -z-10">
           <DitherClouds multicolor fit="cover" />
         </div>
@@ -1345,9 +1410,9 @@ function DoneStage({
           </span>
         </div>
 
-        <h1 className="mt-6 text-2xl font-semibold tracking-tight sm:text-3xl">
+        <h2 className="mt-5 text-2xl font-semibold tracking-tight">
           Your help center has a head start
-        </h1>
+        </h2>
         <p className="mx-auto mt-2 max-w-md text-sm text-white/85">
           {result.created} {result.created === 1 ? "draft" : "drafts"}
           {result.collectionsCreated > 0
@@ -1356,16 +1421,18 @@ function DoneStage({
           , saved privately and ready for your review.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <Link
-            href={`/workspaces/${workspaceSlug}/help`}
-            className="inline-flex h-9 items-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold text-zinc-900 shadow-md shadow-black/10 transition-colors hover:bg-white/90"
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold text-zinc-900 shadow-md shadow-black/10 transition-colors hover:bg-white/90"
           >
             Review drafts
             <ArrowRight className="size-4" />
-          </Link>
+          </button>
           {onboarding ? (
             <Link
               href={dashboardHref}
+              onClick={onClose}
               className="inline-flex h-9 items-center rounded-lg bg-white/15 px-4 text-sm font-medium text-white ring-1 ring-white/25 backdrop-blur-sm transition-colors hover:bg-white/25"
             >
               Go to dashboard
@@ -1374,17 +1441,14 @@ function DoneStage({
         </div>
       </div>
 
-      <div className="p-6 sm:p-8">
+      <div className="p-5 sm:p-6">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
           Next steps
         </p>
-        <ol className="mt-3 grid gap-3 sm:grid-cols-3">
-          {next.map((item, i) => (
-            <li key={item.title}>
-              <Link
-                href={item.href}
-                className="group/next flex h-full flex-col rounded-xl border border-border/70 p-4 transition-colors hover:border-primary/40 hover:bg-primary/[0.03] dark:border-white/[0.08]"
-              >
+        <ol className="mt-3 grid gap-2.5 sm:grid-cols-3">
+          {next.map((item, i) => {
+            const content = (
+              <>
                 <span className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold tabular-nums text-primary">
                   {i + 1}
                 </span>
@@ -1395,11 +1459,28 @@ function DoneStage({
                   {item.body}
                 </span>
                 <ArrowRight className="mt-auto size-3.5 self-end pt-0 text-muted-foreground transition-transform group-hover/next:translate-x-0.5 group-hover/next:text-primary" />
-              </Link>
-            </li>
-          ))}
+              </>
+            );
+            return (
+              <li key={item.title}>
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    onClick={onClose}
+                    className={stepClass}
+                  >
+                    {content}
+                  </Link>
+                ) : (
+                  <button type="button" onClick={onClose} className={stepClass}>
+                    {content}
+                  </button>
+                )}
+              </li>
+            );
+          })}
         </ol>
       </div>
-    </section>
+    </DialogInner>
   );
 }
