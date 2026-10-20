@@ -63,7 +63,12 @@ async function assertPublicUrl(url: URL) {
  */
 export async function safeFetchText(
   input: string,
-  { maxBytes = 2_000_000, timeoutMs = 10_000, accept = "text/html,*/*;q=0.8" } = {},
+  {
+    maxBytes = 2_000_000,
+    timeoutMs = 10_000,
+    accept = "text/html,*/*;q=0.8",
+    githubToken,
+  }: { maxBytes?: number; timeoutMs?: number; accept?: string; githubToken?: string } = {},
 ): Promise<{ url: string; text: string; contentType: string } | null> {
   let url = new URL(input);
   const controller = new AbortController();
@@ -74,7 +79,12 @@ export async function safeFetchText(
       const res = await fetch(url, {
         redirect: "manual",
         signal: controller.signal,
-        headers: { "User-Agent": USER_AGENT, Accept: accept },
+        headers: {
+          "User-Agent": USER_AGENT,
+          Accept: accept,
+          // Never forward a token past GitHub's API host, including on redirects.
+          ...(githubToken && url.hostname === "api.github.com" ? { Authorization: `Bearer ${githubToken}` } : {}),
+        },
       });
       if (res.status >= 300 && res.status < 400) {
         const location = res.headers.get("location");

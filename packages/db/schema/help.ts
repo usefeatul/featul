@@ -28,6 +28,11 @@ export const helpCenter = pgTable("help_center", {
   /** `YYYY-MM` the monthly counter belongs to; a new month resets it. */
   importMonth: text("import_month"),
   importsThisMonth: integer("imports_this_month").notNull().default(0),
+  /** GitHub App installation that lets scans read the workspace's private repos. */
+  githubInstallationId: text("github_installation_id"),
+  githubAccountLogin: text("github_account_login"),
+  githubConnectedById: text("github_connected_by_id"),
+  githubConnectedAt: timestamp("github_connected_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()

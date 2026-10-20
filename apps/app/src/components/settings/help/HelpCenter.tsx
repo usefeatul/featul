@@ -14,11 +14,14 @@ import {
   AnalyticsIcon,
   ArticleIcon,
   BookIcon,
-  GitHubIcon,
   PanelIcon,
   SparklesIcon,
 } from "@/components/global/icons";
 import { WebsiteFavicon } from "@/components/wizard/WebsiteFavicon";
+import {
+  GithubRepoField,
+  useGithubSetupToast,
+} from "@/components/help/GithubRepoField";
 import { expectOk } from "@/hooks/useHelpTree";
 import { relativeTime } from "@/lib/time";
 import { UsageMeter } from "../billing/usage";
@@ -38,6 +41,7 @@ export default function HelpCenterSection({
   slug: string;
   plan?: string;
 }) {
+  useGithubSetupToast();
   const { data } = useQuery<ImportStatus>({
     queryKey: ["help-import-status", slug],
     queryFn: async () => {
@@ -124,17 +128,13 @@ export default function HelpCenterSection({
             <span className="w-28 shrink-0 text-sm text-muted-foreground">
               GitHub
             </span>
-            <label className={field}>
-              <GitHubIcon className="size-4 text-muted-foreground" />
-              <Input
-                variant="plain"
-                value={repo}
-                onChange={(e) => setRepo(e.target.value)}
-                placeholder="github.com/your-org/your-repo"
-                className="h-9 flex-1 px-0"
-                aria-label="GitHub repository"
-              />
-            </label>
+            <GithubRepoField
+              workspaceSlug={slug}
+              value={repo}
+              onChange={setRepo}
+              className="min-w-0 flex-1"
+              inputClassName="h-9"
+            />
           </div>
           <UsageMeter
             label={monthly ? "Scans this month" : "Setup scan"}

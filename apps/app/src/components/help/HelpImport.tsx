@@ -36,6 +36,7 @@ import {
 } from "@/components/global/icons";
 import { expectOk, useRefreshHelpTree } from "@/hooks/useHelpTree";
 import { WebsiteFavicon } from "@/components/wizard/WebsiteFavicon";
+import { GithubRepoField, useGithubSetupToast } from "./GithubRepoField";
 import { HelpCollectionIcon } from "./icons";
 import styles from "./import.module.css";
 
@@ -138,6 +139,7 @@ export function HelpImport({
 }) {
   const queryClient = useQueryClient();
   const refreshTree = useRefreshHelpTree(workspaceSlug);
+  useGithubSetupToast();
   const statusKey = ["help-import-status", workspaceSlug];
   const { data: status } = useQuery<{ plan: string; usage: HelpImportUsage }>({
     queryKey: statusKey,
@@ -807,29 +809,19 @@ function FormStage({
             />
           </span>
         </label>
-        <label className="block space-y-1.5">
+        <div className="space-y-1.5">
           <span className="text-xs font-medium text-foreground">
             GitHub repository{" "}
             <span className="font-normal text-muted-foreground">
-              (optional, public)
+              (optional)
             </span>
           </span>
-          <span
-            className={cn(
-              raisedSurfaceClass,
-              "flex items-center gap-2.5 rounded-lg px-3 focus-within:border-primary/40 focus-within:ring-3 focus-within:ring-primary/15",
-            )}
-          >
-            <GitHubIcon className="size-4 text-muted-foreground" />
-            <Input
-              variant="plain"
-              value={repo}
-              onChange={(e) => setRepo(e.target.value)}
-              placeholder="github.com/your-org/your-repo"
-              className="h-10 flex-1 px-0"
-            />
-          </span>
-        </label>
+          <GithubRepoField
+            workspaceSlug={workspaceSlug}
+            value={repo}
+            onChange={setRepo}
+          />
+        </div>
 
         {error ? <p className="text-sm text-destructive">{error}</p> : null}
 

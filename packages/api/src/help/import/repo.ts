@@ -16,10 +16,11 @@ const PREFER_FILE = /(getting.?started|quick.?start|install|usage|guide|faq|over
 
 const FILE_CHARS = 6_000;
 
-async function githubJson<T>(path: string): Promise<T | null> {
+async function githubJson<T>(path: string, githubToken?: string): Promise<T | null> {
   const res = await safeFetchText(`https://api.github.com${path}`, {
     accept: "application/vnd.github+json",
     maxBytes: 4_000_000,
+    githubToken,
   });
   if (!res) return null;
   try {
@@ -31,12 +32,14 @@ async function githubJson<T>(path: string): Promise<T | null> {
 
 /**
  * Reads a public GitHub repo: its description, README, and the few Markdown docs most likely
- * to explain the product. Private repos aren't supported yet.
+ * to explain the product. Private repos need `githubToken` from the workspace's GitHub App install.
  */
 export async function readRepo(
   raw: string,
   maxFiles: number,
   onFile: (source: ImportSource) => void,
+  /** Installation token from the workspace's GitHub App connection, for private repos. */
+  githubToken?: string,
 ): Promise<ImportSource[]> {
   const parsed = parseGithubRepo(raw);
   if (!parsed) throw new ImportFetchError("Enter a GitHub repository like github.com/owner/repo");
@@ -48,11 +51,18 @@ export async function readRepo(
     topics?: string[];
     default_branch: string;
     private: boolean;
-  }>(`/repos/${owner}/${repo}`);
-  if (!meta) throw new ImportFetchError(`Couldn't open github.com/${owner}/${repo}. Is it public?`);
+  }>(`/repos/${owner}/${repo}`, githubToken);
+  if (!meta) {
+    throw new ImportFetchError(
+      githubToken
+        ? `Couldn't open github.com/${owner}/${repo}. Give the Featul GitHub App access to it, then try again.`
+        : `Couldn't open github.com/${owner}/${repo}. If it's private, connect GitHub first.`,
+    );
+  }
 
   const tree = await githubJson<{ tree: Array<{ path: string; type: string; size?: number }> }>(
     `/repos/${owner}/${repo}/git/trees/${encodeURIComponent(meta.default_branch)}?recursive=1`,
+    githubToken,
   );
   const docs = (tree?.tree ?? [])
     .filter((f) => f.type === "blob" && /\.(md|mdx)$/i.test(f.path) && !SKIP_FILE.test(f.path))
@@ -70,9 +80,16 @@ export async function readRepo(
     .sort((a, b) => b.score - a.score)
     .slice(0, Math.max(1, maxFiles));
 
-  const base = `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(meta.default_branch)}/`;
+  // The contents API serves raw files and, unlike raw.githubusercontent.com, accepts the token.
+  const ref = encodeURIComponent(meta.default_branch);
   const files = await Promise.all(
-    docs.map(async (doc) => ({ doc, res: await safeFetchText(base + doc.path, { accept: "text/plain" }) })),
+    docs.map(async (doc) => ({
+      doc,
+      res: await safeFetchText(
+        `https://api.github.com/repos/${owner}/${repo}/contents/${doc.path.split("/").map(encodeURIComponent).join("/")}?ref=${ref}`,
+        { accept: "application/vnd.github.raw", githubToken },
+      ),
+    })),
   );
 
   const header = [meta.description, meta.homepage ? `Website: ${meta.homepage}` : "", meta.topics?.length ? `Topics: ${meta.topics.join(", ")}` : ""]

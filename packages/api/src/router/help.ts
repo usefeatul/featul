@@ -1,6 +1,7 @@
+import { z } from "zod";
 import { and, eq, inArray, isNull, sql, type AnyColumn } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
-import { helpArticle, helpCenter, helpCollection } from "@featul/db";
+import { helpArticle, helpCenter, helpCollection, workspace } from "@featul/db";
 import { j, publicProcedure, privateProcedure } from "../jstack";
 import {
   getWorkspaceAccessPlan,
@@ -28,6 +29,13 @@ import {
 } from "../validators/help";
 import { markdownToTiptapDoc } from "../notra/content";
 import { getHelpImportUsage } from "../help/import/usage";
+import { clearHelpGithubConnection, getHelpGithubConnection } from "../help/import/github";
+import {
+  createSetupState,
+  githubAppInstallUrl,
+  isGithubAppConfigured,
+  listInstallationRepos,
+} from "../services/github-app";
 import { getHelpAiUsage } from "../help/ask";
 import {
   countPublishedHelpArticles,
@@ -195,7 +203,7 @@ export function createHelpRouter() {
       .get(async ({ ctx, input, c }) => {
         const ws = await requireBoardManagerBySlug(ctx, input.slug);
         const plan = await getWorkspaceAccessPlan(ws.id);
-        const [usage, collections, published, aiUsed] = await Promise.all([
+        const [usage, collections, published, aiUsed, [site]] = await Promise.all([
           getHelpImportUsage(ctx.db, ws.id, plan),
           ctx.db
             .select({ count: sql<number>`count(*)::int` })
@@ -203,12 +211,76 @@ export function createHelpRouter() {
             .where(eq(helpCollection.workspaceId, ws.id)),
           countPublishedHelpArticles(ctx.db, ws.id),
           getHelpAiUsage(ws.id),
+          ctx.db
+            .select({ domain: workspace.domain })
+            .from(workspace)
+            .where(eq(workspace.id, ws.id))
+            .limit(1),
         ]);
+        // Before the first scan, suggest the website the workspace was created with.
+        const fallbackSite = String(site?.domain ?? "")
+          .trim()
+          .replace(/^https?:\/\//i, "")
+          .replace(/\/+$/, "");
         return c.superjson({
           plan,
-          usage,
+          usage: { ...usage, site: usage.site ?? (fallbackSite || null) },
           counts: { collections: Number(collections[0]?.count ?? 0), published, aiAnswers: aiUsed },
         });
+      }),
+
+    /** Whether private repos can be scanned, and the connected GitHub account if any. */
+    githubStatus: privateProcedure
+      .input(bySlugSchema)
+      .get(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const connection = await getHelpGithubConnection(ctx.db, ws.id);
+        return c.superjson({
+          configured: isGithubAppConfigured(),
+          connected: Boolean(connection),
+          accountLogin: connection?.accountLogin ?? null,
+        });
+      }),
+
+    githubConnectUrl: privateProcedure
+      .input(z.object({ slug: bySlugSchema.shape.slug, returnTo: z.string().max(300).optional() }))
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        if (!isGithubAppConfigured()) {
+          throw new HTTPException(503, { message: "GitHub connection isn't set up on this server yet" });
+        }
+        const state = createSetupState({
+          workspaceSlug: ws.slug,
+          userId: ctx.session.user.id,
+          returnTo: input.returnTo ?? `/workspaces/${ws.slug}/settings/help`,
+        });
+        return c.superjson({ url: githubAppInstallUrl(state) });
+      }),
+
+    githubRepos: privateProcedure
+      .input(bySlugSchema)
+      .get(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const connection = await getHelpGithubConnection(ctx.db, ws.id);
+        if (!connection) return c.superjson({ repos: [] });
+        try {
+          return c.superjson({ repos: await listInstallationRepos(connection.installationId) });
+        } catch (error) {
+          // Uninstalled on GitHub's side: forget the stale connection.
+          if (error instanceof HTTPException && error.status === 404) {
+            await clearHelpGithubConnection(ctx.db, ws.id);
+            return c.superjson({ repos: [], disconnected: true });
+          }
+          throw error;
+        }
+      }),
+
+    githubDisconnect: privateProcedure
+      .input(bySlugSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        await clearHelpGithubConnection(ctx.db, ws.id);
+        return c.superjson({ ok: true });
       }),
 
     importApply: privateProcedure

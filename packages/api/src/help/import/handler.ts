@@ -11,6 +11,8 @@ import { draftHelpCenter, type HelpProposal } from "./generate";
 import { readRepo } from "./repo";
 import { readSite, type ImportSource } from "./site";
 import { getHelpImportUsage, reserveHelpImport } from "./usage";
+import { createInstallationToken } from "../../services/github-app";
+import { getHelpGithubInstallationId } from "./github";
 
 export type HelpImportStep = "site" | "repo" | "draft";
 
@@ -106,7 +108,12 @@ export async function createHelpImportResponse(req: Request) {
         if (input.repo) {
           send({ type: "step", step: "repo", state: "running" });
           try {
-            const files = await readRepo(input.repo, Math.max(3, Math.round(usage.maxPages / 2)), report);
+            // A connected GitHub App lets the scan read private repos; public ones work without it.
+            const installationId = await getHelpGithubInstallationId(db, workspace.id);
+            const githubToken = installationId
+              ? await createInstallationToken(installationId).catch(() => undefined)
+              : undefined;
+            const files = await readRepo(input.repo, Math.max(3, Math.round(usage.maxPages / 2)), report, githubToken);
             sources.push(...files);
             send({ type: "step", step: "repo", state: "done", detail: `${files.length} files` });
           } catch (error) {
