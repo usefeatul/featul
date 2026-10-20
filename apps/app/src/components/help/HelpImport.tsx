@@ -959,7 +959,10 @@ function FormStage({
           <div className="space-y-1.5">
             <span className="text-xs font-medium text-foreground">Website</span>
             <InputGroup className="h-10">
-              <WebsiteFavicon domain={site} className="size-4 shrink-0 rounded-sm" />
+              <WebsiteFavicon
+                domain={site}
+                className="size-4 shrink-0 rounded-sm"
+              />
               <Input
                 variant="plain"
                 value={site}
@@ -1023,7 +1026,7 @@ const formatElapsed = (ms: number) => {
 const timelineRowClass =
   "grid h-9 grid-cols-[2.5rem_1rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-dashed border-border/70 px-5 text-[13px] last:border-0 dark:border-white/[0.07]";
 /** Enough placeholder rows to fill the timeline before anything has been read. */
-const SKELETON_WIDTHS = ["55%", "40%", "65%", "35%", "50%", "45%", "30%"];
+const SKELETON_WIDTHS = ["55%", "40%", "65%", "35%", "50%", "45%"];
 
 function RunningStage({
   steps,
@@ -1225,71 +1228,68 @@ function RunningStage({
             onScroll={updateFade}
             className="h-56 overflow-y-auto"
           >
-                {timeline.map((entry, i) => {
-                  const live =
-                    entry.kind === "article"
-                      ? i === lastArticleAt && steps.draft.state === "running"
-                      : !writingPhase && i === 0;
-                  return (
-                    <li
-                      key={entry.id}
-                      className={cn(
-                        timelineRowClass,
-                        "animate-in fade-in-0 duration-300",
-                      )}
-                    >
-                      <span className="text-[11px] tabular-nums text-muted-foreground">
-                        {formatElapsed(entry.at)}
-                      </span>
-                      <span className="flex justify-center">
-                        {entry.kind === "article" ? (
-                          live ? (
-                            <LoaderIcon className="size-3.5 text-primary" />
-                          ) : (
-                            <span className="flex size-3.5 items-center justify-center rounded-[50%] bg-primary text-primary-foreground">
-                              <CheckIcon className="size-2" />
-                            </span>
-                          )
-                        ) : entry.source ? (
-                          <SourceIcon
-                            source={entry.source}
-                            className="size-3.5"
-                          />
-                        ) : null}
-                      </span>
-                      <span
-                        className={cn(
-                          "truncate",
-                          live
-                            ? "font-medium text-foreground"
-                            : "text-foreground/85",
-                        )}
-                      >
-                        {entry.kind === "article"
-                          ? live
-                            ? `Writing “${entry.text}”`
-                            : `Drafted “${entry.text}”`
-                          : `Read ${entry.text}`}
-                      </span>
-                      <span
-                        className={cn(
-                          "rounded-full px-1.5 py-0.5 text-[10px] font-medium",
-                          live
-                            ? "bg-primary/10 text-primary"
-                            : "bg-muted text-muted-foreground dark:bg-white/[0.06]",
-                        )}
-                      >
-                        {entry.kind === "article"
-                          ? live
-                            ? "Writing"
-                            : "Draft"
-                          : entry.source?.kind === "repo"
-                            ? "GitHub"
-                            : "Website"}
-                      </span>
-                    </li>
-                  );
-                })}
+            {timeline.map((entry, i) => {
+              const live =
+                entry.kind === "article"
+                  ? i === lastArticleAt && steps.draft.state === "running"
+                  : !writingPhase && i === 0;
+              return (
+                <li
+                  key={entry.id}
+                  className={cn(
+                    timelineRowClass,
+                    "animate-in fade-in-0 duration-300",
+                  )}
+                >
+                  <span className="text-[11px] tabular-nums text-muted-foreground">
+                    {formatElapsed(entry.at)}
+                  </span>
+                  <span className="flex justify-center">
+                    {entry.kind === "article" ? (
+                      live ? (
+                        <LoaderIcon className="size-3.5 text-primary" />
+                      ) : (
+                        <span className="flex size-3.5 items-center justify-center rounded-[50%] bg-primary text-primary-foreground">
+                          <CheckIcon className="size-2" />
+                        </span>
+                      )
+                    ) : entry.source ? (
+                      <SourceIcon source={entry.source} className="size-3.5" />
+                    ) : null}
+                  </span>
+                  <span
+                    className={cn(
+                      "truncate",
+                      live
+                        ? "font-medium text-foreground"
+                        : "text-foreground/85",
+                    )}
+                  >
+                    {entry.kind === "article"
+                      ? live
+                        ? `Writing “${entry.text}”`
+                        : `Drafted “${entry.text}”`
+                      : `Read ${entry.text}`}
+                  </span>
+                  <span
+                    className={cn(
+                      "rounded-full px-1.5 py-0.5 text-[10px] font-medium",
+                      live
+                        ? "bg-primary/10 text-primary"
+                        : "bg-muted text-muted-foreground dark:bg-white/[0.06]",
+                    )}
+                  >
+                    {entry.kind === "article"
+                      ? live
+                        ? "Writing"
+                        : "Draft"
+                      : entry.source?.kind === "repo"
+                        ? "GitHub"
+                        : "Website"}
+                  </span>
+                </li>
+              );
+            })}
             {SKELETON_WIDTHS.slice(timeline.length).map((width, i) => (
               <li
                 key={`skeleton-${i}`}
@@ -1543,7 +1543,10 @@ function PublishArt() {
   return (
     <span className="flex w-36 flex-col gap-1.5">
       <span
-        className={cn("flex items-center gap-2 px-2 py-1.5 opacity-60", artSurface)}
+        className={cn(
+          "flex items-center gap-2 px-2 py-1.5 opacity-60",
+          artSurface,
+        )}
       >
         <span className="block h-1 flex-1 rounded-full bg-muted-foreground/25" />
         <span className="flex h-3 w-5 items-center rounded-full bg-muted-foreground/25 p-0.5">
@@ -1569,7 +1572,9 @@ function WidgetArt() {
       <span className="self-end rounded-xl rounded-br-sm bg-primary px-2 py-1 text-[9px] font-medium leading-none text-white shadow-sm">
         How do I start?
       </span>
-      <span className={cn("flex items-center gap-1.5 self-start p-1.5", artSurface)}>
+      <span
+        className={cn("flex items-center gap-1.5 self-start p-1.5", artSurface)}
+      >
         <span className="flex size-5 items-center justify-center rounded-md bg-primary/10 text-primary">
           <BookIcon className="size-3" />
         </span>
