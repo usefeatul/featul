@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { client } from "@featul/api/client";
-import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
+import { modalCardInnerClass } from "@featul/ui/lib/overlay";
 import {
   settingsSectionClass,
   settingsSurfaceHeaderClass,
@@ -114,27 +114,25 @@ export function HelpSearch({
 
   return (
     <div className={cn("relative w-full", className)}>
-      {/* Settings-card frame: title row in the shell (hero size), the field is the inner surface. */}
+      {/* Settings-card frame: title row in the shell, the field is the inner surface. */}
       <div
         className={cn(
-          large ? settingsSectionClass : modalCardShellClass,
+          settingsSectionClass,
           "text-left transition-[border-color] focus-within:border-primary/25 dark:focus-within:border-primary/25",
         )}
       >
-        {large ? (
-          <header className={settingsSurfaceHeaderClass}>
-            <div className="flex min-w-0 items-center gap-2.5">
-              <SearchIcon className="size-4 shrink-0 text-primary" />
-              <h2 className="text-sm font-medium leading-6 text-foreground">Search articles</h2>
-            </div>
-            {askAi ? (
-              <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
-                <SparklesIcon className="size-3.5 text-primary" />
-                Ask AI
-              </span>
-            ) : null}
-          </header>
-        ) : null}
+        <header className={settingsSurfaceHeaderClass}>
+          <div className="flex min-w-0 items-center gap-2.5">
+            <SearchIcon className="size-4 shrink-0 text-primary" />
+            <h2 className="text-sm font-medium leading-6 text-foreground">Search articles</h2>
+          </div>
+          {askAi && large ? (
+            <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+              <SparklesIcon className="size-3.5 text-primary" />
+              Ask AI
+            </span>
+          ) : null}
+        </header>
         <div
           className={cn(
             modalCardInnerClass,
@@ -142,11 +140,6 @@ export function HelpSearch({
             large ? "h-12 px-4" : "h-10 px-3.5",
           )}
         >
-          {large ? null : loading ? (
-            <LoaderIcon className="size-4 shrink-0 text-muted-foreground" />
-          ) : (
-            <SearchIcon className="size-4 shrink-0 text-muted-foreground" />
-          )}
           <input
             ref={inputRef}
             type="search"
@@ -157,13 +150,11 @@ export function HelpSearch({
             aria-label="Search articles"
             value={query}
             placeholder={
-              large
-                ? askAi
+              askAi
+                ? large
                   ? "Type a keyword or ask a question"
-                  : "Type a keyword"
-                : askAi
-                  ? "Search articles or ask a question"
-                  : "Search articles"
+                  : "Keyword or question"
+                : "Type a keyword"
             }
             onChange={(e) => {
               setQuery(e.target.value);
@@ -192,7 +183,7 @@ export function HelpSearch({
               large ? "text-base sm:text-[15px]" : "text-base sm:text-sm",
             )}
           />
-          {large && loading ? (
+          {loading ? (
             <LoaderIcon className="size-4 shrink-0 text-muted-foreground" />
           ) : null}
         </div>
