@@ -10,7 +10,7 @@ import { ImportFetchError, normalizeSiteUrl } from "./fetch";
 import { draftHelpCenter, type HelpProposal } from "./generate";
 import { parseGithubRepo, readRepo } from "./repo";
 import { readSite, type ImportSource } from "./site";
-import { getHelpImportUsage, releaseHelpImport, reserveHelpImport } from "./usage";
+import { getHelpImportUsage, markHelpImportDrafted, releaseHelpImport, reserveHelpImport } from "./usage";
 import { createInstallationToken } from "../../services/github-app";
 import { clearHelpGithubConnection, getHelpGithubInstallationFor } from "./github";
 
@@ -173,6 +173,9 @@ export async function createHelpImportResponse(req: Request) {
         send({ type: "step", step: "draft", state: "done", detail: `${proposal.articles.length} articles` });
         send({ type: "proposal", proposal });
         keepScan = true;
+        await markHelpImportDrafted(db, workspace.id).catch((error: unknown) =>
+          console.error("[help-import] couldn't record the scan time", error),
+        );
       } catch (error) {
         if (!cancelled) {
           console.error("[help-import] failed", error);

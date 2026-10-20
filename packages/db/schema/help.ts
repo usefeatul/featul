@@ -9,6 +9,7 @@ import {
   uniqueIndex,
   index,
   primaryKey,
+  customType,
 } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 import { user } from "./auth";
@@ -85,6 +86,8 @@ export const helpCollection = pgTable(
 export type HelpCollection = typeof helpCollection.$inferSelect;
 export type NewHelpCollection = typeof helpCollection.$inferInsert;
 
+const tsvector = customType<{ data: string }>({ dataType: () => "tsvector" });
+
 export const helpArticle = pgTable(
   "help_article",
   {
@@ -113,6 +116,16 @@ export const helpArticle = pgTable(
     helpfulCount: integer("helpful_count").notNull().default(0),
     notHelpfulCount: integer("not_helpful_count").notNull().default(0),
     publishedAt: timestamp("published_at"),
+    /*
+     * Search fields, filled by the `help_article_search_refresh` trigger (migration 0037) whenever
+     * the title, summary or content changes, so no write path can leave them stale.
+     */
+    /** Plain text of the content. */
+    searchText: text("search_text").notNull().default(""),
+    /** Title (weight A) and summary (B). */
+    headingVector: tsvector("heading_vector"),
+    /** Heading plus content text (C). */
+    searchVector: tsvector("search_vector"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -121,6 +134,8 @@ export const helpArticle = pgTable(
   },
   (table) =>
     ({
+      helpArticleSearchIdx: index("help_article_search_idx").using("gin", table.searchVector),
+      helpArticleHeadingSearchIdx: index("help_article_heading_search_idx").using("gin", table.headingVector),
       helpArticleSlugUnique: uniqueIndex("help_article_slug_unique").on(
         table.workspaceId,
         table.slug,

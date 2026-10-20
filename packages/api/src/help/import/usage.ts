@@ -70,7 +70,6 @@ export async function reserveHelpImport(
           }
         : {}),
       importsTotal: sql`${helpCenter.importsTotal} + 1`,
-      lastImportAt: new Date(),
       importSiteUrl: input.site,
       importRepoUrl: input.repo,
       updatedAt: new Date(),
@@ -78,6 +77,11 @@ export async function reserveHelpImport(
     .where(sql`${helpCenter.workspaceId} = ${input.workspaceId} and ${withinLimit}`)
     .returning({ workspaceId: helpCenter.workspaceId });
   return updated.length > 0;
+}
+
+/** Records when a scan last produced a draft; failed scans don't count as the last scan. */
+export async function markHelpImportDrafted(db: Db, workspaceId: string) {
+  await db.update(helpCenter).set({ lastImportAt: new Date() }).where(eq(helpCenter.workspaceId, workspaceId));
 }
 
 /** Returns a reserved scan, e.g. when nothing could be read or drafting failed. */

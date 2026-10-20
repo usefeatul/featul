@@ -201,18 +201,17 @@ export function useWizardLogic(_options: UseWizardLogicOptions = {}) {
       }
 
       const isFirstWorkspace = Boolean(data?.isFirstWorkspace);
+      // The gate never opens the tour on the help import page, so it starts on whichever page
+      // comes next, not over the scan.
+      if (isFirstWorkspace) {
+        markPendingWelcomeTour();
+      }
 
       if (options?.helpImport) {
         const params = new URLSearchParams({ site: domain.trim(), start: "1", onboarding: "1" });
         if (options.helpImport.repo.trim()) params.set("repo", options.helpImport.repo.trim());
-        // Not marked pending here, so the tour can't open over the scan; the import page's
-        // dashboard links carry `?welcome=1` instead.
-        if (isFirstWorkspace) params.set("welcome", "1");
         router.push(`/workspaces/${createdSlug}/help/import?${params.toString()}`);
         return;
-      }
-      if (isFirstWorkspace) {
-        markPendingWelcomeTour();
       }
       router.push(`/workspaces/${createdSlug}${isFirstWorkspace ? "?welcome=1" : ""}`);
     } catch (e: unknown) {

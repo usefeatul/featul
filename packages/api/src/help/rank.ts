@@ -27,9 +27,9 @@ export function helpQueryTerms(text: string, max = 12): string[] {
   return terms;
 }
 
-const bodyText = sql`coalesce((select string_agg(t #>> '{}', ' ') from jsonb_path_query(${helpArticle.content}::jsonb, 'strict $.**.text') as t), '')`;
-const headingVector = sql`setweight(to_tsvector('english', ${helpArticle.title}), 'A') || setweight(to_tsvector('english', coalesce(${helpArticle.summary}, '')), 'B')`;
-const documentVector = sql`(${headingVector}) || setweight(to_tsvector('english', ${bodyText}), 'C')`;
+// Stored, GIN-indexed vectors kept current by a database trigger (see the help_article schema).
+const headingVector = helpArticle.headingVector;
+const documentVector = helpArticle.searchVector;
 
 export type RankedHelpArticle = {
   id: string;
@@ -72,7 +72,7 @@ export async function rankHelpArticles(
       and(
         eq(helpArticle.workspaceId, workspaceId),
         eq(helpArticle.status, "published"),
-        strict ? sql`(${headingVector}) @@ ${query}` : sql`(${documentVector}) @@ ${query}`,
+        strict ? sql`${headingVector} @@ ${query}` : sql`${documentVector} @@ ${query}`,
       ),
     )
     .orderBy(

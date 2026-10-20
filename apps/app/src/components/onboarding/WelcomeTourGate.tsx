@@ -27,8 +27,7 @@ export function WelcomeTourGate({
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    // The help import page passes `?welcome=1` on to its dashboard links, so the tour
-    // opens after the scan instead of over it.
+    // Never over the help import scan; a pending tour opens on the next page instead.
     if (pathname.endsWith("/help/import")) return;
     const shouldWelcome =
       searchParams.get("welcome") === "1" || hasPendingWelcomeTour();

@@ -127,7 +127,6 @@ const hostOf = (url: string) => {
 /**
  * Draft a help center from a website and/or GitHub repo: scan, review, then save as drafts.
  * Used after workspace setup (with `autoStart`) and from Settings → Help Center.
- * `welcome` hands the first-workspace welcome tour on to the dashboard links.
  */
 export function HelpImport({
   workspaceSlug,
@@ -135,14 +134,12 @@ export function HelpImport({
   initialRepo = "",
   autoStart = false,
   onboarding = false,
-  welcome = false,
 }: {
   workspaceSlug: string;
   initialSite?: string;
   initialRepo?: string;
   autoStart?: boolean;
   onboarding?: boolean;
-  welcome?: boolean;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -327,7 +324,7 @@ export function HelpImport({
 
   const outOfScans = usage ? usage.remaining <= 0 : false;
   const canScan = Boolean(site.trim() || repo.trim()) && !outOfScans;
-  const dashboardHref = `/workspaces/${workspaceSlug}${welcome ? "?welcome=1" : ""}`;
+  const dashboardHref = `/workspaces/${workspaceSlug}`;
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pb-16 sm:px-6">

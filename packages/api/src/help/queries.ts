@@ -327,7 +327,8 @@ export async function searchHelpArticles(
         or(
           ilike(helpArticle.title, pattern),
           ilike(helpArticle.summary, pattern),
-          sql`${helpArticle.content}::text ilike ${pattern}`,
+          // Plain text, so JSON keys like "paragraph" or "type" don't match every article.
+          ilike(helpArticle.searchText, pattern),
         ),
       ),
     )

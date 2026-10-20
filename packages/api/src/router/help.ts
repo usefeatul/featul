@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, eq, inArray, isNull, sql, type AnyColumn } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, isNull, sql, type AnyColumn } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { helpArticle, helpCenter, helpCollection, workspace } from "@featul/db";
 import { j, publicProcedure, privateProcedure } from "../jstack";
@@ -48,7 +48,7 @@ import {
 import { getHelpAnalytics } from "../help/analytics";
 import { searchHelpCenter } from "../help/rank";
 import { bumpHelpArticleDaily, normalizeHelpQuery, recordHelpSearch } from "../help/stats";
-import { claimHelpSearchTrack } from "../services/ratelimiter";
+import { claimHelpSearchTrack, claimHelpView, swapHelpVote } from "../services/ratelimiter";
 
 async function requireCollection(ctx: any, workspaceId: string, id: string) {
   const [row] = await ctx.db
@@ -101,14 +101,22 @@ async function publishOverLimit(ctx: any, workspaceId: string) {
   return max !== null && (await countPublishedHelpArticles(ctx.db, workspaceId)) > max ? max : null;
 }
 
+// Search fields are internal and can be as long as the article; keep them out of responses.
+const {
+  searchText: _searchText,
+  headingVector: _headingVector,
+  searchVector: _searchVector,
+  ...articleColumns
+} = getTableColumns(helpArticle);
+
 async function requireArticle(ctx: any, workspaceId: string, id: string) {
   const [row] = await ctx.db
-    .select()
+    .select(articleColumns)
     .from(helpArticle)
     .where(and(eq(helpArticle.id, id), eq(helpArticle.workspaceId, workspaceId)))
     .limit(1);
   if (!row) throw new HTTPException(404, { message: "Article not found" });
-  return row as typeof helpArticle.$inferSelect;
+  return row as Omit<typeof helpArticle.$inferSelect, "searchText" | "headingVector" | "searchVector">;
 }
 
 /** Published article on a public help center, for anonymous view and vote counters. */
@@ -153,6 +161,7 @@ export function createHelpRouter() {
       .input(helpArticleIdSchema)
       .post(async ({ ctx, input, c }) => {
         const article = await requirePublicArticle(ctx, input.slug, input.articleId);
+        if (!(await claimHelpView(c.req.raw, article.id))) return c.superjson({ ok: true });
         await ctx.db
           .update(helpArticle)
           .set({ viewCount: sql`${helpArticle.viewCount} + 1`, updatedAt: sql`${helpArticle.updatedAt}` })
@@ -184,7 +193,10 @@ export function createHelpRouter() {
       .input(helpFeedbackSchema)
       .post(async ({ ctx, input, c }) => {
         const article = await requirePublicArticle(ctx, input.slug, input.articleId);
-        if (input.previous === input.helpful) return c.superjson({ ok: true });
+        // The visitor's last vote comes from the server when it can be tracked, not the browser.
+        const tracked = await swapHelpVote(c.req.raw, article.id, input.helpful);
+        const previous = tracked ? tracked.previous : input.previous;
+        if (previous === input.helpful) return c.superjson({ ok: true });
         const bump = (col: AnyColumn, by: number) =>
           sql`greatest(${col} + ${by}, 0)`;
         await ctx.db
@@ -192,11 +204,11 @@ export function createHelpRouter() {
           .set({
             helpfulCount: bump(
               helpArticle.helpfulCount,
-              (input.helpful ? 1 : 0) - (input.previous === true ? 1 : 0),
+              (input.helpful ? 1 : 0) - (previous === true ? 1 : 0),
             ),
             notHelpfulCount: bump(
               helpArticle.notHelpfulCount,
-              (input.helpful ? 0 : 1) - (input.previous === false ? 1 : 0),
+              (input.helpful ? 0 : 1) - (previous === false ? 1 : 0),
             ),
             // Votes are not edits; keep "Updated" honest on the public page.
             updatedAt: sql`${helpArticle.updatedAt}`,
@@ -207,8 +219,8 @@ export function createHelpRouter() {
         await bumpHelpArticleDaily(ctx.db, {
           workspaceId: article.workspaceId,
           articleId: article.id,
-          helpful: (input.helpful ? 1 : 0) - (input.previous === true ? 1 : 0),
-          notHelpful: (input.helpful ? 0 : 1) - (input.previous === false ? 1 : 0),
+          helpful: (input.helpful ? 1 : 0) - (previous === true ? 1 : 0),
+          notHelpful: (input.helpful ? 0 : 1) - (previous === false ? 1 : 0),
         });
         return c.superjson({ ok: true });
       }),
@@ -546,7 +558,7 @@ export function createHelpRouter() {
             position,
             publishedAt: isPublished ? new Date() : null,
           })
-          .returning();
+          .returning(articleColumns);
         const over = isPublished ? await publishOverLimit(ctx, ws.id) : null;
         if (over !== null) {
           await ctx.db.delete(helpArticle).where(eq(helpArticle.id, article.id));
@@ -604,7 +616,7 @@ export function createHelpRouter() {
           .update(helpArticle)
           .set(patch)
           .where(eq(helpArticle.id, existing.id))
-          .returning();
+          .returning(articleColumns);
         const over = publishing ? await publishOverLimit(ctx, ws.id) : null;
         if (over !== null) {
           // Keep the edits, but not the publish.

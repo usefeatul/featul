@@ -2,6 +2,7 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { HTTPException } from "hono/http-exception";
 import { getClientIp } from "../request/ip";
+import { getRequestFingerprint } from "../request/fingerprint";
 
 export type RateLimitResult = {
   enabled: boolean;
@@ -284,6 +285,41 @@ const ratelimitHelpSearchTrack = redis
       prefix: "rl:help-search-track",
     })
   : null;
+
+/** Whether this view counts: each visitor's view of an article at most once a day. */
+export async function claimHelpView(req: Request, articleId: string): Promise<boolean> {
+  if (!redis) return true;
+  try {
+    const key = `help-view:${articleId}:${getRequestFingerprint(req)}`;
+    return (await redis.set(key, 1, { nx: true, ex: 86_400 })) === "OK";
+  } catch {
+    return true;
+  }
+}
+
+const SWAP_VOTE = `
+local previous = redis.call('GET', KEYS[1])
+redis.call('SET', KEYS[1], ARGV[1], 'EX', ARGV[2])
+return previous`;
+
+/**
+ * Stores a visitor's helpful vote on an article and returns the one it replaces, so repeat or
+ * forged votes can't inflate the counts. Null when votes can't be tracked (no Redis).
+ */
+export async function swapHelpVote(
+  req: Request,
+  articleId: string,
+  helpful: boolean,
+): Promise<{ previous: boolean | undefined } | null> {
+  if (!redis) return null;
+  try {
+    const key = `help-vote:${articleId}:${getRequestFingerprint(req)}`;
+    const previous = await redis.eval(SWAP_VOTE, [key], [helpful ? "1" : "0", 90 * 86_400]);
+    return { previous: previous === null || previous === undefined ? undefined : String(previous) === "1" };
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Whether a visitor's search should count toward analytics: each query once per visitor per day,
