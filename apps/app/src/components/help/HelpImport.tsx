@@ -26,8 +26,10 @@ import {
 import { cn } from "@featul/ui/lib/utils";
 import {
   ArrowRight,
+  BookIcon,
   CheckIcon,
   ChevronDown,
+  EditIcon,
   ExternalLink,
   GitHubIcon,
   LoaderIcon,
@@ -38,6 +40,7 @@ import {
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { expectOk, useRefreshHelpTree } from "@/hooks/useHelpTree";
 import { WebsiteFavicon } from "@/components/wizard/WebsiteFavicon";
+import { selectionCheckboxClassName } from "@/components/selection/SelectionControl";
 import { GithubRepoField, useGithubSetupToast } from "./GithubRepoField";
 import { HelpCollectionTile } from "./icons";
 import { HELP_IMPORT_PARAMS } from "./import-url";
@@ -191,7 +194,7 @@ function HelpImport({
 
   const [site, setSite] = React.useState(initialSite);
   const [repo, setRepo] = React.useState(initialRepo);
-  const [stage, setStage] = React.useState<Stage>("form");
+  const [stage, setStage] = React.useState<Stage>(() => (typeof window !== "undefined" && window.location.search.includes("tmpdone") ? "done" : "form")); // TMP-SCREENSHOT
   const [steps, setSteps] = React.useState<
     Record<HelpImportStep, { state: StepState; detail?: string }>
   >({
@@ -204,7 +207,7 @@ function HelpImport({
   const [proposal, setProposal] = React.useState<HelpProposal | null>(null);
   const [selected, setSelected] = React.useState<Set<number>>(new Set());
   const [error, setError] = React.useState("");
-  const [result, setResult] = React.useState<SaveResult | null>(null);
+  const [result, setResult] = React.useState<SaveResult | null>(() => (typeof window !== "undefined" && window.location.search.includes("tmpdone") ? { created: 12, collectionsCreated: 3, titles: ["What is Convex?", "Create your first Convex project", "The reactive database"] } : null)); // TMP-SCREENSHOT
   const [log, setLog] = React.useState<LogEntry[]>([]);
   const [startedAt, setStartedAt] = React.useState(0);
   // Once drafting has started the scan is used either way, so Cancel asks once first.
@@ -692,7 +695,7 @@ function Review({
                         checked={selected.has(index)}
                         onCheckedChange={() => toggle(index)}
                         aria-label={`Include ${article.title}`}
-                        className="mt-0.5"
+                        className={cn("mt-0.5", selectionCheckboxClassName)}
                       />
                       <button
                         type="button"
@@ -1341,23 +1344,31 @@ function DoneStage({
   const angles =
     fan.length === 1 ? [0] : fan.length === 2 ? [-6, 6] : [-9, 0, 9];
   // The drafts are on the help page behind this dialog, so the first two steps just close it.
-  const next: Array<{ title: string; body: string; href?: string }> = [
+  const next: Array<{
+    title: string;
+    body: string;
+    art: React.ReactNode;
+    href?: string;
+  }> = [
     {
       title: "Read and edit each draft",
       body: "Fix anything that's off and add screenshots.",
+      art: <EditArt />,
     },
     {
       title: "Publish the ones you're happy with",
       body: "Drafts stay private until you switch them on.",
+      art: <PublishArt />,
     },
     {
       title: "Show articles where people ask",
       body: "Turn on help articles in your widget and Ask AI.",
+      art: <WidgetArt />,
       href: `/workspaces/${workspaceSlug}/settings/help`,
     },
   ];
   const stepClass =
-    "group/next flex h-full w-full cursor-pointer flex-col rounded-xl border border-border/70 p-3.5 text-left transition-colors hover:border-primary/40 hover:bg-primary/[0.03] dark:border-white/[0.08]";
+    "group/next flex h-full w-full cursor-pointer flex-col rounded-2xl border border-border/70 bg-card p-1.5 text-left transition-[translate,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-lg hover:shadow-black/[0.06] dark:border-white/[0.08] dark:hover:border-primary/40";
   return (
     <DialogInner className="p-0">
       <div className="relative isolate overflow-hidden bg-primary px-6 pb-8 pt-8 text-center text-white sm:px-10">
@@ -1442,16 +1453,26 @@ function DoneStage({
           {next.map((item, i) => {
             const content = (
               <>
-                <span className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold tabular-nums text-primary">
-                  {i + 1}
+                <span
+                  aria-hidden
+                  className="relative flex h-24 items-center justify-center overflow-hidden rounded-[11px] bg-muted/70 bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] bg-size-[10px_10px] dark:bg-white/[0.03] dark:bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)]"
+                >
+                  <span className="transition-transform duration-300 group-hover/next:-translate-y-0.5 group-hover/next:scale-[1.03]">
+                    {item.art}
+                  </span>
                 </span>
-                <span className="mt-3 text-sm font-medium text-foreground">
-                  {item.title}
+                <span className="flex flex-1 flex-col px-2 pb-2 pt-3">
+                  <span className="flex items-center justify-between text-[11px] font-medium tabular-nums text-muted-foreground">
+                    Step {i + 1}
+                    <ArrowRight className="size-3.5 transition-[translate,color] group-hover/next:translate-x-0.5 group-hover/next:text-primary" />
+                  </span>
+                  <span className="mt-1 text-sm font-medium leading-snug text-foreground">
+                    {item.title}
+                  </span>
+                  <span className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    {item.body}
+                  </span>
                 </span>
-                <span className="mt-1 text-xs text-muted-foreground">
-                  {item.body}
-                </span>
-                <ArrowRight className="mt-auto size-3.5 self-end pt-0 text-muted-foreground transition-transform group-hover/next:translate-x-0.5 group-hover/next:text-primary" />
               </>
             );
             return (
@@ -1475,5 +1496,72 @@ function DoneStage({
         </ol>
       </div>
     </DialogInner>
+  );
+}
+
+/** Mini UI scenes for the next-step cards. Purely decorative. */
+const artSurface =
+  "rounded-lg bg-card shadow-sm ring-1 ring-border/70 dark:bg-zinc-900 dark:ring-white/10";
+
+function EditArt() {
+  return (
+    <span className="relative block w-32">
+      <span className={cn("block p-2.5", artSurface)}>
+        <span className="block h-1.5 w-3/5 rounded-full bg-foreground/70" />
+        <span className="mt-2 block h-1 w-full rounded-full bg-muted-foreground/20" />
+        <span className="mt-1.5 flex items-center">
+          <span className="block h-1 w-1/3 rounded-full bg-muted-foreground/20" />
+          <span className="ml-1 block h-2 w-8 rounded-[2px] bg-primary/25" />
+          <span className={cn("block h-2.5 w-px bg-primary", styles.caret)} />
+        </span>
+        <span className="mt-1.5 block h-1 w-4/5 rounded-full bg-muted-foreground/20" />
+      </span>
+      <span className="absolute -right-2.5 -top-2.5 flex size-6 items-center justify-center rounded-full bg-primary text-white shadow-md ring-2 ring-card">
+        <EditIcon className="size-3" />
+      </span>
+    </span>
+  );
+}
+
+function PublishArt() {
+  return (
+    <span className="flex w-36 flex-col gap-1.5">
+      <span
+        className={cn("flex items-center gap-2 px-2 py-1.5 opacity-60", artSurface)}
+      >
+        <span className="block h-1 flex-1 rounded-full bg-muted-foreground/25" />
+        <span className="flex h-3 w-5 items-center rounded-full bg-muted-foreground/25 p-0.5">
+          <span className="size-2 rounded-full bg-white" />
+        </span>
+      </span>
+      <span className={cn("flex items-center gap-2 px-2 py-1.5", artSurface)}>
+        <span className="block h-1 flex-1 rounded-full bg-foreground/50" />
+        <span className="rounded-full bg-emerald-500/15 px-1.5 text-[8px] font-semibold leading-3 text-emerald-600 dark:text-emerald-400">
+          Live
+        </span>
+        <span className="flex h-3 w-5 items-center justify-end rounded-full bg-emerald-500 p-0.5">
+          <span className="size-2 rounded-full bg-white" />
+        </span>
+      </span>
+    </span>
+  );
+}
+
+function WidgetArt() {
+  return (
+    <span className="flex w-36 flex-col gap-1.5">
+      <span className="self-end rounded-xl rounded-br-sm bg-primary px-2 py-1 text-[9px] font-medium leading-none text-white shadow-sm">
+        How do I start?
+      </span>
+      <span className={cn("flex items-center gap-1.5 self-start p-1.5", artSurface)}>
+        <span className="flex size-5 items-center justify-center rounded-md bg-primary/10 text-primary">
+          <BookIcon className="size-3" />
+        </span>
+        <span className="flex flex-col gap-1">
+          <span className="block h-1 w-14 rounded-full bg-foreground/60" />
+          <span className="block h-1 w-10 rounded-full bg-muted-foreground/25" />
+        </span>
+      </span>
+    </span>
   );
 }

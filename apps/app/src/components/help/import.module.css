@@ -18,8 +18,18 @@
   to { transform: scale(1.9); opacity: 0; }
 }
 
+/* Text caret in the "edit" next-step scene. */
+.caret {
+  animation: caret 1s steps(1) infinite;
+}
+
+@keyframes caret {
+  50% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ring {
+  .ring,
+  .caret {
     animation: none;
   }
   .fan {
