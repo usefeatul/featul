@@ -3,6 +3,7 @@ import type { HelpArticleLink, HelpHomeData } from "@featul/api/help/queries";
 import { DitherGradient } from "@featul/ui/components/gradient";
 import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
+import { ArrowRight } from "@/components/global/icons";
 import { PoweredBy } from "../PoweredBy";
 import { HelpAskButton } from "./HelpAskButton";
 import { HelpSearch } from "./HelpSearch";
@@ -135,7 +136,7 @@ function SectionHeading({ title, hint }: { title: string; hint?: string }) {
   );
 }
 
-/** Ruled, numbered rows that flow into two columns on wide screens. */
+/** Ruled, numbered rows that flow into two columns on wide screens: topic label, title, summary, hover arrow. */
 export function NumberedArticles({
   articles,
   className,
@@ -143,28 +144,45 @@ export function NumberedArticles({
   articles: Array<HelpArticleLink & { collectionName?: string | null }>;
   className?: string;
 }) {
+  // Keep the topic line's space on every row when any row has one, so the columns stay level.
+  const labelled = articles.some((a) => a.collectionName);
   return (
-    <ol className={cn("grid grid-cols-1 gap-x-10 lg:grid-cols-2", className)}>
+    <ol className={cn("grid grid-cols-1 gap-x-12 lg:grid-cols-2", className)}>
       {articles.map((a, i) => (
         <li key={a.id} className={cn(rule, "min-w-0")}>
           <Link
             href={helpArticleHref(a.slug)}
-            className="group flex items-baseline gap-4 py-4 focus-visible:outline-none"
+            className="group flex items-start gap-4 py-4.5 focus-visible:outline-none"
           >
-            <span className="w-5 shrink-0 text-xs tabular-nums text-muted-foreground/70 transition-colors group-hover:text-primary">
+            <span
+              className={cn(
+                "w-5 shrink-0 text-xs leading-5 tabular-nums text-muted-foreground/60 transition-colors group-hover:text-primary",
+                // Line the number up with the title, below the topic label when there is one.
+                labelled ? "mt-[1.375rem]" : "mt-px",
+              )}
+            >
               {String(i + 1).padStart(2, "0")}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="line-clamp-2 text-[15px] font-medium text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary sm:line-clamp-1">
+              {labelled ? (
+                <span className="mb-1 block h-4 truncate text-[11px] font-medium uppercase leading-4 tracking-[0.08em] text-primary/80">
+                  {a.collectionName}
+                </span>
+              ) : null}
+              <span className="line-clamp-2 text-[15px] font-medium leading-6 text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary sm:line-clamp-1">
                 {a.title}
               </span>
               {a.summary ? (
-                <span className="mt-0.5 line-clamp-2 text-sm text-muted-foreground sm:line-clamp-1">{a.summary}</span>
+                <span className="mt-0.5 line-clamp-2 text-sm leading-5 text-muted-foreground sm:line-clamp-1">{a.summary}</span>
               ) : null}
             </span>
-            {a.collectionName ? (
-              <span className="hidden shrink-0 text-xs text-muted-foreground/80 sm:inline">{a.collectionName}</span>
-            ) : null}
+            <ArrowRight
+              aria-hidden
+              className={cn(
+                "size-3.5 shrink-0 -translate-x-1 text-primary opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100",
+                labelled ? "mt-[1.6875rem]" : "mt-[0.3125rem]",
+              )}
+            />
           </Link>
         </li>
       ))}
