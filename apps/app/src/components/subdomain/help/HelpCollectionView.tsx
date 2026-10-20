@@ -2,7 +2,8 @@ import type { HelpCollectionPageData } from "@featul/api/help/queries";
 import { PoweredBy } from "../PoweredBy";
 import { HelpAskBanner, NumberedArticles } from "./HelpHome";
 import { HelpSearch } from "./HelpSearch";
-import { HelpBreadcrumbs, HelpCollectionChips, HelpCollectionTile } from "./HelpSidebar";
+import { HelpCollectionTile } from "@/components/help/icons";
+import { HelpBreadcrumbs, HelpCollectionChips } from "./HelpSidebar";
 import { HelpNavTree } from "./HelpNavTree";
 
 export function HelpCollectionView({ data, slug }: { data: HelpCollectionPageData; slug: string }) {

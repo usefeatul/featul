@@ -7,7 +7,7 @@ import { ArrowRight } from "@/components/global/icons";
 import { PoweredBy } from "../PoweredBy";
 import { HelpAskButton } from "./HelpAskButton";
 import { HelpSearch } from "./HelpSearch";
-import { HelpCollectionTile } from "./HelpSidebar";
+import { HelpCollectionTile } from "@/components/help/icons";
 import { helpArticleHref, helpCollectionHref } from "./content";
 
 const rule = "border-t border-border/70 dark:border-white/[0.08]";

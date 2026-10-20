@@ -34,7 +34,7 @@ import { relativeTime } from "@/lib/time";
 import { getInitials } from "@/utils/user";
 import { randomAvatarUrl } from "@/utils/avatar";
 import { CollectionDialog } from "./CollectionDialog";
-import { HelpCollectionIcon } from "./icons";
+import { HelpCollectionTile } from "./icons";
 import { helpfulRatio, type HelpAdminArticle, type HelpAdminCollection, type HelpAdminTree } from "./types";
 import { EmptyHelpCenter } from "./EmptyHelpCenter";
 
@@ -171,9 +171,7 @@ function CollectionGroup({
   return (
     <section aria-label={collection?.name ?? "Uncategorized"}>
       <header className="group/collection flex items-center gap-3 border-b border-border/60 px-4 pb-2.5 sm:px-6 dark:border-white/[0.07]">
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-border/70 text-muted-foreground dark:border-white/10">
-          <HelpCollectionIcon icon={collection?.icon ?? "book"} className="size-4" />
-        </span>
+        <HelpCollectionTile icon={collection?.icon} />
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline gap-2">
             <h2 className="truncate text-sm font-semibold">{collection?.name ?? "Uncategorized"}</h2>

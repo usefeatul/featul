@@ -40,7 +40,7 @@ import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirm
 import { expectOk, useRefreshHelpTree } from "@/hooks/useHelpTree";
 import { WebsiteFavicon } from "@/components/wizard/WebsiteFavicon";
 import { GithubRepoField, useGithubSetupToast } from "./GithubRepoField";
-import { HelpCollectionIcon } from "./icons";
+import { HelpCollectionTile } from "./icons";
 import { HELP_IMPORT_PARAMS } from "./import-url";
 import styles from "./import.module.css";
 
@@ -669,12 +669,11 @@ function Review({
               className="border-b border-border/60 last:border-0 dark:border-white/[0.07]"
             >
               <header className="sticky top-0 z-[1] flex items-center gap-3 border-b border-border/60 bg-card px-5 py-3 sm:px-6 dark:border-white/[0.07]">
-                <span className="flex size-7 items-center justify-center rounded-lg border border-border/70 text-muted-foreground dark:border-white/10">
-                  <HelpCollectionIcon
-                    icon={group.collection?.icon ?? "book"}
-                    className="size-3.5"
-                  />
-                </span>
+                <HelpCollectionTile
+                  icon={group.collection?.icon}
+                  className="size-8"
+                  iconClassName="size-4"
+                />
                 <div className="min-w-0">
                   <h3 className="truncate text-sm font-semibold text-foreground">
                     {group.collection?.name ?? "Uncategorized"}
