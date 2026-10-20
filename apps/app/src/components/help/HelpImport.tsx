@@ -194,7 +194,7 @@ function HelpImport({
 
   const [site, setSite] = React.useState(initialSite);
   const [repo, setRepo] = React.useState(initialRepo);
-  const [stage, setStage] = React.useState<Stage>(() => (typeof window !== "undefined" && window.location.search.includes("tmpdone") ? "done" : "form")); // TMP-SCREENSHOT
+  const [stage, setStage] = React.useState<Stage>("form");
   const [steps, setSteps] = React.useState<
     Record<HelpImportStep, { state: StepState; detail?: string }>
   >({
@@ -207,7 +207,7 @@ function HelpImport({
   const [proposal, setProposal] = React.useState<HelpProposal | null>(null);
   const [selected, setSelected] = React.useState<Set<number>>(new Set());
   const [error, setError] = React.useState("");
-  const [result, setResult] = React.useState<SaveResult | null>(() => (typeof window !== "undefined" && window.location.search.includes("tmpdone") ? { created: 12, collectionsCreated: 3, titles: ["What is Convex?", "Create your first Convex project", "The reactive database"] } : null)); // TMP-SCREENSHOT
+  const [result, setResult] = React.useState<SaveResult | null>(null);
   const [log, setLog] = React.useState<LogEntry[]>([]);
   const [startedAt, setStartedAt] = React.useState(0);
   // Once drafting has started the scan is used either way, so Cancel asks once first.
@@ -397,10 +397,11 @@ function HelpImport({
         fluid
         showCloseButton={!busy}
         className={cn(
-          "max-h-[calc(100dvh-2rem)]",
+          // Starting a scan keeps the form's width so the dialog doesn't jump; later changes ease.
+          "max-h-[calc(100dvh-2rem)] transition-[width] duration-300 ease-out motion-reduce:transition-none",
           stage === "review" || stage === "saving"
             ? "w-[min(94vw,46rem)]"
-            : stage === "form"
+            : stage === "form" || stage === "running"
               ? "w-[min(94vw,36rem)]"
               : "w-[min(94vw,40rem)]",
         )}
@@ -1018,6 +1019,12 @@ const formatElapsed = (ms: number) => {
  * and a short timeline of what's been read and drafted. Cancel (or Escape) stops the scan;
  * once drafting has started the scan is used either way, so Cancel asks once before stopping.
  */
+/** One timeline row; a fixed height so skeleton rows line up with the real ones they stand in for. */
+const timelineRowClass =
+  "grid h-9 grid-cols-[2.5rem_1rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-dashed border-border/70 px-5 text-[13px] last:border-0 dark:border-white/[0.07]";
+/** Enough placeholder rows to fill the timeline before anything has been read. */
+const SKELETON_WIDTHS = ["55%", "40%", "65%", "35%", "50%", "45%", "30%"];
+
 function RunningStage({
   steps,
   sources,
@@ -1108,7 +1115,8 @@ function RunningStage({
             aria-hidden
             className="absolute inset-0 -z-10 bg-linear-to-r from-[var(--primary)] via-[color-mix(in_oklab,var(--primary)_55%,transparent)] to-transparent"
           />
-          <div className="flex items-center gap-5">
+          {/* Tall enough for a two-line title, so a wrapping page title doesn't resize the banner. */}
+          <div className="flex min-h-[6.25rem] items-center gap-5">
             <div
               role="progressbar"
               aria-label="Drafting progress"
@@ -1210,19 +1218,13 @@ function RunningStage({
           ))}
         </ol>
 
-        {/* Timeline */}
-        <div>
-          {timeline.length === 0 ? (
-            <p className="px-5 py-4 text-sm text-muted-foreground">
-              Getting started…
-            </p>
-          ) : (
-            <div className="relative">
-              <ol
-                ref={listRef}
-                onScroll={updateFade}
-                className="max-h-56 overflow-y-auto"
-              >
+        {/* Timeline: a fixed height, padded with skeleton rows, so the dialog never grows as rows arrive. */}
+        <div className="relative">
+          <ol
+            ref={listRef}
+            onScroll={updateFade}
+            className="h-56 overflow-y-auto"
+          >
                 {timeline.map((entry, i) => {
                   const live =
                     entry.kind === "article"
@@ -1231,7 +1233,10 @@ function RunningStage({
                   return (
                     <li
                       key={entry.id}
-                      className="grid grid-cols-[2.5rem_1rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-dashed border-border/70 px-5 py-2 text-[13px] last:border-0 animate-in fade-in-0 duration-300 dark:border-white/[0.07]"
+                      className={cn(
+                        timelineRowClass,
+                        "animate-in fade-in-0 duration-300",
+                      )}
                     >
                       <span className="text-[11px] tabular-nums text-muted-foreground">
                         {formatElapsed(entry.at)}
@@ -1285,17 +1290,31 @@ function RunningStage({
                     </li>
                   );
                 })}
-              </ol>
-              {/* Fades the bottom edge while there are more rows to scroll to. */}
-              <div
+            {SKELETON_WIDTHS.slice(timeline.length).map((width, i) => (
+              <li
+                key={`skeleton-${i}`}
                 aria-hidden
-                className={cn(
-                  "pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-card to-transparent transition-opacity duration-200 dark:from-background",
-                  moreBelow ? "opacity-100" : "opacity-0",
-                )}
-              />
-            </div>
-          )}
+                className={timelineRowClass}
+                style={{ opacity: 1 - i * 0.14 }}
+              >
+                <span className="h-2 w-6 animate-pulse rounded-full bg-muted dark:bg-white/[0.06]" />
+                <span className="mx-auto size-3.5 animate-pulse rounded-[50%] bg-muted dark:bg-white/[0.06]" />
+                <span
+                  className="h-2.5 animate-pulse rounded-full bg-muted dark:bg-white/[0.06]"
+                  style={{ width }}
+                />
+                <span className="h-[18px] w-12 animate-pulse rounded-full bg-muted dark:bg-white/[0.06]" />
+              </li>
+            ))}
+          </ol>
+          {/* Fades the bottom edge while there are more rows to scroll to. */}
+          <div
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-card to-transparent transition-opacity duration-200 dark:from-background",
+              moreBelow ? "opacity-100" : "opacity-0",
+            )}
+          />
         </div>
       </DialogInner>
       <div className="flex items-center justify-between gap-3 px-3 pb-1 pt-2">
@@ -1368,7 +1387,8 @@ function DoneStage({
     },
   ];
   const stepClass =
-    "group/next flex h-full w-full cursor-pointer flex-col rounded-2xl border border-border/70 bg-card p-1.5 text-left transition-[translate,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-lg hover:shadow-black/[0.06] dark:border-white/[0.08] dark:hover:border-primary/40";
+    // Raised surface like the other cards (gradient, lit top edge), with only the hairline drop shadow.
+    "group/next flex h-full w-full cursor-pointer flex-col rounded-2xl [corner-shape:squircle] border border-black/[0.08] bg-card bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_4%)] p-1.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.03)] transition-transform duration-200 hover:-translate-y-0.5 dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_4%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_1px_rgba(0,0,0,0.12)]";
   return (
     <DialogInner className="p-0">
       <div className="relative isolate overflow-hidden bg-primary px-6 pb-8 pt-8 text-center text-white sm:px-10">
@@ -1425,14 +1445,10 @@ function DoneStage({
           , saved privately and ready for your review.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold text-zinc-900 shadow-md shadow-black/10 transition-colors hover:bg-white/90"
-          >
+          <Button onClick={onClose} size="md" className="px-4 has-[>svg]:px-4">
             Review drafts
             <ArrowRight className="size-4" />
-          </button>
+          </Button>
           {onboarding ? (
             <Link
               href={dashboardHref}
@@ -1455,7 +1471,7 @@ function DoneStage({
               <>
                 <span
                   aria-hidden
-                  className="relative flex h-24 items-center justify-center overflow-hidden rounded-[11px] bg-muted/70 bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] bg-size-[10px_10px] dark:bg-white/[0.03] dark:bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)]"
+                  className="relative flex h-24 items-center justify-center overflow-hidden rounded-[11px] [corner-shape:squircle] bg-muted/70 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)] bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] bg-size-[10px_10px] dark:bg-white/[0.03] dark:bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)]"
                 >
                   <span className="transition-transform duration-300 group-hover/next:-translate-y-0.5 group-hover/next:scale-[1.03]">
                     {item.art}
