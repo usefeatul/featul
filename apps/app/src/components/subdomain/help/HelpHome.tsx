@@ -1,13 +1,12 @@
 import Link from "next/link";
 import type { HelpArticleLink, HelpHomeData } from "@featul/api/help/queries";
 import { DitherGradient } from "@featul/ui/components/gradient";
-import { modalCardInnerClass } from "@featul/ui/lib/overlay";
+import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import { ArrowRight } from "@/components/global/icons";
 import { PoweredBy } from "../PoweredBy";
 import { HelpAskButton } from "./HelpAskButton";
 import { HelpSearch } from "./HelpSearch";
-import { HelpCollectionIcon } from "@/components/help/icons";
+import { HelpCollectionTile } from "@/components/help/icons";
 import {
   settingsSectionClass,
   settingsSurfaceHeaderClass,
@@ -15,36 +14,35 @@ import {
 import { helpArticleHref, helpCollectionHref } from "./content";
 
 const rule = "border-t border-border/70 dark:border-white/[0.08]";
-const PREVIEW_COUNT = 3;
-/** Past this many collections, article previews turn the grid into a wall of links. */
-const RICH_TOPIC_LIMIT = 4;
 
 /**
- * Help center landing. Cards are kept for the two things worth framing (topics and the
- * board call to action); the hero and loose articles stay open so the page has rhythm.
+ * Help center landing: an open hero (dither behind the title and search), a grid of small
+ * settings-style topic tiles, then open numbered lists for popular and loose articles.
  */
 export function HelpHome({ data, slug }: { data: HelpHomeData; slug: string }) {
   const count = data.collections.length;
-  const compact = count > RICH_TOPIC_LIMIT;
+  const popular = data.popular;
   return (
-    <section className="flex flex-1 flex-col gap-14 sm:gap-16">
-      <HelpHero
-        name={data.workspace.name}
-        slug={slug}
-        askAi={data.workspace.askAi}
-        popular={data.popular.slice(0, 3)}
-      />
+    <section className="flex flex-1 flex-col gap-12 pt-6 sm:gap-14 sm:pt-10">
+      <HelpHero name={data.workspace.name} slug={slug} askAi={data.workspace.askAi} />
 
       {count > 0 ? (
         <div>
-          <SectionHeading title="Browse by topic" hint={compact ? `${count} topics` : undefined} />
-          <ul className={cn("grid grid-cols-1 sm:grid-cols-2", compact ? "gap-3" : "gap-4", count >= 3 && "lg:grid-cols-3")}>
+          <SectionHeading title="Browse by topic" hint={`${count} topics`} />
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {data.collections.map((c) => (
               <li key={c.id} className="flex">
-                {compact ? <CompactTopicCard collection={c} /> : <TopicCard collection={c} />}
+                <TopicTile collection={c} />
               </li>
             ))}
           </ul>
+        </div>
+      ) : null}
+
+      {popular.length > 0 ? (
+        <div>
+          <SectionHeading title="Popular articles" />
+          <NumberedArticles articles={popular} />
         </div>
       ) : null}
 
@@ -67,20 +65,18 @@ function HelpHero({
   name,
   slug,
   askAi,
-  popular,
 }: {
   name: string;
   slug: string;
   askAi: boolean;
-  popular: HelpArticleLink[];
 }) {
   return (
-    // z-10: the search results must open over the topic cards that follow.
-    <header className="relative isolate z-10 pt-8 sm:pt-16">
+    // z-10: the search results must open over the cards that follow.
+    <header className="relative isolate z-10 pt-2 sm:pt-6">
       {/* Brand dither glows down from the header and fades out before the search. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-8 -z-10 h-[26rem] sm:-top-10"
+        className="pointer-events-none absolute inset-x-0 -top-16 -z-10 h-[26rem] sm:-top-20"
         style={{ maskImage: "radial-gradient(ellipse 55% 75% at 50% 0%, black 0%, rgba(0,0,0,0.3) 45%, transparent 75%)" }}
       >
         <DitherGradient to="primary" direction="down" cell={4} opacity={0.28} />
@@ -94,122 +90,38 @@ function HelpHero({
           Guides and answers from the {name} team.
         </p>
         <HelpSearch slug={slug} className="mt-9" askAi={askAi} />
-        {popular.length > 0 ? (
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
-            <span className="mr-1 text-xs text-muted-foreground">Popular:</span>
-            {popular.map((a) => (
-              <Link
-                key={a.id}
-                href={helpArticleHref(a.slug)}
-                className="max-w-56 truncate rounded-full border border-border/80 bg-background/70 px-3 py-1.5 text-xs sm:px-2.5 sm:py-1 font-medium text-foreground/80 backdrop-blur-sm transition-colors hover:border-primary/40 hover:text-primary dark:border-white/10 dark:bg-white/[0.03]"
-              >
-                {a.title}
-              </Link>
-            ))}
-          </div>
-        ) : null}
       </div>
     </header>
   );
 }
 
-function TopicCard({ collection: c }: { collection: HelpHomeData["collections"][number] }) {
-  const href = helpCollectionHref(c.slug);
-  const preview = c.articles.slice(0, PREVIEW_COUNT);
-  const more = c.articleCount - preview.length;
-  return (
-    <article className={cn(settingsSectionClass, "group/topic w-full")}>
-      <TopicCardHeader collection={c} href={href} />
-      <div className={cn(modalCardInnerClass, "relative isolate flex flex-1 flex-col px-4 py-3")}>
-        {/* Corner dither ties each card to the brand without filling it. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 opacity-70 transition-opacity group-hover/topic:opacity-100"
-          style={{ maskImage: "radial-gradient(ellipse 60% 55% at 100% 0%, black 0%, rgba(0,0,0,0.35) 45%, transparent 75%)" }}
-        >
-          <DitherGradient to="primary" direction="down" cell={3} opacity={0.35} />
-        </div>
-        {c.description ? (
-          <p className="line-clamp-2 text-sm leading-5 text-muted-foreground">{c.description}</p>
-        ) : null}
-
-        <ul className={cn(c.description && cn(rule, "mt-3 pt-2"), "flex-1")}>
-          {preview.map((a) => (
-            <li key={a.id}>
-              <Link
-                href={helpArticleHref(a.slug)}
-                className="group -mx-2 flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-foreground/85 transition-colors hover:bg-muted/70 hover:text-foreground dark:hover:bg-white/[0.04]"
-              >
-                <span className="min-w-0 flex-1 truncate">{a.title}</span>
-                <ArrowRight className="size-3.5 shrink-0 text-muted-foreground/50 transition-[transform,color] group-hover:translate-x-0.5 group-hover:text-primary" />
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        {more > 0 ? (
-          <Link href={href} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline">
-            View all {c.articleCount} articles <ArrowRight className="size-3" />
-          </Link>
-        ) : null}
-      </div>
-    </article>
-  );
-}
-
-/** Settings-card header row: collection icon, name and article count inside the frame. */
-function TopicCardHeader({
-  collection: c,
-  href,
-}: {
-  collection: HelpHomeData["collections"][number];
-  href?: string;
-}) {
-  const name = (
-    <span className="truncate text-sm font-medium leading-6 text-foreground transition-colors group-hover/topic:text-primary">
-      {c.name}
-    </span>
-  );
-  return (
-    <header className={cn(settingsSurfaceHeaderClass, "flex-nowrap")}>
-      <div className="flex min-w-0 items-center gap-2.5">
-        <HelpCollectionIcon icon={c.icon} className="size-4 shrink-0 text-primary" />
-        {href ? (
-          <Link href={href} className="min-w-0 truncate focus-visible:outline-none">
-            {name}
-          </Link>
-        ) : (
-          name
-        )}
-      </div>
-      <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{c.articleCount}</span>
-    </header>
-  );
-}
-
-/** Whole-card link for large help centers: no previews, dither only on hover. */
-function CompactTopicCard({ collection: c }: { collection: HelpHomeData["collections"][number] }) {
+/** Square settings-style tile per topic: icon tile, name, count; dither fades in on hover. */
+function TopicTile({ collection: c }: { collection: HelpHomeData["collections"][number] }) {
   return (
     <Link
       href={helpCollectionHref(c.slug)}
+      title={c.description ?? undefined}
       className={cn(
-        settingsSectionClass,
-        "group/topic w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        modalCardShellClass,
+        "group/topic flex w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
       )}
     >
-      <TopicCardHeader collection={c} />
-      <div className={cn(modalCardInnerClass, "relative isolate flex-1 px-4 py-3")}>
-        <div
+      <span className={cn(modalCardInnerClass, "relative isolate flex flex-1 flex-col p-4")}>
+        <span
           aria-hidden
           className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-300 group-hover/topic:opacity-100"
-          style={{ maskImage: "radial-gradient(ellipse 55% 80% at 100% 0%, black 0%, rgba(0,0,0,0.3) 45%, transparent 75%)" }}
+          style={{ maskImage: "radial-gradient(ellipse 70% 70% at 100% 0%, black 0%, rgba(0,0,0,0.3) 45%, transparent 75%)" }}
         >
           <DitherGradient to="primary" direction="down" cell={3} opacity={0.35} />
-        </div>
-        <span className="line-clamp-2 text-[13px] leading-5 text-muted-foreground">
-          {c.description || c.articles.slice(0, 3).map((a) => a.title).join(" · ")}
         </span>
-      </div>
+        <HelpCollectionTile icon={c.icon} />
+        <span className="mt-6 line-clamp-2 text-sm font-medium leading-5 text-foreground transition-colors group-hover/topic:text-primary">
+          {c.name}
+        </span>
+        <span className="mt-1 text-xs tabular-nums text-muted-foreground">
+          {c.articleCount} {c.articleCount === 1 ? "article" : "articles"}
+        </span>
+      </span>
     </Link>
   );
 }
