@@ -40,8 +40,43 @@ const HELP_TOPICS = [
   { title: "Plans & billing", articles: ["Compare plans", "Change your plan"] },
 ]
 
+/** How much of the panel the preview fills, across and down. */
+const FILL_WIDTH = 0.94
+const FILL_HEIGHT = 0.9
+
 /**
- * Right-hand preview for workspace setup: a scaled-down copy of the public portal
+ * Scale that fits `card` inside `frame`. The card is laid out at its natural size and scaled
+ * as a whole, so its type and spacing stay in proportion at any panel size.
+ */
+function useFitScale(
+  frame: React.RefObject<HTMLDivElement | null>,
+  card: React.RefObject<HTMLDivElement | null>,
+) {
+  const [scale, setScale] = React.useState<number | null>(null)
+  React.useLayoutEffect(() => {
+    const frameEl = frame.current
+    const cardEl = card.current
+    if (!frameEl || !cardEl) return
+    const fit = () => {
+      if (!frameEl.clientWidth || !cardEl.offsetWidth) return
+      setScale(
+        Math.min(
+          (frameEl.clientWidth * FILL_WIDTH) / cardEl.offsetWidth,
+          (frameEl.clientHeight * FILL_HEIGHT) / cardEl.offsetHeight,
+        ),
+      )
+    }
+    fit()
+    const observer = new ResizeObserver(fit)
+    observer.observe(frameEl)
+    observer.observe(cardEl)
+    return () => observer.disconnect()
+  }, [frame, card])
+  return scale
+}
+
+/**
+ * Right-hand preview for workspace setup: a copy of the public portal, scaled up to fill the panel
  * (the same header, board list and sidebar as `{slug}.featul.com`), filled in as the user types.
  * The last step shows the help center home instead.
  */
@@ -65,11 +100,22 @@ export default function WizardLivePreview({
     name.trim() || (host ? host.split(".")[0]!.replace(/^\w/, (c) => c.toUpperCase()) : "Your product")
   const subdomain = slug.trim() || "your-workspace"
   const showHelp = step === "help" && draftHelp
+  const frameRef = React.useRef<HTMLDivElement>(null)
+  const cardRef = React.useRef<HTMLDivElement>(null)
+  const scale = useFitScale(frameRef, cardRef)
 
   return (
-    <div className="relative hidden min-h-0 overflow-hidden rounded-lg bg-primary lg:flex lg:h-full lg:items-center lg:justify-center">
+    <div
+      ref={frameRef}
+      className="relative hidden min-h-0 overflow-hidden rounded-lg bg-primary lg:flex lg:h-full lg:items-center lg:justify-center"
+    >
       <DitherGradient to="primary" direction="right" cell={3} />
-      <div className="relative w-[min(90%,640px)] overflow-hidden rounded-xl border border-black/10 bg-background shadow-2xl shadow-black/25">
+      <div
+        ref={cardRef}
+        // Hidden until measured, so it doesn't flash at its natural size first.
+        style={{ transform: `scale(${scale ?? 1})`, visibility: scale ? undefined : "hidden" }}
+        className="relative w-[640px] shrink-0 overflow-hidden rounded-xl border border-black/10 bg-background shadow-2xl shadow-black/25"
+      >
         {/* Address bar */}
         <div className="flex items-center gap-3 border-b border-border/60 bg-muted/50 px-3 py-2">
           <span className="flex gap-1.5" aria-hidden>
