@@ -2,6 +2,8 @@ import { and, eq } from "drizzle-orm";
 import { db, helpArticle, workspace } from "@featul/db";
 import type { JSONContent } from "@featul/editor";
 import { getHelpAdminTree } from "@featul/api/help/queries";
+import { helpAnalyticsAccess, type HelpAnalyticsAccess } from "@featul/api/help/analytics";
+import { getWorkspaceAccessPlan } from "@featul/api/shared/access";
 import type { HelpAdminTree } from "@/components/help/types";
 import type { HelpArticleFormData } from "@/hooks/useHelpArticle";
 
@@ -19,6 +21,13 @@ export async function getHelpTreeData(slug: string): Promise<HelpAdminTree | nul
   const workspaceId = await workspaceIdBySlug(slug);
   if (!workspaceId) return null;
   return (await getHelpAdminTree(db, workspaceId)) as HelpAdminTree;
+}
+
+/** The analytics sections the workspace's plan includes, so the loading skeleton has the same layout. */
+export async function getHelpAnalyticsAccess(slug: string): Promise<HelpAnalyticsAccess | null> {
+  const workspaceId = await workspaceIdBySlug(slug);
+  if (!workspaceId) return null;
+  return helpAnalyticsAccess(await getWorkspaceAccessPlan(workspaceId));
 }
 
 export async function getHelpArticleForEdit(

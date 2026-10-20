@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import type {
   HelpAnalytics as HelpAnalyticsData,
+  HelpAnalyticsAccess,
   HelpArticleStat,
   HelpRangeTotals,
   HelpSearchStat,
@@ -92,7 +93,14 @@ const heroInnerClass =
  * row of stat cards with sparklines, the daily chart, then a masonry of detail cards.
  * Each plan sees what it includes; the rest are previews that link to billing.
  */
-export function HelpAnalytics({ workspaceSlug }: { workspaceSlug: string }) {
+export function HelpAnalytics({
+  workspaceSlug,
+  initialAccess,
+}: {
+  workspaceSlug: string;
+  /** The plan's sections from the server, so the skeleton lays out the same cards. */
+  initialAccess?: HelpAnalyticsAccess | null;
+}) {
   const [days, setDays] = React.useState<Range>(30);
   const { data, error, refetch, isFetching } = useQuery<HelpAnalyticsData>({
     queryKey: ["help-analytics", workspaceSlug, days],
@@ -138,7 +146,15 @@ export function HelpAnalytics({ workspaceSlug }: { workspaceSlug: string }) {
       </div>
     );
   }
-  if (!data) return <AnalyticsSkeleton />;
+  if (!data)
+    return (
+      <AnalyticsSkeleton
+        access={initialAccess}
+        days={days}
+        onDays={setDays}
+        billingHref={billingHref}
+      />
+    );
 
   const { access, totals, range, previous, series } = data;
   const daily = (
@@ -1108,19 +1124,261 @@ function LockedCard({
   );
 }
 
-function AnalyticsSkeleton() {
+/** A loading stand-in sized by the text element it sits in, so it takes the real line's height. */
+function Bone({ className }: { className?: string }) {
   return (
-    <div className="space-y-4 px-4 pb-14 sm:px-6">
-      <div className="h-64 animate-pulse rounded-[calc(var(--radius)*4)] bg-primary/15" />
+    <span
+      aria-hidden
+      className={cn(
+        "inline-block h-[0.8em] animate-pulse rounded-md bg-foreground/[0.08] align-middle",
+        className,
+      )}
+    />
+  );
+}
+
+/**
+ * The page as it will render, built from the same shells, titles and type sizes with bones
+ * where the numbers go. Which cards show comes from the plan, so nothing shifts on load.
+ */
+function AnalyticsSkeleton({
+  access,
+  days,
+  onDays,
+  billingHref,
+}: {
+  access?: HelpAnalyticsAccess | null;
+  days: Range;
+  onDays: (days: Range) => void;
+  billingHref: string;
+}) {
+  const trends = access?.trends ?? true;
+  const searches = access?.searches ?? false;
+  const askAi = access?.askAi ?? false;
+  const stats: Array<{
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }> = [
+    { label: "Article views", icon: EyeIcon },
+    { label: "Found it helpful", icon: LikeIcon },
+    ...(searches && trends
+      ? [
+          { label: "Searches", icon: SearchIcon },
+          { label: "Unanswered", icon: SparklesIcon },
+        ]
+      : [{ label: "Published articles", icon: ArticleIcon }]),
+  ];
+  const lists = [
+    { title: "Most viewed", icon: EyeIcon, meter: true },
+    { title: "Needs work", icon: DislikeIcon, meter: true },
+    ...(searches
+      ? [
+          { title: "Content gaps", icon: Plus, meter: false },
+          { title: "Top searches", icon: SearchIcon, meter: true },
+        ]
+      : []),
+  ];
+
+  return (
+    <div className="space-y-4 px-4 pb-14 sm:px-6" aria-busy="true">
+      <Panel
+        title={
+          trends ? `Help center · last ${days} days` : "Help center · all time"
+        }
+        icon={AnalyticsIcon}
+        innerClassName={heroInnerClass}
+      >
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-5xl font-semibold tabular-nums tracking-tight sm:text-6xl">
+              <Bone className="w-36 bg-white/20" />
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-primary-foreground/85">
+              <span>article views</span>
+            </div>
+          </div>
+          {trends ? (
+            <RangePicker days={days} onDays={onDays} />
+          ) : (
+            <Button
+              asChild
+              size="sm"
+              className="rounded-full bg-white text-primary hover:bg-white/90"
+            >
+              <Link href={billingHref}>
+                Unlock trends
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </Button>
+          )}
+        </div>
+        {trends ? <div className="-mx-6 -mb-6 mt-6 h-24 sm:-mx-8" /> : null}
+      </Panel>
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }, (_, i) => (
-          <div
-            key={i}
-            className="h-44 animate-pulse rounded-[calc(var(--radius)*2)] bg-muted/60 dark:bg-white/[0.04]"
-          />
+        {stats.map((stat) => (
+          <article key={stat.label} className={panelShellClass}>
+            <PanelHeader title={stat.label} icon={stat.icon} />
+            <div className={cn(panelInnerClass, "flex flex-col p-5")}>
+              <p className="text-3xl font-semibold tabular-nums tracking-tight">
+                <Bone className="w-20" />
+              </p>
+              <p className="mt-1 min-h-4 text-xs" />
+              <div className="-mx-5 -mb-5 mt-auto pt-4">
+                <div className="h-16" />
+              </div>
+            </div>
+          </article>
         ))}
+        {searches && trends ? null : (
+          <LockedStat
+            label="Search insights"
+            plan="Professional"
+            href={billingHref}
+          />
+        )}
       </div>
-      <div className="h-80 animate-pulse rounded-[calc(var(--radius)*2)] bg-muted/60 dark:bg-white/[0.04]" />
+
+      {trends ? (
+        <Panel
+          title="Activity · Views"
+          icon={AnalyticsIcon}
+          innerClassName="flex flex-col p-5 sm:p-6"
+        >
+          <header className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-4xl font-semibold tabular-nums tracking-tight">
+                <Bone className="w-28" />
+              </p>
+              <p className="mt-1.5 text-xs">
+                <Bone className="w-44" />
+              </p>
+            </div>
+            <div className="flex items-center gap-1 rounded-full bg-muted/70 p-1 ring-1 ring-border/60 dark:bg-white/[0.04] dark:ring-white/10">
+              {[
+                "Views",
+                "Helpful votes",
+                ...(searches ? ["Searches"] : []),
+              ].map((label, i) => (
+                <span
+                  key={label}
+                  className={cn(
+                    "flex h-8 items-center gap-2 rounded-full px-3.5 text-xs font-medium",
+                    i === 0
+                      ? "bg-card text-foreground shadow-sm ring-1 ring-border/60 dark:bg-white/10 dark:ring-white/10"
+                      : "text-muted-foreground",
+                  )}
+                >
+                  <span className="size-1.5 rounded-full bg-foreground/20" />
+                  {label}
+                </span>
+              ))}
+            </div>
+          </header>
+          <div className="relative mt-6 h-64">
+            {[0, 0.5].map((at) => (
+              <div
+                key={at}
+                aria-hidden
+                className="absolute inset-x-0 border-t border-border/60 dark:border-white/[0.06]"
+                style={{ top: `${at * 100}%` }}
+              />
+            ))}
+            <div className="absolute inset-x-0 bottom-0 h-1/3 animate-pulse rounded-lg bg-foreground/[0.04]" />
+          </div>
+          <div className="mt-3 h-4" />
+          <div className="mt-4 flex items-center gap-4 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <span className="h-0.5 w-4 rounded-full bg-foreground/20" />
+              Last {days} days
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-4 border-t border-dashed border-muted-foreground/60" />
+              The {days} days before
+            </span>
+          </div>
+        </Panel>
+      ) : (
+        <LockedCard
+          title="Trends and top articles"
+          plan="Starter"
+          href={billingHref}
+          description="Daily views, the articles people read most, and the ones that aren't helping yet."
+          tall
+        />
+      )}
+
+      {trends ? (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {lists.map((list) => (
+            <Panel key={list.title} title={list.title} icon={list.icon}>
+              <ul className="space-y-1 p-2">
+                {Array.from({ length: LIST_LIMIT }, (_, i) => (
+                  <li
+                    key={i}
+                    className={cn(
+                      "px-3",
+                      list.meter ? "py-2.5" : "flex items-center gap-3 py-2",
+                    )}
+                  >
+                    {list.meter ? (
+                      <>
+                        <p className="text-sm">
+                          <Bone className="w-1/2" />
+                        </p>
+                        <div className="mt-2 h-2" />
+                      </>
+                    ) : (
+                      <>
+                        <span className="size-7 shrink-0 animate-pulse rounded-lg bg-foreground/[0.06]" />
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-sm">
+                            <Bone className="w-1/2" />
+                          </span>
+                          <span className="text-xs">
+                            <Bone className="w-12" />
+                          </span>
+                        </span>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          ))}
+          <Panel title="Reader feedback" icon={LikeIcon}>
+            <div className="p-5">
+              <p className="text-3xl font-semibold tabular-nums tracking-tight">
+                <Bone className="w-24" />
+              </p>
+              <div className="mt-4 h-4 animate-pulse rounded bg-foreground/[0.06]" />
+              <p className="mt-3 text-xs">
+                <Bone className="w-full" />
+              </p>
+            </div>
+          </Panel>
+          {askAi ? (
+            <Panel title="Ask AI" icon={SparklesIcon}>
+              <div className="p-5">
+                <p className="text-3xl font-semibold tabular-nums tracking-tight">
+                  <Bone className="w-24" />
+                </p>
+                <div className="mt-4 h-3 animate-pulse rounded bg-foreground/[0.06]" />
+                <p className="mt-3 text-xs">
+                  <Bone className="w-3/4" />
+                </p>
+              </div>
+            </Panel>
+          ) : searches ? null : (
+            <LockedCard
+              title="Search insights"
+              plan="Professional"
+              href={billingHref}
+              description="See what visitors search for, the questions your articles don't answer yet, and Ask AI usage."
+            />
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

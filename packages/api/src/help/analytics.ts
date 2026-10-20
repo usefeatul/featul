@@ -59,6 +59,18 @@ function lastDays(days: number) {
 
 const n = (value: unknown) => Number(value ?? 0);
 
+export type HelpAnalyticsAccess = HelpAnalytics["access"];
+
+/** Which analytics sections a plan includes. */
+export function helpAnalyticsAccess(plan: string): HelpAnalyticsAccess {
+  const limits = getPlanLimits(plan);
+  return {
+    trends: limits.allowHelpAnalytics,
+    searches: limits.allowHelpSearchInsights,
+    askAi: limits.monthlyHelpAiAnswers > 0,
+  };
+}
+
 /** Help center analytics for the admin page; sections a plan doesn't include come back null. */
 export async function getHelpAnalytics(
   db: Db,
@@ -67,11 +79,7 @@ export async function getHelpAnalytics(
   days: number,
 ): Promise<HelpAnalytics> {
   const limits = getPlanLimits(plan);
-  const access = {
-    trends: limits.allowHelpAnalytics,
-    searches: limits.allowHelpSearchInsights,
-    askAi: limits.monthlyHelpAiAnswers > 0,
-  };
+  const access = helpAnalyticsAccess(plan);
 
   const [totalsRow] = await db
     .select({
