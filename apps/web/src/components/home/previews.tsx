@@ -16,6 +16,7 @@ import { PlannedIcon } from "@featul/ui/icons/planned";
 import { ReviewIcon } from "@featul/ui/icons/review";
 import { ProgressIcon } from "@featul/ui/icons/progress";
 import { Button } from "@featul/ui/components/button";
+import { SegmentedControl } from "@featul/ui/components/segmented-control";
 import { Avatar, AvatarFallback } from "@featul/ui/components/avatar";
 import { cn } from "@featul/ui/lib/utils";
 import { Preview, Engagement, previewControl } from "./preview";
@@ -277,26 +278,14 @@ export function PortalPreview() {
           <FeedbackIcon className="size-4" />
           Your workspace
         </span>
-        <div
-          className="flex rounded-md border border-border/60 bg-card p-0.5"
+        <SegmentedControl
           aria-label="Portal sections"
-        >
-          {sections.map((item) => (
-            <button
-              type="button"
-              key={item}
-              aria-pressed={section === item}
-              onClick={() => setSection(item)}
-              className={cn(
-                previewControl,
-                "px-2 py-1.5 text-[10px]",
-                section === item && "bg-card shadow-sm",
-              )}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
+          size="sm"
+          value={section}
+          onValueChange={setSection}
+          itemClassName="text-[10px]"
+          options={sections.map((item) => ({ value: item, label: item }))}
+        />
       </div>
       <div className="flex items-center gap-1.5 px-3 pt-3 text-[10px] text-accent">
         <ListFilterIcon className="size-3" />

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { cn } from "@featul/ui/lib/utils";
+import { SegmentedControl } from "@featul/ui/components/segmented-control";
 import { buildWidgetNextSnippet, buildWidgetSnippet } from "@/lib/share";
 import CodeBlock from "./code";
 import CopyButton from "./copy";
@@ -27,29 +28,7 @@ function Segmented<T extends string>({
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs text-accent">{label}</span>
-      <div
-        role="radiogroup"
-        aria-label={label}
-        className="flex rounded-lg bg-muted/40 p-0.5 dark:bg-white/5"
-      >
-        {options.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            role="radio"
-            aria-checked={value === option.value}
-            onClick={() => onChange(option.value)}
-            className={cn(
-              "rounded-md px-2.5 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              value === option.value
-                ? "bg-background font-medium text-foreground shadow-xs dark:bg-white/10"
-                : "text-accent hover:text-foreground",
-            )}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl aria-label={label} value={value} onValueChange={onChange} options={options} />
     </div>
   );
 }
@@ -442,30 +421,16 @@ export default function Embed({
           code={snippet}
           label="Widget snippet"
           header={
-            <div role="tablist" aria-label="Framework" className="flex gap-1">
-              {(
-                [
-                  ["html", "HTML"],
-                  ["next", "Next.js"],
-                ] as const
-              ).map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  role="tab"
-                  aria-selected={framework === value}
-                  onClick={() => setFramework(value)}
-                  className={cn(
-                    "rounded-md px-2 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    framework === value
-                      ? "bg-muted/70 font-medium text-foreground dark:bg-white/8"
-                      : "text-accent hover:text-foreground",
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <SegmentedControl<Framework>
+              aria-label="Framework"
+              size="sm"
+              value={framework}
+              onValueChange={setFramework}
+              options={[
+                { value: "html", label: "HTML" },
+                { value: "next", label: "Next.js" },
+              ]}
+            />
           }
         />
       ) : null}

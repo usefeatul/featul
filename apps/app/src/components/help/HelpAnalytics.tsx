@@ -20,8 +20,13 @@ import {
   modalShellClass,
   overlayRoundedClass,
   overlayRoundedInnerClass,
+  raisedSurfaceClass,
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
+import {
+  SegmentedControl,
+  segmentedTrackClass,
+} from "@featul/ui/components/segmented-control";
 import {
   AnalyticsIcon,
   ArticleIcon,
@@ -426,29 +431,15 @@ function RangePicker({
   onDays: (days: Range) => void;
 }) {
   return (
-    <div
-      role="radiogroup"
+    <SegmentedControl
       aria-label="Date range"
-      className="flex items-center gap-0.5 rounded-full bg-black/15 p-1 backdrop-blur-sm"
-    >
-      {RANGES.map((value) => (
-        <button
-          key={value}
-          type="button"
-          role="radio"
-          aria-checked={days === value}
-          onClick={() => onDays(value)}
-          className={cn(
-            "h-7 cursor-pointer rounded-full px-3 text-xs font-medium tabular-nums transition-colors",
-            days === value
-              ? "bg-white text-primary shadow-sm"
-              : "text-primary-foreground/80 hover:text-primary-foreground",
-          )}
-        >
-          {value} days
-        </button>
-      ))}
-    </div>
+      value={String(days)}
+      onValueChange={(value) => onDays(Number(value) as Range)}
+      options={RANGES.map((value) => ({ value: String(value), label: `${value} days` }))}
+      // Sits on the brand banner: darker track, light inactive labels.
+      className="border-transparent bg-black/15 backdrop-blur-sm dark:border-transparent dark:bg-black/25"
+      itemClassName="tabular-nums text-primary-foreground/80 hover:text-primary-foreground aria-checked:text-foreground"
+    />
   );
 }
 
@@ -634,25 +625,16 @@ function TrendCard({
             {best && best.value > 0 ? ` · busiest ${dayLabel(best.key)}` : ""}
           </p>
         </div>
-        <div
-          role="tablist"
+        <SegmentedControl
           aria-label="Chart metric"
-          className="flex items-center gap-1 rounded-full bg-muted/70 p-1 ring-1 ring-border/60 dark:bg-white/[0.04] dark:ring-white/10"
-        >
-          {metrics.map((m) => (
-            <button
-              key={m.key}
-              type="button"
-              role="tab"
-              aria-selected={m.key === metric.key}
-              onClick={() => setSelected(m.key)}
-              className={cn(
-                "flex h-8 cursor-pointer items-center gap-2 rounded-full px-3.5 text-xs font-medium transition-colors",
-                m.key === metric.key
-                  ? "bg-card text-foreground shadow-sm ring-1 ring-border/60 dark:bg-white/10 dark:ring-white/10"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
+          size="md"
+          value={metric.key}
+          onValueChange={setSelected}
+          itemClassName="px-3.5 text-xs"
+          options={metrics.map((m) => ({
+            value: m.key,
+            label: m.label,
+            icon: (
               <span
                 aria-hidden
                 className="size-1.5 rounded-full"
@@ -664,10 +646,9 @@ function TrendCard({
                       : undefined,
                 }}
               />
-              {m.label}
-            </button>
-          ))}
-        </div>
+            ),
+          }))}
+        />
       </header>
 
       <div className="relative mt-6 h-64">
@@ -1254,7 +1235,7 @@ function AnalyticsSkeleton({
                 <Bone className="w-44" />
               </p>
             </div>
-            <div className="flex items-center gap-1 rounded-full bg-muted/70 p-1 ring-1 ring-border/60 dark:bg-white/[0.04] dark:ring-white/10">
+            <div className={segmentedTrackClass}>
               {[
                 "Views",
                 "Helpful votes",
@@ -1263,10 +1244,8 @@ function AnalyticsSkeleton({
                 <span
                   key={label}
                   className={cn(
-                    "flex h-8 items-center gap-2 rounded-full px-3.5 text-xs font-medium",
-                    i === 0
-                      ? "bg-card text-foreground shadow-sm ring-1 ring-border/60 dark:bg-white/10 dark:ring-white/10"
-                      : "text-muted-foreground",
+                    "flex h-8 items-center gap-1.5 rounded-md border border-transparent px-3.5 text-xs font-medium",
+                    i === 0 ? cn(raisedSurfaceClass, "text-foreground") : "text-accent",
                   )}
                 >
                   <span className="size-1.5 rounded-full bg-foreground/20" />
