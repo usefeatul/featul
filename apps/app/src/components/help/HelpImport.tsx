@@ -26,6 +26,7 @@ import {
 import { cn } from "@featul/ui/lib/utils";
 import {
   ArrowRight,
+  ArticleIcon,
   BookIcon,
   CheckIcon,
   ChevronDown,
@@ -1359,9 +1360,8 @@ function DoneStage({
   dashboardHref: string;
   onClose: () => void;
 }) {
-  const fan = result.titles.slice(0, 3);
-  const angles =
-    fan.length === 1 ? [0] : fan.length === 2 ? [-6, 6] : [-9, 0, 9];
+  const shown = result.titles.slice(0, 3);
+  const more = result.created - shown.length;
   // The drafts are on the help page behind this dialog, so the first two steps just close it.
   const next: Array<{
     title: string;
@@ -1391,73 +1391,79 @@ function DoneStage({
     "group/next flex h-full w-full cursor-pointer flex-col rounded-2xl [corner-shape:squircle] border border-black/[0.08] bg-card bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_4%)] p-1.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.03)] transition-transform duration-200 hover:-translate-y-0.5 dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_4%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.35),0_1px_1px_rgba(0,0,0,0.12)]";
   return (
     <DialogInner className="p-0">
-      <div className="relative isolate overflow-hidden bg-primary px-6 pb-8 pt-8 text-center text-white sm:px-10">
-        <div className="absolute inset-0 -z-10">
-          <DitherClouds multicolor fit="cover" />
+      {/* A cropped look at the help page with the new drafts on it, fading into the dialog. */}
+      <div
+        aria-hidden
+        className="relative overflow-hidden bg-muted/60 bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] bg-size-[12px_12px] px-6 pt-8 sm:px-10 dark:bg-white/[0.02] dark:bg-[radial-gradient(rgb(255_255_255/0.06)_1px,transparent_1px)]"
+      >
+        <div className="mx-auto max-w-md rounded-t-xl [corner-shape:squircle] border border-b-0 border-black/[0.08] bg-card shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_1px_rgba(0,0,0,0.03)] dark:border-white/[0.08] dark:bg-[color-mix(in_oklab,var(--card),white_3%)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+          <div className="flex items-center gap-2 border-b border-border/60 px-4 py-2.5 dark:border-white/[0.07]">
+            <BookIcon className="size-3.5 text-primary" />
+            <span className="text-xs font-medium text-foreground">
+              Help Center
+            </span>
+            <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground dark:bg-white/[0.06]">
+              +{result.created} {result.created === 1 ? "draft" : "drafts"}
+            </span>
+          </div>
+          <ul className="divide-y divide-border/50 dark:divide-white/[0.06]">
+            {shown.map((title, i) => (
+              <li
+                key={`${i}-${title}`}
+                className={cn(
+                  "flex items-center gap-2.5 px-4 py-2.5",
+                  styles.rise,
+                )}
+                style={{ animationDelay: `${0.1 + 0.08 * i}s` }}
+              >
+                <ArticleIcon className="size-3.5 shrink-0 text-muted-foreground" />
+                <span className="min-w-0 flex-1 truncate text-[13px] text-foreground">
+                  {title}
+                </span>
+                <span className="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-400">
+                  Draft
+                </span>
+              </li>
+            ))}
+            {more > 0 ? (
+              <li className="px-4 py-2.5 text-[11px] text-muted-foreground">
+                and {more} more
+              </li>
+            ) : null}
+          </ul>
         </div>
-        <div className="absolute inset-0 -z-10 bg-linear-to-b from-black/0 via-black/0 to-black/25" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-card to-transparent dark:from-background" />
+      </div>
 
-        <div className="relative mx-auto h-40 max-w-sm" aria-hidden>
-          {fan.map((title, i) => (
-            <div
-              key={`${i}-${title}`}
-              className={cn(
-                "absolute left-1/2 top-5 h-32 w-64 rounded-xl bg-white p-4 text-left text-zinc-900 shadow-2xl shadow-black/25",
-                styles.fan,
-              )}
-              style={{
-                rotate: `${angles[i]}deg`,
-                translate: `calc(-50% + ${angles[i]! * 9}px) ${Math.abs(angles[i]!) * 1.2}px`,
-                animationDelay: `${0.12 * i}s`,
-                // The middle card sits on top, so its title is the one that reads.
-                zIndex: fan.length === 3 && i === 1 ? 3 : i,
-              }}
-            >
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800">
-                Draft
-              </span>
-              <p className="mt-2 line-clamp-2 text-sm font-semibold leading-snug">
-                {title}
-              </p>
-              <span className="mt-2 block h-1.5 w-11/12 rounded-full bg-zinc-100" />
-              <span className="mt-1.5 block h-1.5 w-3/4 rounded-full bg-zinc-100" />
-            </div>
-          ))}
-          <span className="absolute right-6 top-0 z-10 flex size-11 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg ring-4 ring-white/30">
-            <span
-              className={cn(
-                "absolute inset-0 rounded-full bg-emerald-400",
-                styles.ring,
-              )}
-            />
-            <CheckIcon className="relative size-5" />
-          </span>
+      <div className="flex flex-wrap items-end justify-between gap-4 px-5 pt-4 sm:px-6">
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            <CheckIcon className="size-3.5" />
+            Saved as drafts
+          </p>
+          <h2 className="mt-1.5 text-xl font-semibold tracking-tight text-foreground">
+            Your help center has a head start
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {result.created} {result.created === 1 ? "draft" : "drafts"}
+            {result.collectionsCreated > 0
+              ? ` in ${result.collectionsCreated} new ${result.collectionsCreated === 1 ? "collection" : "collections"}`
+              : ""}
+            , private until you publish them.
+          </p>
         </div>
-
-        <h2 className="mt-5 text-2xl font-semibold tracking-tight">
-          Your help center has a head start
-        </h2>
-        <p className="mx-auto mt-2 max-w-md text-sm text-white/85">
-          {result.created} {result.created === 1 ? "draft" : "drafts"}
-          {result.collectionsCreated > 0
-            ? ` in ${result.collectionsCreated} new ${result.collectionsCreated === 1 ? "collection" : "collections"}`
-            : ""}
-          , saved privately and ready for your review.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
+          {onboarding ? (
+            <Button asChild variant="outline" size="md" className="px-4">
+              <Link href={dashboardHref} onClick={onClose}>
+                Go to dashboard
+              </Link>
+            </Button>
+          ) : null}
           <Button onClick={onClose} size="md" className="px-4 has-[>svg]:px-4">
             Review drafts
             <ArrowRight className="size-4" />
           </Button>
-          {onboarding ? (
-            <Link
-              href={dashboardHref}
-              onClick={onClose}
-              className="inline-flex h-9 items-center rounded-lg bg-white/15 px-4 text-sm font-medium text-white ring-1 ring-white/25 backdrop-blur-sm transition-colors hover:bg-white/25"
-            >
-              Go to dashboard
-            </Link>
-          ) : null}
         </div>
       </div>
 
