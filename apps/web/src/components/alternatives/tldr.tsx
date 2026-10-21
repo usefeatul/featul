@@ -9,9 +9,24 @@ import { AlternativeIcon } from "@featul/ui/icons/alternative";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
 import { BookmarkIcon } from "@featul/ui/icons/bookmark";
 
+import {
+  modalCardInnerClass,
+  modalCardShellClass,
+} from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
+
 import { AUTH_SIGN_IN_URL } from "@/config/auth";
-const comparisonCardClass =
-  "flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card p-6 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:p-7";
+
+const comparisonCardClass = cn(
+  modalCardShellClass,
+  "flex h-full min-w-0 flex-col",
+);
+const comparisonCardHeaderClass =
+  "flex items-center justify-between gap-3 px-2.5 py-1.5";
+const comparisonCardBodyClass = cn(
+  modalCardInnerClass,
+  "flex-1 min-w-0 px-5 py-4 sm:px-6 sm:py-5",
+);
 
 export default function TLDR({ alt }: { alt: Alternative }) {
   const description = getAltDescription(alt.slug, "first");
@@ -38,41 +53,45 @@ export default function TLDR({ alt }: { alt: Alternative }) {
 
           <div className="mt-8 grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2">
             <article className={comparisonCardClass}>
-              <div className="flex items-center gap-2.5">
-                <span className="flex size-8 items-center justify-center overflow-hidden rounded-md bg-muted/40">
-                  <AlternativeIcon
-                    slug={alt.slug}
-                    alt={`${alt.name} logo`}
-                    size={32}
-                    className="size-full object-cover"
-                  />
-                </span>
-                <p className="text-sm font-semibold text-foreground">
-                  {alt.name}
-                </p>
+              <div className={comparisonCardHeaderClass}>
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-[5px]">
+                    <AlternativeIcon
+                      slug={alt.slug}
+                      alt={`${alt.name} logo`}
+                      size={20}
+                      className="size-full object-cover"
+                    />
+                  </span>
+                  <p className="text-sm font-medium leading-6 text-foreground">
+                    {alt.name}
+                  </p>
+                </div>
               </div>
-              <p className="mt-3 text-balance text-sm leading-7 text-accent sm:max-w-[60ch] sm:text-base">
-                {alt.summary ?? description}
-              </p>
-              {tradeoffs.length > 0 ? (
-                <ul className="mt-4 space-y-2 text-sm leading-6 text-accent">
-                  {tradeoffs.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-foreground/30" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+              <div className={comparisonCardBodyClass}>
+                <p className="text-balance text-sm leading-7 text-accent sm:max-w-[60ch] sm:text-base">
+                  {alt.summary ?? description}
+                </p>
+                {tradeoffs.length > 0 ? (
+                  <ul className="mt-4 space-y-2 text-sm leading-6 text-accent">
+                    {tradeoffs.map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-foreground/30" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
             </article>
 
             <article className={comparisonCardClass}>
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex size-8 items-center justify-center rounded-md bg-white">
+              <div className={comparisonCardHeaderClass}>
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="flex size-5 shrink-0 items-center justify-center">
                     <FeatulLogoIcon className="size-5 text-primary" size={20} />
                   </span>
-                  <p className="text-sm font-semibold text-foreground">
+                  <p className="text-sm font-medium leading-6 text-foreground">
                     Featul
                   </p>
                 </div>
@@ -84,27 +103,29 @@ export default function TLDR({ alt }: { alt: Alternative }) {
                   Try free
                 </Link>
               </div>
-              <p className="mt-3 text-balance text-sm leading-7 text-accent sm:max-w-[60ch] sm:text-base">
-                Featul is a modern,
-                <span className="ml-1 inline rounded-md bg-primary/40 px-1.5 py-0 text-black">
-                  privacy‑first
-                </span>{" "}
-                {alt.name} alternative with EU hosting by default and an
-                <span className="ml-1 inline rounded-md bg-primary/40 px-1.5 py-0 text-black">
-                  end‑to‑end workflow
-                </span>
-                : feedback boards, public roadmap, and changelog.
-              </p>
-              {victoryPoints.length > 0 ? (
-                <ul className="mt-4 space-y-2 text-sm leading-6 text-accent">
-                  {victoryPoints.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+              <div className={comparisonCardBodyClass}>
+                <p className="text-balance text-sm leading-7 text-accent sm:max-w-[60ch] sm:text-base">
+                  Featul is a modern,
+                  <span className="ml-1 inline rounded-md bg-primary/40 px-1.5 py-0 text-black">
+                    privacy‑first
+                  </span>{" "}
+                  {alt.name} alternative with EU hosting by default and an
+                  <span className="ml-1 inline rounded-md bg-primary/40 px-1.5 py-0 text-black">
+                    end‑to‑end workflow
+                  </span>
+                  : feedback boards, public roadmap, and changelog.
+                </p>
+                {victoryPoints.length > 0 ? (
+                  <ul className="mt-4 space-y-2 text-sm leading-6 text-accent">
+                    {victoryPoints.map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
             </article>
           </div>
         </div>

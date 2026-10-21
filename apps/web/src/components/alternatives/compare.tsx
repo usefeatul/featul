@@ -29,6 +29,8 @@ export default function Compare({ alt }: { alt: Alternative }) {
           <div className="mt-10 sm:mt-12">
             <ComparisonTable
               caption={`${alt.name} vs Featul feature comparison`}
+              title="Features"
+              action={<StatusLegend />}
             >
               <ComparisonThead>
                 <ComparisonTr>
@@ -80,23 +82,27 @@ export default function Compare({ alt }: { alt: Alternative }) {
               </tbody>
             </ComparisonTable>
           </div>
-
-          <ul className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-accent">
-            <li className="inline-flex items-center gap-1.5">
-              <StatusIcon value={true} />
-              Included
-            </li>
-            <li className="inline-flex items-center gap-1.5">
-              <StatusIcon value="partial" />
-              Limited or extra setup
-            </li>
-            <li className="inline-flex items-center gap-1.5">
-              <StatusIcon value={false} />
-              Not available
-            </li>
-          </ul>
         </div>
       </section>
     </MarketingContainer>
+  );
+}
+
+function StatusLegend() {
+  return (
+    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-accent">
+      <li className="inline-flex items-center gap-1.5">
+        <StatusIcon value={true} />
+        Included
+      </li>
+      <li className="inline-flex items-center gap-1.5">
+        <StatusIcon value="partial" />
+        Limited or extra setup
+      </li>
+      <li className="inline-flex items-center gap-1.5">
+        <StatusIcon value={false} />
+        Not available
+      </li>
+    </ul>
   );
 }
