@@ -79,7 +79,7 @@ export default function SettingsCard({
   if (layout === "row") {
     return (
       <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-start gap-3">
           {icon ? (
             <div className="flex size-5 shrink-0 items-center justify-center">
               {icon}
