@@ -1,5 +1,6 @@
 "use client"
 
+import { Mascot } from "@featul/ui/components/mascot"
 import * as React from "react"
 import Link from "next/link"
 import { ArrowRight, CommentsIcon } from "@/components/global/icons"
@@ -58,7 +59,10 @@ export function RoadmapColumn({
 
       <ol className="divide-y divide-border/60 dark:divide-white/[0.07]">
         {items.length === 0 ? (
-          <li className="py-10 text-center text-sm text-muted-foreground/80">Nothing here yet.</li>
+          <li className="flex flex-col items-center py-10 text-center text-sm text-muted-foreground/80">
+            <Mascot size={64} mood="sleep" className="mb-3" />
+            Nothing here yet.
+          </li>
         ) : (
           items.map((item) => {
             const excerpt = toPlain(item.content)

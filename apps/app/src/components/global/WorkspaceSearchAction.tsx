@@ -1,5 +1,6 @@
 "use client";
 
+import { Mascot } from "@featul/ui/components/mascot";
 import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { ShortcutKey } from "./keys";
 
@@ -472,7 +473,8 @@ export function WorkspaceSearchAction({
             </CommandGroup>
           ) : null}
           {!isSearching && hasQuery && results.length === 0 && showNoResults ? (
-            <SearchStatusMessage className="py-6">
+            <SearchStatusMessage className="flex-col gap-3 py-6">
+              <Mascot size={64} mood="search" />
               No posts found for &ldquo;{debouncedQuery}&rdquo;
             </SearchStatusMessage>
           ) : null}

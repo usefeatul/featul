@@ -1,5 +1,6 @@
 "use client";
 
+import { Mascot } from "@featul/ui/components/mascot";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { client } from "@featul/api/client";
@@ -217,9 +218,10 @@ export function HelpSearch({
             </button>
           ) : null}
           {results.length === 0 ? (
-            <p className="px-3 py-6 text-center text-sm text-muted-foreground">
+            <div className="flex flex-col items-center px-3 py-6 text-center text-sm text-muted-foreground">
+              {loading || debounced !== trimmed ? null : <Mascot size={64} mood="search" className="mb-3" />}
               {loading || debounced !== trimmed ? "Searching…" : `No articles match "${trimmed}"`}
-            </p>
+            </div>
           ) : (
             results.map((result, index) => (
               <button

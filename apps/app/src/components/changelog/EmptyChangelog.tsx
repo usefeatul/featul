@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
+import { Mascot } from "@featul/ui/components/mascot";
 import { Plus } from "@/components/global/icons";
 
 interface EmptyChangelogProps {
@@ -13,6 +14,7 @@ export default function EmptyChangelog({ workspaceSlug }: EmptyChangelogProps) {
   return (
     <div data-page-empty className="flex flex-1 items-center justify-center">
       <div className="flex flex-col items-center px-4 py-12 text-center">
+        <Mascot size={96} className="mb-4" />
         <div className="text-sm font-medium text-foreground">
           No changelogs yet
         </div>

@@ -262,6 +262,7 @@ export function WidgetFeedbackDetail({
   if (error && !post) {
     return (
       <WidgetEmpty
+        mood="search"
         title="Couldn’t load this request"
         description="It may have been removed, or the connection dropped."
       />

@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
+import { Mascot } from "@featul/ui/components/mascot";
 import { Plus, SparklesIcon } from "@/components/global/icons";
 import { CollectionDialog } from "./CollectionDialog";
 import { openHelpImport } from "./HelpImport";
@@ -12,6 +13,7 @@ export function EmptyHelpCenter({ workspaceSlug }: { workspaceSlug: string }) {
   return (
     <div data-page-empty className="flex flex-1 items-center justify-center">
       <div className="flex flex-col items-center px-4 py-12 text-center">
+        <Mascot size={96} className="mb-4" />
         <div className="text-sm font-medium text-foreground">No help articles yet</div>
         <p className="mt-1 max-w-sm text-sm text-foreground/50 dark:text-white/45">
           Group answers into collections like Getting started or Billing, then write

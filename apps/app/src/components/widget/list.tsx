@@ -20,7 +20,6 @@ import {
   ListFilterIcon,
   SearchIcon,
   X,
-  CollectIcon as FillFeedbackIcon,
 } from "@/components/global/icons";
 
 import StatusIcon from "@/components/requests/StatusIcon";
@@ -475,7 +474,7 @@ export function WidgetFeedbackList({
               ? "Try another search or clear your filters."
               : "Share an idea or report an issue to get the conversation started."
           }
-          icon={<FillFeedbackIcon className="size-5" size={20} />}
+          mood={hasFilters ? "search" : "idle"}
         >
           {!hasFilters ? <WidgetEmptyPlaceholders /> : null}
           <WidgetButton

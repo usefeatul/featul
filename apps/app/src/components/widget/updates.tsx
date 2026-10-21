@@ -4,7 +4,6 @@ import * as React from "react";
 import type { JSONContent } from "@tiptap/core";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
-  ChangelogIcon as FillChangelogIcon,
   CheckIcon,
   ChevronRight,
 } from "@/components/global/icons";
@@ -106,7 +105,7 @@ export function WidgetUpdates({
         <WidgetEmpty
           title="No updates yet"
           description="New releases, fixes, and product changes will show up here."
-          icon={<FillChangelogIcon className="size-5" size={20} />}
+          mood="sleep"
         >
           <WidgetEmptyPlaceholders />
         </WidgetEmpty>

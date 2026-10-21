@@ -1,5 +1,6 @@
 "use client";
 
+import { Mascot } from "@featul/ui/components/mascot";
 import { Button } from "@featul/ui/components/button";
 import { PlusIcon as FillPlusIcon } from "@/components/global/icons";
 
@@ -13,6 +14,7 @@ export default function RoadmapEmptyColumn({
   return (
     <li className="flex min-h-[108px] flex-1 flex-col rounded-lg border border-dashed border-border/50 bg-muted/20 dark:border-white/[0.07] dark:bg-white/[0.02]">
       <div className="flex flex-1 flex-col items-center justify-center px-4 py-4 text-center">
+        <Mascot size={48} mood="sleep" className="mb-2" />
         <p className="text-xs text-accent">No items in {label}</p>
         {onCreate ? (
           <Button

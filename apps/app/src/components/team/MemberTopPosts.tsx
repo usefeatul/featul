@@ -1,5 +1,6 @@
 "use client"
 
+import { Mascot } from "@featul/ui/components/mascot"
 import React from "react"
 import Link from "next/link"
 import StatusIcon from "@/components/requests/StatusIcon"
@@ -49,7 +50,8 @@ export function MemberTopPosts({ slug, topPosts, isLoading, className, panel = f
             <LoadingSpinner label="Loading top posts..." />
           </div>
         ) : !hasPosts ? (
-          <div className="px-4 py-8 text-center text-sm text-accent">
+          <div className="flex flex-col items-center px-4 py-8 text-center text-sm text-accent">
+            <Mascot size={64} className="mb-3" />
             No posts yet
           </div>
         ) : (
