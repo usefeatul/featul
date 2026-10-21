@@ -17,6 +17,8 @@ import {
 import dashboard from "../../../public/image/dashboard.png";
 import roadmap from "../../../public/image/roadmap.png";
 import changelog from "../../../public/image/changelog.png";
+import { selectorSurfaceClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { DitherBackdrop } from "./backdrop";
 
 const previews = [
@@ -119,7 +121,12 @@ export function Showcase() {
         >
           <MarketingContainer>
             <MarketingRail>
-              <div className="overflow-hidden rounded-xl bg-card p-1 shadow-[0_24px_64px_-20px_rgba(0,0,0,0.35)] ring-1 ring-white/40 sm:rounded-2xl sm:p-2">
+              <div
+                className={cn(
+                  selectorSurfaceClass,
+                  "overflow-hidden rounded-xl to-[color-mix(in_oklab,var(--card),var(--foreground)_3%)] p-1 supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*3.5)] sm:rounded-2xl sm:supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*4)]",
+                )}
+              >
                 <motion.div
                   initial={reduceMotion ? false : { opacity: 0.85 }}
                   animate={{ opacity: 1 }}
