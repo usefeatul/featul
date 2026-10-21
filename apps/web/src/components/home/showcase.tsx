@@ -4,6 +4,8 @@ import {
   BoardIcon,
   RoadmapIcon,
   ChangelogIcon,
+  BookIcon,
+  WidgetIcon,
 } from "@/components/global/icons";
 
 import Image from "next/image";
@@ -17,6 +19,8 @@ import {
 import dashboard from "../../../public/image/dashboard.png";
 import roadmap from "../../../public/image/roadmap.png";
 import changelog from "../../../public/image/changelog.png";
+import helpCenter from "../../../public/image/help-center.png";
+import widget from "../../../public/image/widget.png";
 import { selectorSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { DitherBackdrop } from "./backdrop";
@@ -46,6 +50,22 @@ const previews = [
     image: changelog,
     alt: "Featul changelog workspace for writing and publishing product updates",
   },
+  {
+    id: "help-center",
+    label: "Help Center",
+    icon: BookIcon,
+    iconColor: "#d9822b",
+    image: helpCenter,
+    alt: "Featul public help center article with collections, a table of contents, and step-by-step content",
+  },
+  {
+    id: "widget",
+    label: "Widget",
+    icon: WidgetIcon,
+    iconColor: "#3fa66b",
+    image: widget,
+    alt: "Featul feedback widget open on a site, showing the latest update, a feedback box, and roadmap items",
+  },
 ];
 
 export function Showcase() {
@@ -74,7 +94,7 @@ export function Showcase() {
       </svg>
       <Tabs.List
         aria-label="Explore Featul"
-        className="mx-auto flex h-14 w-fit max-w-full items-center justify-center gap-2 sm:gap-3 lg:gap-4"
+        className="mx-auto flex h-14 w-fit max-w-full items-center justify-center gap-1 sm:gap-3 lg:gap-4"
         onPointerLeave={() => setHovered(null)}
         onKeyDown={() => setHovered(null)}
         onBlur={(event) => {
@@ -88,7 +108,7 @@ export function Showcase() {
             key={id}
             value={id}
             aria-label={label}
-            className="relative isolate inline-flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-xs text-accent transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary data-[state=active]:text-foreground sm:px-3 sm:text-sm"
+            className="relative isolate inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-xs text-accent transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary data-[state=active]:text-foreground sm:px-3 sm:text-sm"
             onPointerEnter={(event) => {
               if (event.pointerType !== "touch") setHovered(id);
             }}
@@ -108,7 +128,7 @@ export function Showcase() {
                 }
               />
             ) : null}
-            <Icon aria-hidden className="size-4" style={{ color: iconColor }} />
+            <Icon aria-hidden className="hidden size-4 sm:block" style={{ color: iconColor }} />
             {label}
           </Tabs.Trigger>
         ))}
