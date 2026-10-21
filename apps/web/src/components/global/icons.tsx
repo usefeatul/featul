@@ -16,6 +16,7 @@ import {
   IconLockFilled,
   IconMailFilled,
   IconMessageFilled,
+  IconMessageCircleFilled,
   IconPuzzleFilled,
   IconSettingsFilled,
   IconShieldCheckFilled,
@@ -72,7 +73,7 @@ export const HomeIcon = marketingIcon(ProductHomeIcon);
 export const EditIcon = marketingIcon(IconEditFilled);
 export const TagIcon = marketingIcon(IconTagFilled);
 export const ListFilterIcon = marketingIcon(IconListCheckFilled);
-export const CommentsIcon = FeedbackIcon;
+export const CommentsIcon = marketingIcon(IconMessageCircleFilled);
 export const DomainIcon = marketingIcon(IconWorldFilled);
 export const LockIcon = marketingIcon(IconLockFilled);
 export const MemberIcon = marketingIcon(IconUserFilled);

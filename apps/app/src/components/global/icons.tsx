@@ -8,6 +8,7 @@ import {
   IconUserFilled,
   IconLayoutBoardFilled,
   IconMessageFilled,
+  IconMessageCircleFilled,
   IconWorldFilled,
   IconPuzzleFilled,
   IconSettingsFilled,
@@ -108,7 +109,6 @@ import {
   Maximize2 as LucideMaximize2,
   Menu as LucideMenu,
   Rss as LucideRss,
-  MessageCircle as LucideMessageCircle,
   MessageSquareText as LucideMessageSquareText,
   MoreHorizontal as LucideMoreHorizontal,
   Paperclip as LucidePaperclip,
@@ -289,7 +289,7 @@ export const ChevronRightIcon = ChevronRight;
 export const CircleQuestionMarkIcon = outline(LucideCircleHelp);
 export const ClipboardIcon = outline(LucideClipboard);
 export const CloudIcon = outline(LucideCloud);
-export const CommentsIcon = outline(LucideMessageCircle);
+export const CommentsIcon = solid(IconMessageCircleFilled);
 export const CsvIcon = outline(LucideFileSpreadsheet);
 export const DocumentTextIcon = FileText;
 export const FileExportIcon = outline(LucideFileUp);
