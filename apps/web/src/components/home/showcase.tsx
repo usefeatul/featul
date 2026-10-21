@@ -108,7 +108,7 @@ export function Showcase() {
             key={id}
             value={id}
             aria-label={label}
-            className="relative isolate inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-xs text-accent transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary data-[state=active]:text-foreground sm:px-3 sm:text-sm"
+            className="relative isolate inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-xs text-accent transition-colors hover:text-foreground outline-none data-[state=active]:text-foreground sm:px-3 sm:text-sm"
             onPointerEnter={(event) => {
               if (event.pointerType !== "touch") setHovered(id);
             }}
