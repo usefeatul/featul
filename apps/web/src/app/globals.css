@@ -17,6 +17,21 @@ html:focus-within {
   scroll-behavior: smooth;
 }
 
+/*
+ * Hide every scrollbar on the marketing site; scrolling still works by wheel, touch and keys.
+ * `scrollbar-width` covers Firefox, Chrome/Edge 121+ and Safari 18.2+, `::-webkit-scrollbar`
+ * older Chrome, Safari and iOS, and `-ms-overflow-style` legacy Edge and IE.
+ */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 /* Keep marketing pages anchored when scrolling reaches the footer. */
 html:has([data-component="Wordmark"]),
 html:has([data-component="Wordmark"]) body {
