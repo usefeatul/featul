@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
 import type { TocItem as TocItemType } from "@/lib/toc"
 import {
+  DOCS_HOME_HREF,
   docsSections,
   findDocsNav,
   getDocsNeighbors,
@@ -117,7 +118,7 @@ export default async function DocsPage(props: DocsPageProps) {
         <article className="min-w-0 max-w-[42rem]">
           <DocsBreadcrumbs
             items={[
-              { label: "Docs", href: "/docs" },
+              { label: "Docs", href: DOCS_HOME_HREF },
               ...(section?.items[0] ? [{ label: section.label, href: section.items[0].href }] : []),
               { label: pageTitle },
             ]}

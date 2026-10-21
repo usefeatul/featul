@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { DOCS_HOME_HREF } from "@/config/docsNav"
 import { SITE_URL } from "@/config/seo"
 import { buildUseCasesBreadcrumbSchema } from "@/lib/schema"
 import { serializeJsonLd } from "@/lib/security";
@@ -152,7 +153,7 @@ export function EnterpriseCustomerSuccessUseCase() {
             <Link href="/pricing" className="text-primary underline-offset-4 hover:underline">
               View enterprise pricing
             </Link>
-            <Link href="/docs" className="text-accent underline-offset-4 hover:underline">
+            <Link href={DOCS_HOME_HREF} className="text-accent underline-offset-4 hover:underline">
               Review implementation guides
             </Link>
             <Link href="/contact" className="text-accent underline-offset-4 hover:underline">

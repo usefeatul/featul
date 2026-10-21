@@ -1,4 +1,5 @@
 import { LIVE_DEMO_URL } from "@/config/auth";
+import { DOCS_HOME_HREF } from "@/config/docsNav";
 import type { NavigationItem } from "./homeNav";
 
 export type FooterIconName =
@@ -95,7 +96,7 @@ const columns: FooterNavColumn[] = [
       {
         title: "Resources",
         items: [
-          { name: "Documentation", href: "/docs", icon: "docs" },
+          { name: "Documentation", href: DOCS_HOME_HREF, icon: "docs" },
           { name: "Definitions", href: "/definitions", icon: "definitions" },
           { name: "Free tools", href: "/tools", icon: "tools" },
           { name: "Use cases", href: "/use-cases", icon: "use-cases" },

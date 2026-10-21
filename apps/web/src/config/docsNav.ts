@@ -91,3 +91,6 @@ export const docsSections: DocsNavSection[] = [
     ],
   },
 ]
+
+/** First docs page. Link here rather than to `/docs`, which only redirects, so navigation skips the empty hop. */
+export const DOCS_HOME_HREF = flattenDocsNav()[0]?.href ?? "/"
