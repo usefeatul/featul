@@ -12,13 +12,13 @@ import {
   MarketingContainer,
   MarketingRail,
 } from "@/components/layout/container";
-import { BentoTexture, type BentoTone } from "./texture";
+import { DitherGradient } from "@/components/dither-kit/gradient";
 
 const steps: {
   number: string;
   icon: typeof BoardIcon;
   iconColor: string;
-  tone: BentoTone;
+  tone: [number, number, number];
   label: string;
   title: string;
   body: string;
@@ -27,7 +27,7 @@ const steps: {
     number: "01",
     icon: BoardIcon,
     iconColor: "#4189e2",
-    tone: "blue",
+    tone: [142, 198, 250],
     label: "Listen",
     title: "Bring the good ideas together.",
     body: "Give customers one place to share requests and vote. Spend less time chasing feedback across chats and spreadsheets.",
@@ -36,7 +36,7 @@ const steps: {
     number: "02",
     icon: RoadmapIcon,
     iconColor: "#3b95af",
-    tone: "teal",
+    tone: [90, 192, 202],
     label: "Decide",
     title: "Know what deserves your time.",
     body: "See which requests have momentum, choose what comes next, and share a roadmap that keeps everyone in the loop.",
@@ -45,7 +45,7 @@ const steps: {
     number: "03",
     icon: ChangelogIcon,
     iconColor: "#837ec8",
-    tone: "violet",
+    tone: [186, 166, 240],
     label: "Deliver",
     title: "Turn a request into a reason to stay.",
     body: "Publish an update when you ship. Help customers discover what’s new and see how their feedback shaped your product.",
@@ -87,7 +87,14 @@ export function ConversionHero() {
                     "relative flex-1 overflow-hidden px-5 py-4",
                   )}
                 >
-                  <BentoTexture tone={tone} />
+                  <DitherGradient
+                    from={tone}
+                    direction="left"
+                    cell={2}
+                    opacity={0.35}
+                    bloom="off"
+                    className="[mask-image:radial-gradient(45%_70%_at_100%_0%,black,transparent)]"
+                  />
                   <h3 className="relative font-heading text-base font-medium text-foreground">
                     {title}
                   </h3>
