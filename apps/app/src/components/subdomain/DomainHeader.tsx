@@ -29,7 +29,7 @@ type WorkspaceInfo = {
   logo: string | null;
 };
 
-const navLinkClass =
+export const navLinkClass =
   "relative inline-flex h-full items-center px-3 text-sm font-medium transition-colors after:absolute after:inset-x-3 after:-bottom-px after:h-0.5 after:rounded-full after:bg-primary after:opacity-0 after:transition-opacity hover:text-foreground";
 
 export function DomainHeader({

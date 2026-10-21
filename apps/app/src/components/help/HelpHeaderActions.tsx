@@ -9,7 +9,7 @@ import { Button } from "@featul/ui/components/button";
 import { Switch } from "@featul/ui/components/switch";
 import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import { AnalyticsIcon, BookIcon, ExternalLink, Plus, SparklesIcon } from "@/components/global/icons";
+import { AnalyticsIcon, BookIcon, OpenExternalIcon, PlusIcon, SparklesIcon } from "@/components/global/icons";
 import { ActionTooltip } from "@/components/global/ActionTooltip";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { expectOk } from "@/hooks/useHelpTree";
@@ -84,7 +84,7 @@ export function HelpHeaderActions({
         <ActionTooltip label="View your live help center">
           <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
             <Link href={`${boardUrl}/help`} target="_blank" rel="noopener noreferrer" aria-label="View help center">
-              <ExternalLink className="size-4" />
+              <OpenExternalIcon className="size-4" />
             </Link>
           </Button>
         </ActionTooltip>
@@ -121,7 +121,7 @@ export function HelpHeaderActions({
       <ActionTooltip label="New article">
         <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
           <Link href={`/workspaces/${workspaceSlug}/help/new`} aria-label="New article">
-            <Plus className="size-4" />
+            <PlusIcon className="size-4" />
           </Link>
         </Button>
       </ActionTooltip>

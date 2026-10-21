@@ -52,7 +52,14 @@ import {
   type Icon as TablerIcon,
   type IconProps as TablerIconProps,
 } from "@tabler/icons-react";
-import { LogoutIcon, ShareIcon, LowTractionIcon, FilterIcon, NoCollectionIcon } from "./artwork";
+import {
+  LogoutIcon,
+  ShareIcon,
+  LowTractionIcon,
+  FilterIcon,
+  NoCollectionIcon,
+  OpenExternalIcon,
+} from "./artwork";
 export {
   LogoutIcon,
   RoadmapIcon,
@@ -61,6 +68,7 @@ export {
   LowTractionIcon,
   FilterIcon,
   NoCollectionIcon,
+  OpenExternalIcon,
 };
 export { HomeIcon } from "@featul/ui/icons/home";
 import {
