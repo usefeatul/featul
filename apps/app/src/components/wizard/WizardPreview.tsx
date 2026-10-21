@@ -13,7 +13,8 @@ export default function WizardPreview() {
           src={WIZARD_PREVIEW_IMAGE}
           alt="Featul dashboard"
           fill
-          sizes="50vw"
+          quality={100}
+          sizes="max(100vh, 45vw)"
           className="object-cover object-left-top"
         />
       </div>
