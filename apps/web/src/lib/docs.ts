@@ -1,6 +1,7 @@
 import fs from "node:fs/promises"
 import path from "node:path"
 import matter from "./frontmatter"
+import { flattenDocsNav } from "@/config/docsNav"
 
 export type DocsFrontmatter = {
   title: string
@@ -62,4 +63,38 @@ export async function readDocsMarkdown(id: DocsPageId) {
     frontmatter: data as DocsFrontmatter,
     content,
   }
+}
+
+export type DocsArticleLink = {
+  id: string
+  title: string
+  href: string
+  summary: string | null
+  sectionLabel: string
+}
+
+/** Every docs page with its frontmatter summary, in nav order; feeds docs search. */
+export async function getDocsArticles(): Promise<DocsArticleLink[]> {
+  return Promise.all(
+    flattenDocsNav().map(async (item) => {
+      const { frontmatter } = await readDocsMarkdown(item.id as DocsPageId)
+      return {
+        id: item.id,
+        title: frontmatter.title ?? item.label,
+        href: item.href,
+        summary: frontmatter.description ?? null,
+        sectionLabel: item.sectionLabel,
+      }
+    }),
+  )
+}
+
+/** Reading time at ~200 words a minute, never under one minute (same as help articles). */
+export function docsReadingMinutes(markdown: string) {
+  const words = markdown
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[#>*_`|[\]()-]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean).length
+  return Math.max(1, Math.round(words / 200))
 }

@@ -11,6 +11,7 @@
     "validate-seo": "bun run scripts/validate-seo.ts"
   },
   "dependencies": {
+    "@featul/editor": "workspace:*",
     "@featul/ui": "workspace:*",
     "@tabler/icons-react": "^3.49.0",
     "@tailwindcss/postcss": "^4.3.3",

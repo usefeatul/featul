@@ -9,7 +9,11 @@
   --marketing-create-band: #202020;
 }
 
-html {
+/*
+ * Smooth only once something has focus (an anchor or TOC click), so the browser restores the
+ * scroll position instantly on refresh instead of gliding there from the top.
+ */
+html:focus-within {
   scroll-behavior: smooth;
 }
 
@@ -20,7 +24,8 @@ html:has([data-component="Wordmark"]) body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
+  html,
+  html:focus-within {
     scroll-behavior: auto;
   }
 }

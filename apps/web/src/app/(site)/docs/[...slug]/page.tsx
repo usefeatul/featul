@@ -1,15 +1,21 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { notFound } from "next/navigation"
+import { ArrowLeft, ArrowRight } from "lucide-react"
+import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo"
 import type { TocItem as TocItemType } from "@/lib/toc"
 import {
   docsSections,
   findDocsNav,
   getDocsNeighbors,
 } from "@/config/docsNav"
-import { readDocsMarkdown, type DocsPageId } from "@/lib/docs"
+import { docsReadingMinutes, getDocsArticles, readDocsMarkdown, type DocsPageId } from "@/lib/docs"
 import { DocsMarkdown, extractDocsToc } from "@/components/docs/markdown"
 import { DocsToc } from "@/components/docs/toc"
-import { DocsPager } from "@/components/docs/pager"
+import { DocsSearch } from "@/components/docs/search"
+import { DocsNavTree } from "@/components/docs/nav-tree"
+import { DocsBreadcrumbs, DocsMobileArticleNav } from "@/components/docs/article-nav"
+import { DocsStillStuck } from "@/components/docs/ask"
 import { createPageMetadata } from "@/lib/seo"
 import { SITE_URL } from "@/config/seo"
 import { buildDocsBreadcrumbSchema } from "@/lib/schema"
@@ -68,16 +74,21 @@ export async function generateMetadata(props: DocsPageProps): Promise<Metadata> 
   })
 }
 
+/** Laid out like a help center article: search and tree on the left, outline and ask card on the right. */
 export default async function DocsPage(props: DocsPageProps) {
   const params = await props.params
   const pathname = resolvePathname(params)
   const nav = findDocsNav(pathname)
   if (!nav) notFound()
 
-  const docs = await readDocsMarkdown(nav.item.id as DocsPageId)
+  const [docs, articles] = await Promise.all([
+    readDocsMarkdown(nav.item.id as DocsPageId),
+    getDocsArticles(),
+  ])
   const tocItems: TocItemType[] = toTocItems(docs.content)
   const pageTitle = docs.frontmatter.title ?? nav.item.label
   const { prev, next } = getDocsNeighbors(pathname)
+  const section = docsSections.find((s) => s.label === nav.sectionLabel)
   const breadcrumbSchema = buildDocsBreadcrumbSchema({
     siteUrl: SITE_URL,
     pathname,
@@ -86,7 +97,7 @@ export default async function DocsPage(props: DocsPageProps) {
   })
 
   return (
-    <div className="flex items-start gap-8">
+    <section className="flex flex-1 flex-col">
       <script
         id="docs-breadcrumb-jsonld"
         type="application/ld+json"
@@ -94,33 +105,90 @@ export default async function DocsPage(props: DocsPageProps) {
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
 
-      <article className="min-w-0 flex-1">
-        <header className="mb-8">
-          <p className="text-xs font-medium uppercase tracking-[0.08em] text-foreground/45">
-            {nav.sectionLabel}
-          </p>
-          <div className="mt-2 flex items-start justify-between gap-4">
-            <h1 className="min-w-0 text-3xl font-semibold tracking-tight text-foreground sm:text-[2.15rem]">
-              {pageTitle}
-            </h1>
-            <div className="shrink-0 pt-1">
-              <DocsPager prev={prev} next={next} />
-            </div>
+      <div className="grid flex-1 grid-cols-1 gap-10 md:grid-cols-[13rem_minmax(0,1fr)] lg:grid-cols-[14rem_minmax(0,1fr)_13rem]">
+        <aside className="hidden md:block">
+          <div data-docs-rail className="sticky top-24 max-h-[calc(100dvh-7rem)] space-y-6 overflow-y-auto pb-6 [scrollbar-width:none]">
+            <DocsSearch articles={articles} size="sm" />
+            <DocsNavTree />
           </div>
+        </aside>
+
+        <article className="min-w-0 max-w-[42rem]">
+          <DocsBreadcrumbs
+            items={[
+              { label: "Docs", href: "/docs" },
+              ...(section?.items[0] ? [{ label: section.label, href: section.items[0].href }] : []),
+              { label: pageTitle },
+            ]}
+          />
+          <h1 className="mt-5 text-[1.75rem] font-semibold leading-tight tracking-tight text-foreground sm:mt-6 sm:text-[2.125rem]">
+            {pageTitle}
+          </h1>
           {docs.frontmatter.description ? (
-            <p className="mt-3 text-lg leading-8 text-foreground/55">
+            <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
               {docs.frontmatter.description}
             </p>
           ) : null}
-        </header>
-        <DocsMarkdown markdown={docs.content} />
-      </article>
+          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
+            <span className="inline-flex items-center gap-2">
+              <span className="flex size-6 items-center justify-center rounded-full bg-muted">
+                <FeatulLogoIcon size={14} />
+              </span>
+              <span className="font-medium text-foreground">Featul</span>
+            </span>
+            <span>{docsReadingMinutes(docs.content)} min read</span>
+          </div>
 
-      <aside className="hidden w-40 shrink-0 xl:block">
-        <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-hide">
-          <DocsToc items={tocItems} />
-        </div>
-      </aside>
-    </div>
+          <DocsMobileArticleNav
+            headings={tocItems}
+            sectionLabel={nav.sectionLabel}
+            siblings={section?.items ?? []}
+            activeHref={pathname}
+          />
+
+          <div className="mb-8 mt-6 border-t border-border/60 dark:border-white/[0.07]" />
+          <DocsMarkdown markdown={docs.content} />
+
+          {prev || next ? (
+            <nav
+              aria-label="More docs"
+              className="mt-12 grid gap-x-10 gap-y-4 border-t border-border/60 pt-8 sm:grid-cols-2 dark:border-white/[0.07]"
+            >
+              {prev ? (
+                <Link href={prev.href} className="group">
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <ArrowLeft aria-hidden className="size-3.5" strokeWidth={1.5} /> Previous
+                  </span>
+                  <span className="mt-1 block truncate text-sm font-medium text-foreground group-hover:text-primary">
+                    {prev.label}
+                  </span>
+                </Link>
+              ) : null}
+              {next ? (
+                <Link href={next.href} className="group text-right sm:col-start-2">
+                  <span className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground">
+                    Next <ArrowRight aria-hidden className="size-3.5" strokeWidth={1.5} />
+                  </span>
+                  <span className="mt-1 block truncate text-sm font-medium text-foreground group-hover:text-primary">
+                    {next.label}
+                  </span>
+                </Link>
+              ) : null}
+            </nav>
+          ) : null}
+
+          <div className="mt-10 lg:hidden">
+            <DocsStillStuck />
+          </div>
+        </article>
+
+        <aside className="hidden lg:block">
+          <div className="sticky top-24 space-y-10">
+            <DocsToc items={tocItems} />
+            <DocsStillStuck />
+          </div>
+        </aside>
+      </div>
+    </section>
   )
 }
