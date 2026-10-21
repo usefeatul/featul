@@ -106,8 +106,9 @@ export default async function DocsPage(props: DocsPageProps) {
       />
 
       <div className="grid flex-1 grid-cols-1 gap-10 md:grid-cols-[13rem_minmax(0,1fr)] lg:grid-cols-[14rem_minmax(0,1fr)_13rem]">
+        {/* Rails stick at the spot they start (10.5rem = site pt-10 + docs sm:pt-32), so only the article moves. */}
         <aside className="hidden md:block">
-          <div data-docs-rail className="sticky top-24 max-h-[calc(100dvh-7rem)] space-y-6 overflow-y-auto pb-6 [scrollbar-width:none]">
+          <div data-docs-rail className="sticky top-42 max-h-[calc(100dvh-10.5rem)] space-y-6 overflow-y-auto pb-6 [scrollbar-width:none]">
             <DocsSearch articles={articles} size="sm" />
             <DocsNavTree />
           </div>
@@ -183,7 +184,7 @@ export default async function DocsPage(props: DocsPageProps) {
         </article>
 
         <aside className="hidden lg:block">
-          <div className="sticky top-24 space-y-10">
+          <div className="sticky top-42 max-h-[calc(100dvh-10.5rem)] space-y-10 overflow-y-auto pb-6">
             <DocsToc items={tocItems} />
             <DocsStillStuck />
           </div>
