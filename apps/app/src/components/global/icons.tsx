@@ -47,7 +47,7 @@ import {
   IconBulbFilled,
   IconThumbDownFilled,
   IconFileTextFilled,
-  IconChartAreaFilled,
+  IconGraphFilled,
   IconEyeFilled,
   type Icon as TablerIcon,
   type IconProps as TablerIconProps,
@@ -197,7 +197,7 @@ export const SparklesIcon = solid(IconSparklesFilled);
 export const BulbIcon = solid(IconBulbFilled);
 export const DislikeIcon = solid(IconThumbDownFilled);
 export const ArticleIcon = solid(IconFileTextFilled);
-export const AnalyticsIcon = solid(IconChartAreaFilled);
+export const AnalyticsIcon = solid(IconGraphFilled);
 export const EyeIcon = solid(IconEyeFilled);
 const LeftPanelIcon = solid(IconLayoutSidebarFilled);
 const RightPanelIcon = solid(IconLayoutSidebarRightFilled);
