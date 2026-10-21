@@ -21,8 +21,9 @@ export default function Security({ initialSessions, twoFactorEnabled, initialAcc
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-8">
+      <div className="grid gap-8 md:grid-cols-2 md:gap-x-4">
         <SettingsCard
+          layout="stacked"
           title="Password"
           description="Change your account password for security."
           buttonLabel="Change password"

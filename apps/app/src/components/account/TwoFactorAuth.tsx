@@ -160,6 +160,7 @@ export default function TwoFactorAuth({ twoFactorEnabled = false, hasPassword = 
     if (!hasPassword && !isEnabled) {
         return (
             <SettingsCard
+                layout="stacked"
                 title="Two-Factor Auth"
                 description="To enable 2FA, first set a password for your account."
                 isConnected={false}
@@ -172,6 +173,7 @@ export default function TwoFactorAuth({ twoFactorEnabled = false, hasPassword = 
     return (
         <>
             <SettingsCard
+                layout="stacked"
                 title="Two-Factor Auth"
                 description="Add an extra layer of security with TOTP authentication."
                 onAction={handleAction}

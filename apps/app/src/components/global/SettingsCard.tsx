@@ -8,7 +8,8 @@ import {
 } from "@/components/settings/global/SectionCard";
 
 type Props = {
-  layout?: "card" | "row";
+  /** `stacked` puts the action under the description, for half-width grid cards. */
+  layout?: "card" | "row" | "stacked";
   icon?: React.ReactNode;
   title: string;
   description: React.ReactNode;
@@ -46,9 +47,12 @@ export default function SettingsCard({
   onTest,
   children,
 }: Props) {
-  const inline = typeof description === "string";
+  const stacked = layout === "stacked";
+  const inline = !stacked && typeof description === "string";
   const controls = (
-    <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
+    <div
+      className={`flex max-w-full flex-wrap items-center gap-2 ${stacked ? "justify-start" : "justify-end"}`}
+    >
       {children ?? (
         <>
           {isConnected && onTest && (
@@ -105,7 +109,7 @@ export default function SettingsCard({
   }
 
   return (
-    <section className={settingsSectionClass}>
+    <section className={`${settingsSectionClass} ${stacked ? "h-full" : ""}`}>
       <header className={settingsSurfaceHeaderClass}>
         <div className="flex min-w-0 items-center gap-2.5">
           {icon ? (
@@ -122,10 +126,19 @@ export default function SettingsCard({
             </span>
           )}
         </div>
-        {!inline && controls}
+        {!inline && !stacked && controls}
       </header>
-      <div className={settingsSurfaceClass}>
-        {inline ? (
+      <div
+        className={`${settingsSurfaceClass} ${stacked ? "flex flex-1 flex-col gap-4" : ""}`}
+      >
+        {stacked ? (
+          <>
+            <div className="text-sm leading-relaxed text-muted-foreground wrap-break-word">
+              {description}
+            </div>
+            <div className="mt-auto">{controls}</div>
+          </>
+        ) : inline ? (
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <div className="min-w-0 flex-1 text-sm leading-relaxed text-muted-foreground wrap-break-word">
               {description}
