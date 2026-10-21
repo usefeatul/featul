@@ -4,12 +4,13 @@ import React from "react"
 import { AnimatePresence, animate, motion } from "framer-motion"
 import { Button } from "@featul/ui/components/button"
 import { StarIcon } from "@featul/ui/icons/star"
-import { overlayRibbonInnerClass, overlayRibbonShellClass } from "@featul/ui/lib/overlay"
-import { cn } from "@featul/ui/lib/utils"
 import {
-  OverlayCard,
-  OverlayCardPanel,
-} from "@/components/shared/overlay-card"
+  modalCardInnerClass,
+  modalCardShellClass,
+  overlayRibbonInnerClass,
+  overlayRibbonShellClass,
+} from "@featul/ui/lib/overlay"
+import { cn } from "@featul/ui/lib/utils"
 import { SegmentedControl } from "@featul/ui/components/segmented-control"
 import type { PixelColor } from "@/components/dither-kit/pixel"
 import { SubtleDitherWash } from "@/components/home/visual-well"
@@ -139,11 +140,18 @@ function PricingPlanCard({
         : `£${plan.monthlyPrice} / mo`
 
   return (
-    <OverlayCard className="relative">
-      <OverlayCardPanel className="relative flex flex-1 flex-col overflow-hidden px-5 py-5">
+    <section className={cn(modalCardShellClass, "flex h-full min-w-0 flex-col")}>
+      <header className="flex items-center justify-between gap-3 px-2.5 py-1.5">
+        <h3 className="text-sm font-medium leading-6 text-foreground">{plan.name}</h3>
+        <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-foreground/60">
+          {billingCycle === "yearly" ? "Yearly" : "Monthly"}
+        </span>
+      </header>
+
+      <div className={cn(modalCardInnerClass, "relative flex min-w-0 flex-1 flex-col")}>
         {ribbon ? <PricingPlanRibbon label={ribbon.label} tone={ribbon.tone} /> : null}
 
-        <div className="relative -mx-5 -mt-5 overflow-hidden px-5 pb-5 pt-5">
+        <div className="relative overflow-hidden px-5 py-5">
           <SubtleDitherWash
             color={PLAN_WASH[planKey]}
             direction="down"
@@ -151,16 +159,7 @@ function PricingPlanCard({
             opacity={0.9}
             className="[mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_100%)]"
           />
-          <div className="relative z-10 flex items-center justify-between gap-3">
-            <div className="font-heading text-2xl font-light leading-none text-foreground">
-              {plan.name}
-            </div>
-            <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-foreground/70">
-              {billingCycle === "yearly" ? "Yearly" : "Monthly"}
-            </span>
-          </div>
-
-          <div className="relative z-10 mt-4 flex items-baseline text-4xl font-light tracking-tight text-foreground">
+          <div className="relative z-10 flex items-baseline text-4xl font-light tracking-tight text-foreground">
             <AnimatedPrice
               value={billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice}
             />
@@ -177,9 +176,10 @@ function PricingPlanCard({
               </motion.span>
             </AnimatePresence>
           </div>
+          <p className="relative z-10 mt-2 text-sm text-foreground/80">{plan.note}</p>
         </div>
 
-        <dl className="relative z-10 -mx-5 space-y-2.5 border-t border-foreground/10 bg-background px-5 pt-4 text-sm font-extralight">
+        <dl className="space-y-2.5 border-t border-border/40 px-5 py-4 text-sm font-extralight">
           {plan.highlights.map((item) => (
             <div key={item.label} className="flex items-baseline justify-between gap-3">
               <dt className="text-foreground">{item.label}</dt>
@@ -196,7 +196,7 @@ function PricingPlanCard({
           </div>
         </dl>
 
-        <ul className="relative z-10 mt-4 -mx-5 flex-1 space-y-2 border-t border-foreground/10 bg-background px-5 pt-4 text-sm font-normal text-foreground">
+        <ul className="flex-1 space-y-2 border-t border-border/40 px-5 py-4 text-sm font-normal text-foreground">
           {plan.features.map((feature) => (
             <li key={feature.title} className="flex items-start gap-2 leading-relaxed">
               <span className="mt-px select-none text-foreground/50" aria-hidden>
@@ -207,23 +207,22 @@ function PricingPlanCard({
           ))}
         </ul>
 
-        <div className="relative z-10 mt-5 bg-background">
+        <div className="px-5 pb-5">
           <Button asChild variant={buttonVariant} className={buttonClassName}>
             <Link href={plan.href}>{ctaLabel}</Link>
           </Button>
-          <p className="mt-2 text-center text-xs font-extralight text-foreground/65">
-            {planKey !== "free" && billingCycle === "yearly"
-              ? "2 months free. Billed annually. Cancel anytime."
-              : plan.finePrint}
-          </p>
-          {plan.trialDays ? (
-            <p className="mt-2 text-center text-xs font-extralight text-foreground/65">
-              One trial per account. No credit card required.
-            </p>
-          ) : null}
         </div>
-      </OverlayCardPanel>
-    </OverlayCard>
+      </div>
+
+      <footer className="flex min-h-13 flex-col justify-center gap-0.5 px-2.5 py-2 text-center text-xs font-extralight text-foreground/65">
+        <p>
+          {planKey !== "free" && billingCycle === "yearly"
+            ? "2 months free. Billed annually. Cancel anytime."
+            : plan.finePrint}
+        </p>
+        {plan.trialDays ? <p>One trial per account. No credit card required.</p> : null}
+      </footer>
+    </section>
   )
 }
 
