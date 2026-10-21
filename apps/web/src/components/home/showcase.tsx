@@ -16,7 +16,7 @@ import {
   MarketingContainer,
   MarketingRail,
 } from "@/components/layout/container";
-import dashboard from "../../../public/image/dashboard.png";
+import feedback from "../../../public/image/feedback.png";
 import roadmap from "../../../public/image/roadmap.png";
 import changelog from "../../../public/image/changelog.png";
 import helpCenter from "../../../public/image/help-center.png";
@@ -31,7 +31,7 @@ const previews = [
     label: "Feedback",
     icon: BoardIcon,
     iconColor: "#4189e2",
-    image: dashboard,
+    image: feedback,
     alt: "Featul feedback workspace with customer requests, votes, comments, and statuses",
   },
   {
@@ -151,7 +151,7 @@ export function Showcase() {
                   initial={reduceMotion ? false : { opacity: 0.85 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: reduceMotion ? 0 : 0.2, ease: "easeOut" }}
-                  className="aspect-[16/10] overflow-hidden rounded-lg"
+                  className="aspect-[4/3] overflow-hidden rounded-lg"
                 >
                   <Image
                     src={preview.image}
