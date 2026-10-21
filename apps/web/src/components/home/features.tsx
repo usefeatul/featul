@@ -4,6 +4,8 @@ import {
   MarketingContainer,
   marketingRailClass,
 } from "@/components/layout/container";
+import { selectorSurfaceClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { BentoCard as FeatureCard } from "./bento";
 import { PortalPreview, WidgetPreview } from "./previews";
 import {
@@ -33,7 +35,13 @@ export default function FeaturesSection() {
             </p>
           </div>
 
-          <div className="mt-9 grid items-stretch gap-3 rounded-2xl border border-border/70 bg-muted/35 p-2 shadow-[0_2px_8px_rgba(0,0,0,0.03)] sm:mt-12 sm:p-3 md:grid-cols-2">
+          <div
+            className={cn(
+              selectorSurfaceClass,
+              // Raised like a button, toned for a large frame behind white cards.
+              "mt-9 grid items-stretch gap-3 rounded-2xl from-[color-mix(in_oklab,var(--background),var(--foreground)_2%)] to-[color-mix(in_oklab,var(--background),var(--foreground)_4%)] p-2 supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*4)] sm:mt-12 sm:p-3 md:grid-cols-2",
+            )}
+          >
             <FeatureCard
               tone="blue"
               title="A feedback space that feels like you."

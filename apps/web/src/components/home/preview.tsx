@@ -2,10 +2,6 @@
 
 import { useState, type ReactNode } from "react";
 import { UpvoteIcon, CommentsIcon } from "@/components/global/icons";
-import {
-  modalCardInnerClass,
-  modalCardShellClass,
-} from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
 export const previewControl =
@@ -27,19 +23,11 @@ export function Preview({
       aria-label={label}
       data-preview
       className={cn(
-        modalCardShellClass,
-        "w-full min-w-0 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_4px_16px_-6px_rgba(0,0,0,0.16)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_16px_-6px_rgba(0,0,0,0.4)]",
+        "w-full min-w-0 overflow-hidden rounded-xl border border-border bg-card text-foreground shadow-[0_4px_16px_-6px_rgba(0,0,0,0.16)]",
+        className,
       )}
     >
-      <div
-        aria-hidden
-        className="px-2.5 py-1 text-[11px] font-medium leading-5 text-foreground/80"
-      >
-        {label}
-      </div>
-      <div className={cn(modalCardInnerClass, "min-w-0", className)}>
-        {children}
-      </div>
+      {children}
     </div>
   );
 }
