@@ -31,6 +31,7 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
         description: "Public feedback portal",
       },
       { title: "Roadmap and changelog", description: "Roadmap and changelog" },
+      { title: "Help center", description: "Help center" },
       { title: "In-app widget", description: "In-app widget" },
       { title: "Voting and comments", description: "Voting and comments" },
       { title: "File attachments", description: "File attachments" },
@@ -56,6 +57,14 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
         description: "Hide Powered by Featul",
       },
       {
+        title: "Help articles in widget",
+        description: "Help articles in widget",
+      },
+      {
+        title: "Help center analytics",
+        description: "Help center analytics",
+      },
+      {
         title: "Slack and Discord alerts",
         description: "Slack and Discord alerts",
       },
@@ -74,19 +83,21 @@ export const BILLING_PLANS: Record<PlanKey, PlanOption> = {
     trialDays: 14,
     features: [
       { title: "Everything in Starter", description: "Everything in Starter" },
-      { title: "Custom domain", description: "Custom domain" },
-      { title: "Branding controls", description: "Branding controls" },
       {
-        title: "Hide Powered by Featul",
-        description: "Hide Powered by Featul",
+        title: "Unlimited help collections and articles",
+        description: "Unlimited help collections and articles",
       },
       {
-        title: "Slack and Discord alerts",
-        description: "Slack and Discord alerts",
+        title: "Ask AI answers on your help center",
+        description: "Ask AI answers on your help center",
       },
       {
-        title: "Canny, Nolt, and ProductBoard import",
-        description: "Canny, Nolt, and ProductBoard import",
+        title: "Help search insights and content gaps",
+        description: "Help search insights and content gaps",
+      },
+      {
+        title: "More website article drafts",
+        description: "More website article drafts",
       },
     ],
   },
@@ -128,5 +139,6 @@ export function getPlanHighlights(plan: PlanKey) {
     { label: "Boards", value: value(limits.maxNonSystemBoards) },
     { label: "Changelog entries", value: value(limits.maxChangelogEntries) },
     { label: "Tags", value: value(limits.maxTags) },
+    { label: "Help articles", value: value(limits.maxHelpArticles) },
   ];
 }
