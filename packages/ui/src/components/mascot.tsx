@@ -6,16 +6,11 @@ import {
   mascotArt,
   type MascotMood,
   type MascotTone,
-  type MascotVariant,
 } from "../lib/mascot";
 
-export type { MascotMood, MascotVariant } from "../lib/mascot";
-
-/** The variant used everywhere unless a surface asks for another. */
-export const DEFAULT_MASCOT: MascotVariant = "tully";
+export type { MascotMood } from "../lib/mascot";
 
 export type MascotProps = {
-  variant?: MascotVariant;
   mood?: MascotMood;
   /** Rendered width and height in CSS pixels. Multiples of 32 stay pixel-perfect. */
   size?: number;
@@ -27,29 +22,27 @@ export type MascotProps = {
 
 function toneFill(color: string): Record<MascotTone, string> {
   return {
+    face: `color-mix(in oklab, ${color} 6%, #fff1e2)`,
     shade: `color-mix(in oklab, ${color} 62%, black)`,
     base: color,
     light: `color-mix(in oklab, ${color} 48%, white)`,
     blush: "rgb(255 170 220)",
-    face: `color-mix(in oklab, ${color} 6%, #fff1e2)`,
     ink: `color-mix(in oklab, ${color} 30%, #0b0b12)`,
     spark: "#ffffff",
-    mark: "currentColor",
-    shadow: "currentColor",
   };
 }
 
-const BODY: MascotTone[] = ["face", "shade", "base", "light", "blush", "ink", "spark"];
+const TONES: MascotTone[] = ["face", "shade", "base", "light", "blush", "ink", "spark"];
 
+/** Tully, the empty-state mascot. */
 export function Mascot({
-  variant = DEFAULT_MASCOT,
   mood = "idle",
   size = 64,
   color = "var(--primary)",
   animated = true,
   className,
 }: MascotProps) {
-  const art = mascotArt(variant, mood);
+  const art = mascotArt(mood);
   const fill = toneFill(color);
   const style: CSSProperties = { width: size, height: size };
 
@@ -66,9 +59,8 @@ export function Mascot({
       data-mood={mood}
       style={style}
     >
-      <path className="featul-mascot__shadow" d={art.layers.shadow} style={{ fill: fill.shadow, opacity: 0.35 }} />
       <g className="featul-mascot__body">
-        {BODY.map((tone) =>
+        {TONES.map((tone) =>
           art.layers[tone] ? <path key={tone} d={art.layers[tone]} style={{ fill: fill[tone] }} /> : null,
         )}
         <g className="featul-mascot__eyes">
@@ -77,7 +69,7 @@ export function Mascot({
         </g>
         <path d={art.mouth} style={{ fill: "#16161d" }} />
       </g>
-      {art.marks ? <path className="featul-mascot__marks" d={art.marks} style={{ fill: fill.mark }} /> : null}
+      {art.marks ? <path className="featul-mascot__marks" d={art.marks} style={{ fill: "currentColor" }} /> : null}
     </svg>
   );
 }

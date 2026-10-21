@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
+import { Mascot } from "@featul/ui/components/mascot";
 import { FeatulLogoIcon } from "@/components/global/icons";
 
 type NotFoundSceneProps = {
@@ -36,6 +37,7 @@ export default function NotFoundScene({ defaultHref }: NotFoundSceneProps) {
 
       <div className="relative z-10 flex min-h-full items-center justify-center px-4 sm:px-6">
         <div className="w-full max-w-md text-center text-foreground">
+          <Mascot size={128} mood="search" className="mx-auto mb-6" />
           <p className="font-heading text-6xl font-semibold tracking-tight sm:text-7xl">
             404
           </p>

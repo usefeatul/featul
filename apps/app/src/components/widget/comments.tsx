@@ -150,7 +150,7 @@ export function Comments({
           ))
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center px-4 py-8 text-center text-sm text-[rgb(var(--widget-fg)/0.45)]">
-            <Mascot size={48} color="var(--widget-accent)" className="mb-2 text-[rgb(var(--widget-fg)/0.35)]" />
+            <Mascot size={64} color="var(--widget-accent)" className="mb-2 text-[rgb(var(--widget-fg)/0.35)]" />
             No comments yet. Start the conversation.
           </div>
         )}

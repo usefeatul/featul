@@ -24,7 +24,7 @@ export function WidgetEmpty({
     >
       <Mascot
         mood={mood}
-        size={compact ? 48 : 64}
+        size={64}
         color="var(--widget-accent)"
         className={`text-[rgb(var(--widget-fg)/0.35)] ${compact ? "mb-2" : "mb-3"}`}
       />

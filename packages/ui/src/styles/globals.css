@@ -40,12 +40,6 @@
     animation: featul-mascot-bob 2.4s steps(1, end) infinite;
   }
 
-  .featul-mascot--animated .featul-mascot__shadow {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: featul-mascot-shadow 2.4s steps(1, end) infinite;
-  }
-
   .featul-mascot--animated .featul-mascot__eyes {
     transform-box: fill-box;
     transform-origin: center;
@@ -66,11 +60,6 @@
   50% { transform: translateY(-1px); }
 }
 
-@keyframes featul-mascot-shadow {
-  0% { transform: scaleX(1); }
-  50% { transform: scaleX(0.9); }
-}
-
 @keyframes featul-mascot-blink {
   0% { transform: scaleY(1); }
   94% { transform: scaleY(0.34); }
@@ -84,7 +73,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .featul-mascot--animated .featul-mascot__body,
-  .featul-mascot--animated .featul-mascot__shadow,
   .featul-mascot--animated .featul-mascot__eyes,
   .featul-mascot--animated .featul-mascot__marks {
     animation: none;
