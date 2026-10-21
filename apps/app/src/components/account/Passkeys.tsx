@@ -2,10 +2,10 @@
 
 import React from "react";
 import SettingsCard from "@/components/global/SettingsCard";
+import { FingerprintIcon } from "@/components/global/icons";
 import { authClient } from "@featul/auth/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { FingerprintIcon } from "@/components/global/icons";
 
 export type PasskeyItem = {
   id: string;
@@ -85,11 +85,12 @@ export default function Passkeys({
   return (
     <SettingsCard
       layout="row"
+      icon={<FingerprintIcon className="size-5 text-primary" />}
       title="Passkey"
       description="Use your fingerprint, face, or device PIN to sign in."
-      icon={<FingerprintIcon className="size-5 text-primary" />}
       onAction={hasPasskeys ? onDisconnect : onAddPasskey}
       buttonLabel={hasPasskeys ? "Disconnect" : "Connect"}
+      buttonVariant={hasPasskeys ? "destructive" : "default"}
       isConnected={!!hasPasskeys}
       isLoading={loading}
       disabled={loading}

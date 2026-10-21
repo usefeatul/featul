@@ -1,6 +1,5 @@
 import {
   AccountIcon as WorkspaceAccountIcon,
-  AppearanceIcon as WorkspaceAppearanceIcon,
   ArchiveIcon as WorkspaceArchiveIcon,
   BillingIcon as WorkspaceBillingIcon,
   BoardIcon as WorkspaceBoardIcon,
@@ -14,7 +13,6 @@ import {
   IntegrationIcon as WorkspaceIntegrationIcon,
   MemberIcon as WorkspaceMembersIcon,
   RoadmapIcon as WorkspaceRoadmapIcon,
-  ShieldIcon as WorkspaceSecurityIcon,
   SettingIcon as WorkspaceSettingsIcon,
   ShareIcon,
   PlannedIcon,
@@ -27,7 +25,6 @@ import {
 
 import type { NavItem } from "../types/nav";
 import { SECTIONS } from "./sections";
-import { ACCOUNT_SECTIONS } from "./account/sections";
 
 /** Path under `/workspaces/{slug}`. Empty slug uses `/workspaces{p}`. */
 function w(slug: string, p: string) {
@@ -56,13 +53,6 @@ export function isWorkspaceSettingsPath(pathname: string) {
   const parts = pathname.split("/").filter(Boolean);
   const idx = parts.indexOf("workspaces");
   return idx >= 0 && parts[idx + 2] === "settings";
-}
-
-/** True when the path is `/workspaces/{slug}/account…`. */
-export function isWorkspaceAccountPath(pathname: string) {
-  const parts = pathname.split("/").filter(Boolean);
-  const idx = parts.indexOf("workspaces");
-  return idx >= 0 && parts[idx + 2] === "account";
 }
 
 /** Status-filtered request links for the top nav. */
@@ -128,6 +118,7 @@ export function buildBottomNav(): NavItem[] {
 }
 
 const SETTINGS_ICONS: Record<string, NavItem["icon"]> = {
+  account: WorkspaceAccountIcon,
   branding: WorkspaceImageIcon,
   team: WorkspaceMembersIcon,
   feedback: WorkspaceFeedbackIcon,
@@ -156,39 +147,12 @@ export function buildSettingsNavGroups(
   slug: string,
 ): { title: string; items: NavItem[] }[] {
   const items = buildSettingsNav(slug);
-  return [
-    {
-      title: "Personal",
-      items: [
-        {
-          label: "Account",
-          href: w(slug, "/account/profile"),
-          icon: WorkspaceAccountIcon,
-          match: w(slug, "/account"),
-        },
-      ],
-    },
-    ...(["Workspace", "Product", "Connections"] as const).map((title) => ({
+  return (["Personal", "Workspace", "Product", "Connections"] as const).map(
+    (title) => ({
       title,
       items: items.filter((_, index) => SECTIONS[index]?.group === title),
-    })),
-  ];
-}
-
-const ACCOUNT_ICONS: Record<string, NavItem["icon"]> = {
-  profile: WorkspaceAccountIcon,
-  security: WorkspaceSecurityIcon,
-  appearance: WorkspaceAppearanceIcon,
-};
-
-/** Account sidebar from `ACCOUNT_SECTIONS`. `replace` avoids stacking history. */
-export function buildAccountNav(slug: string): NavItem[] {
-  return ACCOUNT_SECTIONS.map((section) => ({
-    label: section.label,
-    href: w(slug, `/account/${section.value}`),
-    icon: ACCOUNT_ICONS[section.value] || WorkspaceAccountIcon,
-    replace: true,
-  }));
+    }),
+  );
 }
 
 /** `/workspaces/{slug}` with no extra path. */

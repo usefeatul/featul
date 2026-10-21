@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
 import { client } from "@featul/api/client"
 import SettingsCard from "@/components/global/SettingsCard"
-import { CloudIcon, LoaderIcon } from "@/components/global/icons";
+import { LoaderIcon } from "@/components/global/icons";
 import { Button } from "@featul/ui/components/button"
 
 import type { SessionItem } from "@/types/session"
@@ -148,7 +148,6 @@ export default function ActiveSessions({ initialSessions }: { initialSessions?: 
                     )}
                 </div>
             }
-            icon={<CloudIcon className="size-5 text-primary" />}
             buttonLabel="Sign out all other devices"
             buttonVariant="destructive"
             onAction={onSignOutAll}

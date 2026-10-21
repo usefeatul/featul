@@ -1,7 +1,6 @@
 "use client";
 
 import OAuthConnections from "./OAuthConnections";
-import DeleteAccount from "./DeleteAccount";
 import AvatarUpload from "./AvatarUpload";
 import AccountDetails from "./AccountDetails";
 import Passkeys, { type PasskeyItem } from "./Passkeys";
@@ -32,7 +31,6 @@ export default function Profile({
           <OAuthConnections initialAccounts={initialAccounts} />
         </div>
       </SectionCard>
-      <DeleteAccount />
     </div>
   );
 }

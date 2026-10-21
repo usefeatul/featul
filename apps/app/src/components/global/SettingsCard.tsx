@@ -9,7 +9,7 @@ import {
 
 type Props = {
   layout?: "card" | "row";
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   title: string;
   description: React.ReactNode;
   buttonLabel?: string;
@@ -108,9 +108,11 @@ export default function SettingsCard({
     <section className={settingsSectionClass}>
       <header className={settingsSurfaceHeaderClass}>
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex size-4 shrink-0 items-center justify-center [&_svg]:size-4">
-            {icon}
-          </div>
+          {icon ? (
+            <div className="flex size-4 shrink-0 items-center justify-center [&_svg]:size-4">
+              {icon}
+            </div>
+          ) : null}
           <h2 className="text-sm font-medium leading-6 text-foreground">
             {title}
           </h2>

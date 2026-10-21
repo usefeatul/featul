@@ -6,7 +6,6 @@ import SettingsCard from "@/components/global/SettingsCard"
 import { authClient } from "@featul/auth/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { ShieldIcon } from "@/components/global/icons"
 import { EnableTwoFactorDialog, DisableTwoFactorDialog, BackupCodesDialog } from "./twofactor"
 
 type TwoFactorAuthProps = {
@@ -163,7 +162,6 @@ export default function TwoFactorAuth({ twoFactorEnabled = false, hasPassword = 
             <SettingsCard
                 title="Two-Factor Auth"
                 description="To enable 2FA, first set a password for your account."
-                icon={<ShieldIcon className="size-5 text-primary" opacity={1} />}
                 isConnected={false}
                 buttonLabel="Set Password"
                 onAction={() => window.location.href = `/auth/setpassword?redirect=${encodeURIComponent(pathname)}`}
@@ -176,7 +174,6 @@ export default function TwoFactorAuth({ twoFactorEnabled = false, hasPassword = 
             <SettingsCard
                 title="Two-Factor Auth"
                 description="Add an extra layer of security with TOTP authentication."
-                icon={<ShieldIcon className="size-5 text-primary" opacity={1} />}
                 onAction={handleAction}
                 buttonLabel={isEnabled ? "Disable" : "Enable"}
                 buttonVariant="card"

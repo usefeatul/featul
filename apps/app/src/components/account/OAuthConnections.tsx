@@ -171,6 +171,7 @@ export default function OAuthConnections({
             description={provider.description}
             isConnected={!!connected}
             buttonLabel={connected ? "Disconnect" : "Connect"}
+            buttonVariant={connected ? "destructive" : "default"}
             onAction={() =>
               connected
                 ? handleDisconnect(provider.id)

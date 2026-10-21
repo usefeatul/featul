@@ -6,11 +6,9 @@ import { cn } from "@featul/ui/lib/utils";
 import { Drawer } from "@featul/ui/components/drawer";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import {
-  buildAccountNav,
   buildBottomNav,
   buildSettingsNav,
   getSlugFromPath,
-  isWorkspaceAccountPath,
   isWorkspaceSettingsPath,
 } from "../../config/nav";
 import MobileBottomBar from "./MobileBottomBar";
@@ -69,9 +67,7 @@ export default function MobileSidebar({
     ...buildBottomNav(),
   ];
   const settingsNav = React.useMemo(() => buildSettingsNav(slug), [slug]);
-  const accountNav = React.useMemo(() => buildAccountNav(slug), [slug]);
   const isSettings = isWorkspaceSettingsPath(pathname);
-  const isAccount = isWorkspaceAccountPath(pathname);
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -81,9 +77,7 @@ export default function MobileSidebar({
           items={
             isSettings
               ? settingsNav
-              : isAccount
-                ? accountNav
-                : middleNav.filter((item) => item.label !== "My Board")
+              : middleNav.filter((item) => item.label !== "My Board")
           }
         />
         <MobileDrawerContent

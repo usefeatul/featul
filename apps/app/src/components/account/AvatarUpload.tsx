@@ -17,7 +17,6 @@ import {
   getImageUploadValidationError,
 } from "@/hooks/useSignedUpload";
 import { Button } from "@featul/ui/components/button";
-import { AvatarIcon } from "@/components/global/icons";
 import { updateAccountUserInCache } from "./cache";
 import { accountQueryKeys } from "./keys";
 
@@ -157,7 +156,6 @@ export default function AvatarUpload({ initialUser }: AvatarUploadProps) {
       layout="row"
       title="Avatar"
       description="This is your public display avatar."
-      icon={<AvatarIcon className="size-5 text-primary" />}
     >
       <div className="flex items-center gap-2">
         <Button

@@ -22,12 +22,10 @@ import WorkspaceNotificationsAction from "@/components/global/WorkspaceNotificat
 
 import {
   getSlugFromPath,
-  isWorkspaceAccountPath,
   isWorkspaceSettingsPath,
   workspaceBase,
 } from "../../config/nav";
 import SettingsNav from "@/components/settings/global/SettingsNav";
-import AccountNav from "@/components/account/AccountNav";
 
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
 import { CreatePostModal } from "../post/CreatePostModal";
@@ -81,7 +79,6 @@ export default function MobileDrawerContent({
   const [createPostOpen, setCreatePostOpen] = React.useState(false);
   const slug = getSlugFromPath(pathname);
   const isSettings = isWorkspaceSettingsPath(pathname);
-  const isAccount = isWorkspaceAccountPath(pathname);
   const statusKey = (label: string) => {
     return label.trim().toLowerCase();
   };
@@ -140,10 +137,8 @@ export default function MobileDrawerContent({
           />
         </div>
 
-        {isSettings || isAccount ? (
-          <LayoutGroup
-            id={isSettings ? "mobile-settings-nav" : "mobile-account-nav"}
-          >
+        {isSettings ? (
+          <LayoutGroup id="mobile-settings-nav">
             <SidebarSection>
               <SidebarItem
                 item={{
@@ -158,15 +153,8 @@ export default function MobileDrawerContent({
                 onClick={onLinkClick}
               />
             </SidebarSection>
-            <SidebarSection
-              title={isSettings ? undefined : "Account"}
-              className="mt-4"
-            >
-              {isSettings ? (
-                <SettingsNav onLinkClick={onLinkClick} />
-              ) : (
-                <AccountNav onLinkClick={onLinkClick} />
-              )}
+            <SidebarSection className="mt-4">
+              <SettingsNav onLinkClick={onLinkClick} />
             </SidebarSection>
           </LayoutGroup>
         ) : (

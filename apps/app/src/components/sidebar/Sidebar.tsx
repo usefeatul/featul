@@ -6,7 +6,6 @@ import { cn } from "@featul/ui/lib/utils";
 import {
   buildBottomNav,
   getSlugFromPath,
-  isWorkspaceAccountPath,
   isWorkspaceSettingsPath,
   workspaceBase,
 } from "@/config/nav";
@@ -22,7 +21,6 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import SettingsNav from "@/components/settings/global/SettingsNav";
-import AccountNav from "@/components/account/AccountNav";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
@@ -85,9 +83,8 @@ export default function Sidebar({
   const pathname = usePathname();
   const slug = getSlugFromPath(pathname);
   const isSettings = isWorkspaceSettingsPath(pathname);
-  const isAccount = isWorkspaceAccountPath(pathname);
   const reduceMotion = useReducedMotion();
-  const navView = isSettings ? "settings" : isAccount ? "account" : "workspace";
+  const navView = isSettings ? "settings" : "workspace";
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
     slug,
     initialWorkspace || null,
@@ -196,11 +193,7 @@ export default function Sidebar({
         </div>
         <nav
           aria-label={
-            isSettings
-              ? "Workspace settings"
-              : isAccount
-                ? "Account settings"
-                : "Workspace navigation"
+            isSettings ? "Workspace settings" : "Workspace navigation"
           }
           className="relative flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto scrollbar-hide"
         >
@@ -214,7 +207,7 @@ export default function Sidebar({
                 exit={{ opacity: 0 }}
                 transition={{ duration: reduceMotion ? 0 : 0.12 }}
               >
-                {isSettings || isAccount ? (
+                {isSettings ? (
                   <>
                     <SidebarSection collapsed={collapsed}>
                       <SidebarItem
@@ -231,21 +224,11 @@ export default function Sidebar({
                         onClick={revealNavigation}
                       />
                     </SidebarSection>
-                    <SidebarSection
-                      title={isSettings ? undefined : "Account"}
-                      collapsed={collapsed}
-                    >
-                      {isSettings ? (
-                        <SettingsNav
-                          collapsed={collapsed}
-                          onLinkClick={revealNavigation}
-                        />
-                      ) : (
-                        <AccountNav
-                          collapsed={collapsed}
-                          onLinkClick={revealNavigation}
-                        />
-                      )}
+                    <SidebarSection collapsed={collapsed}>
+                      <SettingsNav
+                        collapsed={collapsed}
+                        onLinkClick={revealNavigation}
+                      />
                     </SidebarSection>
                   </>
                 ) : (
@@ -299,7 +282,7 @@ export default function Sidebar({
                 )}
               </motion.div>
             </AnimatePresence>
-            {!isSettings && !isAccount && unpinnedWorkspaceNav.length > 0 ? (
+            {!isSettings && unpinnedWorkspaceNav.length > 0 ? (
               <SidebarSection title="Workspace" collapsed={collapsed} className="shrink-0">
                 {unpinnedWorkspaceNav.map((item) => (
                   <SidebarItem

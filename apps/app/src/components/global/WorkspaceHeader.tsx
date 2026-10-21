@@ -8,7 +8,6 @@ import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { Switch } from "@featul/ui/components/switch";
 import { ChevronLeftIcon, Plus } from "@/components/global/icons";
 import { SECTIONS, WORKSPACE_TITLES, getSectionMeta } from "@/config/sections";
-import { getAccountSectionMeta } from "@/config/account/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
 import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
 import RoadmapHeaderActions from "@/components/roadmap/RoadmapHeaderActions";
@@ -116,12 +115,8 @@ export default function WorkspaceHeader({
   const isMembersSection = rest[0] === "members";
   const isMemberDetail = isMembersSection && rest.length > 1;
   const isSettingsSection = rest[0] === "settings";
-  const isAccountSection = rest[0] === "account";
   const settingsMeta = isSettingsSection
     ? getSectionMeta(rest[1] || "branding")
-    : null;
-  const accountMeta = isAccountSection
-    ? getAccountSectionMeta(rest[1] || "profile")
     : null;
   const editorContext = useEditorHeaderActionsOptional();
   const actions = editorActions ?? editorContext?.actions ?? [];
@@ -131,8 +126,6 @@ export default function WorkspaceHeader({
   let title = rest.length === 0 ? "Requests" : "";
   if (isSettingsSection) {
     title = settingsMeta?.label || "Settings";
-  } else if (isAccountSection) {
-    title = accountMeta?.label || "Account";
   } else if (rest.length > 0) {
     const t = resolveTitle(rest[0] ?? "");
     title = t || "";
@@ -329,9 +322,9 @@ export default function WorkspaceHeader({
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
               {title}
             </h1>
-            {settingsMeta?.desc || accountMeta?.desc ? (
+            {settingsMeta?.desc ? (
               <p className="mt-2 text-sm text-accent">
-                {settingsMeta?.desc || accountMeta?.desc}
+                {settingsMeta?.desc}
               </p>
             ) : null}
           </div>
@@ -341,7 +334,7 @@ export default function WorkspaceHeader({
             className={cn(
               "flex min-h-11 flex-wrap items-center justify-between gap-2 pb-2",
               !showPageHeading && "mb-5",
-              (isSettingsSection || isAccountSection) &&
+              isSettingsSection &&
                 "mx-auto w-full max-w-4xl",
             )}
           >
@@ -349,7 +342,7 @@ export default function WorkspaceHeader({
               <FilterDynamicIsland />
             ) : (
               <span className="text-sm text-accent">
-                {settingsMeta?.desc || accountMeta?.desc || title}
+                {settingsMeta?.desc || title}
               </span>
             )}
             {showPageHeading ? pageActions : null}
