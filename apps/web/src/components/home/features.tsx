@@ -33,7 +33,7 @@ export default function FeaturesSection() {
             </p>
           </div>
 
-          <div className="mt-9 grid items-stretch gap-3 rounded-2xl border border-border/70 bg-muted/35 p-2 shadow-[0_2px_8px_rgba(0,0,0,0.03)] sm:mt-12 sm:p-3 md:grid-cols-2">
+          <div className="mt-9 grid items-stretch gap-3 sm:mt-12 md:grid-cols-2">
             <FeatureCard
               tone="blue"
               title="A feedback space that feels like you."

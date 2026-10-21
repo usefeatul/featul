@@ -4,6 +4,11 @@ import {
   ChangelogIcon,
 } from "@/components/global/icons";
 import {
+  modalCardInnerClass,
+  modalCardShellClass,
+} from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
+import {
   MarketingContainer,
   MarketingRail,
 } from "@/components/layout/container";
@@ -46,22 +51,27 @@ export function ConversionHero() {
               workflow, from their first idea to your latest release.
             </p>
           </div>
-          <div className="mt-9 grid divide-y divide-border rounded-xl border border-border bg-card sm:mt-12 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div className="mt-9 grid gap-3 sm:mt-12 sm:grid-cols-3">
             {steps.map(({ number, icon: Icon, label, title, body }) => (
-              <article key={number} className="p-6 sm:p-7">
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground">
+              <article
+                key={number}
+                className={cn(modalCardShellClass, "flex min-w-0 flex-col")}
+              >
+                <header className="flex items-center justify-between gap-3 px-2.5 py-1.5">
+                  <span className="inline-flex items-center gap-2 text-sm font-medium leading-6 text-foreground">
                     <Icon aria-hidden className="size-4" />
                     {label}
                   </span>
                   <span className="font-mono text-xs text-accent/60">
                     {number}
                   </span>
+                </header>
+                <div className={cn(modalCardInnerClass, "flex-1 px-5 py-4")}>
+                  <h3 className="font-heading text-base font-medium text-foreground">
+                    {title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-accent">{body}</p>
                 </div>
-                <h3 className="mt-6 font-heading text-base font-medium text-foreground">
-                  {title}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-accent">{body}</p>
               </article>
             ))}
           </div>
