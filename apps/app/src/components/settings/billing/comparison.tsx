@@ -6,7 +6,9 @@ import {
   type DitherGradientProps,
 } from "@featul/ui/components/gradient";
 import Counter from "./counter";
-import { planCardClass, planComparisonTableClass, planPatternClass } from "./styles";
+import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
+import { planComparisonTableClass, planPatternClass } from "./styles";
 import { getPlanLimits } from "@featul/api/shared/plan";
 import {
   AccountIcon,
@@ -214,33 +216,39 @@ export default function Comparison({
           const amount =
             billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
           return (
+            // Sidebar-stack frame: plan name in the shell header, pricing on the inner surface.
             <section
               key={key}
-              className={planCardClass}
+              className={cn(modalCardShellClass, "flex flex-col")}
               aria-label={`${plan.label} plan`}
             >
-              <DitherGradient
-                from={planPattern[key]}
-                to="transparent"
-                direction="down"
-                cell={3}
-                bloom="low"
-                opacity={0.45}
-                className={planPatternClass}
-              />
-              <div className="relative z-10 flex flex-1 flex-col">
-                <div className="flex min-h-5 items-center justify-between gap-2">
-                  <h3 className="text-sm font-semibold">{plan.label}</h3>
-                  {currentPlan === key ? (
-                    <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
-                      Current
-                    </span>
-                  ) : null}
+              <div className="flex h-7 items-center justify-between gap-2 pr-1 pl-2">
+                <h3 className="text-xs font-medium">{plan.label}</h3>
+                {currentPlan === key ? (
+                  <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                    Current
+                  </span>
+                ) : null}
+              </div>
+              <div
+                className={cn(
+                  modalCardInnerClass,
+                  "relative isolate flex flex-1 flex-col p-3",
+                )}
+              >
+                {/* Pattern sits in the top-left corner and fades out toward the copy. */}
+                <div aria-hidden="true" className={planPatternClass}>
+                  <DitherGradient
+                    from={planPattern[key]}
+                    to="transparent"
+                    direction="down"
+                    cell={3}
+                    bloom="low"
+                    opacity={0.45}
+                  />
                 </div>
-                <p className="mt-1.5 text-xs text-muted-foreground">
-                  {plan.tagline}
-                </p>
-                <div className="mb-5 mt-5">
+                <p className="text-xs text-muted-foreground">{plan.tagline}</p>
+                <div className="mb-5 mt-4">
                   <p className="flex items-baseline gap-1.5">
                     <span className="text-[2rem] font-semibold leading-none tracking-tight">
                       {key === "free" ? (

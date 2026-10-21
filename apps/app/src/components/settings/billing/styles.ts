@@ -24,11 +24,9 @@ export const plansDialogSurfaceClass = [
   "[&>[data-slot=dialog-close]]:top-5 [&>[data-slot=dialog-close]]:right-5",
 ].join(" ");
 
-export const planCardClass =
-  "relative isolate flex flex-col overflow-hidden rounded-[0.75rem] border border-border/65 bg-sidebar p-4 shadow-[inset_0_1px_0_color-mix(in_oklab,var(--foreground),transparent_97%)]";
-
+// Matches the sidebar stack: the pattern hugs the top-left corner and fades toward the copy.
 export const planPatternClass =
-  "opacity-65 mask-[linear-gradient(to_bottom,black_0%,black_40%,transparent_100%)] dark:opacity-90";
+  "pointer-events-none absolute inset-0 -z-10 opacity-80 mask-[radial-gradient(ellipse_85%_75%_at_top_left,black_10%,rgba(0,0,0,0.4)_45%,transparent_80%)] dark:opacity-100";
 
 // Cell padding lives on the table so every row lines up with the plan cards above.
 export const planComparisonTableClass = [
