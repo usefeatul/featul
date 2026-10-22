@@ -140,6 +140,17 @@ const PLAN_LABELS: Record<PlanKey, string> = {
   professional: "Professional",
 };
 
+const PLAN_SHORT_LABELS: Record<PlanKey, string> = {
+  free: "Free",
+  starter: "Starter",
+  professional: "Pro",
+};
+
+export function getPlanLabel(plan: PlanKey | string, short = false): string {
+  const key = normalizePlan(String(plan));
+  return (short ? PLAN_SHORT_LABELS : PLAN_LABELS)[key];
+}
+
 /** Copy for the member-cap upgrade prompt. */
 export function getMemberLimitMessage(
   plan: PlanKey | string,
