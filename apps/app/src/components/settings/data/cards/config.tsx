@@ -34,7 +34,7 @@ export const importCardConfigs: DataCardConfig[] = [
   {
     id: "import-csv",
     icon: CsvIcon,
-    iconClassName: "w-5 h-5 text-primary",
+    iconClassName: "size-5 text-muted-foreground",
     title: "Import from CSV",
     description: () =>
       "Import your feature requests, boards, and users from a CSV file.",
@@ -89,7 +89,7 @@ export const exportCardConfigs: DataCardConfig[] = [
   {
     id: "export-csv",
     icon: FileExportIcon,
-    iconClassName: "w-5 h-5 text-primary",
+    iconClassName: "size-5 text-muted-foreground",
     title: "Export to CSV",
     description: () =>
       "Export all your feedback submissions and their details to a downloadable CSV file.",

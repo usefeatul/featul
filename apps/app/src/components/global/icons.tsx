@@ -49,6 +49,8 @@ import {
   IconFileTextFilled,
   IconGraphFilled,
   IconEyeFilled,
+  IconTableFilled,
+  IconFileUploadFilled,
   type Icon as TablerIcon,
   type IconProps as TablerIconProps,
 } from "@tabler/icons-react";
@@ -100,9 +102,7 @@ import {
   Cloud as LucideCloud,
   Code2 as LucideCode2,
   EllipsisVertical as LucideEllipsisVertical,
-  FileSpreadsheet as LucideFileSpreadsheet,
   FileText as LucideFileText,
-  FileUp as LucideFileUp,
   Fingerprint as LucideFingerprint,
   GitMerge as LucideGitMerge,
   GripVertical as LucideGripVertical,
@@ -298,9 +298,9 @@ export const CircleQuestionMarkIcon = outline(LucideCircleHelp);
 export const ClipboardIcon = outline(LucideClipboard);
 export const CloudIcon = outline(LucideCloud);
 export const CommentsIcon = solid(IconMessageCircleFilled);
-export const CsvIcon = outline(LucideFileSpreadsheet);
+export const CsvIcon = solid(IconTableFilled);
 export const DocumentTextIcon = FileText;
-export const FileExportIcon = outline(LucideFileUp);
+export const FileExportIcon = solid(IconFileUploadFilled);
 export const InfoIcon = solid(IconInfoCircleFilled);
 export const IdeaIcon = outline(LucideLightbulb);
 export const KeyIcon = outline(LucideKeyRound);
