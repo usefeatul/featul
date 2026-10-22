@@ -4,9 +4,9 @@ import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
 import { Button } from "@featul/ui/components/button";
+import { DitherClouds } from "@featul/ui/components/clouds";
 import {
   ArrowRight,
-  Sparkles,
   ChevronLeftIcon,
 } from "@/components/global/icons";
 
@@ -26,26 +26,41 @@ type WelcomeTourDialogProps = {
 };
 
 const stepMotion = {
-  initial: { opacity: 0, x: 20 },
-  animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -20 },
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
 };
 
-function StepContent({ step }: { step: WelcomeTourStep }) {
+const stepTransition = { duration: 0.24, ease: [0.22, 1, 0.36, 1] } as const;
+
+/** Brand plate: the kit's primary contours behind one real product row. */
+function StepPlate({ step }: { step: WelcomeTourStep }) {
   return (
-    <div className="flex flex-col items-center px-2 py-5 text-center sm:px-4 sm:py-6">
-      <div
-        className={cn(
-          "mb-5 flex size-16 items-center justify-center rounded-lg border border-border/60",
-          step.accentClassName,
-        )}
-      >
-        {step.icon}
+    <div className="relative isolate h-44 shrink-0 overflow-hidden bg-primary px-6 sm:h-48">
+      <div className="absolute inset-0 -z-10">
+        <DitherClouds primary fit="cover" />
       </div>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={step.id}
+          {...stepMotion}
+          transition={stepTransition}
+          className="flex h-full items-center justify-center"
+        >
+          {step.detail}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function StepCopy({ step }: { step: WelcomeTourStep }) {
+  return (
+    <div className="px-5 pt-5 pb-6 sm:px-6">
       <h3 className="text-lg font-semibold tracking-tight text-foreground">
         {step.title}
       </h3>
-      <p className="mt-2 max-w-sm text-sm leading-relaxed text-accent">
+      <p className="mt-1.5 max-w-md text-sm leading-relaxed text-accent">
         {step.description}
       </p>
     </div>
@@ -154,77 +169,69 @@ export function WelcomeTourDialog({
       title="Welcome tour"
       width="wide"
       offsetY="50%"
-      icon={<Sparkles className="size-3.5" />}
-      innerClassName="px-0 pb-0"
+      innerClassName="p-0"
     >
-      <div className="flex min-h-[320px] flex-col">
-        <div className="flex items-center justify-center gap-2 px-4 pt-1">
-          {steps.map((step, index) => (
-            <button
-              key={step.id}
-              type="button"
-              aria-label={`Go to step ${index + 1}: ${step.title}`}
-              aria-current={index === stepIndex ? "step" : undefined}
-              onClick={() => setStepIndex(index)}
-              className={cn(
-                "h-1.5 rounded-lg transition-all duration-300",
-                index === stepIndex
-                  ? "w-6 bg-primary"
-                  : index < stepIndex
-                    ? "w-1.5 bg-primary/50"
-                    : "w-1.5 bg-muted-foreground/25 hover:bg-muted-foreground/40",
-              )}
-            />
-          ))}
-        </div>
+      <div className="flex flex-col">
+        <StepPlate step={currentStep} />
 
-        <p className="mt-2 text-center text-[11px] tabular-nums text-muted-foreground">
-          {stepIndex + 1} of {steps.length}
-        </p>
-
-        <div className="relative mt-1 min-h-[240px] flex-1 overflow-hidden">
+        <div className="relative min-h-[132px] overflow-hidden">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={currentStep.id}
               {...stepMotion}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-0 flex items-center justify-center"
+              transition={stepTransition}
             >
-              <StepContent step={currentStep} />
+              <StepCopy step={currentStep} />
             </motion.div>
           </AnimatePresence>
         </div>
 
-        <div className="mt-auto border-t border-border/60 bg-background px-4 py-3">
-          <div className="flex items-center justify-between gap-3">
-            <Button
-              type="button"
-              variant="card"
-              size="sm"
-              onClick={() => finish("skipped")}
-            >
-              Skip tour
-            </Button>
+        <div className="flex items-center justify-between gap-3 border-t border-border/60 px-4 py-3 dark:border-white/[0.07]">
+          <div className="flex items-center gap-1.5">
+            {steps.map((step, index) => (
+              <button
+                key={step.id}
+                type="button"
+                aria-label={`Go to step ${index + 1}: ${step.title}`}
+                aria-current={index === stepIndex ? "step" : undefined}
+                onClick={() => setStepIndex(index)}
+                className={cn(
+                  "h-1.5 cursor-pointer rounded-full transition-all duration-300",
+                  index === stepIndex
+                    ? "w-6 bg-primary"
+                    : index < stepIndex
+                      ? "w-1.5 bg-primary/50"
+                      : "w-1.5 bg-muted-foreground/25 hover:bg-muted-foreground/40",
+                )}
+              />
+            ))}
+            <span className="ml-2 text-[11px] tabular-nums text-muted-foreground">
+              {stepIndex + 1} of {steps.length}
+            </span>
+          </div>
 
-            <div className="flex items-center gap-2">
-              {stepIndex > 0 ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={goBack}
-                >
-                  <ChevronLeftIcon className="size-4 opacity-60" />
-                  Back
-                </Button>
-              ) : null}
-              <Button type="button" size="sm" onClick={goNext}>
-                {isLastStep ? "Get started" : "Continue"}
-                {!isLastStep ? (
-                  <ArrowRight className="size-4 opacity-60" />
-                ) : null}
+          <div className="flex items-center gap-2">
+            {stepIndex > 0 ? (
+              <Button type="button" variant="ghost" size="sm" onClick={goBack}>
+                <ChevronLeftIcon className="size-4 opacity-60" />
+                Back
               </Button>
-            </div>
+            ) : (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => finish("skipped")}
+              >
+                Skip
+              </Button>
+            )}
+            <Button type="button" size="sm" onClick={goNext}>
+              {isLastStep ? "Get started" : "Continue"}
+              {!isLastStep ? (
+                <ArrowRight className="size-4 opacity-60" />
+              ) : null}
+            </Button>
           </div>
         </div>
       </div>
