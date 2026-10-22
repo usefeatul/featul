@@ -1,5 +1,6 @@
 "use client";
 
+import { Mascot } from "@featul/ui/components/mascot";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, X, SidebarPanelIcon, LoaderIcon } from "@/components/global/icons";
@@ -341,9 +342,10 @@ export default function Navigator({
             !listItems.length &&
             !isFetching &&
             !isError ? (
-              <p className="px-3 py-6 text-center text-sm text-accent">
+              <div className="flex flex-col items-center px-3 py-6 text-center text-sm text-accent">
+                <Mascot size={64} mood="search" className="mb-3" />
                 No requests found.
-              </p>
+              </div>
             ) : null}
             <div
               ref={sentinelRef}

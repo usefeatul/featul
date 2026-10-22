@@ -1,5 +1,6 @@
 "use client";
 
+import { Mascot } from "@featul/ui/components/mascot";
 import {
   Avatar,
   AvatarFallback,
@@ -54,9 +55,10 @@ export default function Activity({
     );
   if (!items.length)
     return (
-      <p className="py-8 text-center text-sm text-muted-foreground">
+      <div className="flex flex-col items-center py-8 text-center text-sm text-muted-foreground">
+        <Mascot size={64} mood="sleep" className="mb-3" />
         No activity yet. Updates to this post will appear here.
-      </p>
+      </div>
     );
 
   return (

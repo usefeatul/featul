@@ -57,12 +57,15 @@ export function PreferredSourceButton({
   return (
     <Button
       type="button"
-      variant="card"
+      variant="default"
       size="sm"
       className={cn("font-heading text-xs", className)}
       onClick={() => (allowed ? addPreferredSource() : setActiveUI("dialog"))}
     >
-      <GoogleIcon className="size-3.5 grayscale" />
+      {/* White chip keeps the blue segment of the logo visible on bg-primary. */}
+      <span className="flex size-4.5 shrink-0 items-center justify-center rounded-[5px] bg-white">
+        <GoogleIcon className="size-3.5" />
+      </span>
       {PREFERRED_SOURCE_BUTTON_LABEL}
     </Button>
   );

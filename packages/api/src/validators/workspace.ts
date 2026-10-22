@@ -63,6 +63,19 @@ export const importCsvInputSchema = z.object({
   csvContent: z.string().max(10_000_000, "CSV payload too large"),
 });
 
+const providerApiKeySchema = z.string().trim().min(1, "API key is required").max(512, "API key is too long");
+
+export const importFromProviderInputSchema = z.object({
+  slug: slugSchema,
+  apiKey: providerApiKeySchema,
+});
+
+export const importFromNoltInputSchema = z.object({
+  slug: slugSchema,
+  apiKey: providerApiKeySchema,
+  boardUrl: z.string().trim().min(1, "Board URL is required").max(255),
+});
+
 export const updateTimezoneInputSchema = z.object({
   slug: slugSchema,
   timezone: z.string().min(1),

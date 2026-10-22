@@ -64,6 +64,7 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
 
   const currentLogo: string | null = liveLogo ?? wsInfo?.logo ?? current?.logo ?? null
   const currentName: string = liveName ?? wsInfo?.name ?? current?.name ?? (slug || "Current")
+  const currentPlan: string = wsInfo?.plan ?? current?.plan ?? "free"
 
   const handleSelectWorkspace = React.useCallback(
     (targetSlug: string) => {
@@ -78,7 +79,7 @@ export function useWorkspaceSwitcher(slug: string, initialWorkspace?: Ws | null,
     router.push("/workspaces/new")
   }, [router])
 
-  return { workspaces, all: workspaces, current, wsInfo, liveLogo, currentLogo, currentName, handleSelectWorkspace, handleCreateNew }
+  return { workspaces, all: workspaces, current, wsInfo, liveLogo, currentLogo, currentName, currentPlan, handleSelectWorkspace, handleCreateNew }
 }
 
 /**

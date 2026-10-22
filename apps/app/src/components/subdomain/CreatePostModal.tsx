@@ -18,6 +18,7 @@ import { useSubdomainAuthModal } from "@/hooks/useSubdomainAuthModal"
 import { useCloseThenOpenAuth } from "@/hooks/useCloseThenOpenAuth"
 import { createPostImageTransferHandlers } from "@/lib/post/transfer"
 import { useDraft } from "@/hooks/useDraft"
+import { DitherWash } from "@/components/global/DitherWash"
 
 interface CreatePostModalProps {
   open: boolean
@@ -132,12 +133,14 @@ export default function CreatePostModal({
         offsetY="10%"
         icon={<DocumentTextIcon className="size-3.5" />}
         expandable
+        innerClassName="relative isolate"
       >
         <form
           onSubmit={handleSubmit}
           className="flex min-h-0 flex-1 flex-col pb-3"
           {...imageTransfer}
         >
+          <DitherWash />
           <PostHeader
             user={user}
             initials={initials}

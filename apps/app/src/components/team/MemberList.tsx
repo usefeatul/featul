@@ -1,5 +1,6 @@
 "use client"
 
+import { Mascot } from "@featul/ui/components/mascot"
 import { useQuery } from "@tanstack/react-query"
 import type { Member } from "@/types/team"
 import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar"
@@ -35,6 +36,7 @@ export default function MemberList({ slug, initialMembers = [] }: Props) {
     <section className="min-w-0 has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-1 has-[[data-page-empty]]:flex-col" aria-busy={isLoading}>
       {items.length === 0 && !isLoading ? (
         <div data-page-empty className="flex flex-1 flex-col items-center justify-center px-4 py-12 text-center sm:px-6">
+          <Mascot size={96} className="mb-4" />
           <p className="text-sm font-medium text-foreground">No members yet</p>
           <p className="mt-1 text-xs text-accent">
             Workspace members will appear here.

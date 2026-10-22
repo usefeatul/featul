@@ -7,6 +7,9 @@ import * as Sentry from "@sentry/nextjs";
 /** Forwards all `/api/*` traffic to the jstack/Elysia app with CORS. */
 const handler = (req: Request) => app.handle(req);
 
+// Canny, Nolt, and ProductBoard imports page through provider APIs inside one request.
+export const maxDuration = 300;
+
 export const OPTIONS = handlePreflight;
 export const GET = async (req: Request) => withCors(req, await handler(req));
 export const POST = async (req: Request) => {

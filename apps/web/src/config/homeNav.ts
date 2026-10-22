@@ -1,4 +1,5 @@
 import { AUTH_SIGN_IN_URL } from "@/config/auth";
+import { DOCS_HOME_HREF } from "@/config/docsNav";
 
 export interface NavigationItem {
   name: string
@@ -23,7 +24,7 @@ export const navigationConfig: NavigationConfig = {
     },
     {
       name: 'Docs',
-      href: '/docs',
+      href: DOCS_HOME_HREF,
     },
   ],
   auth: [

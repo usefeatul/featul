@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  History,
   MessageSquareText,
   Trash2,
   LoaderIcon,
 } from "@/components/global/icons";
 
+import { Mascot } from "@featul/ui/components/mascot";
 import { cn } from "@featul/ui/lib/utils";
 import { relativeTime } from "@/lib/time";
 import type { ChangelogAiConversationSummary } from "@/features/changelog/history";
@@ -58,9 +58,7 @@ export function ConversationHistory({
       <div className="scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-contain pb-4">
         {!loading && conversations.length === 0 ? (
           <div className="flex h-full min-h-52 flex-col items-center justify-center px-6 text-center">
-            <span className="mb-3 flex size-10 items-center justify-center rounded-lg bg-muted/60 text-muted-foreground">
-              <History className="size-[18px]" />
-            </span>
+            <Mascot size={64} mood="sleep" className="mb-3" />
             <h3 className="text-sm font-medium">No conversations yet</h3>
             <p className="mt-1 max-w-52 text-xs leading-relaxed text-muted-foreground">
               Your previous AI conversations will appear here.

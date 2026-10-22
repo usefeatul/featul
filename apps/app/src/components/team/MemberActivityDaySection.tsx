@@ -4,6 +4,7 @@ import React from "react"
 import { format } from "date-fns"
 import { MemberActivityDescription } from "@/components/team/MemberActivityDescription"
 import { MemberActivityItemRow } from "@/components/team/MemberActivityItemRow"
+import SectionCard from "@/components/settings/global/SectionCard"
 import {
   getActivityHref,
   type ActivityDayGroup,
@@ -16,14 +17,8 @@ interface MemberActivityDaySectionProps {
   workspaceSlug: string
 }
 
-const sectionClassName =
-  "space-y-2 border-t border-border/25 pt-5 first:border-t-0 first:pt-0 dark:border-white/5"
-
-const headingClassName =
-  "px-2 pt-1 font-heading text-[12px] font-semibold uppercase leading-none tracking-[0.16em] text-foreground"
-
 const groupButtonClassName =
-  "block w-full rounded-lg px-2 py-2.5 text-left hover:bg-muted/40"
+  "block w-full px-5 py-3 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
 
 const groupRowClassName = "text-sm text-accent flex items-center gap-2 min-w-0"
 
@@ -63,10 +58,8 @@ export function MemberActivityDaySection({
   workspaceSlug,
 }: MemberActivityDaySectionProps) {
   return (
-    <section className={sectionClassName}>
-      <div className={headingClassName}>{dayGroup.label}</div>
-
-      <ul className="w-full min-w-0 space-y-0.5">
+    <SectionCard title={dayGroup.label} contentClassName="p-0">
+      <ul className="w-full min-w-0 divide-y divide-border/50">
         {dayGroup.rows.map((row) => {
           if (row.kind === "item") {
             return <MemberActivityItemRow key={row.key} item={row.item} href={row.href} />
@@ -83,7 +76,7 @@ export function MemberActivityDaySection({
                     href={getActivityHref(entry, workspaceSlug)}
                   />
                 ))}
-                <li className="py-1.5">
+                <li className="px-5 py-2.5">
                   <button
                     type="button"
                     onClick={() => onToggleGroup(row.key)}
@@ -107,6 +100,6 @@ export function MemberActivityDaySection({
           )
         })}
       </ul>
-    </section>
+    </SectionCard>
   )
 }

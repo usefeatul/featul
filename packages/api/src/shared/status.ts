@@ -25,7 +25,12 @@ export function normalizeStatus(s: string): StatusKey {
     complete: "completed",
     done: "completed",
     shipped: "completed",
+    released: "completed",
+    newidea: "pending",
+    candidate: "review",
     closed: "closed",
+    wontdo: "closed",
+    "won'tdo": "closed",
     archived: "closed",
     rejected: "closed",
   };

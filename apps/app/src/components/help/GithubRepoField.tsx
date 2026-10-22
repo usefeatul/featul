@@ -32,18 +32,49 @@ const STATUS_MESSAGES: Record<string, string> = {
     "GitHub didn't return an installation. Please try again.",
 };
 
-/** Shows the `?github=` result of the install round trip once, then removes it from the URL. */
+/** Marks a return trip that happened in the tab "Connect GitHub" opened. */
+const TAB_PARAM = "github_tab";
+const CHANNEL = "featul:github-setup";
+
+function showSetupStatus(status: string) {
+  const message = STATUS_MESSAGES[status] ?? "Couldn't connect GitHub.";
+  if (status === "connected") toast.success(message);
+  else toast.error(message);
+}
+
+/**
+ * Shows the `?github=` result of the install round trip once, then removes it from the URL.
+ * When that trip ran in its own tab, hands the result to the tab that opened it and closes.
+ */
 export function useGithubSetupToast() {
+  const queryClient = useQueryClient();
   React.useEffect(() => {
     const url = new URL(window.location.href);
     const status = url.searchParams.get("github");
-    if (!status) return;
-    const message = STATUS_MESSAGES[status] ?? "Couldn't connect GitHub.";
-    if (status === "connected") toast.success(message);
-    else toast.error(message);
-    url.searchParams.delete("github");
-    window.history.replaceState(null, "", url.toString());
-  }, []);
+    const inSetupTab = url.searchParams.has(TAB_PARAM);
+    if (status) {
+      url.searchParams.delete("github");
+      url.searchParams.delete(TAB_PARAM);
+      window.history.replaceState(null, "", url.toString());
+      if (inSetupTab && "BroadcastChannel" in window) {
+        const channel = new BroadcastChannel(CHANNEL);
+        channel.postMessage(status);
+        channel.close();
+        window.close();
+      }
+      // Still shown when the tab can't close, so it works as a normal page.
+      showSetupStatus(status);
+    }
+
+    if (!("BroadcastChannel" in window)) return;
+    const channel = new BroadcastChannel(CHANNEL);
+    channel.onmessage = (event: MessageEvent<string>) => {
+      showSetupStatus(String(event.data));
+      void queryClient.invalidateQueries({ queryKey: ["help-github-status"] });
+      void queryClient.invalidateQueries({ queryKey: ["help-github-repos"] });
+    };
+    return () => channel.close();
+  }, [queryClient]);
 }
 
 /**
@@ -143,18 +174,30 @@ export function GithubRepoField({
 
   const connect = async () => {
     setConnecting(true);
+    // Opened during the click so popup blockers allow it; it goes to GitHub once the URL is ready.
+    // Without it (blocked), GitHub opens in this tab instead.
+    const tab = window.open("", "_blank");
+    if (tab) tab.opener = null;
     try {
       // Coming back must not auto-start another scan or replay an old connect result.
       const back = new URL(window.location.href);
       back.searchParams.delete("start");
       back.searchParams.delete("github");
+      if (tab) back.searchParams.set(TAB_PARAM, "1");
       const res = await client.help.githubConnectUrl.$post({
         slug: workspaceSlug,
         returnTo: `${back.pathname}${back.search}`,
       });
       await expectOk(res, "Couldn't start the GitHub connection");
-      window.location.href = ((await res.json()) as { url: string }).url;
+      const { url } = (await res.json()) as { url: string };
+      if (tab) {
+        tab.location.href = url;
+        setConnecting(false);
+      } else {
+        window.location.href = url;
+      }
     } catch (error) {
+      tab?.close();
       toast.error(
         error instanceof Error ? error.message : "Couldn't connect GitHub",
       );

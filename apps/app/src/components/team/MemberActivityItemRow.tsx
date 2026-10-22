@@ -15,7 +15,7 @@ export function MemberActivityItemRow({ item, href }: MemberActivityItemRowProps
     <li className="py-0">
       <Link
         href={href}
-        className="block w-full rounded-lg px-2 py-2.5 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        className="block w-full px-5 py-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       >
         <div className="text-sm text-accent flex items-center gap-2 min-w-0">
           <span className="text-xs font-medium shrink-0">{format(new Date(item.createdAt), "LLL d")}</span>

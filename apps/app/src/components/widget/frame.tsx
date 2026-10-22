@@ -706,6 +706,7 @@ export default function WidgetFrame({
 
             {!loading && loadFailed ? (
               <WidgetEmpty
+                mood="search"
                 title="Couldn’t load right now"
                 description="Check your connection and open the widget again."
               />

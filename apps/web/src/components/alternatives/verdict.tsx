@@ -23,21 +23,22 @@ export default function Verdict({ alt }: VerdictProps) {
             title={`Switch from ${alt.name} to Featul. Keep the workflow, gain ${topWin}.`}
             description="Boards, roadmaps, and changelogs in one place. Set up in minutes."
             label="Try Featul free"
+            action={
+              alt.website ? (
+                <>
+                  Still evaluating?{" "}
+                  <Link
+                    href={alt.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground underline underline-offset-2 hover:text-primary"
+                  >
+                    Visit {alt.name}
+                  </Link>
+                </>
+              ) : undefined
+            }
           />
-
-          {alt.website ? (
-            <p className="mt-3 text-sm text-accent">
-              Still evaluating?{" "}
-              <Link
-                href={alt.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-foreground underline underline-offset-2 hover:text-primary"
-              >
-                Visit {alt.name}
-              </Link>
-            </p>
-          ) : null}
         </div>
       </section>
     </MarketingContainer>

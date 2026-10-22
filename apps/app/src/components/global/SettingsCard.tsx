@@ -8,8 +8,9 @@ import {
 } from "@/components/settings/global/SectionCard";
 
 type Props = {
-  layout?: "card" | "row";
-  icon: React.ReactNode;
+  /** `stacked` puts the action under the description, for half-width grid cards. */
+  layout?: "card" | "row" | "stacked";
+  icon?: React.ReactNode;
   title: string;
   description: React.ReactNode;
   buttonLabel?: string;
@@ -46,9 +47,12 @@ export default function SettingsCard({
   onTest,
   children,
 }: Props) {
-  const inline = typeof description === "string";
+  const stacked = layout === "stacked";
+  const inline = !stacked && typeof description === "string";
   const controls = (
-    <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
+    <div
+      className={`flex max-w-full flex-wrap items-center gap-2 ${stacked ? "justify-start" : "justify-end"}`}
+    >
       {children ?? (
         <>
           {isConnected && onTest && (
@@ -79,7 +83,7 @@ export default function SettingsCard({
   if (layout === "row") {
     return (
       <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-start gap-3">
           {icon ? (
             <div className="flex size-5 shrink-0 items-center justify-center">
               {icon}
@@ -105,12 +109,14 @@ export default function SettingsCard({
   }
 
   return (
-    <section className={settingsSectionClass}>
+    <section className={`${settingsSectionClass} ${stacked ? "h-full" : ""}`}>
       <header className={settingsSurfaceHeaderClass}>
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex size-4 shrink-0 items-center justify-center [&_svg]:size-4">
-            {icon}
-          </div>
+          {icon ? (
+            <div className="flex size-4 shrink-0 items-center justify-center [&_svg]:size-4">
+              {icon}
+            </div>
+          ) : null}
           <h2 className="text-sm font-medium leading-6 text-foreground">
             {title}
           </h2>
@@ -120,10 +126,19 @@ export default function SettingsCard({
             </span>
           )}
         </div>
-        {!inline && controls}
+        {!inline && !stacked && controls}
       </header>
-      <div className={settingsSurfaceClass}>
-        {inline ? (
+      <div
+        className={`${settingsSurfaceClass} ${stacked ? "flex flex-1 flex-col gap-4" : ""}`}
+      >
+        {stacked ? (
+          <>
+            <div className="text-sm leading-relaxed text-muted-foreground wrap-break-word">
+              {description}
+            </div>
+            <div className="mt-auto">{controls}</div>
+          </>
+        ) : inline ? (
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <div className="min-w-0 flex-1 text-sm leading-relaxed text-muted-foreground wrap-break-word">
               {description}

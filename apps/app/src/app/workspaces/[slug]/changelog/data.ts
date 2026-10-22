@@ -24,6 +24,7 @@ export interface ChangelogEntryData {
     tags: string[]; // Tag IDs
     relatedPostIds?: string[];
     publishedAt?: Date | null;
+    scheduledAt?: Date | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -90,6 +91,7 @@ export async function getChangelogListData(
             status: changelogEntry.status,
             tags: changelogEntry.tags,
             publishedAt: changelogEntry.publishedAt,
+            scheduledAt: changelogEntry.scheduledAt,
             createdAt: changelogEntry.createdAt,
             updatedAt: changelogEntry.updatedAt,
             authorName: user.name,

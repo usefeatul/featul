@@ -4,9 +4,6 @@ import { WidgetButton } from "./button";
 
 import {
   ChevronRight,
-  ChangelogIcon as FillChangelogIcon,
-  CollectIcon as FillFeedbackIcon,
-  RoadmapIcon as FillRoadmapIcon,
 } from "@/components/global/icons";
 
 import StatusIcon from "@/components/requests/StatusIcon";
@@ -162,7 +159,6 @@ export function Home({
             compact
             title="No roadmap yet"
             description="Public items will show up here when they’re ready to share."
-            icon={<FillRoadmapIcon className="size-5" size={20} />}
           />
         )}
       </div>
@@ -223,7 +219,7 @@ export function Home({
           compact
           title="No updates yet"
           description="New releases, fixes, and product changes will show up here."
-          icon={<FillChangelogIcon className="size-5" size={20} />}
+          mood="sleep"
         />
       )}
     </section>
@@ -274,7 +270,6 @@ export function Home({
           compact
           title="No feedback yet"
           description="Be the first to share an idea or report a problem."
-          icon={<FillFeedbackIcon className="size-5" size={20} />}
         />
       )}
     </section>

@@ -143,7 +143,7 @@ export default function AccountDetails({ initialUser }: AccountDetailsProps) {
           onKeyDown={(e) => {
             if (e.key === "Enter") e.currentTarget.blur();
           }}
-          className="h-9 w-full sm:w-60 placeholder:text-accent"
+          className="h-9 w-auto min-w-16 max-w-full field-sizing-content sm:max-w-80 placeholder:text-accent"
           placeholder="Your name"
         />
       </SettingRow>
@@ -155,7 +155,7 @@ export default function AccountDetails({ initialUser }: AccountDetailsProps) {
           aria-label="Email address"
           value={d.email || ""}
           readOnly
-          className="h-9 w-full sm:w-60 text-muted-foreground"
+          className="h-9 w-auto min-w-16 max-w-full field-sizing-content sm:max-w-80 text-muted-foreground"
         />
       </SettingRow>
     </>

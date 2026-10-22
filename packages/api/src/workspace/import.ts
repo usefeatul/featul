@@ -100,11 +100,11 @@ const NON_BOARD_VALUE_KEYS = new Set([
   "updatedat",
 ])
 
-function normalizeBoardLookupKey(value: string): string {
+export function normalizeBoardLookupKey(value: string): string {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "")
 }
 
-function toBoardSlug(value: string): string {
+export function toBoardSlug(value: string): string {
   const base = toSlug(value)
     .replace(/[^a-z0-9-]+/g, "-")
     .replace(/-+/g, "-")
@@ -123,7 +123,7 @@ function isSuspiciousBoardValue(value: string): boolean {
   return false
 }
 
-function toPostSlug(value: string): string {
+export function toPostSlug(value: string): string {
   const base = value
     .trim()
     .toLowerCase()
@@ -137,11 +137,11 @@ function utf8ByteLength(value: string): number {
   return new TextEncoder().encode(value).length
 }
 
-function sanitizeSingleLineText(value: string): string {
+export function sanitizeSingleLineText(value: string): string {
   return value.replace(CONTROL_CHAR_REGEX, "").trim()
 }
 
-function sanitizeMultilineText(value: string): string {
+export function sanitizeMultilineText(value: string): string {
   return value.replace(CONTROL_CHAR_REGEX, "").trim()
 }
 
@@ -186,7 +186,7 @@ function asPostMetadata(value: unknown): PostMetadata {
   return {}
 }
 
-function readImportSourceId(value: unknown): string | null {
+export function readImportSourceId(value: unknown): string | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null
   const customFields = (value as { customFields?: unknown }).customFields
   if (!customFields || typeof customFields !== "object" || Array.isArray(customFields)) return null

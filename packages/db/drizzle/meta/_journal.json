@@ -267,6 +267,13 @@
       "when": 1792511929783,
       "tag": "0037_help_search_index",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1792653104206,
+      "tag": "0038_changelog_schedule",
+      "breakpoints": true
     }
   ]
 }

@@ -34,6 +34,51 @@
   }
 }
 
+/* Empty-state mascot: a one-pixel bob and an occasional blink, stepped to stay on the grid. */
+@layer components {
+  .featul-mascot--animated .featul-mascot__body {
+    animation: featul-mascot-bob 2.4s steps(1, end) infinite;
+  }
+
+  .featul-mascot--animated .featul-mascot__eyes {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: featul-mascot-blink 4s steps(1, end) infinite;
+  }
+
+  .featul-mascot--animated[data-mood="sleep"] .featul-mascot__eyes {
+    animation: none;
+  }
+
+  .featul-mascot--animated .featul-mascot__marks {
+    animation: featul-mascot-marks 2.4s steps(1, end) infinite;
+  }
+}
+
+@keyframes featul-mascot-bob {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+
+@keyframes featul-mascot-blink {
+  0% { transform: scaleY(1); }
+  94% { transform: scaleY(0.34); }
+  97% { transform: scaleY(1); }
+}
+
+@keyframes featul-mascot-marks {
+  0% { opacity: 1; transform: translateY(0); }
+  50% { opacity: 0.6; transform: translateY(-1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featul-mascot--animated .featul-mascot__body,
+  .featul-mascot--animated .featul-mascot__eyes,
+  .featul-mascot--animated .featul-mascot__marks {
+    animation: none;
+  }
+}
+
 :root {
   --background: #fafafa;
   --foreground: #202020;

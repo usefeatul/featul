@@ -32,7 +32,7 @@ export function useWorkspaceNavigation(currentSlug: string) {
   }, [currentSlug, getWorkspaceSlugs]);
 
   const pushWorkspaceRoute = React.useCallback(
-    async (path: "account/profile" | "settings/branding") => {
+    async (path: "settings/account" | "settings/branding") => {
       const targetSlug = await resolveWorkspaceSlug();
 
       if (targetSlug) {
@@ -45,7 +45,7 @@ export function useWorkspaceNavigation(currentSlug: string) {
   );
 
   const navigateToAccountProfile = React.useCallback(async () => {
-    await pushWorkspaceRoute("account/profile");
+    await pushWorkspaceRoute("settings/account");
   }, [pushWorkspaceRoute]);
 
   const navigateToBrandingSettings = React.useCallback(async () => {

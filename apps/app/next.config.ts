@@ -74,6 +74,7 @@ const nextConfig = {
         ]
     },
     images: {
+        qualities: [100, 75],
         remotePatterns: [
           { protocol: 'https', hostname: 'lh3.googleusercontent.com', pathname: '/**' },
           { protocol: 'https', hostname: 'avatars.githubusercontent.com', pathname: '/**' },

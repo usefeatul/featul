@@ -9,6 +9,7 @@ import {
   LoaderIcon,
   ChangelogDraftIcon,
   ChangelogPublishedIcon,
+  CalendarDays,
 } from "@/components/global/icons";
 
 import { useChangelogEntryActions } from "@/hooks/useChangelogEntryActions";
@@ -37,7 +38,7 @@ export function ChangelogItemContextMenu({
   const router = useRouter();
   const menu = useContextMenuPosition();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
-  const { publish, unpublish, isPending } = useChangelogEntryActions({
+  const { publish, unpublish, cancelSchedule, isPending } = useChangelogEntryActions({
     workspaceSlug,
     entryId: item.id,
   });
@@ -79,8 +80,17 @@ export function ChangelogItemContextMenu({
                     <ChangelogPublishedIcon className="size-4" />
                   )
                 }
-                label="Publish"
+                label={item.scheduledAt ? "Publish now" : "Publish"}
                 onClick={publish}
+                disabled={isPending}
+              />
+            ) : null}
+
+            {item.status === "draft" && item.scheduledAt ? (
+              <ContextMenuItem
+                icon={<CalendarDays className="size-4" />}
+                label="Remove schedule"
+                onClick={cancelSchedule}
                 disabled={isPending}
               />
             ) : null}

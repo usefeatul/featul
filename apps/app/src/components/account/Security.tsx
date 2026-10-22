@@ -3,7 +3,6 @@
 import React from "react"
 import { useRouter, usePathname } from "next/navigation"
 import SettingsCard from "@/components/global/SettingsCard"
-import { KeyIcon } from "@/components/global/icons"
 import TwoFactorAuth from "@/components/account/TwoFactorAuth"
 import ActiveSessions from "@/components/account/ActiveSessions"
 import type { SessionItem } from "@/types/session"
@@ -22,9 +21,9 @@ export default function Security({ initialSessions, twoFactorEnabled, initialAcc
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-8">
+      <div className="grid gap-8 md:grid-cols-2 md:gap-x-4">
         <SettingsCard
-          icon={<KeyIcon className="size-5 text-primary" />}
+          layout="stacked"
           title="Password"
           description="Change your account password for security."
           buttonLabel="Change password"

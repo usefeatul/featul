@@ -21,7 +21,8 @@ import type { Ws } from "../../hooks/useWorkspaceSwitcher";
 import { SidebarBadge } from "./badge";
 
 import { sidebarLeadSlotClassName, sidebarRowClassName } from "./styles";
-import { getPlanColorClassName } from "@/lib/plan";
+import { getPlanColorClassName, getPlanLabel } from "@/lib/plan";
+import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 
 const SIDEBAR_HOVER_ITEM_CLASS =
   "hover:bg-muted dark:hover:bg-white/5 focus:bg-muted dark:focus:bg-black/40 data-[highlighted]:bg-muted dark:data-[highlighted]:bg-black/40";
@@ -44,6 +45,7 @@ export default function WorkspaceSwitcher({
     all,
     currentLogo,
     currentName,
+    currentPlan,
     handleSelectWorkspace,
     handleCreateNew,
   } = useWorkspaceSwitcher(
@@ -112,9 +114,20 @@ export default function WorkspaceSwitcher({
               </div>
             ) : null}
             {!collapsed ? (
-              <SidebarBadge className="ml-auto shrink-0">
-                <WorkspaceSwitcherIcon className="size-3 text-neutral-600 dark:text-neutral-300" />
-              </SidebarBadge>
+              <span className="ml-auto flex shrink-0 items-center gap-1">
+                <span
+                  className={cn(
+                    raisedSurfaceClass,
+                    "rounded-md px-1.5 py-[3px] text-[11px] font-medium leading-none",
+                    getPlanColorClassName(currentPlan),
+                  )}
+                >
+                  {getPlanLabel(currentPlan, true)}
+                </span>
+                <SidebarBadge>
+                  <WorkspaceSwitcherIcon className="size-3 text-neutral-600 dark:text-neutral-300" />
+                </SidebarBadge>
+              </span>
             ) : null}
           </button>
         </DropdownMenuTrigger>
@@ -170,11 +183,11 @@ export default function WorkspaceSwitcher({
                           </span>
                           <span
                             className={cn(
-                              "text-xs capitalize",
+                              "text-xs",
                               getPlanColorClassName(w.plan || "free"),
                             )}
                           >
-                            {w.plan || "Free"}
+                            {getPlanLabel(w.plan || "free")}
                           </span>
                         </div>
                       </DropdownMenuItem>

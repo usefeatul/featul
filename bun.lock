@@ -90,6 +90,7 @@
       "name": "web",
       "version": "0.1.0",
       "dependencies": {
+        "@featul/editor": "workspace:*",
         "@featul/ui": "workspace:*",
         "@tabler/icons-react": "^3.49.0",
         "@tailwindcss/postcss": "^4.3.3",

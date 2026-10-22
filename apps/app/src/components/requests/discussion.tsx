@@ -1,5 +1,6 @@
 "use client";
 
+import { Mascot } from "@featul/ui/components/mascot";
 import { useState, type ComponentProps } from "react";
 import {
   Tabs,
@@ -43,9 +44,10 @@ function PublicDiscussion(
           </h2>
           {thread ??
             (props.allowComments !== false && (
-              <p className="py-6 text-center text-sm text-muted-foreground">
+              <div className="flex flex-col items-center py-6 text-center text-sm text-muted-foreground">
+                <Mascot size={64} className="mb-3" />
                 No comments yet. Start the conversation above.
-              </p>
+              </div>
             ))}
         </div>
       )}
@@ -105,9 +107,10 @@ function WorkspaceDiscussion({
             >
               {thread ??
                 (props.allowComments !== false && (
-                  <p className="py-6 text-center text-sm text-muted-foreground">
+                  <div className="flex flex-col items-center py-6 text-center text-sm text-muted-foreground">
+                    <Mascot size={64} className="mb-3" />
                     No comments yet. Start the conversation above.
-                  </p>
+                  </div>
                 ))}
             </TabsContent>
             <TabsContent

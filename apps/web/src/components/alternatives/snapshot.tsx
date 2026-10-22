@@ -58,6 +58,12 @@ export default function Snapshot({ alt }: { alt: Alternative }) {
           <div className="mt-10">
             <ComparisonTable
               caption={`${alt.name} vs Featul comparison as of ${ALTERNATIVES_UPDATED_LABEL}`}
+              title="At a glance"
+              action={
+                <span className="text-xs text-accent">
+                  Updated {ALTERNATIVES_UPDATED_LABEL}
+                </span>
+              }
             >
               <ComparisonThead>
                 <ComparisonTr>

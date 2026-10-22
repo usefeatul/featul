@@ -9,6 +9,7 @@ import {
   AlertDialogInner,
   AlertDialogTitle,
 } from "@featul/ui/components/alert-dialog"
+import { DitherWash } from "./DitherWash"
 import { TrashIcon } from "@/components/global/icons"
 
 type AlertDialogShellProps = {
@@ -56,7 +57,8 @@ export function AlertDialogShell({
             {title}
           </AlertDialogTitle>
         </AlertDialogHeader>
-        <AlertDialogInner>
+        <AlertDialogInner className="relative isolate overflow-hidden">
+          <DitherWash className="h-28" />
           {description ? (
             <AlertDialogDescription className="text-sm text-accent mb-2">
               {description}

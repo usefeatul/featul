@@ -1,17 +1,10 @@
 import React from "react"
-import { buttonVariants } from "@featul/ui/components/button"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeHighlight from "rehype-highlight"
-import {
-  OverlayCard,
-  OverlayCardPanel,
-} from "@/components/shared/overlay-card"
-import { OverlayChip } from "@featul/ui/components/overlay-chip"
-import { GitHubIcon } from "@featul/ui/icons/github"
-import { cn } from "@featul/ui/lib/utils"
 import { DocsCodeBlock } from "./code-block"
-import "./code.css"
+import "@featul/editor/styles/editor.css"
+import "@featul/editor/styles/table.css"
 
 function slugifyHeading(input: string) {
   return input
@@ -40,150 +33,68 @@ function extractTextFromChildren(children: React.ReactNode): string {
   return ""
 }
 
+// Element styling (headings, callouts, code, tables...) is the shared content design in
+// @featul/editor's editor.css, the same one help articles render with; this only sets the
+// reading container.
+const proseClass = "ProseMirror prose dark:prose-invert max-w-none focus:outline-none"
+
+// Code blocks use the docs' JetBrains Mono (loaded in the docs layout).
+const contentStyle = {
+  "--content-mono": "var(--font-docs-code), ui-monospace, SFMono-Regular, Menlo, monospace",
+} as React.CSSProperties
+
 export function DocsMarkdown({ markdown }: { markdown: string }) {
   return (
-    <div className="text-base leading-8 text-foreground/80 [&_strong]:font-semibold [&_strong]:text-foreground">
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeHighlight]}
-        components={{
-          h1: () => null,
-          h2: ({ children }) => {
-            const text = extractTextFromChildren(children)
-            const id = slugifyHeading(text)
-            return (
-              <h2 id={id} className="mb-3 mt-8 scroll-mt-28 text-2xl font-semibold tracking-tight text-foreground first:mt-0">
+    <div className="min-w-0 max-w-full">
+      <div className={proseClass} contentEditable={false} style={contentStyle}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeHighlight]}
+          components={{
+            h1: () => null,
+            h2: ({ children }) => (
+              // Anchor jumps land below the fixed marketing navbar.
+              <h2 id={slugifyHeading(extractTextFromChildren(children))} className="scroll-mt-28">
                 {children}
               </h2>
-            )
-          },
-          h3: ({ children }) => {
-            const text = extractTextFromChildren(children)
-            const id = slugifyHeading(text)
-            return (
-              <h3 id={id} className="mb-2 mt-8 scroll-mt-28 text-lg font-semibold tracking-tight text-foreground">
+            ),
+            h3: ({ children }) => (
+              <h3 id={slugifyHeading(extractTextFromChildren(children))} className="scroll-mt-28">
                 {children}
               </h3>
-            )
-          },
-          p: ({ children }) => (
-            <p className="mb-5 text-base leading-8 text-foreground/80">
-              {children}
-            </p>
-          ),
-          ul: ({ children }) => (
-            <ul className="mb-5 list-disc space-y-2 pl-5">
-              {children}
-            </ul>
-          ),
-          ol: ({ children }) => (
-            <ol className="mb-5 list-decimal space-y-2 pl-5">
-              {children}
-            </ol>
-          ),
-          li: ({ children }) => (
-            <li className="text-base leading-8 text-foreground/80">
-              {children}
-            </li>
-          ),
-          a: ({ href, children }) => {
-            const url = typeof href === "string" ? href : ""
-            const isExternal = /^https?:\/\//.test(url)
-            const isGitHub = url.includes("github.com")
-            
-            if (isGitHub) {
+            ),
+            a: ({ href, children }) => {
+              const url = typeof href === "string" ? href : ""
+              const isExternal = /^https?:\/\//.test(url)
               return (
                 <a
                   href={url}
-                  className={cn(buttonVariants({ variant: "default" }), "gap-2 px-3 py-1.5 text-white! no-underline")}
-                  target="_blank"
-                  rel="noopener noreferrer nofollow"
-                >
-                  <GitHubIcon size={16} className="text-white" />
-                  <span className="text-white">{children}</span>
-                </a>
-              )
-            }
-            
-            return (
-              <a
-                href={url}
-                className="font-medium text-primary underline-offset-4 hover:underline"
-                target={isExternal ? "_blank" : undefined}
-                rel={isExternal ? "noopener noreferrer nofollow" : undefined}
-              >
-                {children}
-              </a>
-            )
-          },
-          table: ({ children }) => (
-            <div className="my-6 w-full overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                {children}
-              </table>
-            </div>
-          ),
-          thead: ({ children }) => (
-            <thead>
-              {children}
-            </thead>
-          ),
-          tr: ({ children }) => (
-            <tr className="border-b border-border">
-              {children}
-            </tr>
-          ),
-          th: ({ children }) => (
-            <th className="py-2 pr-6 text-left text-xs font-medium uppercase tracking-[0.08em] text-foreground/45">
-              {children}
-            </th>
-          ),
-          td: ({ children }) => (
-            <td className="py-3 pr-6 text-left text-sm text-foreground/70 first:font-medium first:text-foreground">
-              {children}
-            </td>
-          ),
-          code: ({ children, className }) => {
-            const isInline = !className
-            if (isInline) {
-              return (
-                <OverlayChip
-                  className="mx-0.5 align-middle"
-                  innerClassName="h-auto min-h-5 px-1.5 font-mono text-[12px] font-medium text-primary"
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer nofollow" : undefined}
                 >
                   {children}
-                </OverlayChip>
+                </a>
               )
-            }
-            return (
-              <code className={cn(className)}>
-                {children}
-              </code>
-            )
-          },
-          pre: ({ children }) => <DocsCodeBlock>{children}</DocsCodeBlock>,
-          blockquote: ({ children }) => (
-            <OverlayCard className="my-5 h-auto w-full">
-              <OverlayCardPanel className="px-5 py-4 text-sm [&_li]:text-accent [&_ol]:my-3 [&_ol]:space-y-2 [&_p]:my-0 [&_p]:text-accent [&_strong]:text-foreground [&_ul]:my-3 [&_ul]:space-y-2">
-                {children}
-              </OverlayCardPanel>
-            </OverlayCard>
-          ),
-          img: ({ src, alt }) => {
-            const url = typeof src === "string" ? src : ""
-            if (!url) return null
-            return (
-              <OverlayCard className="my-5 h-auto w-full">
-                <OverlayCardPanel className="p-0">
-                  <img src={url} alt={typeof alt === "string" ? alt : ""} className="block h-auto w-full" />
-                </OverlayCardPanel>
-              </OverlayCard>
-            )
-          },
-        }}
-      >
-        {markdown}
-      </ReactMarkdown>
+            },
+            table: ({ children }) => (
+              <div className="tableWrapper overflow-x-auto">
+                <table>{children}</table>
+              </div>
+            ),
+            // Read the fence language here on the server so the header label hydrates as rendered.
+            pre: ({ node, children }) => {
+              const code = node?.children[0]
+              const classes = code && "properties" in code ? code.properties.className : undefined
+              const language = Array.isArray(classes)
+                ? classes.map(String).find((c) => c.startsWith("language-"))?.slice("language-".length)
+                : undefined
+              return <DocsCodeBlock language={language}>{children}</DocsCodeBlock>
+            },
+          }}
+        >
+          {markdown}
+        </ReactMarkdown>
+      </div>
     </div>
   )
 }

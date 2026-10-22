@@ -94,7 +94,7 @@ export default function RequestDetail({
   return (
     <section
       data-request-detail
-      className="relative -mx-4 flex h-[calc(100dvh-var(--workspace-mobile-nav-height))] min-w-0 overflow-hidden sm:-mx-8 lg:-mx-12 lg:h-dvh xl:-mx-16"
+      className="relative -mx-4 flex h-[calc(100dvh-var(--workspace-mobile-nav-height))] min-w-0 overflow-hidden sm:-mx-8 lg:-mx-12 lg:h-(--workspace-frame-height) xl:-mx-16"
     >
       <Navigator
         workspaceSlug={workspaceSlug}

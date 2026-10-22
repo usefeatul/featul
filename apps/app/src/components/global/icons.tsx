@@ -8,13 +8,14 @@ import {
   IconUserFilled,
   IconLayoutBoardFilled,
   IconMessageFilled,
+  IconMessageCircleFilled,
   IconWorldFilled,
   IconPuzzleFilled,
   IconSettingsFilled,
   IconBellFilled,
   IconMoonFilled,
   IconSunFilled,
-  IconCircleCheckFilled,
+  IconSquareRoundedCheckFilled,
   IconClockFilled,
   IconCopyFilled,
   IconExternalLinkFilled,
@@ -31,6 +32,7 @@ import {
   IconPaletteFilled,
   IconArchiveFilled,
   IconCreditCardFilled,
+  IconCrownFilled,
   IconFolderFilled,
   IconDatabaseFilled,
   IconLayoutSidebarFilled,
@@ -38,20 +40,31 @@ import {
   IconCalendarFilled,
   IconSortDescending2Filled,
   IconListCheckFilled,
-  IconInfoCircleFilled,
-  IconHelpCircleFilled,
+  IconInfoSquareRoundedFilled,
+  IconHelpSquareRoundedFilled,
+  IconAlertSquareRoundedFilled,
   IconBookFilled,
   IconBoltFilled,
   IconSparklesFilled,
   IconBulbFilled,
   IconThumbDownFilled,
   IconFileTextFilled,
-  IconChartAreaFilled,
+  IconGraphFilled,
   IconEyeFilled,
+  IconTableFilled,
+  IconFileUploadFilled,
+  IconSquareRoundedArrowLeftFilled,
   type Icon as TablerIcon,
   type IconProps as TablerIconProps,
 } from "@tabler/icons-react";
-import { LogoutIcon, ShareIcon, LowTractionIcon, FilterIcon, NoCollectionIcon } from "./artwork";
+import {
+  LogoutIcon,
+  ShareIcon,
+  LowTractionIcon,
+  FilterIcon,
+  NoCollectionIcon,
+  OpenExternalIcon,
+} from "./artwork";
 export {
   LogoutIcon,
   RoadmapIcon,
@@ -60,12 +73,12 @@ export {
   LowTractionIcon,
   FilterIcon,
   NoCollectionIcon,
+  OpenExternalIcon,
 };
 export { HomeIcon } from "@featul/ui/icons/home";
 import {
   type LucideIcon,
   type LucideProps,
-  AlertCircle as LucideAlertCircle,
   AlignLeft as LucideAlignLeft,
   ArrowBigDown as LucideArrowBigDown,
   ArrowBigUp as LucideArrowBigUp,
@@ -84,16 +97,13 @@ import {
   ChevronsDown as LucideChevronsDown,
   ChevronsUp as LucideChevronsUp,
   ChevronsUpDown as LucideChevronsUpDown,
-  CircleHelp as LucideCircleHelp,
   CircleUserRound as LucideCircleUserRound,
   Clipboard as LucideClipboard,
   ClipboardCheck as LucideClipboardCheck,
   Cloud as LucideCloud,
   Code2 as LucideCode2,
   EllipsisVertical as LucideEllipsisVertical,
-  FileSpreadsheet as LucideFileSpreadsheet,
   FileText as LucideFileText,
-  FileUp as LucideFileUp,
   Fingerprint as LucideFingerprint,
   GitMerge as LucideGitMerge,
   GripVertical as LucideGripVertical,
@@ -108,7 +118,6 @@ import {
   Maximize2 as LucideMaximize2,
   Menu as LucideMenu,
   Rss as LucideRss,
-  MessageCircle as LucideMessageCircle,
   MessageSquareText as LucideMessageSquareText,
   MoreHorizontal as LucideMoreHorizontal,
   Paperclip as LucidePaperclip,
@@ -173,7 +182,7 @@ export const DomainIcon = solid(IconWorldFilled);
 export const IntegrationIcon = solid(IconPuzzleFilled);
 export const SettingIcon = solid(IconSettingsFilled);
 export const Bell = solid(IconBellFilled);
-export const CheckCircle = solid(IconCircleCheckFilled);
+export const CheckCircle = solid(IconSquareRoundedCheckFilled);
 export const Clock = solid(IconClockFilled);
 export const Copy = solid(IconCopyFilled);
 export const ExternalLink = solid(IconExternalLinkFilled);
@@ -188,16 +197,17 @@ export const EditIcon = solid(IconEditFilled);
 export const AppearanceIcon = solid(IconPaletteFilled);
 export const ArchiveIcon = solid(IconArchiveFilled);
 export const BillingIcon = solid(IconCreditCardFilled);
+export const PlanIcon = solid(IconCrownFilled);
 export const DocsIcon = solid(IconFolderFilled);
 export const ExportIcon = solid(IconDatabaseFilled);
-export const HelpCenterIcon = solid(IconHelpCircleFilled);
+export const HelpCenterIcon = solid(IconHelpSquareRoundedFilled);
 export const BookIcon = solid(IconBookFilled);
 export const BoltIcon = solid(IconBoltFilled);
 export const SparklesIcon = solid(IconSparklesFilled);
 export const BulbIcon = solid(IconBulbFilled);
 export const DislikeIcon = solid(IconThumbDownFilled);
 export const ArticleIcon = solid(IconFileTextFilled);
-export const AnalyticsIcon = solid(IconChartAreaFilled);
+export const AnalyticsIcon = solid(IconGraphFilled);
 export const EyeIcon = solid(IconEyeFilled);
 const LeftPanelIcon = solid(IconLayoutSidebarFilled);
 const RightPanelIcon = solid(IconLayoutSidebarRightFilled);
@@ -223,7 +233,7 @@ export function PanelIcon({
 
 export const SidebarPanelIcon = PanelIcon;
 
-export const AlertCircle = outline(LucideAlertCircle);
+export const AlertCircle = solid(IconAlertSquareRoundedFilled);
 export const AlignLeft = outline(LucideAlignLeft);
 export const ArrowBigDown = outline(LucideArrowBigDown);
 export const ArrowBigUp = outline(LucideArrowBigUp);
@@ -286,14 +296,14 @@ export const CheckIcon = Check;
 export const ChevronDownIcon = ChevronDown;
 export const ChevronLeftIcon = ChevronLeft;
 export const ChevronRightIcon = ChevronRight;
-export const CircleQuestionMarkIcon = outline(LucideCircleHelp);
+export const CircleQuestionMarkIcon = solid(IconHelpSquareRoundedFilled);
 export const ClipboardIcon = outline(LucideClipboard);
 export const CloudIcon = outline(LucideCloud);
-export const CommentsIcon = outline(LucideMessageCircle);
-export const CsvIcon = outline(LucideFileSpreadsheet);
+export const CommentsIcon = solid(IconMessageCircleFilled);
+export const CsvIcon = solid(IconTableFilled);
 export const DocumentTextIcon = FileText;
-export const FileExportIcon = outline(LucideFileUp);
-export const InfoIcon = solid(IconInfoCircleFilled);
+export const FileExportIcon = solid(IconFileUploadFilled);
+export const InfoIcon = solid(IconInfoSquareRoundedFilled);
 export const IdeaIcon = outline(LucideLightbulb);
 export const KeyIcon = outline(LucideKeyRound);
 export const ListFilterIcon = solid(IconListCheckFilled);
@@ -345,7 +355,7 @@ export { DiscordIcon } from "@featul/ui/icons/discord";
 export { SlackIcon } from "@featul/ui/icons/slack";
 export const DangerDeleteIcon = TrashIcon;
 export const MoreIcon = MenuIcon;
-export const ArrowBackIcon = ArrowLeft;
+export const ArrowBackIcon = solid(IconSquareRoundedArrowLeftFilled);
 export { WorkspaceSwitcherIcon } from "@featul/ui/icons/workspace";
 export { SelectBoxIcon } from "@featul/ui/icons/select-box";
 

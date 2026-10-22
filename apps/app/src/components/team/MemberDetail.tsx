@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { Member } from "@/types/team";
 import type { PaginatedActivity } from "@/types/activity";
 import { MemberHeader } from "@/components/team/MemberHeader";
-import { MemberCounters } from "@/components/team/stats";
+import { MemberOverview } from "@/components/team/stats";
 import { MemberActivity } from "@/components/team/MemberActivity";
 import { MemberTopPosts } from "@/components/team/MemberTopPosts";
 import { useMemberActivityQuery } from "@/components/team/useMemberActivityQuery";
@@ -104,9 +104,9 @@ export default function MemberDetail({
   return (
     <section
       data-member-detail
-      className="relative -mx-4 flex h-[calc(100dvh-var(--workspace-mobile-nav-height))] min-w-0 flex-col overflow-hidden sm:-mx-8 md:flex-row md:gap-[2px] md:bg-muted/45 md:pr-1 dark:md:bg-black/25 lg:-mx-12 lg:h-dvh xl:-mx-16"
+      className="relative -mx-4 flex h-[calc(100dvh-var(--workspace-mobile-nav-height))] min-w-0 flex-col overflow-hidden sm:-mx-8 md:flex-row lg:-mx-12 lg:h-(--workspace-frame-height) xl:-mx-16"
     >
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background md:border-r md:border-border/60 dark:md:border-white/10">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background">
         <header className="z-20 flex min-h-12 shrink-0 items-center gap-2 bg-background px-4 text-sm sm:px-6">
           <nav aria-label="Member navigation" className="min-w-0 flex-1">
             <ol className="flex min-w-0 items-center gap-2">
@@ -140,7 +140,7 @@ export default function MemberDetail({
             <MemberHeader member={member} userId={userId} />
 
             <div className="md:hidden">
-              <MemberCounters stats={stats} />
+              <MemberOverview stats={stats} />
             </div>
 
             <div className="md:hidden">
@@ -202,26 +202,10 @@ export default function MemberDetail({
 
       <aside
         aria-label="Member statistics and top posts"
-        className="hidden h-full min-h-0 w-[22rem] shrink-0 flex-col overflow-hidden border-l border-border/60 bg-background md:flex dark:border-white/10"
+        className="scrollbar-hide hidden h-full min-h-0 w-[22rem] shrink-0 flex-col gap-3 overflow-y-auto overscroll-contain border-l border-border/60 bg-background px-3 pb-3 pt-[4.75rem] md:flex lg:pt-20 [&>*]:shrink-0 dark:border-white/10"
       >
-        <section
-          aria-labelledby="member-overview-heading"
-          className="shrink-0 border-b border-border/60 dark:border-white/10"
-        >
-          <header className="flex min-h-12 items-center px-4">
-            <h2
-              id="member-overview-heading"
-              className="text-sm font-semibold text-foreground"
-            >
-              At a glance
-            </h2>
-          </header>
-          <div className="px-2 pb-6 pt-3">
-            <MemberCounters stats={stats} />
-          </div>
-        </section>
+        <MemberOverview stats={stats} />
         <MemberTopPosts
-          panel
           slug={slug}
           topPosts={topPosts}
           isLoading={isStatsLoading || isStatsFetching}

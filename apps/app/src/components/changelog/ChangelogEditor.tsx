@@ -13,7 +13,7 @@ import {
   TickIcon,
   LoaderIcon,
   ChevronLeftIcon,
-  IconAi,
+  SparklesIcon,
 } from "@/components/global/icons";
 
 import { TagSelector, type WorkspaceTag } from "./TagSelector";
@@ -27,6 +27,7 @@ import { useAssistantPanel } from "@/hooks/useAssistantPanel";
 import { PANEL_SHORTCUT_LABEL, usePanelShortcut } from "@/hooks/shortcut";
 
 import { Related } from "./related";
+import { SchedulePicker } from "./SchedulePicker";
 import { Timeline } from "./timeline";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -45,6 +46,7 @@ interface ChangelogEditorProps {
     tags: string[];
     relatedPostIds?: string[];
     status: "draft" | "published";
+    scheduledAt?: Date | null;
   };
   availableTags: WorkspaceTag[];
 }
@@ -89,6 +91,8 @@ export function ChangelogEditor({
     setRelatedPostIds,
     isDraft,
     setIsDraft,
+    scheduledAt,
+    setScheduledAt,
     isSaving,
     isDirty,
     setIsDirty,
@@ -114,7 +118,7 @@ export function ChangelogEditor({
   }, [setIsAiOpen]);
 
   const saveWithCheck = useCallback(async () => {
-    if (!isDraft) {
+    if (!isDraft || scheduledAt) {
       const issues = getPublishCheckIssues({
         title,
         contentMarkdown: editorRef.current?.getMarkdown(),
@@ -128,7 +132,7 @@ export function ChangelogEditor({
       }
     }
     await handleSave();
-  }, [isDraft, title, coverImage, editorRef, handleSave]);
+  }, [isDraft, scheduledAt, title, coverImage, editorRef, handleSave]);
 
   const additionalSlashSuggestions = useCallback(
     ({ query }: { query: string }) => {
@@ -193,8 +197,28 @@ export function ChangelogEditor({
             type: "button" as const,
             variant: "plain" as const,
             shortcut: PANEL_SHORTCUT_LABEL,
-            icon: <IconAi className="size-[18px]" viewBox="4 4 16 16" stroke={1.8} aria-hidden="true" />,
+            icon: <SparklesIcon className="size-4 text-primary" aria-hidden="true" />,
             onClick: openAiPanel,
+          },
+        ]
+      : []),
+    ...(isDraft
+      ? [
+          {
+            key: "schedule",
+            label: "Schedule publish",
+            type: "custom" as const,
+            onClick: () => {},
+            render: (buttonClassName: string) => (
+              <SchedulePicker
+                scheduledAt={scheduledAt}
+                triggerClassName={buttonClassName}
+                onChange={(next) => {
+                  setScheduledAt(next);
+                  setIsDirty(true);
+                }}
+              />
+            ),
           },
         ]
       : []),
@@ -236,7 +260,7 @@ export function ChangelogEditor({
   return (
     <div
       data-changelog-editor
-      className="relative min-h-[calc(100dvh-var(--workspace-mobile-nav-height))] bg-background lg:flex lg:h-dvh lg:min-h-dvh lg:overflow-hidden"
+      className="relative min-h-[calc(100dvh-var(--workspace-mobile-nav-height))] bg-background lg:flex lg:h-(--workspace-frame-height) lg:min-h-(--workspace-frame-height) lg:overflow-hidden"
     >
       <div
         className="flex min-w-0 flex-1 flex-col bg-background lg:min-h-0"

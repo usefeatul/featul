@@ -130,12 +130,6 @@ export default function HelpCenterSection({
               fieldClassName="h-9"
             />
           </div>
-          <UsageMeter
-            label={monthly ? "Scans this month" : "Setup scan"}
-            icon={SparklesIcon}
-            used={usage?.used ?? 0}
-            limit={usage?.limit ?? null}
-          />
           <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
             <p className="text-xs text-muted-foreground">
               Up to {limits.helpImportMaxPages} pages and{" "}
@@ -165,6 +159,12 @@ export default function HelpCenterSection({
 
       <SectionCard title="Help center usage" contentClassName="py-0">
         <div className="-mx-5 divide-y divide-border/50">
+          <UsageMeter
+            label={monthly ? "Scans this month" : "Setup scan"}
+            icon={SparklesIcon}
+            used={usage?.used ?? 0}
+            limit={usage?.limit ?? null}
+          />
           <UsageMeter
             label="Collections"
             icon={BookIcon}

@@ -2,10 +2,16 @@ export type SettingsSection = {
   value: string;
   label: string;
   desc: string;
-  group: "Workspace" | "Product" | "Connections";
+  group: "Personal" | "Workspace" | "Product" | "Connections";
 };
 
 export const SECTIONS: SettingsSection[] = [
+  {
+    value: "account",
+    group: "Personal",
+    label: "Account",
+    desc: "Manage your profile, security, and appearance",
+  },
   {
     value: "branding",
     group: "Workspace",

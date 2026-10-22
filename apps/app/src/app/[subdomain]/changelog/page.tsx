@@ -64,6 +64,7 @@ export default async function ChangelogPage({
         {entries.length === 0 ? (
           <div className="flex flex-1 flex-col">
             <SubdomainListEmptyState
+              mood="sleep"
               title="No changelog entries yet"
               description="Check back soon for updates."
             />

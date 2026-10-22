@@ -1,11 +1,8 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
+import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import {
-  OverlayCard,
-  OverlayCardPanel,
-} from "@/components/shared/overlay-card";
 
 type PromoCardProps = {
   className?: string;
@@ -26,13 +23,17 @@ export function PromoCard({
 }: PromoCardProps) {
   return (
     <div className={cn("w-full", className)}>
-      <OverlayCard>
-        <OverlayCardPanel className="px-3 py-3">
-          <h3 className="font-heading text-sm font-semibold tracking-tight text-foreground">
+      <section className={cn(modalCardShellClass, "flex min-w-0 flex-col")}>
+        <header className="flex items-center px-2.5 py-1.5">
+          <h3 className="text-sm font-medium leading-6 text-foreground">
             {title}
           </h3>
-          <p className="mt-1.5 text-xs leading-5 text-accent">{description}</p>
-          <div className="mt-3">
+        </header>
+        <div className={cn(modalCardInnerClass, "flex min-w-0 flex-col gap-4 px-4 py-4")}>
+          <p className="text-sm leading-relaxed text-accent wrap-break-word">
+            {description}
+          </p>
+          <div>
             <Button
               asChild
               variant="default"
@@ -41,10 +42,12 @@ export function PromoCard({
             >
               <Link href={ctaHref}>{ctaLabel}</Link>
             </Button>
+            <p className="mt-2 text-center text-[11px] text-accent/75">
+              {subtext}
+            </p>
           </div>
-          <p className="mt-2 text-center text-[11px] text-accent/75">{subtext}</p>
-        </OverlayCardPanel>
-      </OverlayCard>
+        </div>
+      </section>
     </div>
   );
 }

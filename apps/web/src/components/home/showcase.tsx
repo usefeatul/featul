@@ -4,6 +4,8 @@ import {
   BoardIcon,
   RoadmapIcon,
   ChangelogIcon,
+  BookIcon,
+  WidgetIcon,
 } from "@/components/global/icons";
 
 import Image from "next/image";
@@ -14,9 +16,13 @@ import {
   MarketingContainer,
   MarketingRail,
 } from "@/components/layout/container";
-import dashboard from "../../../public/image/dashboard.png";
+import feedback from "../../../public/image/feedback.png";
 import roadmap from "../../../public/image/roadmap.png";
 import changelog from "../../../public/image/changelog.png";
+import helpCenter from "../../../public/image/help-center.png";
+import widget from "../../../public/image/widget.png";
+import { selectorSurfaceClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import { DitherBackdrop } from "./backdrop";
 
 const previews = [
@@ -25,7 +31,7 @@ const previews = [
     label: "Feedback",
     icon: BoardIcon,
     iconColor: "#4189e2",
-    image: dashboard,
+    image: feedback,
     alt: "Featul feedback workspace with customer requests, votes, comments, and statuses",
   },
   {
@@ -43,6 +49,22 @@ const previews = [
     iconColor: "#837ec8",
     image: changelog,
     alt: "Featul changelog workspace for writing and publishing product updates",
+  },
+  {
+    id: "help-center",
+    label: "Help Center",
+    icon: BookIcon,
+    iconColor: "#d9822b",
+    image: helpCenter,
+    alt: "Featul public help center article with collections, a table of contents, and step-by-step content",
+  },
+  {
+    id: "widget",
+    label: "Widget",
+    icon: WidgetIcon,
+    iconColor: "#3fa66b",
+    image: widget,
+    alt: "Featul feedback widget open on a site, showing the latest update, a feedback box, and roadmap items",
   },
 ];
 
@@ -72,7 +94,7 @@ export function Showcase() {
       </svg>
       <Tabs.List
         aria-label="Explore Featul"
-        className="mx-auto flex h-14 w-fit max-w-full items-center justify-center gap-2 sm:gap-3 lg:gap-4"
+        className="mx-auto flex h-14 w-fit max-w-full items-center justify-center gap-1 sm:gap-3 lg:gap-4"
         onPointerLeave={() => setHovered(null)}
         onKeyDown={() => setHovered(null)}
         onBlur={(event) => {
@@ -86,7 +108,7 @@ export function Showcase() {
             key={id}
             value={id}
             aria-label={label}
-            className="relative isolate inline-flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-xs text-accent transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary data-[state=active]:text-foreground sm:px-3 sm:text-sm"
+            className="relative isolate inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-xs text-accent transition-colors hover:text-foreground outline-none data-[state=active]:text-foreground sm:px-3 sm:text-sm"
             onPointerEnter={(event) => {
               if (event.pointerType !== "touch") setHovered(id);
             }}
@@ -106,7 +128,7 @@ export function Showcase() {
                 }
               />
             ) : null}
-            <Icon aria-hidden className="size-4" style={{ color: iconColor }} />
+            <Icon aria-hidden className="hidden size-4 sm:block" style={{ color: iconColor }} />
             {label}
           </Tabs.Trigger>
         ))}
@@ -119,12 +141,17 @@ export function Showcase() {
         >
           <MarketingContainer>
             <MarketingRail>
-              <div className="overflow-hidden rounded-xl bg-card p-1 shadow-[0_24px_64px_-20px_rgba(0,0,0,0.35)] ring-1 ring-white/40 sm:rounded-2xl sm:p-2">
+              <div
+                className={cn(
+                  selectorSurfaceClass,
+                  "overflow-hidden rounded-xl to-[color-mix(in_oklab,var(--card),var(--foreground)_3%)] p-1 supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*3.5)] sm:rounded-2xl sm:supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*4)]",
+                )}
+              >
                 <motion.div
                   initial={reduceMotion ? false : { opacity: 0.85 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: reduceMotion ? 0 : 0.2, ease: "easeOut" }}
-                  className="aspect-[16/10] overflow-hidden rounded-lg"
+                  className="aspect-[4/3] overflow-hidden rounded-lg"
                 >
                   <Image
                     src={preview.image}

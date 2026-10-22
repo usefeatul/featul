@@ -3,7 +3,6 @@
 import * as React from "react";
 import {
   ChevronDown,
-  RoadmapIcon as FillRoadmapIcon,
 } from "@/components/global/icons";
 
 import StatusIcon from "@/components/requests/StatusIcon";
@@ -82,7 +81,6 @@ export function WidgetRoadmap({
         <WidgetEmpty
           title="No roadmap yet"
           description="Public items will show up here when they’re ready to share."
-          icon={<FillRoadmapIcon className="size-5" size={20} />}
         >
           <WidgetEmptyPlaceholders />
         </WidgetEmpty>

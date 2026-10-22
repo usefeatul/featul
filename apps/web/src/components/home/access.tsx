@@ -7,6 +7,8 @@ import {
   VoteIcon,
 } from "@/components/global/icons";
 import type { ComponentType } from "react";
+import { selectorSurfaceClass } from "@featul/ui/lib/overlay";
+import { cn } from "@featul/ui/lib/utils";
 import {
   MarketingContainer,
   marketingRailClass,
@@ -74,7 +76,12 @@ export default function Access() {
             conversation should be.
           </p>
 
-          <div className="mt-9 overflow-hidden rounded-xl border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.03),0_10px_24px_-12px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.6)] sm:mt-12">
+          <div
+            className={cn(
+              selectorSurfaceClass,
+              "mt-9 overflow-hidden rounded-xl to-[color-mix(in_oklab,var(--card),var(--foreground)_3%)] supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*3.5)] sm:mt-12",
+            )}
+          >
             <div className="-mb-px -mr-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {portalItems.map((item) => {
                 const Icon = item.icon;

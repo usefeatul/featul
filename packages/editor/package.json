@@ -5,7 +5,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./components/*": "./src/components/*.tsx",
-    "./extensions/*": "./src/extensions/*"
+    "./extensions/*": "./src/extensions/*",
+    "./styles/*": "./src/styles/*"
   },
   "scripts": {
     "check-types": "tsc --noEmit"

@@ -5,6 +5,7 @@ import { Command as CommandPrimitive } from "cmdk"
 import { SearchIcon } from "@featul/ui/icons/search"
 
 import { cn } from "@featul/ui/lib/utils"
+import { DitherGradient } from "@featul/ui/components/gradient"
 import {
   Dialog,
   DialogContent,
@@ -38,6 +39,8 @@ type CommandDialogProps = Omit<
   icon?: React.ReactNode
   shouldFilter?: boolean
   contentClassName?: string
+  /** Faint dither wash behind the top of the list, fading out within a few rows. */
+  pattern?: boolean
 }
 
 function CommandDialog({
@@ -49,6 +52,7 @@ function CommandDialog({
   icon,
   shouldFilter,
   contentClassName,
+  pattern = false,
   ...props
 }: CommandDialogProps) {
   const styleWidth =
@@ -77,7 +81,19 @@ function CommandDialog({
           </DialogTitle>
         </DialogHeader>
         <DialogInner className="p-0">
-          <div className={cn("p-2", contentClassName)}>
+          <div className={cn("relative isolate p-2", contentClassName)}>
+            {pattern ? (
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-28"
+                style={{
+                  maskImage:
+                    "radial-gradient(ellipse 70% 100% at 50% 0%, black 0%, rgba(0,0,0,0.35) 50%, transparent 100%)",
+                }}
+              >
+                <DitherGradient to="primary" direction="down" cell={3} opacity={0.2} />
+              </div>
+            ) : null}
             <Command shouldFilter={shouldFilter}>
               {children}
             </Command>

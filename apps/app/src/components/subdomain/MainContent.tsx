@@ -116,11 +116,13 @@ export function MainContent({
           {items.length === 0 ? (
             searchQuery ? (
               <SubdomainListEmptyState
+                mood="search"
                 title="No results found"
                 description="Try different keywords or clear your search."
               />
             ) : selectedStatuses.length > 0 ? (
               <SubdomainListEmptyState
+                mood="search"
                 title="No posts found"
                 description="Try another roadmap status or clear the filter."
               />

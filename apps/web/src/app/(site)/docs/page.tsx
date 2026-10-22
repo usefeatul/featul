@@ -1,48 +1,7 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import { docsSections } from "@/config/docsNav"
-import { createPageMetadata } from "@/lib/seo"
+import { redirect } from "next/navigation"
+import { DOCS_HOME_HREF } from "@/config/docsNav"
 
-export const metadata: Metadata = createPageMetadata({
-  title: "Documentation",
-  description:
-    "Documentation, guides, and technical reference for Featul — feedback boards, roadmaps, changelogs, and the in-app widget.",
-  path: "/docs",
-})
-
+/** No docs home: /docs opens straight into the first page. */
 export default function DocsIndexPage() {
-  return (
-    <div className="w-full">
-      <header className="mb-12">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-[2.15rem]">
-          Docs
-        </h1>
-        <p className="mt-3 max-w-2xl text-base leading-7 text-foreground/55">
-          Documentation, guides, and technical reference for Featul.
-        </p>
-      </header>
-
-      <div className="space-y-12">
-        {docsSections.map((section) => (
-          <section key={section.label} className="w-full">
-            <h2 className="text-sm font-semibold tracking-tight text-foreground">
-              {section.label}
-            </h2>
-            <ul className="mt-2 grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {section.items.map((item) => (
-                <li key={item.href} className="border-b border-border">
-                  <Link
-                    href={item.href}
-                    className="block py-3 text-sm text-foreground/80 transition-colors hover:text-foreground"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-    </div>
-  )
+  redirect(DOCS_HOME_HREF)
 }

@@ -44,6 +44,16 @@ export function readImportErrorMessage(payload: unknown, fallback: string): stri
   return fallback;
 }
 
+/** Readable message from a thrown import error. The API client puts the JSON body in `message`. */
+export function readThrownImportError(error: unknown, fallback: string): string {
+  if (!(error instanceof Error)) return fallback;
+  try {
+    return readImportErrorMessage(JSON.parse(error.message), fallback);
+  } catch {
+    return error.message.trim() || fallback;
+  }
+}
+
 /** Refresh boards, status counts, and post-count queries after an import. */
 export async function invalidateWorkspaceImportQueries(
   queryClient: QueryClient,

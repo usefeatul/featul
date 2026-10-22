@@ -1,91 +1,69 @@
 "use client"
 
-import { useRef, useState, type ReactNode } from "react"
-import { Copy } from "lucide-react"
-import { Button } from "@featul/ui/components/button"
-import { TickIcon } from "@featul/ui/icons/tick"
-import {
-  OverlayCard,
-  OverlayCardPanel,
-} from "@/components/shared/overlay-card"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 
-function getLanguage(children: ReactNode): string | undefined {
-  const child = Array.isArray(children) ? children[0] : children
-  if (!child || typeof child !== "object" || !("props" in child)) return undefined
-
-  const className = (child.props as { className?: string }).className ?? ""
-  const match = className.match(/language-([\w+-]+)/)
-  return match?.[1]
+// Same labels as the editor's code block header (packages/editor code-block.ts).
+const LANGUAGE_LABELS: Record<string, string> = {
+  bash: "Bash",
+  css: "CSS",
+  html: "HTML",
+  javascript: "JavaScript",
+  js: "JavaScript",
+  json: "JSON",
+  jsx: "JSX",
+  markdown: "Markdown",
+  md: "Markdown",
+  python: "Python",
+  py: "Python",
+  sh: "Shell",
+  shell: "Shell",
+  sql: "SQL",
+  ts: "TypeScript",
+  tsx: "TSX",
+  typescript: "TypeScript",
+  xml: "XML",
+  yaml: "YAML",
+  yml: "YAML",
 }
 
-function copyWithFallback(text: string) {
-  const textarea = document.createElement("textarea")
-  textarea.value = text
-  textarea.setAttribute("readonly", "")
-  textarea.style.position = "fixed"
-  textarea.style.left = "-9999px"
-  document.body.appendChild(textarea)
-  textarea.select()
-  const ok = document.execCommand("copy")
-  document.body.removeChild(textarea)
-  if (!ok) throw new Error("Copy failed")
+const COPIED_MS = 1500
+
+export function languageLabel(language: string | undefined) {
+  if (!language) return "Code"
+  return LANGUAGE_LABELS[language.toLowerCase()] ?? language.charAt(0).toUpperCase() + language.slice(1)
 }
 
-export function DocsCodeBlock({ children }: { children: ReactNode }) {
+/** The help article code frame: editor.css draws the header from `data-language` and styles the copy button. */
+export function DocsCodeBlock({ language, children }: { language?: string; children: ReactNode }) {
   const preRef = useRef<HTMLPreElement>(null)
   const [copied, setCopied] = useState(false)
-  const language = getLanguage(children)
 
-  async function copySnippet() {
-    const text = preRef.current?.textContent?.trim() ?? ""
+  useEffect(() => {
+    if (!copied) return
+    const reset = window.setTimeout(() => setCopied(false), COPIED_MS)
+    return () => window.clearTimeout(reset)
+  }, [copied])
+
+  function copySnippet() {
+    const text = preRef.current?.querySelector("code")?.textContent ?? ""
     if (!text) return
-
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text)
-      } else {
-        copyWithFallback(text)
-      }
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1600)
-    } catch {
-      try {
-        copyWithFallback(text)
-        setCopied(true)
-        window.setTimeout(() => setCopied(false), 1600)
-      } catch {
-        setCopied(false)
-      }
-    }
+    navigator.clipboard
+      ?.writeText(text)
+      .then(() => setCopied(true))
+      .catch(() => {})
   }
 
   return (
-    <OverlayCard className="not-prose my-4 h-auto w-full">
-      <OverlayCardPanel className="relative bg-background px-4 py-3.5">
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-            {language || "code"}
-          </span>
-          <Button
-            type="button"
-            variant="card"
-            size="icon-sm"
-            className="size-7 text-muted-foreground hover:text-foreground"
-            onClick={copySnippet}
-            aria-label={copied ? "Copied" : "Copy code"}
-            title={copied ? "Copied" : "Copy code"}
-          >
-            {copied ? (
-              <TickIcon width={14} height={14} />
-            ) : (
-              <Copy className="size-3.5" />
-            )}
-          </Button>
-        </div>
-        <pre ref={preRef} className="docs-code overflow-x-auto">
-          {children}
-        </pre>
-      </OverlayCardPanel>
-    </OverlayCard>
+    <pre ref={preRef} data-language={languageLabel(language)}>
+      <button
+        type="button"
+        className="featul-code-copy"
+        aria-label={copied ? "Copied" : "Copy code"}
+        title="Copy"
+        data-copied={copied ? "true" : undefined}
+        onClick={copySnippet}
+      />
+      {children}
+    </pre>
   )
 }

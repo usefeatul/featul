@@ -9,6 +9,16 @@ export const entryContentSchema = z
   })
   .passthrough();
 
+/** Schedules must land between now and a year out; the cron publishes within minutes. */
+const SCHEDULE_MAX_MS = 366 * 24 * 60 * 60 * 1000;
+export const scheduledAtSchema = z.coerce
+  .date()
+  .refine((date) => date.getTime() > Date.now(), "Schedule a time in the future")
+  .refine(
+    (date) => date.getTime() < Date.now() + SCHEDULE_MAX_MS,
+    "Schedule within the next year",
+  );
+
 export const createEntrySchema = z.object({
   slug: bySlugSchema.shape.slug,
   title: z.string().min(1).max(256),
@@ -22,6 +32,7 @@ export const createEntrySchema = z.object({
     .transform((ids) => [...new Set(ids)])
     .optional(),
   status: z.enum(["draft", "published"]).optional(),
+  scheduledAt: scheduledAtSchema.optional(),
 });
 
 export const updateEntrySchema = z.object({
@@ -38,6 +49,8 @@ export const updateEntrySchema = z.object({
     .transform((ids) => [...new Set(ids)])
     .optional(),
   status: z.enum(["draft", "published"]).optional(),
+  /** Null clears the schedule; omitted leaves it unchanged. */
+  scheduledAt: scheduledAtSchema.nullable().optional(),
 });
 
 export const aiToneSchema = z.enum(["user-friendly", "technical", "brief"]);

@@ -22,6 +22,7 @@ interface UseChangelogEntryProps {
         tags: string[];
         relatedPostIds?: string[];
         status: "draft" | "published";
+        scheduledAt?: Date | null;
     };
 }
 
@@ -41,9 +42,26 @@ export function useChangelogEntry({
     const [coverImage, setCoverImage] = useState<string | null>(initialData?.coverImage || null);
     const [selectedTags, setSelectedTags] = useState<string[]>(initialData?.tags || []);
     const [relatedPostIds, setRelatedPostIds] = useState<string[]>(initialData?.relatedPostIds || []);
-    const [isDraft, setIsDraft] = useState(initialData?.status !== "published");
+    const [isDraft, setIsDraftState] = useState(initialData?.status !== "published");
+    const [scheduledAt, setScheduledAtState] = useState<Date | null>(initialData?.scheduledAt ?? null);
+    // Only send publish state when the user touched it, so an open editor's
+    // autosave can't revert an entry the scheduler published in the meantime.
+    const publishStateChanged = useRef(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isDirty, setIsDirty] = useState(false);
+
+    const setIsDraft = useCallback((next: boolean) => {
+        publishStateChanged.current = true;
+        setIsDraftState(next);
+        if (!next) setScheduledAtState(null);
+    }, []);
+
+    /** Scheduling keeps the entry a draft until the time passes. */
+    const setScheduledAt = useCallback((next: Date | null) => {
+        publishStateChanged.current = true;
+        setScheduledAtState(next);
+        if (next) setIsDraftState(true);
+    }, []);
 
     // Image upload handler
     const handleImageUpload = useCallback(async (file: File): Promise<string> => {
@@ -95,10 +113,12 @@ export function useChangelogEntry({
                     tags: selectedTags,
                     relatedPostIds,
                     status: isDraft ? "draft" : "published",
+                    scheduledAt: isDraft && scheduledAt ? scheduledAt : undefined,
                 });
                 const data = await res.json();
                 if ("ok" in data && data.ok) {
-                    toast.success(isDraft ? "Draft saved" : "Entry published");
+                    toast.success(scheduledAt ? "Entry scheduled" : isDraft ? "Draft saved" : "Entry published");
+                    publishStateChanged.current = false;
                     setIsDirty(false);
                     router.replace(`/workspaces/${workspaceSlug}/changelog/${data.entry.id}/edit`);
                 } else {
@@ -114,11 +134,17 @@ export function useChangelogEntry({
                     coverImage: coverImage,
                     tags: selectedTags,
                     relatedPostIds,
-                    status: isDraft ? "draft" : "published",
+                    ...(publishStateChanged.current
+                        ? {
+                            status: isDraft ? "draft" : "published",
+                            scheduledAt: isDraft ? scheduledAt : null,
+                        }
+                        : {}),
                 });
                 const data = await res.json();
                 if ("ok" in data && data.ok) {
-                    toast.success("Changes saved");
+                    toast.success(publishStateChanged.current && isDraft && scheduledAt ? "Entry scheduled" : "Changes saved");
+                    publishStateChanged.current = false;
                     setIsDirty(false);
                 } else {
                     toast.error("Failed to update entry");
@@ -130,7 +156,7 @@ export function useChangelogEntry({
         } finally {
             setIsSaving(false);
         }
-    }, [mode, workspaceSlug, entryId, title, summary, coverImage, selectedTags, relatedPostIds, isDraft, router]);
+    }, [mode, workspaceSlug, entryId, title, summary, coverImage, selectedTags, relatedPostIds, isDraft, scheduledAt, router]);
 
     // Auto-save effect
     useEffect(() => {
@@ -156,6 +182,8 @@ export function useChangelogEntry({
         setRelatedPostIds,
         isDraft,
         setIsDraft,
+        scheduledAt,
+        setScheduledAt,
         isSaving,
         isDirty,
         setIsDirty,

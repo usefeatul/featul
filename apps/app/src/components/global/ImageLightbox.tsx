@@ -9,6 +9,7 @@ import {
 
 import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 import { SettingsDialogShell } from "@/components/settings/global/SettingsDialogShell";
+import { DitherWash } from "./DitherWash";
 
 export const imageLightboxContentClassName =
   "h-[min(88dvh,860px)] max-h-[92dvh] overflow-visible";
@@ -147,6 +148,7 @@ export function ImageLightbox({
       contentClassName={imageLightboxContentClassName}
       icon={<ImageIcon className="size-3.5" />}
       onOpenAutoFocus={(event) => event.preventDefault()}
+      innerClassName="relative isolate"
       aside={
         hasMany ? (
           <ImageLightboxNav
@@ -156,6 +158,7 @@ export function ImageLightbox({
         ) : null
       }
     >
+      <DitherWash />
       <ImageLightboxView
         images={images}
         index={safeIndex}

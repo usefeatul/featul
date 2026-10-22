@@ -37,6 +37,12 @@ export function AlternativesRoundup() {
           <div className="mt-10">
             <ComparisonTable
               caption={`Best Featurebase and Canny alternatives compared, ${ROUNDUP_UPDATED_LABEL}`}
+              title="Alternatives compared"
+              action={
+                <span className="text-xs text-accent">
+                  Updated {ROUNDUP_UPDATED_LABEL}
+                </span>
+              }
               minWidthClassName="min-w-[64rem]"
             >
               <ComparisonThead>

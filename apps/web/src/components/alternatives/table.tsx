@@ -2,23 +2,47 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { AlternativeIcon } from "@featul/ui/icons/alternative";
 import { FeatulLogoIcon } from "@featul/ui/icons/featul-logo";
+import {
+  modalCardInnerClass,
+  modalCardShellClass,
+} from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import type { FeatureSupport } from "@/config/alternatives";
 import { StatusIcon, featureSupportLabel } from "./icon";
 
 export function ComparisonTable({
   caption,
+  title,
+  action,
   children,
   minWidthClassName = "min-w-[36rem]",
 }: {
   caption: string;
+  /** Visible label in the shell header row, like a settings card title. */
+  title?: string;
+  action?: ReactNode;
   children: ReactNode;
   minWidthClassName?: string;
 }) {
   return (
-    <div className="w-full border border-border bg-card">
+    <div className={cn(modalCardShellClass, "flex w-full min-w-0 flex-col")}>
+      {title || action ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 px-2.5 py-1.5">
+          {title ? (
+            <p className="text-sm font-medium leading-6 text-foreground">
+              {title}
+            </p>
+          ) : null}
+          {action ? (
+            <div className="flex items-center justify-end">{action}</div>
+          ) : null}
+        </div>
+      ) : null}
       <div
-        className="overflow-x-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
+        className={cn(
+          modalCardInnerClass,
+          "min-w-0 overflow-x-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary",
+        )}
         role="region"
         aria-label={caption}
         tabIndex={0}
@@ -38,7 +62,7 @@ export function ComparisonTable({
 }
 
 export function ComparisonThead({ children }: { children: ReactNode }) {
-  return <thead className="border-b border-border">{children}</thead>;
+  return <thead className="border-b border-border/60">{children}</thead>;
 }
 
 export function ComparisonTh({

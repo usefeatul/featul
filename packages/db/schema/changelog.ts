@@ -40,6 +40,8 @@ export const changelogEntry = pgTable(
     sourceExternalId: text("source_external_id"),
     sourceImportedAt: timestamp("source_imported_at"),
     publishedAt: timestamp("published_at"),
+    /** A draft with this set is published automatically once the time passes. */
+    scheduledAt: timestamp("scheduled_at"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()
@@ -67,6 +69,9 @@ export const changelogEntry = pgTable(
       changelogEntryPublishedAtIdx: index(
         "changelog_entry_published_at_idx",
       ).on(table.publishedAt),
+      changelogEntryScheduledAtIdx: index(
+        "changelog_entry_scheduled_at_idx",
+      ).on(table.scheduledAt),
     }) as const,
 );
 

@@ -1,3 +1,5 @@
+export type DocsTopicIconKey = "book" | "bolt" | "palette" | "keyboard" | "github"
+
 export interface DocsNavItem {
   id: string
   label: string
@@ -6,6 +8,8 @@ export interface DocsNavItem {
 
 export interface DocsNavSection {
   label: string
+  /** Section artwork in the nav tree. */
+  icon: DocsTopicIconKey
   items: DocsNavItem[]
 }
 
@@ -41,6 +45,7 @@ export function getDocsNeighbors(pathname: string, sections: DocsNavSection[] = 
 export const docsSections: DocsNavSection[] = [
   {
     label: "Introduction",
+    icon: "book",
     items: [
       { id: "getting-started/overview", label: "What is Featul?", href: "/docs/getting-started/overview" },
       { id: "getting-started/index", label: "Getting Started", href: "/docs/getting-started" },
@@ -48,6 +53,7 @@ export const docsSections: DocsNavSection[] = [
   },
   {
     label: "Getting Started",
+    icon: "bolt",
     items: [
       { id: "getting-started/create-boards", label: "Create Boards", href: "/docs/getting-started/create-boards" },
       { id: "getting-started/invite-members", label: "Invite Members", href: "/docs/getting-started/invite-members" },
@@ -62,6 +68,7 @@ export const docsSections: DocsNavSection[] = [
   },
   {
     label: "Branding & Setup",
+    icon: "palette",
     items: [
       { id: "branding-setup/branding", label: "Branding", href: "/docs/branding-setup/branding" },
       { id: "branding-setup/domain", label: "Custom Domain", href: "/docs/branding-setup/domain" },
@@ -71,14 +78,19 @@ export const docsSections: DocsNavSection[] = [
   },
   {
     label: "Shortcuts",
+    icon: "keyboard",
     items: [
       { id: "getting-started/shortcuts", label: "Keyboard Shortcuts", href: "/docs/getting-started/shortcuts" },
     ],
   },
   {
     label: "Open Source",
+    icon: "github",
     items: [
       { id: "open-source/index", label: "Overview", href: "/docs/open-source" },
     ],
   },
 ]
+
+/** First docs page. Link here rather than to `/docs`, which only redirects, so navigation skips the empty hop. */
+export const DOCS_HOME_HREF = flattenDocsNav()[0]?.href ?? "/"

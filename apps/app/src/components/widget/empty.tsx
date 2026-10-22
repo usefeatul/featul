@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
+import { Mascot, type MascotMood } from "@featul/ui/components/mascot";
 
 export function WidgetEmpty({
   title,
   description,
-  icon,
+  mood = "idle",
   compact = false,
   children,
 }: {
   title: string;
   description?: string;
-  icon?: ReactNode;
+  mood?: MascotMood;
   compact?: boolean;
   children?: ReactNode;
 }) {
@@ -21,15 +22,12 @@ export function WidgetEmpty({
           : "flex min-h-0 flex-1 flex-col items-center px-6 pb-8 pt-16 text-center"
       }
     >
-      {icon ? (
-        <div
-          className={`flex items-center justify-center rounded-lg bg-[rgb(var(--widget-fg)/0.06)] text-[rgb(var(--widget-fg)/0.5)] ${
-            compact ? "mb-2 size-9" : "mb-3 size-11"
-          }`}
-        >
-          {icon}
-        </div>
-      ) : null}
+      <Mascot
+        mood={mood}
+        size={64}
+        color="var(--widget-accent)"
+        className={`text-[rgb(var(--widget-fg)/0.35)] ${compact ? "mb-2" : "mb-3"}`}
+      />
       <p className="text-sm font-medium text-[rgb(var(--widget-fg))]">{title}</p>
       {description ? (
         <p

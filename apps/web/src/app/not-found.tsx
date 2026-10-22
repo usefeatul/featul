@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { Mascot } from "@featul/ui/components/mascot"
 
 export const metadata: Metadata = {
   title: "Page not found",
@@ -10,6 +11,7 @@ export default function NotFound() {
   return (
     <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
       <div className="mx-auto max-w-lg  text-center">
+        <Mascot size={128} mood="search" className="mx-auto mb-6" />
         <h1 className="text-3xl font-sans tracking-wider ">Whoops…</h1>
         <p className="text-accent mt-2 text-sm font-mono">
           Sorry, there’s no such page. Go back
