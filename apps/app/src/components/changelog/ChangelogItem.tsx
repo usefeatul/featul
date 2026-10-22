@@ -143,8 +143,8 @@ function ChangelogItem({
             ) : null}
 
             {scheduledAt ? (
-              <span className="hidden text-right text-[10px] tabular-nums text-primary sm:inline">
-                {formatSchedule(scheduledAt)}
+              <span className="text-right text-[10px] tabular-nums text-primary">
+                Scheduled · {formatSchedule(scheduledAt)}
               </span>
             ) : (
               <span className="hidden w-12 text-right text-[10px] tabular-nums sm:inline">
