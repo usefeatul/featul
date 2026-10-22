@@ -21,6 +21,8 @@ import { requestBadgeClass } from "@/components/requests/styles"
 import { getInitials } from "@/utils/user"
 import { randomAvatarUrl } from "@/utils/avatar"
 import { relativeTime } from "@/lib/time"
+import { CalendarDays } from "@/components/global/icons"
+import { formatSchedule } from "./SchedulePicker"
 
 interface ChangelogItemProps {
   item: ChangelogEntryWithTags
@@ -44,6 +46,8 @@ function ChangelogItem({
   const href = `/workspaces/${workspaceSlug}/changelog/${item.id}/edit`
   const visibleTags = item.tags.slice(0, 2)
   const extraTagCount = Math.max(0, item.tags.length - visibleTags.length)
+  const scheduledAt =
+    item.status === "draft" && item.scheduledAt ? new Date(item.scheduledAt) : null
   const dateLabel = relativeTime(new Date(displayDate).toISOString())
 
   const handleRowClick: React.MouseEventHandler<HTMLDivElement> =
@@ -89,9 +93,17 @@ function ChangelogItem({
 
           <span
             className="shrink-0"
-            title={item.status === "published" ? "Published" : "Draft"}
+            title={
+              scheduledAt
+                ? `Scheduled for ${formatSchedule(scheduledAt)}`
+                : item.status === "published"
+                  ? "Published"
+                  : "Draft"
+            }
           >
-            {item.status === "published" ? (
+            {scheduledAt ? (
+              <CalendarDays className="size-4 text-primary" />
+            ) : item.status === "published" ? (
               <ChangelogPublishedIcon className="size-4" />
             ) : (
               <ChangelogDraftIcon className="size-4" />
@@ -130,9 +142,15 @@ function ChangelogItem({
               </div>
             ) : null}
 
-            <span className="hidden w-12 text-right text-[10px] tabular-nums sm:inline">
-              {dateLabel}
-            </span>
+            {scheduledAt ? (
+              <span className="hidden text-right text-[10px] tabular-nums text-primary sm:inline">
+                {formatSchedule(scheduledAt)}
+              </span>
+            ) : (
+              <span className="hidden w-12 text-right text-[10px] tabular-nums sm:inline">
+                {dateLabel}
+              </span>
+            )}
             <Avatar className="relative size-6 overflow-visible bg-muted">
               <AvatarImage
                 src={item.authorImage || randomAvatarUrl(item.authorId)}

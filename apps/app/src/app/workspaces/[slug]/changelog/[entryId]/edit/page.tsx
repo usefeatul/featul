@@ -43,6 +43,7 @@ export default async function EditChangelogPage({ params }: Props) {
                 tags: entry.tags,
                 relatedPostIds: entry.relatedPostIds,
                 status: entry.status,
+                scheduledAt: entry.scheduledAt ?? null,
             }}
             availableTags={availableTags}
         />

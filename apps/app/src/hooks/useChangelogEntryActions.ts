@@ -12,7 +12,7 @@ interface UseChangelogEntryActionsProps {
   onSuccess?: () => void;
 }
 
-/** Publish or delete a changelog entry. Delete dispatches `changelog:deleted` and refreshes. */
+/** Publish, unschedule, or delete a changelog entry. Delete dispatches `changelog:deleted` and refreshes. */
 export function useChangelogEntryActions({
   workspaceSlug,
   entryId,
@@ -64,6 +64,28 @@ export function useChangelogEntryActions({
     }
   };
 
+  const cancelSchedule = async () => {
+    setIsPending(true);
+    try {
+      const res = await client.changelog.entriesUpdate.$post({
+        slug: workspaceSlug,
+        entryId,
+        scheduledAt: null,
+      });
+      if (res.ok) {
+        toast.success("Schedule removed");
+        router.refresh();
+        onSuccess?.();
+      } else {
+        toast.error("Failed to remove schedule");
+      }
+    } catch {
+      toast.error("Failed to remove schedule");
+    } finally {
+      setIsPending(false);
+    }
+  };
+
   const deleteEntry = async () => {
     setIsPending(true);
     try {
@@ -94,6 +116,7 @@ export function useChangelogEntryActions({
   return {
     publish,
     unpublish,
+    cancelSchedule,
     deleteEntry,
     isPending,
   };

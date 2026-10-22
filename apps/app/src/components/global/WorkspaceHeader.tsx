@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
@@ -200,6 +201,10 @@ export default function WorkspaceHeader({
             <span>{action.label}</span>
             <Switch checked={action.checked} onCheckedChange={action.onClick} />
           </div>
+        ) : action.type === "custom" && action.render ? (
+          <Fragment key={action.key}>
+            {action.render(compactActionButtonClass)}
+          </Fragment>
         ) : (
           <EditorActionButton key={action.key} action={action} />
         ),

@@ -472,6 +472,8 @@ export function createChangelogRouter() {
         }
         const entrySlug = (toUrlSlug(input.title) || "update") + "-" + Date.now().toString(36);
         const isPublished = input.status === "published";
+        // Publishing now wins over a schedule; a scheduled entry stays a draft.
+        const scheduledAt = isPublished ? null : (input.scheduledAt ?? null);
 
         assertOptionalWorkspaceAssetUrl(
           input.coverImage,
@@ -493,6 +495,7 @@ export function createChangelogRouter() {
             tags: input.tags || [],
             relatedPostIds,
             publishedAt: isPublished ? new Date() : null,
+            scheduledAt,
           })
           .returning();
 
@@ -529,6 +532,7 @@ export function createChangelogRouter() {
           metadata: {
             status: entry.status,
             tags: entry.tags,
+            scheduledAt: entry.scheduledAt?.toISOString() ?? null,
           },
         });
 
@@ -601,6 +605,13 @@ export function createChangelogRouter() {
           if (input.status === "published" && !existing.publishedAt) {
             updates.publishedAt = new Date();
           }
+        }
+        // Publishing now wins over a schedule; a scheduled entry stays a draft.
+        if (input.status === "published") {
+          updates.scheduledAt = null;
+        } else if (input.scheduledAt !== undefined) {
+          updates.scheduledAt = input.scheduledAt;
+          if (input.scheduledAt) updates.status = "draft";
         }
 
         const [entry] = await ctx.db
@@ -683,6 +694,7 @@ export function createChangelogRouter() {
           metadata: {
             status: entry.status,
             tags: entry.tags,
+            scheduledAt: entry.scheduledAt?.toISOString() ?? null,
           },
         });
 
@@ -935,6 +947,7 @@ export function createChangelogRouter() {
           .set({
             status: "published",
             publishedAt: existing.publishedAt || new Date(),
+            scheduledAt: null,
           })
           .where(eq(changelogEntry.id, input.entryId))
           .returning();

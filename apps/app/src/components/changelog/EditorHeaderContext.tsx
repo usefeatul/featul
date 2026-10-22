@@ -15,11 +15,13 @@ export interface EditorAction {
     onClick: () => void
     disabled?: boolean
     destructive?: boolean
-    type?: "button" | "switch" | "menu"
+    type?: "button" | "switch" | "menu" | "custom"
     checked?: boolean
     active?: boolean
     variant?: "card" | "plain"
     shortcut?: string
+    /** For `custom`: renders its own control, styled like the header buttons. */
+    render?: (buttonClassName: string) => ReactNode
 }
 
 interface EditorHeaderContextValue {
