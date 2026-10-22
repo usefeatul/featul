@@ -25,7 +25,8 @@ import { toast } from "sonner";
 import { getSlugFromPath } from "@/config/nav";
 import { client } from "@featul/api/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { AccountIcon } from "@/components/global/icons";
+import { AccountIcon, WorkspaceSwitcherIcon } from "@/components/global/icons";
+import { SidebarBadge } from "@/components/sidebar/badge";
 import SignIn from "@/components/auth/SignIn";
 import SignUp from "@/components/auth/SignUp";
 import type { AuthMode } from "@/types/auth";
@@ -322,9 +323,14 @@ export default function UserDropdown({
                   </Avatar>
                 </span>
                 {!collapsed ? (
-                  <span className="truncate transition-colors">
-                    {displayUser.name || "Account"}
-                  </span>
+                  <>
+                    <span className="min-w-0 flex-1 truncate text-left transition-colors">
+                      {displayUser.name || "Account"}
+                    </span>
+                    <SidebarBadge className="ml-auto shrink-0">
+                      <WorkspaceSwitcherIcon className="size-3 text-neutral-600 dark:text-neutral-300" />
+                    </SidebarBadge>
+                  </>
                 ) : null}
               </button>
             </DropdownMenuTrigger>

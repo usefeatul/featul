@@ -145,7 +145,6 @@ const AccountActionsPopover = React.forwardRef<
           side="top"
           sideOffset={6}
           collisionPadding={12}
-          className="min-w-[132px] p-0"
         >
           <PopoverList>
             <PopoverListItem
