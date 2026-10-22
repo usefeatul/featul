@@ -50,7 +50,7 @@ export function MemberActivity({
 
   return (
     <section className="w-full min-w-0">
-      <header className="mb-4 flex items-center border-b border-border/30 pb-3 dark:border-white/5">
+      <header className="mb-4 flex items-center">
         <h2 className="text-base font-semibold text-foreground">
           Activity
         </h2>
@@ -71,7 +71,7 @@ export function MemberActivity({
         ) : dayGroups.length === 0 ? (
           <div className="py-6 text-center text-sm text-accent">No matching activity</div>
         ) : (
-          <div className="min-w-0 w-full">
+          <div className="flex w-full min-w-0 flex-col gap-4">
             {dayGroups.map((day) => (
               <MemberActivityDaySection
                 key={day.key}
