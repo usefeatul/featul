@@ -6,7 +6,8 @@ import { Button } from "@featul/ui/components/button";
 import { client } from "@featul/api/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CsvIcon, Upload, X, LoaderIcon } from "@/components/global/icons";
+import { CsvIcon, Upload, X } from "@/components/global/icons";
+import { cn } from "@featul/ui/lib/utils";
 
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -15,7 +16,10 @@ import {
   invalidateWorkspaceImportQueries,
   parseImportResultPayload,
   readImportErrorMessage,
+  readThrownImportError,
 } from "./import";
+import { ImportResultSummary } from "./ImportResultSummary";
+import { BannerChips, DataBanner, DataErrorStep, raisedCardClass, stepMotion } from "./DataDialogKit";
 
 type Props = {
   slug: string;
@@ -94,7 +98,7 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
       toast.success(`Import complete! ${normalized.importedCount} posts imported.`, { id: "import-csv" });
     } catch (err) {
       console.error("Import failed:", err);
-      setError(err instanceof Error ? err.message : "Failed to import data. Please try again.");
+      setError(readThrownImportError(err, "Failed to import data. Please try again."));
       setState("error");
       toast.error("Import failed", { id: "import-csv" });
     }
@@ -127,24 +131,25 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
       onOpenChange={handleClose}
       title="Import from CSV"
       icon={<CsvIcon className="size-5" />}
+      innerClassName="p-0"
     >
-      <div className="p-4 space-y-4 overflow-hidden">
-        <AnimatePresence mode="wait">
-          {state === "idle" && (
-            <motion.div
-              key="idle"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
+      <AnimatePresence mode="wait" initial={false}>
+        {state === "idle" && (
+          <motion.div key="idle" {...stepMotion}>
+            <DataBanner
+              title="Import feedback from a spreadsheet"
+              description="We match your columns automatically. Rows with an ID update the post they came from."
             >
+              <BannerChips items={["Title and description", "Board, status, votes", "Up to 5,000 rows"]} />
+            </DataBanner>
+
+            <div className="space-y-4 px-5 py-5 sm:px-6">
               {/* Drop zone */}
               <div
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-muted-foreground/50 transition-colors"
+                className="cursor-pointer rounded-xl [corner-shape:squircle] border-2 border-dashed border-border p-6 text-center transition-colors hover:border-primary/50"
               >
                 <input
                   ref={fileInputRef}
@@ -153,25 +158,17 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
                   onChange={handleFileSelect}
                   className="hidden"
                 />
-                <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm text-foreground font-medium">
-                  Drop your CSV file here
-                </p>
-                <p className="text-xs text-accent mt-1">
-                  or click to browse
-                </p>
+                <Upload className="mx-auto mb-2 size-7 text-muted-foreground" />
+                <p className="text-sm font-medium text-foreground">Drop your CSV file here</p>
+                <p className="mt-1 text-xs text-accent">or click to browse</p>
               </div>
 
               {/* Selected file */}
               {file && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center justify-between bg-muted/40 rounded-lg px-3 py-2"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <CsvIcon className="size-4 flex-shrink-0" />
-                    <span className="text-sm text-foreground truncate">{file.name}</span>
+                <div className={cn("flex items-center justify-between px-3 py-2", raisedCardClass)}>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <CsvIcon className="size-4 shrink-0 text-primary" />
+                    <span className="truncate text-sm text-foreground">{file.name}</span>
                   </div>
                   <Button
                     variant="ghost"
@@ -183,133 +180,43 @@ export function ImportDialog({ slug, open, onOpenChange }: Props) {
                   >
                     <X className="size-4" />
                   </Button>
-                </motion.div>
+                </div>
               )}
 
-              {/* Error */}
-              {error && (
-                <p className="text-sm text-destructive">{error}</p>
-              )}
+              {error && <p className="text-sm text-destructive">{error}</p>}
 
-              {/* Import button */}
-              <Button
-                onClick={handleImport}
-                disabled={!file}
-                className="w-full"
-              >
-                Import CSV
-              </Button>
-            </motion.div>
-          )}
-
-          {state === "uploading" && (
-            <motion.div
-              key="uploading"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col items-center justify-center py-6 gap-3"
-            >
-              <LoaderIcon className="text-muted-foreground size-5" />
-              <p className="text-sm text-accent">Importing your data...</p>
-            </motion.div>
-          )}
-
-          {state === "success" && (
-            <motion.div
-              key="success"
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="flex flex-col items-center justify-center py-6 gap-4"
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-center space-y-1"
-              >
-                <p className="text-sm font-medium text-foreground">Import complete!</p>
-                <p className="text-sm text-accent mt-0.5">
-                  Imported {result?.importedCount ?? 0} posts.
-                </p>
-                <p className="text-xs text-accent">
-                  Created {result?.createdCount ?? 0}, updated {result?.updatedCount ?? 0}, skipped {result?.skippedCount ?? 0}.
-                </p>
-                {result?.errorCount ? (
-                  <p className="text-xs text-destructive">
-                    {result.errorCount} row errors were found.
-                  </p>
-                ) : null}
-              </motion.div>
-
-              {result && (result.errors.length > 0 || result.warnings.length > 0) ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
-                  className="w-full text-left space-y-2"
-                >
-                  {result.errors.length > 0 ? (
-                    <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-2">
-                      <p className="text-xs font-medium text-destructive mb-1">Top errors</p>
-                      <ul className="space-y-1">
-                        {result.errors.slice(0, 5).map((issue, idx) => (
-                          <li key={`error-${idx}`} className="text-xs text-destructive/90">
-                            {issue.row ? `Row ${issue.row}: ` : ""}
-                            {issue.message}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-
-                  {result.warnings.length > 0 ? (
-                    <div className="rounded-lg border border-border bg-muted/30 p-2">
-                      <p className="text-xs font-medium text-foreground mb-1">Top warnings</p>
-                      <ul className="space-y-1">
-                        {result.warnings.slice(0, 5).map((issue, idx) => (
-                          <li key={`warning-${idx}`} className="text-xs text-accent">
-                            {issue.row ? `Row ${issue.row}: ` : ""}
-                            {issue.message}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                </motion.div>
-              ) : null}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Button onClick={() => handleClose(false)}>
-                  Done
+              <div className="flex justify-end">
+                <Button onClick={handleImport} disabled={!file}>
+                  Import CSV
                 </Button>
-              </motion.div>
-            </motion.div>
-          )}
+              </div>
+            </div>
+          </motion.div>
+        )}
 
-          {state === "error" && (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col items-center justify-center py-6 gap-4"
-            >
-              <p className="text-sm text-destructive text-center">{error}</p>
-              <Button variant="secondary" onClick={() => setState("idle")}>
-                Try Again
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+        {state === "uploading" && (
+          <motion.div key="uploading" {...stepMotion} aria-live="polite">
+            <DataBanner
+              busy
+              eyebrow={file ? `Reading ${file.name}` : "Reading your file"}
+              title="Moving your feedback in"
+              description="Matching columns and creating posts. Keep this window open."
+            />
+          </motion.div>
+        )}
+
+        {state === "success" && (
+          <ImportResultSummary result={result} source="your CSV" onDone={() => handleClose(false)} />
+        )}
+
+        {state === "error" && (
+          <DataErrorStep
+            title="We couldn't import that file"
+            message={error ?? "Failed to import data. Please try again."}
+            onRetry={() => setState("idle")}
+          />
+        )}
+      </AnimatePresence>
     </SettingsDialogShell>
   );
 }

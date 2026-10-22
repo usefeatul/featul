@@ -61,6 +61,7 @@ export const comment = pgTable(
       mentions?: string[];
       editHistory?: { content: string; editedAt: string }[];
       fingerprint?: string;
+      importSourceId?: string;
     }>(),
   },
   (table) =>

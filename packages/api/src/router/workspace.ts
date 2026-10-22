@@ -25,6 +25,8 @@ import {
   updateWorkspaceNameInputSchema,
   deleteWorkspaceInputSchema,
   importCsvInputSchema,
+  importFromProviderInputSchema,
+  importFromNoltInputSchema,
   updateTimezoneInputSchema,
 } from "../validators/workspace";
 import { getTopLevelDomain, normalizeDomainHost } from "../validators/domain";
@@ -44,6 +46,14 @@ import {
 import { isDataImportsAllowed } from "../shared/plan";
 import { seedWorkspaceOnboarding } from "../services/onboarding";
 import { runWorkspaceCsvImport } from "../workspace/import";
+import { runProviderImport } from "../import/run";
+import {
+  fetchCannyData,
+  fetchNoltData,
+  fetchProductboardData,
+  ProviderImportError,
+  type ProviderImportData,
+} from "../import/providers";
 import {
   isAppCreatorEmail,
   isReservedNameBlockedForEmail,
@@ -69,6 +79,41 @@ async function requireWorkspaceManagerWithPlan(ctx: any, slug: string) {
   const ws = await requireWorkspaceManagerBySlug(ctx, slug);
   const plan = await getWorkspaceAccessPlan(ws.id);
   return { ...ws, plan };
+}
+
+async function requireProviderImportAccess(ctx: any, slug: string, label: string) {
+  const ws = await requireWorkspaceManagerWithPlan(ctx, slug);
+  if (!isDataImportsAllowed(String(ws.plan || "free"))) {
+    throw new HTTPException(403, {
+      message: `${label} import is available on Starter or Professional plans`,
+    });
+  }
+  return ws;
+}
+
+/** Keys are used for this request only and never stored. */
+async function runProviderImportResponse(
+  c: any,
+  ctx: any,
+  workspaceId: string,
+  load: () => Promise<ProviderImportData>,
+) {
+  let data: ProviderImportData;
+  try {
+    data = await load();
+  } catch (error) {
+    if (error instanceof ProviderImportError) {
+      return c.json({ ok: false, message: error.message }, error.status);
+    }
+    throw error;
+  }
+  const summary = await runProviderImport({
+    db: ctx.db,
+    workspaceId,
+    actorUserId: ctx.session.user.id,
+    data,
+  });
+  return c.json(summary, 200);
 }
 
 async function assertCustomDomainAvailable(
@@ -1083,66 +1128,24 @@ export function createWorkspaceRouter() {
       }),
 
     importFromCanny: privateProcedure
-      .input(checkSlugInputSchema)
+      .input(importFromProviderInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireWorkspaceManagerWithPlan(ctx, input.slug);
-        if (!isDataImportsAllowed(String(ws.plan || "free"))) {
-          throw new HTTPException(403, {
-            message:
-              "Canny import is available on Starter or Professional plans",
-          });
-        }
-
-        return c.json(
-          {
-            ok: false,
-            provider: "canny",
-            message: "Canny import is coming soon",
-          },
-          501,
-        );
+        const ws = await requireProviderImportAccess(ctx, input.slug, "Canny");
+        return runProviderImportResponse(c, ctx, ws.id, () => fetchCannyData(input.apiKey));
       }),
 
     importFromNolt: privateProcedure
-      .input(checkSlugInputSchema)
+      .input(importFromNoltInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireWorkspaceManagerWithPlan(ctx, input.slug);
-        if (!isDataImportsAllowed(String(ws.plan || "free"))) {
-          throw new HTTPException(403, {
-            message:
-              "Nolt import is available on Starter or Professional plans",
-          });
-        }
-
-        return c.json(
-          {
-            ok: false,
-            provider: "nolt",
-            message: "Nolt import is coming soon",
-          },
-          501,
-        );
+        const ws = await requireProviderImportAccess(ctx, input.slug, "Nolt");
+        return runProviderImportResponse(c, ctx, ws.id, () => fetchNoltData(input.boardUrl, input.apiKey));
       }),
 
     importFromProductBoard: privateProcedure
-      .input(checkSlugInputSchema)
+      .input(importFromProviderInputSchema)
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireWorkspaceManagerWithPlan(ctx, input.slug);
-        if (!isDataImportsAllowed(String(ws.plan || "free"))) {
-          throw new HTTPException(403, {
-            message:
-              "ProductBoard import is available on Starter or Professional plans",
-          });
-        }
-
-        return c.json(
-          {
-            ok: false,
-            provider: "productboard",
-            message: "ProductBoard import is coming soon",
-          },
-          501,
-        );
+        const ws = await requireProviderImportAccess(ctx, input.slug, "ProductBoard");
+        return runProviderImportResponse(c, ctx, ws.id, () => fetchProductboardData(input.apiKey));
       }),
   });
 }

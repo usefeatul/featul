@@ -11,7 +11,13 @@ type DataCardContext = {
   allowProviderImports: boolean;
 };
 
-export type DataCardAction = "openImportDialog" | "openExportDialog" | "none";
+export type DataCardAction =
+  | "openImportDialog"
+  | "openExportDialog"
+  | "openCannyImport"
+  | "openNoltImport"
+  | "openProductBoardImport"
+  | "none";
 
 export type DataCardConfig = {
   id: string;
@@ -21,7 +27,7 @@ export type DataCardConfig = {
   description: (ctx: DataCardContext) => string;
   buttonLabel: (ctx: DataCardContext) => string;
   action: DataCardAction;
-  disabled?: boolean;
+  disabled?: (ctx: DataCardContext) => boolean;
 };
 
 export const importCardConfigs: DataCardConfig[] = [
@@ -45,9 +51,9 @@ export const importCardConfigs: DataCardConfig[] = [
         ? "Import your feedback, feature requests, and comments directly from Canny."
         : "Import your feedback, feature requests, and comments directly from Canny. Available on paid plans.",
     buttonLabel: ({ allowProviderImports }) =>
-      allowProviderImports ? "Soon" : "Paid (Soon)",
-    action: "none",
-    disabled: true,
+      allowProviderImports ? "Import" : "Paid",
+    action: "openCannyImport",
+    disabled: ({ allowProviderImports }) => !allowProviderImports,
   },
   {
     id: "import-productboard",
@@ -56,12 +62,12 @@ export const importCardConfigs: DataCardConfig[] = [
     title: "Import from ProductBoard",
     description: ({ allowProviderImports }) =>
       allowProviderImports
-        ? "Import your posts, boards, and comments directly from ProductBoard."
-        : "Import your posts, boards, and comments directly from ProductBoard. Available on paid plans.",
+        ? "Import your features, statuses, and boards directly from ProductBoard."
+        : "Import your features, statuses, and boards directly from ProductBoard. Available on paid plans.",
     buttonLabel: ({ allowProviderImports }) =>
-      allowProviderImports ? "Soon" : "Paid (Soon)",
-    action: "none",
-    disabled: true,
+      allowProviderImports ? "Import" : "Paid",
+    action: "openProductBoardImport",
+    disabled: ({ allowProviderImports }) => !allowProviderImports,
   },
   {
     id: "import-nolt",
@@ -70,12 +76,12 @@ export const importCardConfigs: DataCardConfig[] = [
     title: "Import from Nolt",
     description: ({ allowProviderImports }) =>
       allowProviderImports
-        ? "Import your feedback, feature requests, and comments directly from Nolt."
-        : "Import your feedback, feature requests, and comments directly from Nolt. Available on paid plans.",
+        ? "Import your feedback, feature requests, and vote counts directly from Nolt."
+        : "Import your feedback, feature requests, and vote counts directly from Nolt. Available on paid plans.",
     buttonLabel: ({ allowProviderImports }) =>
-      allowProviderImports ? "Soon" : "Paid (Soon)",
-    action: "none",
-    disabled: true,
+      allowProviderImports ? "Import" : "Paid",
+    action: "openNoltImport",
+    disabled: ({ allowProviderImports }) => !allowProviderImports,
   },
 ];
 

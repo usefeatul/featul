@@ -6,6 +6,13 @@ import SettingsEntry from "../global/entry";
 import { isDataImportsAllowed } from "@/lib/plan";
 import { ImportDialog } from "./ImportDialog";
 import { importCardConfigs, type DataCardAction } from "./cards/config";
+import { ProviderImportDialog, type ImportProvider } from "./ProviderImportDialog";
+
+const PROVIDER_ACTIONS: Partial<Record<DataCardAction, ImportProvider>> = {
+  openCannyImport: "canny",
+  openNoltImport: "nolt",
+  openProductBoardImport: "productboard",
+};
 
 type Props = {
   slug: string;
@@ -14,6 +21,7 @@ type Props = {
 
 export default function DataImportSection({ slug, plan }: Props) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [provider, setProvider] = React.useState<ImportProvider | null>(null);
   const allowProviderImports = isDataImportsAllowed(plan ?? "free");
   const context = React.useMemo(
     () => ({ allowProviderImports }),
@@ -23,7 +31,10 @@ export default function DataImportSection({ slug, plan }: Props) {
   const onCardAction = React.useCallback((action: DataCardAction) => {
     if (action === "openImportDialog") {
       setDialogOpen(true);
+      return;
     }
+    const next = PROVIDER_ACTIONS[action];
+    if (next) setProvider(next);
   }, []);
 
   return (
@@ -39,7 +50,7 @@ export default function DataImportSection({ slug, plan }: Props) {
                 title={card.title}
                 description={card.description(context)}
                 onAction={() => onCardAction(card.action)}
-                disabled={Boolean(card.disabled)}
+                disabled={Boolean(card.disabled?.(context))}
               >
                 <span className="rounded-md bg-muted px-2 py-1 text-xs whitespace-nowrap">
                   {card.buttonLabel(context)}
@@ -53,6 +64,13 @@ export default function DataImportSection({ slug, plan }: Props) {
         slug={slug}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
+      />
+      <ProviderImportDialog
+        slug={slug}
+        provider={provider}
+        onOpenChange={(open) => {
+          if (!open) setProvider(null);
+        }}
       />
     </>
   );

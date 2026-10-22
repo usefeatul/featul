@@ -128,7 +128,7 @@ function buildMessage(
       };
     return {
       title: "Third-party imports included in your plan",
-      detail: "Canny, Nolt, and ProductBoard import are coming soon",
+      detail: "Import from Canny, Nolt, and ProductBoard in Data settings",
     };
   }
   return { title: `Your plan: ${plan}`, detail: "View plan details" };

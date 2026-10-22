@@ -6,10 +6,11 @@ import { Button } from "@featul/ui/components/button";
 import { client } from "@featul/api/client";
 import { toast } from "sonner";
 import {
+  CsvIcon,
   FileExportIcon,
-  LoaderIcon,
   DownloadIcon,
 } from "@/components/global/icons";
+import { DataBanner, DataErrorStep, ResultFooter, ResultPlate, stepMotion } from "./DataDialogKit";
 
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -25,6 +26,7 @@ export function ExportDialog({ slug, open, onOpenChange }: Props) {
   const [state, setState] = React.useState<ExportState>("idle");
   const [downloadUrl, setDownloadUrl] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [file, setFile] = React.useState<{ rows: number; bytes: number } | null>(null);
 
   const handleExport = React.useCallback(async () => {
     setState("exporting");
@@ -43,6 +45,8 @@ export function ExportDialog({ slug, open, onOpenChange }: Props) {
       }
 
       const blob = await res.blob();
+      const text = await blob.text();
+      setFile({ rows: countCsvRecords(text), bytes: blob.size });
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setState("ready");
@@ -72,6 +76,7 @@ export function ExportDialog({ slug, open, onOpenChange }: Props) {
         setState("idle");
         setDownloadUrl(null);
         setError(null);
+        setFile(null);
         if (downloadUrl) {
           URL.revokeObjectURL(downloadUrl);
         }
@@ -94,73 +99,74 @@ export function ExportDialog({ slug, open, onOpenChange }: Props) {
       onOpenChange={handleClose}
       title="Export to CSV"
       icon={<FileExportIcon className="size-5" />}
+      innerClassName="p-0"
     >
-      <div className="p-4 space-y-4 overflow-hidden">
-        <AnimatePresence mode="wait">
-          {state === "exporting" && (
-            <motion.div
-              key="exporting"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col items-center justify-center py-6 gap-3"
-            >
-              <LoaderIcon className="text-muted-foreground size-5" />
-              <p className="text-sm text-accent">Exporting your data...</p>
-            </motion.div>
-          )}
+      <AnimatePresence mode="wait" initial={false}>
+        {(state === "idle" || state === "exporting") && (
+          <motion.div key="exporting" {...stepMotion} aria-live="polite">
+            <DataBanner
+              busy
+              eyebrow="Exporting"
+              title="Packing up your feedback"
+              description="Every post with its board, status, votes, author, and dates."
+            />
+          </motion.div>
+        )}
 
-          {state === "ready" && (
-            <motion.div
-              key="ready"
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="flex flex-col items-center justify-center py-6 gap-4"
+        {state === "ready" && (
+          <motion.div key="ready" {...stepMotion}>
+            <ResultPlate>
+              <div className="flex items-center gap-3 px-4 py-3.5">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                  <CsvIcon className="size-4.5 text-primary" />
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-foreground">{slug}-export.csv</p>
+                  <p className="text-xs tabular-nums text-accent">
+                    {file ? `${file.rows} ${file.rows === 1 ? "post" : "posts"} · ${formatBytes(file.bytes)}` : "CSV file"}
+                  </p>
+                </div>
+              </div>
+            </ResultPlate>
+            <ResultFooter
+              title="Export ready"
+              description="Opens in Excel, Numbers, or Google Sheets. You can import it back here too."
             >
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-center"
-              >
-                <p className="text-sm font-medium text-foreground">Export ready!</p>
-                <p className="text-sm text-accent mt-0.5">
-                  Your CSV file is ready to download.
-                </p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Button onClick={handleDownload} className="gap-2">
-                  <DownloadIcon className="size-4" />
-                  Download CSV
-                </Button>
-              </motion.div>
-            </motion.div>
-          )}
-
-          {state === "error" && (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col items-center justify-center py-6 gap-4"
-            >
-              <p className="text-sm text-destructive">{error}</p>
-              <Button variant="secondary" onClick={handleExport}>
-                Try Again
+              <Button onClick={handleDownload} className="gap-2">
+                <DownloadIcon className="size-4" />
+                Download CSV
               </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            </ResultFooter>
+          </motion.div>
+        )}
+
+        {state === "error" && (
+          <DataErrorStep
+            title="We couldn't export your feedback"
+            message={error ?? "Failed to export data. Please try again."}
+            onRetry={handleExport}
+          />
+        )}
+      </AnimatePresence>
     </SettingsDialogShell>
   );
+}
+
+/** Data rows, not raw lines: quoted descriptions can contain newlines. */
+function countCsvRecords(csv: string): number {
+  let quoted = false;
+  let lines = 0;
+  for (let i = 0; i < csv.length; i += 1) {
+    const ch = csv[i];
+    if (ch === '"') quoted = !quoted;
+    else if (ch === "\n" && !quoted) lines += 1;
+  }
+  // The header is the first line and the export has no trailing newline.
+  return csv.trim() ? lines : 0;
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
