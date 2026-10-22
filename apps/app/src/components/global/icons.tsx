@@ -32,6 +32,7 @@ import {
   IconPaletteFilled,
   IconArchiveFilled,
   IconCreditCardFilled,
+  IconCrownFilled,
   IconFolderFilled,
   IconDatabaseFilled,
   IconLayoutSidebarFilled,
@@ -196,6 +197,7 @@ export const EditIcon = solid(IconEditFilled);
 export const AppearanceIcon = solid(IconPaletteFilled);
 export const ArchiveIcon = solid(IconArchiveFilled);
 export const BillingIcon = solid(IconCreditCardFilled);
+export const PlanIcon = solid(IconCrownFilled);
 export const DocsIcon = solid(IconFolderFilled);
 export const ExportIcon = solid(IconDatabaseFilled);
 export const HelpCenterIcon = solid(IconHelpSquareRoundedFilled);

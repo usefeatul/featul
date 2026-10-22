@@ -8,7 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@featul/ui/components/tooltip";
-import { Sparkles } from "@/components/global/icons";
+import { PlanIcon } from "@/components/global/icons";
 import Plans from "@/components/settings/billing/plans";
 import { getPricingDetails } from "@/lib/billing.actions";
 import type { PlanKey } from "@/lib/plan";
@@ -48,9 +48,9 @@ export default function Pricing({
       size="icon-sm"
       variant="ghost"
       aria-label="View upgrade plans"
-      className="text-muted-foreground dark:bg-transparent dark:text-muted-foreground"
+      className="text-amber-500 hover:text-amber-600 dark:bg-transparent dark:text-amber-400 dark:hover:text-amber-300"
     >
-      <Sparkles className="size-4" />
+      <PlanIcon className="size-5" />
     </Button>
   ) : (
     <button
