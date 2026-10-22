@@ -104,7 +104,7 @@ export default function MemberDetail({
   return (
     <section
       data-member-detail
-      className="relative -mx-4 flex h-[calc(100dvh-var(--workspace-mobile-nav-height))] min-w-0 flex-col overflow-hidden sm:-mx-8 md:flex-row lg:-mx-12 lg:h-dvh xl:-mx-16"
+      className="relative -mx-4 flex h-[calc(100dvh-var(--workspace-mobile-nav-height))] min-w-0 flex-col overflow-hidden sm:-mx-8 md:flex-row lg:-mx-12 lg:h-(--workspace-frame-height) xl:-mx-16"
     >
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background">
         <header className="z-20 flex min-h-12 shrink-0 items-center gap-2 bg-background px-4 text-sm sm:px-6">

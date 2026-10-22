@@ -260,7 +260,7 @@ export function ChangelogEditor({
   return (
     <div
       data-changelog-editor
-      className="relative min-h-[calc(100dvh-var(--workspace-mobile-nav-height))] bg-background lg:flex lg:h-dvh lg:min-h-dvh lg:overflow-hidden"
+      className="relative min-h-[calc(100dvh-var(--workspace-mobile-nav-height))] bg-background lg:flex lg:h-(--workspace-frame-height) lg:min-h-(--workspace-frame-height) lg:overflow-hidden"
     >
       <div
         className="flex min-w-0 flex-1 flex-col bg-background lg:min-h-0"
