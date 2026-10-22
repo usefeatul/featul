@@ -17,6 +17,7 @@ import type { TagSummary, PostUser } from "@/types/post"
 import { canSubmitPostForm } from "@/hooks/postSubmitGuard"
 import { createPostImageTransferHandlers } from "@/lib/post/transfer"
 import { useDraft } from "@/hooks/useDraft"
+import { DitherWash } from "@/components/global/DitherWash"
 
 export function CreatePostModal({
   open,
@@ -169,12 +170,14 @@ export function CreatePostModal({
       offsetY="10%"
       icon={<DocumentTextIcon className="size-3.5" />}
       expandable
+      innerClassName="relative isolate"
     >
       <form
         onSubmit={handleSubmit}
         className="flex min-h-0 flex-1 flex-col"
         {...imageTransfer}
       >
+        <DitherWash />
         <PostHeader
           user={user || null}
           initials={user?.name?.[0] || "?"}

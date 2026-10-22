@@ -1,6 +1,7 @@
 "use client";
 
 import { Mascot } from "@featul/ui/components/mascot";
+import { DitherGradient } from "@featul/ui/components/gradient";
 import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { ShortcutKey } from "./keys";
 
@@ -180,6 +181,31 @@ function SearchStatusMessage({
       )}
     >
       {children}
+    </div>
+  );
+}
+
+/** No matches: the mascot on a faint dither halo that dissolves into the list on every side. */
+function SearchEmptyState({ query }: { query: string }) {
+  return (
+    <div className="relative isolate flex flex-col items-center overflow-hidden px-6 pb-7 pt-7 text-center">
+      <div
+        aria-hidden
+        className="absolute left-1/2 top-2 -z-10 h-28 w-56 -translate-x-1/2"
+        style={{
+          maskImage:
+            "radial-gradient(closest-side, black 0%, rgba(0,0,0,0.35) 55%, transparent 100%)",
+        }}
+      >
+        <DitherGradient to="primary" direction="down" cell={3} opacity={0.22} />
+      </div>
+      <Mascot size={52} mood="search" />
+      <p className="mt-3 max-w-xs truncate text-sm font-medium text-foreground">
+        No posts match &ldquo;{query}&rdquo;
+      </p>
+      <p className="mt-1 text-xs text-accent">
+        Try fewer words, or check the spelling.
+      </p>
     </div>
   );
 }
@@ -402,6 +428,7 @@ export function WorkspaceSearchAction({
         shouldFilter={false}
         contentClassName="px-0"
         width="search"
+        pattern
         icon={<SearchIcon className="size-3.5 opacity-80" />}
         footer={
           <div className="flex items-center justify-between border-t border-foreground/10 bg-sidebar px-4 py-2.5 text-sm text-muted-foreground">
@@ -473,10 +500,7 @@ export function WorkspaceSearchAction({
             </CommandGroup>
           ) : null}
           {!isSearching && hasQuery && results.length === 0 && showNoResults ? (
-            <SearchStatusMessage className="flex-col gap-3 py-6">
-              <Mascot size={64} mood="search" />
-              No posts found for &ldquo;{debouncedQuery}&rdquo;
-            </SearchStatusMessage>
+            <SearchEmptyState query={debouncedQuery} />
           ) : null}
           {canSubmit && !isSearching ? (
             <>
