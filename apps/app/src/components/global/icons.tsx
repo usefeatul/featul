@@ -15,7 +15,7 @@ import {
   IconBellFilled,
   IconMoonFilled,
   IconSunFilled,
-  IconCircleCheckFilled,
+  IconSquareRoundedCheckFilled,
   IconClockFilled,
   IconCopyFilled,
   IconExternalLinkFilled,
@@ -39,8 +39,9 @@ import {
   IconCalendarFilled,
   IconSortDescending2Filled,
   IconListCheckFilled,
-  IconInfoCircleFilled,
-  IconHelpCircleFilled,
+  IconInfoSquareRoundedFilled,
+  IconHelpSquareRoundedFilled,
+  IconAlertSquareRoundedFilled,
   IconBookFilled,
   IconBoltFilled,
   IconSparklesFilled,
@@ -51,6 +52,7 @@ import {
   IconEyeFilled,
   IconTableFilled,
   IconFileUploadFilled,
+  IconSquareRoundedArrowLeftFilled,
   type Icon as TablerIcon,
   type IconProps as TablerIconProps,
 } from "@tabler/icons-react";
@@ -76,7 +78,6 @@ export { HomeIcon } from "@featul/ui/icons/home";
 import {
   type LucideIcon,
   type LucideProps,
-  AlertCircle as LucideAlertCircle,
   AlignLeft as LucideAlignLeft,
   ArrowBigDown as LucideArrowBigDown,
   ArrowBigUp as LucideArrowBigUp,
@@ -95,7 +96,6 @@ import {
   ChevronsDown as LucideChevronsDown,
   ChevronsUp as LucideChevronsUp,
   ChevronsUpDown as LucideChevronsUpDown,
-  CircleHelp as LucideCircleHelp,
   CircleUserRound as LucideCircleUserRound,
   Clipboard as LucideClipboard,
   ClipboardCheck as LucideClipboardCheck,
@@ -181,7 +181,7 @@ export const DomainIcon = solid(IconWorldFilled);
 export const IntegrationIcon = solid(IconPuzzleFilled);
 export const SettingIcon = solid(IconSettingsFilled);
 export const Bell = solid(IconBellFilled);
-export const CheckCircle = solid(IconCircleCheckFilled);
+export const CheckCircle = solid(IconSquareRoundedCheckFilled);
 export const Clock = solid(IconClockFilled);
 export const Copy = solid(IconCopyFilled);
 export const ExternalLink = solid(IconExternalLinkFilled);
@@ -198,7 +198,7 @@ export const ArchiveIcon = solid(IconArchiveFilled);
 export const BillingIcon = solid(IconCreditCardFilled);
 export const DocsIcon = solid(IconFolderFilled);
 export const ExportIcon = solid(IconDatabaseFilled);
-export const HelpCenterIcon = solid(IconHelpCircleFilled);
+export const HelpCenterIcon = solid(IconHelpSquareRoundedFilled);
 export const BookIcon = solid(IconBookFilled);
 export const BoltIcon = solid(IconBoltFilled);
 export const SparklesIcon = solid(IconSparklesFilled);
@@ -231,7 +231,7 @@ export function PanelIcon({
 
 export const SidebarPanelIcon = PanelIcon;
 
-export const AlertCircle = outline(LucideAlertCircle);
+export const AlertCircle = solid(IconAlertSquareRoundedFilled);
 export const AlignLeft = outline(LucideAlignLeft);
 export const ArrowBigDown = outline(LucideArrowBigDown);
 export const ArrowBigUp = outline(LucideArrowBigUp);
@@ -294,14 +294,14 @@ export const CheckIcon = Check;
 export const ChevronDownIcon = ChevronDown;
 export const ChevronLeftIcon = ChevronLeft;
 export const ChevronRightIcon = ChevronRight;
-export const CircleQuestionMarkIcon = outline(LucideCircleHelp);
+export const CircleQuestionMarkIcon = solid(IconHelpSquareRoundedFilled);
 export const ClipboardIcon = outline(LucideClipboard);
 export const CloudIcon = outline(LucideCloud);
 export const CommentsIcon = solid(IconMessageCircleFilled);
 export const CsvIcon = solid(IconTableFilled);
 export const DocumentTextIcon = FileText;
 export const FileExportIcon = solid(IconFileUploadFilled);
-export const InfoIcon = solid(IconInfoCircleFilled);
+export const InfoIcon = solid(IconInfoSquareRoundedFilled);
 export const IdeaIcon = outline(LucideLightbulb);
 export const KeyIcon = outline(LucideKeyRound);
 export const ListFilterIcon = solid(IconListCheckFilled);
@@ -353,7 +353,7 @@ export { DiscordIcon } from "@featul/ui/icons/discord";
 export { SlackIcon } from "@featul/ui/icons/slack";
 export const DangerDeleteIcon = TrashIcon;
 export const MoreIcon = MenuIcon;
-export const ArrowBackIcon = ArrowLeft;
+export const ArrowBackIcon = solid(IconSquareRoundedArrowLeftFilled);
 export { WorkspaceSwitcherIcon } from "@featul/ui/icons/workspace";
 export { SelectBoxIcon } from "@featul/ui/icons/select-box";
 

@@ -212,7 +212,7 @@ export default function Sidebar({
                     <SidebarSection collapsed={collapsed}>
                       <SidebarItem
                         item={{
-                          label: "Back to workspace",
+                          label: "Back",
                           href: workspaceBase(slug),
                           icon: ArrowBackIcon,
                           exact: true,
