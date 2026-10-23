@@ -16,11 +16,11 @@ import {
   SearchIcon,
   SparklesIcon,
   BoardIcon,
-  BoltIcon,
   BookIcon,
   CheckIcon,
   CollectIcon,
   EditIcon,
+  GiftIcon,
   TagIcon,
   DocsIcon,
   ExportIcon,
@@ -34,7 +34,7 @@ import {
   PanelIcon,
   PlanIcon,
   RoadmapIcon,
-  SeedlingIcon,
+  StarIcon,
 } from "@/components/global/icons";
 import type { PlanKey } from "@/lib/plan";
 import { PLAN_ORDER, getPlan, type BillingCycle } from "./data";
@@ -47,8 +47,8 @@ const planPattern: Record<PlanKey, PixelColor> = {
 
 /** Filled plan marks, tinted with the plan's pattern color. */
 const planIcon = {
-  free: SeedlingIcon,
-  starter: BoltIcon,
+  free: GiftIcon,
+  starter: StarIcon,
   professional: PlanIcon,
 } satisfies Record<PlanKey, typeof PlanIcon>;
 
