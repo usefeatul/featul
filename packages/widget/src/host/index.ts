@@ -136,10 +136,26 @@ function boot() {
     return state.theme === "light" ? "#ffffff" : "#1c1c1c";
   }
 
-  function launcherBorder() {
+  /**
+   * The app's raised button surface (`raisedSurfaceClass` in @featul/ui): a top-lit gradient,
+   * an inner highlight along the top edge, and a hairline drop shadow.
+   */
+  function launcherSurface() {
     return state.theme === "light"
-      ? "1px solid rgba(0, 0, 0, 0.14)"
-      : "1px solid rgba(255, 255, 255, 0.14)";
+      ? {
+          border: "1px solid rgba(0, 0, 0, 0.1)",
+          background: "linear-gradient(to bottom, #ffffff, #efefef)",
+          shadow:
+            "inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -1px 0 rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.07)",
+          hover: "brightness(0.97)",
+        }
+      : {
+          border: "1px solid rgba(255, 255, 255, 0.08)",
+          background: "linear-gradient(to bottom, #272727, #1c1c1c)",
+          shadow:
+            "inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 1px rgba(0, 0, 0, 0.3)",
+          hover: "brightness(1.25)",
+        };
   }
 
   function applyLauncherChrome() {
@@ -149,9 +165,12 @@ function boot() {
     button.style.width = `${LAUNCHER_SIZE}px`;
     button.style.height = `${LAUNCHER_SIZE}px`;
     button.style.padding = "0";
-    button.style.border = launcherBorder();
+    const surface = launcherSurface();
+    button.style.border = surface.border;
     button.style.borderRadius = BUTTON_RADIUS;
-    button.style.background = panelBackground();
+    button.style.background = surface.background;
+    button.style.boxShadow = surface.shadow;
+    button.style.filter = button.matches(":hover") ? surface.hover : "";
     button.style.color = state.accent;
     const face = button.querySelector("[data-featul-widget='launcher-face']");
     if (face instanceof HTMLElement) {
@@ -882,7 +901,21 @@ function boot() {
       button.style.cursor = "pointer";
       button.style.zIndex = "2147483647";
       button.style.transition =
-        "bottom 220ms cubic-bezier(0.22, 1, 0.36, 1), left 220ms cubic-bezier(0.22, 1, 0.36, 1), right 220ms cubic-bezier(0.22, 1, 0.36, 1)";
+        "bottom 220ms cubic-bezier(0.22, 1, 0.36, 1), left 220ms cubic-bezier(0.22, 1, 0.36, 1), right 220ms cubic-bezier(0.22, 1, 0.36, 1), filter 150ms ease, translate 150ms ease";
+      // Inline styles have no :hover or :active, so the button's hover and press are wired here.
+      button.addEventListener("pointerenter", () => {
+        button.style.filter = launcherSurface().hover;
+      });
+      button.addEventListener("pointerleave", () => {
+        button.style.filter = "";
+        button.style.translate = "";
+      });
+      button.addEventListener("pointerdown", () => {
+        button.style.translate = "0 1px";
+      });
+      button.addEventListener("pointerup", () => {
+        button.style.translate = "";
+      });
       button.onclick = () => api.showWidget();
       state.button = button;
       applyLauncherChrome();
