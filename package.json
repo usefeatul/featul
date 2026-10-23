@@ -40,7 +40,7 @@
     "@opentelemetry/exporter-trace-otlp-http": "0.223.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.23.4"
   },
   "dependencies": {
     "highlight.js": "^11.12.0",
