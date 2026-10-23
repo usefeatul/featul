@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { ComponentType, CSSProperties, ReactNode } from "react";
 import { DitherGradient } from "@featul/ui/components/gradient";
 import { fillOf, type PixelColor } from "@featul/ui/lib/pixel";
 import { rgb } from "@featul/ui/lib/palette";
@@ -50,7 +50,10 @@ const planIcon = {
   free: GiftIcon,
   starter: StarIcon,
   professional: PlanIcon,
-} satisfies Record<PlanKey, typeof PlanIcon>;
+} satisfies Record<
+  PlanKey,
+  ComponentType<{ className?: string; style?: CSSProperties; "aria-hidden"?: boolean }>
+>;
 
 export const comparison = [
   {
@@ -223,6 +226,7 @@ export default function Comparison({
         {PLAN_ORDER.map((key) => {
           const plan = getPlan(key);
           const PlanMark = planIcon[key];
+          const planColor = rgb(fillOf(planPattern[key]));
           const amount =
             billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
           return (
@@ -237,7 +241,7 @@ export default function Comparison({
                   <PlanMark
                     aria-hidden
                     className="size-3.5 shrink-0"
-                    style={{ color: rgb(fillOf(planPattern[key])) }}
+                    style={{ color: planColor }}
                   />
                   {plan.label}
                 </h3>
@@ -291,7 +295,13 @@ export default function Comparison({
                         : "Billed monthly"}
                   </p>
                 </div>
-                <div className="mt-auto">{renderAction(key)}</div>
+                {/* Re-point --primary so the action button takes the plan's color. */}
+                <div
+                  className="mt-auto"
+                  style={{ "--primary": planColor } as CSSProperties}
+                >
+                  {renderAction(key)}
+                </div>
               </div>
             </section>
           );

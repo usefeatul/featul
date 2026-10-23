@@ -46,7 +46,6 @@ import {
   IconBookFilled,
   IconBoltFilled,
   IconGiftFilled,
-  IconStarFilled,
   IconSparklesFilled,
   IconBulbFilled,
   IconThumbDownFilled,
@@ -205,7 +204,6 @@ export const HelpCenterIcon = solid(IconHelpSquareRoundedFilled);
 export const BookIcon = solid(IconBookFilled);
 export const BoltIcon = solid(IconBoltFilled);
 export const GiftIcon = solid(IconGiftFilled);
-export const StarIcon = solid(IconStarFilled);
 export const SparklesIcon = solid(IconSparklesFilled);
 export const BulbIcon = solid(IconBulbFilled);
 export const DislikeIcon = solid(IconThumbDownFilled);
