@@ -35,6 +35,16 @@ export const createEntrySchema = z.object({
   scheduledAt: scheduledAtSchema.optional(),
 });
 
+export const entrySlugSchema = z
+  .string()
+  .trim()
+  .min(1, "URL can't be empty")
+  .max(120, "URL is too long")
+  .regex(
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    "Use lowercase letters, numbers and single hyphens",
+  );
+
 export const updateEntrySchema = z.object({
   slug: bySlugSchema.shape.slug,
   entryId: z.string().min(1),
@@ -51,6 +61,8 @@ export const updateEntrySchema = z.object({
   status: z.enum(["draft", "published"]).optional(),
   /** Null clears the schedule; omitted leaves it unchanged. */
   scheduledAt: scheduledAtSchema.nullable().optional(),
+  /** Public URL segment: `/changelog/p/{entrySlug}`. */
+  entrySlug: entrySlugSchema.optional(),
 });
 
 export const aiToneSchema = z.enum(["user-friendly", "technical", "brief"]);

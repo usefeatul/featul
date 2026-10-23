@@ -143,7 +143,15 @@ export function useChangelogEntry({
                 });
                 const data = await res.json();
                 if ("ok" in data && data.ok) {
-                    toast.success(publishStateChanged.current && isDraft && scheduledAt ? "Entry scheduled" : "Changes saved");
+                    toast.success(
+                        !publishStateChanged.current
+                            ? "Changes saved"
+                            : !isDraft
+                              ? "Entry published"
+                              : scheduledAt
+                                ? "Entry scheduled"
+                                : "Moved to drafts",
+                    );
                     publishStateChanged.current = false;
                     setIsDirty(false);
                 } else {
@@ -157,6 +165,19 @@ export function useChangelogEntry({
             setIsSaving(false);
         }
     }, [mode, workspaceSlug, entryId, title, summary, coverImage, selectedTags, relatedPostIds, isDraft, scheduledAt, router]);
+
+    // Publish-state changes from the publish panel save right away rather than waiting for autosave.
+    const [saveRequested, setSaveRequested] = useState(false);
+    useEffect(() => {
+        if (!saveRequested || isSaving) return;
+        setSaveRequested(false);
+        void handleSave();
+    }, [saveRequested, isSaving, handleSave]);
+
+    const requestSave = useCallback(() => {
+        setIsDirty(true);
+        setSaveRequested(true);
+    }, []);
 
     // Auto-save effect
     useEffect(() => {
@@ -189,5 +210,6 @@ export function useChangelogEntry({
         setIsDirty,
         handleImageUpload,
         handleSave,
+        requestSave,
     };
 }

@@ -27,7 +27,7 @@ import { useAssistantPanel } from "@/hooks/useAssistantPanel";
 import { PANEL_SHORTCUT_LABEL, usePanelShortcut } from "@/hooks/shortcut";
 
 import { Related } from "./related";
-import { SchedulePicker } from "./SchedulePicker";
+import { PublishPanel } from "./PublishPanel";
 import { Timeline } from "./timeline";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -47,6 +47,9 @@ interface ChangelogEditorProps {
     relatedPostIds?: string[];
     status: "draft" | "published";
     scheduledAt?: Date | null;
+    publishedAt?: Date | null;
+    /** Public URL segment; only known once the entry exists. */
+    slug?: string;
   };
   availableTags: WorkspaceTag[];
 }
@@ -76,6 +79,10 @@ export function ChangelogEditor({
 
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [workspaceTags, setWorkspaceTags] = useState(availableTags);
+  const [entrySlug, setEntrySlug] = useState(initialData?.slug ?? "");
+  const [publishedAt, setPublishedAt] = useState<Date | null>(
+    initialData?.publishedAt ?? null,
+  );
 
   const {
     editorRef,
@@ -98,6 +105,7 @@ export function ChangelogEditor({
     setIsDirty,
     handleImageUpload,
     handleSave,
+    requestSave,
   } = useChangelogEntry({
     workspaceSlug,
     mode,
@@ -202,35 +210,36 @@ export function ChangelogEditor({
           },
         ]
       : []),
-    ...(isDraft
-      ? [
-          {
-            key: "schedule",
-            label: "Schedule publish",
-            type: "custom" as const,
-            onClick: () => {},
-            render: (buttonClassName: string) => (
-              <SchedulePicker
-                scheduledAt={scheduledAt}
-                triggerClassName={buttonClassName}
-                onChange={(next) => {
-                  setScheduledAt(next);
-                  setIsDirty(true);
-                }}
-              />
-            ),
-          },
-        ]
-      : []),
     {
-      key: "status",
-      label: "Published",
-      type: "switch",
-      checked: !isDraft,
-      onClick: () => {
-        setIsDraft(!isDraft);
-        setIsDirty(true);
-      },
+      key: "publish",
+      label: "Publishing",
+      type: "custom",
+      onClick: () => {},
+      render: () => (
+        <PublishPanel
+          workspaceSlug={workspaceSlug}
+          entryId={entryId}
+          entrySlug={entrySlug}
+          onEntrySlugChange={setEntrySlug}
+          title={title}
+          isDraft={isDraft}
+          scheduledAt={scheduledAt}
+          publishedAt={publishedAt}
+          onPublish={() => {
+            setIsDraft(false);
+            setPublishedAt((current) => current ?? new Date());
+            requestSave();
+          }}
+          onUnpublish={() => {
+            setIsDraft(true);
+            requestSave();
+          }}
+          onScheduleChange={(next) => {
+            setScheduledAt(next);
+            requestSave();
+          }}
+        />
+      ),
     },
     {
       key: "save",

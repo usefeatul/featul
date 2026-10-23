@@ -110,7 +110,6 @@ import {
   Headset as LucideHeadset,
   History as LucideHistory,
   KeyRound as LucideKeyRound,
-  Lightbulb as LucideLightbulb,
   Link2 as LucideLink2,
   List as LucideList,
   ListChecks as LucideListChecks,
@@ -304,7 +303,7 @@ export const CsvIcon = solid(IconTableFilled);
 export const DocumentTextIcon = FileText;
 export const FileExportIcon = solid(IconFileUploadFilled);
 export const InfoIcon = solid(IconInfoSquareRoundedFilled);
-export const IdeaIcon = outline(LucideLightbulb);
+export const IdeaIcon = BulbIcon;
 export const KeyIcon = outline(LucideKeyRound);
 export const ListFilterIcon = solid(IconListCheckFilled);
 export const ListIcon = outline(LucideList);

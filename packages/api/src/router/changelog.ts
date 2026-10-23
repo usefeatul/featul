@@ -577,6 +577,23 @@ export function createChangelogRouter() {
           });
 
         const updates: Partial<typeof changelogEntry.$inferInsert> = {};
+        if (input.entrySlug !== undefined && input.entrySlug !== existing.slug) {
+          const [taken] = await ctx.db
+            .select({ id: changelogEntry.id })
+            .from(changelogEntry)
+            .where(
+              and(
+                eq(changelogEntry.boardId, b.id),
+                eq(changelogEntry.slug, input.entrySlug),
+              ),
+            )
+            .limit(1);
+          if (taken)
+            throw new HTTPException(409, {
+              message: "Another entry already uses this URL",
+            });
+          updates.slug = input.entrySlug;
+        }
         if (input.title !== undefined) updates.title = input.title.trim();
         if (input.content !== undefined)
           updates.content = input.content as Record<string, unknown>;
