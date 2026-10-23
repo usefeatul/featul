@@ -1,20 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { FeedEditor } from "@/components/editor/editor";
 import type { JSONContent, MentionSuggestionItem } from "@featul/editor";
 import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 import type { EditorAction } from "./EditorHeaderContext";
 import { CoverImageUploader } from "./CoverImageUploader";
-import {
-  InfoIcon,
-  TickIcon,
-  LoaderIcon,
-  ChevronLeftIcon,
-  SparklesIcon,
-} from "@/components/global/icons";
+import { SparklesIcon } from "@/components/global/icons";
 
 import type { WorkspaceTag } from "@/types/changelog";
 import type { Member } from "@/types/team";
@@ -29,6 +22,7 @@ import { PANEL_SHORTCUT_LABEL, usePanelShortcut } from "@/hooks/shortcut";
 
 import { Related } from "./related";
 import { PublishPanel } from "./PublishPanel";
+import { SaveStatus } from "./SaveStatus";
 import { Timeline } from "./timeline";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -67,7 +61,6 @@ export function ChangelogEditor({
   availableTags,
   initialAuthorIds,
 }: ChangelogEditorProps) {
-  const router = useRouter();
   const scrollRef = useRef<HTMLElement>(null);
   const [mentionSuggestions, setMentionSuggestions] = useState<
     MentionSuggestionItem[]
@@ -256,34 +249,11 @@ export function ChangelogEditor({
             type: "button" as const,
             variant: "plain" as const,
             shortcut: PANEL_SHORTCUT_LABEL,
-            icon: <SparklesIcon className="size-4 text-primary" aria-hidden="true" />,
+            icon: <SparklesIcon className="size-4" aria-hidden="true" />,
             onClick: openAiPanel,
           },
         ]
       : []),
-    {
-      key: "save",
-      label: isSaving ? "Saving changes" : isDirty ? "Save unsaved changes" : "Saved",
-      type: "button",
-      variant: "plain",
-      icon: isSaving ? (
-        <LoaderIcon className="size-4 text-yellow-600 dark:text-yellow-400" />
-      ) : isDirty ? (
-        <InfoIcon className="size-4 text-yellow-600 dark:text-yellow-400" />
-      ) : (
-        <TickIcon className="size-4 text-green-600 dark:text-green-400" />
-      ),
-      onClick: saveWithCheck,
-      disabled: isSaving,
-    },
-    {
-      key: "back",
-      label: "",
-      type: "button",
-      variant: "plain",
-      icon: <ChevronLeftIcon className="size-3" />,
-      onClick: () => router.push(`/workspaces/${workspaceSlug}/changelog`),
-    },
   ];
 
   return (
@@ -357,6 +327,12 @@ export function ChangelogEditor({
               </div>
             </div>
           </article>
+          <SaveStatus
+            isSaving={isSaving}
+            isDirty={isDirty}
+            onSave={() => void saveWithCheck()}
+            className="fixed bottom-[calc(var(--workspace-mobile-nav-height)+1rem)] left-4 lg:absolute lg:bottom-4"
+          />
         </div>
       </div>
 

@@ -262,7 +262,6 @@ export function HelpCenterList({
   }
 
   const collectionIds = tree.collections.map((c) => c.id);
-  const hasSelection = selection.selectedCount > 0;
 
   return (
     <SelectableListShell
@@ -280,23 +279,28 @@ export function HelpCenterList({
       deleteDescription="This action cannot be undone. These articles will be permanently removed from your help center."
       totalCount={itemIds.length}
       extraActions={
+        // Only the moves that apply to the selection are offered.
         <>
-          <BulkStatusButton
-            label="Publish"
-            pendingLabel="Publishing…"
-            icon={<ChangelogPublishedIcon className="size-3.5" />}
-            disabled={!hasSelection || !canPublish || bulkAction !== null}
-            pending={bulkAction === "published"}
-            onClick={() => void handleBulkStatus("published")}
-          />
-          <BulkStatusButton
-            label="Unpublish"
-            pendingLabel="Unpublishing…"
-            icon={<ChangelogDraftIcon className="size-3.5" />}
-            disabled={!hasSelection || !canUnpublish || bulkAction !== null}
-            pending={bulkAction === "draft"}
-            onClick={() => void handleBulkStatus("draft")}
-          />
+          {canPublish ? (
+            <BulkStatusButton
+              label="Publish"
+              pendingLabel="Publishing…"
+              icon={<ChangelogPublishedIcon className="size-3.5" />}
+              disabled={bulkAction !== null}
+              pending={bulkAction === "published"}
+              onClick={() => void handleBulkStatus("published")}
+            />
+          ) : null}
+          {canUnpublish ? (
+            <BulkStatusButton
+              label="Unpublish"
+              pendingLabel="Unpublishing…"
+              icon={<ChangelogDraftIcon className="size-3.5" />}
+              disabled={bulkAction !== null}
+              pending={bulkAction === "draft"}
+              onClick={() => void handleBulkStatus("draft")}
+            />
+          ) : null}
         </>
       }
     >
@@ -350,7 +354,7 @@ function BulkStatusButton({
       type="button"
       variant="card"
       size="sm"
-      className={cn("h-8 gap-1.5 rounded-lg px-3 py-0", disabled && !pending && "pointer-events-none opacity-40")}
+      className="h-8 gap-1.5 rounded-lg px-3 py-0"
       disabled={disabled}
       onClick={onClick}
       aria-label={`${label} selected articles`}
@@ -459,7 +463,8 @@ function CollectionGroup({
               : "Articles without a collection appear at the bottom of the help center."}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-0.5">
+        {/* Revealed on hover so the list reads as content, not a wall of buttons. */}
+        <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover/collection:opacity-100 has-[[data-state=open]]:opacity-100 [@media(hover:none)]:opacity-100">
           <ActionTooltip label={collection ? `New article in ${collection.name}` : "New article"}>
             <Button asChild variant="plain" size="icon-sm" className="text-muted-foreground hover:text-foreground">
               <Link href={newHref} aria-label={`New article in ${collection?.name ?? "Uncategorized"}`}>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import TextareaAutosize from "react-textarea-autosize";
 import { FeedEditor } from "@/components/editor/editor";
 import type { MentionSuggestionItem } from "@featul/editor";
@@ -16,14 +15,11 @@ import { cn } from "@featul/ui/lib/utils";
 import {
   ChevronDown,
   CheckIcon,
-  ChevronLeftIcon,
-  InfoIcon,
-  LoaderIcon,
   NoCollectionIcon,
-  TickIcon,
 } from "@/components/global/icons";
 import WorkspaceHeader from "@/components/global/WorkspaceHeader";
 import type { EditorAction } from "@/components/changelog/EditorHeaderContext";
+import { SaveStatus } from "@/components/changelog/SaveStatus";
 import { Timeline } from "@/components/changelog/timeline";
 import { fetchWorkspaceMembers } from "@/lib/team/client";
 import { useHelpArticle, type HelpArticleFormData } from "@/hooks/useHelpArticle";
@@ -50,7 +46,6 @@ export function HelpArticleEditor({
   initialTitle,
   collections: initialCollections,
 }: HelpArticleEditorProps) {
-  const router = useRouter();
   const scrollRef = useRef<HTMLElement>(null);
   const [mentionSuggestions, setMentionSuggestions] = useState<MentionSuggestionItem[]>([]);
   const { data: tree } = useHelpTree(workspaceSlug);
@@ -113,29 +108,6 @@ export function HelpArticleEditor({
         setIsDraft(!isDraft);
         setIsDirty(true);
       },
-    },
-    {
-      key: "save",
-      label: isSaving ? "Saving changes" : isDirty || mode === "create" ? "Save" : "Saved",
-      type: "button",
-      variant: "plain",
-      icon: isSaving ? (
-        <LoaderIcon className="size-4 text-yellow-600 dark:text-yellow-400" />
-      ) : isDirty || mode === "create" ? (
-        <InfoIcon className="size-4 text-yellow-600 dark:text-yellow-400" />
-      ) : (
-        <TickIcon className="size-4 text-green-600 dark:text-green-400" />
-      ),
-      onClick: () => void handleSave(),
-      disabled: isSaving,
-    },
-    {
-      key: "back",
-      label: "Back to help center",
-      type: "button",
-      variant: "plain",
-      icon: <ChevronLeftIcon className="size-3" />,
-      onClick: () => router.push(`/workspaces/${workspaceSlug}/help`),
     },
   ];
 
@@ -207,6 +179,12 @@ export function HelpArticleEditor({
               </div>
             </div>
           </article>
+          <SaveStatus
+            isSaving={isSaving}
+            isDirty={isDirty || mode === "create"}
+            onSave={() => void handleSave()}
+            className="fixed bottom-[calc(var(--workspace-mobile-nav-height)+1rem)] left-4 lg:absolute lg:bottom-4"
+          />
         </div>
       </div>
     </div>
