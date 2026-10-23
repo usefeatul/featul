@@ -18,6 +18,7 @@ import {
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { publicBoardUrlForWorkspace } from "@/config/nav";
+import { ActionTooltip } from "@/components/global/ActionTooltip";
 import {
   CalendarDays,
   Check,
@@ -133,30 +134,32 @@ export function PublishPanel({
         }
       }}
     >
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          // The faintest surface shadow, so the pill sits almost flat in the header.
-          className={cn(
-            inputSurfaceClass,
-            "flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-[filter,color] hover:text-foreground hover:brightness-[0.98] data-[state=open]:text-foreground dark:hover:brightness-125",
-          )}
-        >
-          {status.trigger}
-          <span className="relative flex size-1.5" aria-hidden="true">
-            {!isDraft ? (
-              // Live entries breathe; drafts and schedules stay still.
-              <span
-                className={cn(
-                  "absolute inline-flex size-full animate-ping rounded-full opacity-75 motion-reduce:hidden",
-                  status.dot,
-                )}
-              />
-            ) : null}
-            <span className={cn("relative inline-flex size-1.5 rounded-full", status.dot)} />
-          </span>
-        </button>
-      </PopoverTrigger>
+      <ActionTooltip label={open ? "Hide details" : "Show details"}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            // The faintest surface shadow, so the pill sits almost flat in the header.
+            className={cn(
+              inputSurfaceClass,
+              "flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-[filter,color] hover:text-foreground hover:brightness-[0.98] data-[state=open]:text-foreground dark:hover:brightness-125",
+            )}
+          >
+            {status.trigger}
+            <span className="relative flex size-1.5" aria-hidden="true">
+              {!isDraft ? (
+                // Live entries breathe; drafts and schedules stay still.
+                <span
+                  className={cn(
+                    "absolute inline-flex size-full animate-ping rounded-full opacity-75 motion-reduce:hidden",
+                    status.dot,
+                  )}
+                />
+              ) : null}
+              <span className={cn("relative inline-flex size-1.5 rounded-full", status.dot)} />
+            </span>
+          </button>
+        </PopoverTrigger>
+      </ActionTooltip>
 
       <PopoverContent
         align="end"
