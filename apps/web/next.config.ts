@@ -18,6 +18,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  experimental: {
+    agentUpgrade: 'security',
+  },
   images: {
     qualities: [100, 75],
     remotePatterns: [
