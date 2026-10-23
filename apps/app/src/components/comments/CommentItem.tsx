@@ -21,7 +21,6 @@ import { useMentionableMembers } from "../../hooks/useMentions"
 import type { CommentData } from "../../types/comment"
 import type { CommentSurface } from "@/lib/comment/shared"
 import { settingsSurfaceHeaderClass } from "@/components/settings/global/SectionCard"
-import { CommentsIcon } from "@/components/global/icons"
 import { cn } from "@featul/ui/lib/utils"
 import { commentCardInnerClass, commentCardShellClass } from "./styles"
 
@@ -185,14 +184,9 @@ export default function CommentItem({
       {showReplyForm ? (
         <div className={cn(commentCardShellClass, "mt-3")}>
           <header className={settingsSurfaceHeaderClass}>
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="flex size-5 shrink-0 items-center justify-center">
-                <CommentsIcon className="size-5 text-primary" />
-              </div>
-              <h2 className="truncate text-sm font-medium leading-6 text-foreground">
-                Reply to {displayUser.name}
-              </h2>
-            </div>
+            <h2 className="min-w-0 truncate text-sm font-medium leading-6 text-foreground">
+              Reply to {displayUser.name}
+            </h2>
           </header>
           <div className={commentCardInnerClass}>
             <CommentForm
