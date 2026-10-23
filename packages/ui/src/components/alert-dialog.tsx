@@ -4,6 +4,7 @@ import * as React from "react"
 import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog"
 
 import { cn } from "@featul/ui/lib/utils"
+import { useBackgroundScaleLock, useOverlayOpenState } from "@featul/ui/hooks/use-background-scale"
 import { buttonVariants } from "@featul/ui/components/button"
 import type { VariantProps } from "class-variance-authority"
 import {
@@ -15,9 +16,26 @@ import {
 import { XMarkIcon } from "@featul/ui/icons/xmark"
 
 function AlertDialog({
+  open,
+  defaultOpen,
+  onOpenChange,
+  scaleBackground = true,
   ...props
-}: React.ComponentProps<typeof BaseAlertDialog.Root>) {
-  return <BaseAlertDialog.Root data-slot="alert-dialog" {...props} />
+}: React.ComponentProps<typeof BaseAlertDialog.Root> & {
+  /** Zoom the app out behind the alert dialog while it is open. */
+  scaleBackground?: boolean
+}) {
+  const [isOpen, handleOpenChange] = useOverlayOpenState({ open, defaultOpen, onOpenChange })
+  useBackgroundScaleLock(scaleBackground && isOpen)
+  return (
+    <BaseAlertDialog.Root
+      data-slot="alert-dialog"
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={handleOpenChange}
+      {...props}
+    />
+  )
 }
 
 function AlertDialogTrigger({
@@ -44,7 +62,7 @@ function AlertDialogOverlay({
     <BaseAlertDialog.Backdrop
       data-slot="alert-dialog-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/20 backdrop-blur-xs dark:bg-black/40",
+        "fixed inset-0 z-50 bg-black/20 backdrop-blur-[1px] dark:bg-black/40",
         className
       )}
       {...props}
