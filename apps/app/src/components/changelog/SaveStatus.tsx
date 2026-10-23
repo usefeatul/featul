@@ -13,9 +13,9 @@ interface SaveStatusProps {
 type SaveState = "saving" | "dirty" | "saved";
 
 const LABELS: Record<SaveState, string> = {
-  saving: "Saving…",
-  dirty: "Unsaved changes · click to save",
-  saved: "All changes saved",
+  saving: "Saving",
+  dirty: "Unsaved",
+  saved: "Saved",
 };
 
 /** Tabler's filled cloud, so it matches the other filled workspace icons. */
@@ -23,9 +23,9 @@ const CLOUD_PATH =
   "M10.04 4.305c2.195 -.667 4.615 -.224 6.36 1.176c1.386 1.108 2.188 2.686 2.252 4.34l.003 .212l.091 .003c2.3 .107 4.143 1.961 4.25 4.27l.004 .211c0 2.407 -1.885 4.372 -4.255 4.482l-.21 .005h-11.878l-.222 -.008c-2.94 -.11 -5.317 -2.399 -5.43 -5.263l-.005 -.216c0 -2.747 2.08 -5.01 4.784 -5.417l.114 -.016l.07 -.181c.663 -1.62 2.056 -2.906 3.829 -3.518l.244 -.08z";
 
 /**
- * A grey cloud whose centre mark tells the state: a check once saved, a spinning arc while
- * saving, and an amber dot on the corner while there are unsaved changes. The marks are drawn
- * in the page colour so they read as cut out of the cloud.
+ * The cloud's colour carries the state (amber while unsaved, green while saving, grey once
+ * saved) and fades between them. Its centre mark is drawn in the page colour so it reads as
+ * cut out of the cloud: a spinning arc while saving, and a check that pops in once saved.
  */
 function CloudStatusIcon({ state }: { state: SaveState }) {
   return (
@@ -38,7 +38,7 @@ function CloudStatusIcon({ state }: { state: SaveState }) {
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="stroke-background"
+          className="origin-center stroke-background animate-in fade-in zoom-in-50 duration-300 [transform-box:fill-box] motion-reduce:animate-none"
         />
       ) : null}
       {state === "saving" ? (
@@ -56,9 +56,6 @@ function CloudStatusIcon({ state }: { state: SaveState }) {
           />
         </g>
       ) : null}
-      {state === "dirty" ? (
-        <circle cx={19.5} cy={6.5} r={3.4} strokeWidth={2} className="fill-amber-500 stroke-background" />
-      ) : null}
     </svg>
   );
 }
@@ -74,11 +71,14 @@ export function SaveStatus({ isSaving, isDirty, onSave, className }: SaveStatusP
           type="button"
           // aria-disabled rather than disabled so the tooltip still shows on hover.
           aria-disabled={state !== "dirty"}
-          aria-label={LABELS[state]}
+          // The one-word tooltip doesn't say the button saves, so screen readers get the action.
+          aria-label={state === "dirty" ? "Save changes" : LABELS[state]}
           onClick={() => state === "dirty" && onSave()}
           className={cn(
-            "flex size-6 items-center justify-center rounded-md text-accent outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
-            state === "dirty" ? "cursor-pointer hover:text-foreground" : "cursor-default",
+            "flex size-6 items-center justify-center rounded-md outline-none transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-ring",
+            state === "dirty" && "cursor-pointer text-amber-500 hover:text-amber-600 dark:hover:text-amber-400",
+            state === "saving" && "cursor-default text-green-500 dark:text-green-400",
+            state === "saved" && "cursor-default text-accent",
           )}
         >
           <CloudStatusIcon state={state} />

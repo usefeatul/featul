@@ -12,9 +12,9 @@ import {
   PopoverTrigger,
 } from "@featul/ui/components/popover";
 import {
+  inputSurfaceClass,
   modalCardInnerClass,
   modalCardShellClass,
-  raisedSurfaceClass,
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { publicBoardUrlForWorkspace } from "@/config/nav";
@@ -136,8 +136,9 @@ export function PublishPanel({
       <PopoverTrigger asChild>
         <button
           type="button"
+          // The faintest surface shadow, so the pill sits almost flat in the header.
           className={cn(
-            raisedSurfaceClass,
+            inputSurfaceClass,
             "flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-[filter,color] hover:text-foreground hover:brightness-[0.98] data-[state=open]:text-foreground dark:hover:brightness-125",
           )}
         >
