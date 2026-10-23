@@ -125,7 +125,8 @@ export function HelpAnalytics({
 
   if (error && !data) {
     return (
-      <div className="space-y-4 px-4 pb-14 sm:px-6">
+      // Same column as the Share page: max-w-4xl content, with padding that undoes the page's bleed.
+    <div className="mx-auto box-content max-w-4xl space-y-4 px-4 pb-14 sm:px-8 lg:px-12 xl:px-16">
         <Panel
           title={`Help center · last ${days} days`}
           icon={AnalyticsIcon}
@@ -180,7 +181,8 @@ export function HelpAnalytics({
     : null;
 
   return (
-    <div className="space-y-4 px-4 pb-14 sm:px-6">
+    // Same column as the Share page: max-w-4xl content, with padding that undoes the page's bleed.
+    <div className="mx-auto box-content max-w-4xl space-y-4 px-4 pb-14 sm:px-8 lg:px-12 xl:px-16">
       <Hero
         views={range ? range.views : totals.views}
         previous={previous?.views}
@@ -208,7 +210,7 @@ export function HelpAnalytics({
         <StatCard
           color="green"
           icon={LikeIcon}
-          label="Found it helpful"
+          label="Helpful"
           value={rate === null ? "—" : `${rate}%`}
           hint={rate === null ? "No votes yet" : undefined}
           change={
@@ -234,7 +236,7 @@ export function HelpAnalytics({
               icon={SparklesIcon}
               label="Unanswered"
               value={compact.format(range.gaps)}
-              hint="of searches found nothing"
+              hint="no results"
               change={{
                 now: range.gaps,
                 before: previous.gaps,
@@ -473,7 +475,8 @@ function Change({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums",
+        // Compact and never wrapping, so it still fits beside the title in narrow stat cards.
+        "inline-flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-full px-1.5 py-0.5 text-[11px] font-medium tabular-nums",
         onBrand
           ? "bg-white/15 text-primary-foreground backdrop-blur-sm"
           : good
@@ -1141,7 +1144,7 @@ function AnalyticsSkeleton({
     icon: React.ComponentType<{ className?: string }>;
   }> = [
     { label: "Article views", icon: EyeIcon },
-    { label: "Found it helpful", icon: LikeIcon },
+    { label: "Helpful", icon: LikeIcon },
     ...(searches && trends
       ? [
           { label: "Searches", icon: SearchIcon },
