@@ -32,6 +32,13 @@ export const createCommentInputSchema = z.object({
   }
 )
 
+// 16 kHz mono 16-bit WAV, base64: ~2.56M chars for the 60s client cap.
+export const transcribeCommentAudioInputSchema = z.object({
+  postId: z.string().min(1),
+  audio: z.string().min(1).max(2_700_000),
+  format: z.literal("wav"),
+})
+
 export const updateCommentInputSchema = z.object({
   commentId: z.string().min(1),
   content: z.string().min(1).max(5000),

@@ -13,7 +13,11 @@ export const commentCardShellClass = cn(
   "shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.35)]",
 );
 
-export const commentCardInnerClass = settingsCardInnerClass;
+/** Inner composer card; picks up a primary ring while voice typing is recording. */
+export const commentCardInnerClass = cn(
+  settingsCardInnerClass,
+  "transition-shadow has-[[data-dictation=recording]]:ring-primary/50 dark:has-[[data-dictation=recording]]:ring-primary/50",
+);
 
 export const commentActionIconClass =
   "border-0 bg-transparent p-0 text-foreground shadow-none hover:bg-transparent hover:text-gray-400 dark:bg-transparent dark:text-foreground dark:hover:bg-transparent dark:hover:text-gray-400";

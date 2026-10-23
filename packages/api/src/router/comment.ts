@@ -31,7 +31,13 @@ import {
   reportCommentInputSchema,
   pinCommentInputSchema,
   setCommentVisibilityInputSchema,
+  transcribeCommentAudioInputSchema,
 } from "../validators/comment";
+import { transcribeOpenRouterAudio } from "../services/openrouter";
+import {
+  applyRateLimitHeaders,
+  limitCommentTranscribe,
+} from "../services/ratelimiter";
 import { HTTPException } from "hono/http-exception";
 import { createHash } from "crypto";
 import { enforceTrustedBrowserOrigin } from "../request/origin";
@@ -566,6 +572,35 @@ export function createCommentRouter() {
       }),
 
     // Update a comment
+    // Voice typing: turns a short recording into text for the comment box.
+    transcribe: privateProcedure
+      .input(transcribeCommentAudioInputSchema)
+      .post(async ({ ctx, input, c }) => {
+        enforceTrustedBrowserOrigin(c.req.raw);
+        const userId = String(ctx.session.user.id || "");
+        const target = await requirePostAccess(ctx.db, input.postId, userId, {
+          allowUnpublishedForMembers: true,
+        });
+        if (!target.member) {
+          throw new HTTPException(403, {
+            message: "Voice typing is only available to workspace members",
+          });
+        }
+        if (!target.allowComments || target.isLocked) {
+          throw new HTTPException(403, {
+            message: "Comments are closed on this post",
+          });
+        }
+        applyRateLimitHeaders(
+          c,
+          await limitCommentTranscribe(userId),
+          "Too many voice requests. Please try again shortly.",
+        );
+
+        const text = await transcribeOpenRouterAudio(input.audio, input.format);
+        return c.superjson({ text });
+      }),
+
     update: privateProcedure
       .input(updateCommentInputSchema)
       .post(async ({ ctx, input, c }) => {

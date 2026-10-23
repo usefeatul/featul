@@ -22,6 +22,7 @@ import {
   IconTagFilled,
   IconTrashFilled,
   IconPhotoFilled,
+  IconMicrophoneFilled,
   IconMoodSmileFilled,
   IconThumbUpFilled,
   IconLockFilled,
@@ -86,6 +87,7 @@ import {
   ArrowLeft as LucideArrowLeft,
   ArrowRight as LucideArrowRight,
   CornerDownLeft as LucideCornerDownLeft,
+  RotateCcw as LucideRotateCcw,
   ArrowUp as LucideArrowUp,
   ArrowUpRight as LucideArrowUpRight,
   TrendingUp as LucideTrendingUp,
@@ -190,6 +192,7 @@ export const ExternalLink = solid(IconExternalLinkFilled);
 export const TagIcon = solid(IconTagFilled);
 export const Trash2 = solid(IconTrashFilled);
 export const ImageIcon = solid(IconPhotoFilled);
+export const MicrophoneIcon = solid(IconMicrophoneFilled);
 export const LockIcon = solid(IconLockFilled);
 export const FlagIcon = solid(IconFlagFilled);
 export const PlusIcon = solid(IconSquareRoundedPlusFilled);
@@ -242,6 +245,7 @@ export const ArrowBigUp = outline(LucideArrowBigUp);
 export const ArrowLeft = outline(LucideArrowLeft);
 export const ArrowRight = outline(LucideArrowRight);
 export const CornerDownLeft = outline(LucideCornerDownLeft);
+export const RetryIcon = outline(LucideRotateCcw);
 export const ArrowUp = outline(LucideArrowUp);
 export const MoonIcon = solid(IconMoonFilled);
 export const SunIcon = solid(IconSunFilled);
