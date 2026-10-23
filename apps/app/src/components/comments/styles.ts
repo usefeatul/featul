@@ -1,4 +1,3 @@
-import type { CommentSurface } from "@/lib/comment/shared";
 import { cn } from "@featul/ui/lib/utils";
 import {
   settingsCardInnerClass,
@@ -8,12 +7,7 @@ import {
 export const commentBadgeClass =
   "inline-flex h-5 shrink-0 items-center justify-center gap-1 rounded-lg border-0 bg-black/5 px-1.5 text-[11px] font-medium leading-none text-accent dark:bg-secondary";
 
-export const commentComposerBackgroundClass: Record<CommentSurface, string> = {
-  workspace: "bg-black/[0.02] dark:bg-white/[0.025]",
-  public: "bg-card dark:bg-background",
-};
-
-/** Settings card frame for the comment composer, keeping the lit edges but without the drop shadow. */
+/** Settings card frame for the comment and reply composers, keeping the lit edges but without the drop shadow. */
 export const commentCardShellClass = cn(
   settingsCardShellClass,
   "shadow-[inset_0_1px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(0,0,0,0.35)]",

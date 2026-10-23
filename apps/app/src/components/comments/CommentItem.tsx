@@ -20,9 +20,10 @@ import { useCommentEdit } from "../../hooks/useCommentEdit"
 import { useMentionableMembers } from "../../hooks/useMentions"
 import type { CommentData } from "../../types/comment"
 import type { CommentSurface } from "@/lib/comment/shared"
-import { settingsCardInnerClass } from "@/components/settings/global/SectionCard"
+import { settingsSurfaceHeaderClass } from "@/components/settings/global/SectionCard"
+import { CommentsIcon } from "@/components/global/icons"
 import { cn } from "@featul/ui/lib/utils"
-import { commentComposerBackgroundClass } from "./styles"
+import { commentCardInnerClass, commentCardShellClass } from "./styles"
 
 interface CommentItemProps {
   comment: CommentData
@@ -182,23 +183,35 @@ export default function CommentItem({
       </div>
 
       {showReplyForm ? (
-        <div className={cn(settingsCardInnerClass, commentComposerBackgroundClass[surface], "mt-3")}>
-          <CommentForm
-            postId={comment.postId}
-            parentId={comment.id}
-            workspaceSlug={workspaceSlug}
-            surface={surface}
-            defaultInternal={Boolean(comment.isInternal)}
-            onSuccess={() => {
-              setShowReplyForm(false)
-              onReplySuccess?.()
-            }}
-            onBusyChange={setIsReplyBusy}
-            compact
-            placeholder="Write a reply..."
-            autoFocus
-            buttonText="Reply"
-          />
+        <div className={cn(commentCardShellClass, "mt-3")}>
+          <header className={settingsSurfaceHeaderClass}>
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex size-5 shrink-0 items-center justify-center">
+                <CommentsIcon className="size-5 text-primary" />
+              </div>
+              <h2 className="truncate text-sm font-medium leading-6 text-foreground">
+                Reply to {displayUser.name}
+              </h2>
+            </div>
+          </header>
+          <div className={commentCardInnerClass}>
+            <CommentForm
+              postId={comment.postId}
+              parentId={comment.id}
+              workspaceSlug={workspaceSlug}
+              surface={surface}
+              defaultInternal={Boolean(comment.isInternal)}
+              onSuccess={() => {
+                setShowReplyForm(false)
+                onReplySuccess?.()
+              }}
+              onBusyChange={setIsReplyBusy}
+              compact
+              placeholder="Write a reply..."
+              autoFocus
+              buttonText="Reply"
+            />
+          </div>
         </div>
       ) : null}
     </div>
