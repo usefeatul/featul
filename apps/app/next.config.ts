@@ -89,6 +89,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  experimental: {
+    agentUpgrade: 'security',
+  },
 
   
 }
