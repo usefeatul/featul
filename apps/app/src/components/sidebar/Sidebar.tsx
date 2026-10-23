@@ -14,12 +14,7 @@ import {
   EditIcon as WorkspaceCreateIcon,
 } from "@/components/global/icons";
 
-import {
-  AnimatePresence,
-  LayoutGroup,
-  motion,
-  useReducedMotion,
-} from "framer-motion";
+import { LayoutGroup, motion, useReducedMotion } from "framer-motion";
 import SettingsNav from "@/components/settings/global/SettingsNav";
 import { CreatePostModal } from "../post/CreatePostModal";
 import type { DeviceAccount, UserIdentity } from "@/components/account/types";
@@ -85,6 +80,11 @@ export default function Sidebar({
   const isSettings = isWorkspaceSettingsPath(pathname);
   const reduceMotion = useReducedMotion();
   const navView = isSettings ? "settings" : "workspace";
+  // Skip the enter animation on first paint so SSR markup isn't hidden.
+  const navMounted = React.useRef(false);
+  React.useEffect(() => {
+    navMounted.current = true;
+  }, []);
   const { primaryNav, middleNav, statusCounts } = useWorkspaceNav(
     slug,
     initialWorkspace || null,
@@ -198,92 +198,99 @@ export default function Sidebar({
           className="relative flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto scrollbar-hide"
         >
           <LayoutGroup id="desktop-sidebar-nav">
-            <AnimatePresence initial={false} mode="wait">
-              <motion.div
-                key={navView}
-                className="shrink-0"
-                initial={{ opacity: 0, x: reduceMotion ? 0 : 6 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: reduceMotion ? 0 : 0.12 }}
-              >
-                {isSettings ? (
-                  <>
-                    <SidebarSection collapsed={collapsed}>
-                      <SidebarItem
-                        item={{
-                          label: "Back",
-                          href: workspaceBase(slug),
-                          icon: ArrowBackIcon,
-                          exact: true,
-                        }}
-                        pathname={pathname}
-                        mutedIcon
-                        indicator={false}
-                        collapsed={collapsed}
-                        onClick={revealNavigation}
-                      />
-                    </SidebarSection>
-                    <SidebarSection collapsed={collapsed}>
-                      <SettingsNav
-                        collapsed={collapsed}
-                        onLinkClick={revealNavigation}
-                      />
-                    </SidebarSection>
-                  </>
-                ) : (
-                  <>
-                    {pinnedItems.length > 0 ? (
-                      <SidebarSection title="Pinned" collapsed={collapsed}>
-                        {pinnedItems.map((item) => {
-                          const isRequest = primaryNav.includes(item);
-                          return (
-                            <SidebarItem
-                              key={item.label}
-                              item={item}
-                              pathname={pathname}
-                              collapsed={collapsed}
-                              mutedIcon={!isRequest}
-                              onClick={
-                                item.external ? undefined : revealNavigation
-                              }
-                              count={
-                                isRequest
-                                  ? statusCounts?.[
-                                      item.label.trim().toLowerCase()
-                                    ]
-                                  : undefined
-                              }
-                              pinned
-                              onTogglePin={togglePin}
-                            />
-                          );
-                        })}
-                      </SidebarSection>
-                    ) : null}
-                    {requestNav.length > 0 ? (
-                      <SidebarSection title="Requests" collapsed={collapsed}>
-                        {requestNav.map((item) => (
+            {/* Enter-only swap: an exit-gated (mode="wait") presence can stall on
+                back/forward navigation and leave the nav empty until reload. */}
+            <motion.div
+              key={navView}
+              className="shrink-0"
+              initial={
+                !navMounted.current
+                  ? false
+                  : { opacity: 0, x: reduceMotion ? 0 : 6 }
+              }
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.12 }}
+            >
+              {isSettings ? (
+                <>
+                  <SidebarSection collapsed={collapsed}>
+                    <SidebarItem
+                      item={{
+                        label: "Back",
+                        href: workspaceBase(slug),
+                        icon: ArrowBackIcon,
+                        exact: true,
+                      }}
+                      pathname={pathname}
+                      mutedIcon
+                      indicator={false}
+                      collapsed={collapsed}
+                      onClick={revealNavigation}
+                    />
+                  </SidebarSection>
+                  <SidebarSection collapsed={collapsed}>
+                    <SettingsNav
+                      collapsed={collapsed}
+                      onLinkClick={revealNavigation}
+                    />
+                  </SidebarSection>
+                </>
+              ) : (
+                <>
+                  {pinnedItems.length > 0 ? (
+                    <SidebarSection title="Pinned" collapsed={collapsed}>
+                      {pinnedItems.map((item) => {
+                        const isRequest = primaryNav.includes(item);
+                        return (
                           <SidebarItem
                             key={item.label}
                             item={item}
                             pathname={pathname}
                             collapsed={collapsed}
-                            onClick={revealNavigation}
-                            count={
-                              statusCounts?.[item.label.trim().toLowerCase()]
+                            mutedIcon={!isRequest}
+                            onClick={
+                              item.external ? undefined : revealNavigation
                             }
+                            count={
+                              isRequest
+                                ? statusCounts?.[
+                                    item.label.trim().toLowerCase()
+                                  ]
+                                : undefined
+                            }
+                            pinned
                             onTogglePin={togglePin}
                           />
-                        ))}
-                      </SidebarSection>
-                    ) : null}
-                  </>
-                )}
-              </motion.div>
-            </AnimatePresence>
+                        );
+                      })}
+                    </SidebarSection>
+                  ) : null}
+                  {requestNav.length > 0 ? (
+                    <SidebarSection title="Requests" collapsed={collapsed}>
+                      {requestNav.map((item) => (
+                        <SidebarItem
+                          key={item.label}
+                          item={item}
+                          pathname={pathname}
+                          collapsed={collapsed}
+                          onClick={revealNavigation}
+                          count={
+                            statusCounts?.[item.label.trim().toLowerCase()]
+                          }
+                          onTogglePin={togglePin}
+                        />
+                      ))}
+                    </SidebarSection>
+                  ) : null}
+                </>
+              )}
+            </motion.div>
             {!isSettings && unpinnedWorkspaceNav.length > 0 ? (
-              <SidebarSection title="Workspace" collapsed={collapsed} className="shrink-0">
+              <SidebarSection
+                title="Workspace"
+                collapsed={collapsed}
+                className="shrink-0"
+              >
                 {unpinnedWorkspaceNav.map((item) => (
                   <SidebarItem
                     key={item.label}
