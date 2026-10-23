@@ -85,6 +85,7 @@ import {
   ArrowBigUp as LucideArrowBigUp,
   ArrowLeft as LucideArrowLeft,
   ArrowRight as LucideArrowRight,
+  CornerDownLeft as LucideCornerDownLeft,
   ArrowUp as LucideArrowUp,
   ArrowUpRight as LucideArrowUpRight,
   TrendingUp as LucideTrendingUp,
@@ -240,6 +241,7 @@ export const ArrowBigDown = outline(LucideArrowBigDown);
 export const ArrowBigUp = outline(LucideArrowBigUp);
 export const ArrowLeft = outline(LucideArrowLeft);
 export const ArrowRight = outline(LucideArrowRight);
+export const CornerDownLeft = outline(LucideCornerDownLeft);
 export const ArrowUp = outline(LucideArrowUp);
 export const MoonIcon = solid(IconMoonFilled);
 export const SunIcon = solid(IconSunFilled);

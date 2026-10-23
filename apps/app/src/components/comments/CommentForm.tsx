@@ -6,7 +6,12 @@ import Visibility from "./visibility";
 import MentionList from "./MentionList";
 import { MentionTextarea } from "./MentionTextarea";
 import { Button } from "@featul/ui/components/button";
-import { LoaderIcon, ImageIcon, XMarkIcon } from "@/components/global/icons";
+import {
+  LoaderIcon,
+  ImageIcon,
+  CornerDownLeft,
+  XMarkIcon,
+} from "@/components/global/icons";
 
 import { commentActionIconClass } from "./styles";
 import ContentImage from "@/components/global/ContentImage";
@@ -203,14 +208,18 @@ export default function CommentForm({
         <div className="flex items-center gap-2">
           <Button
             type="submit"
-            size="xs"
+            size="icon-sm"
             variant="default"
-            className="h-8 px-4"
             disabled={!canSubmit}
             aria-label={submitLabel}
+            title={submitLabel}
             aria-busy={isPending}
           >
-            {isPending ? <LoaderIcon className="h-3 w-3" /> : submitLabel}
+            {isPending ? (
+              <LoaderIcon className="size-3.5" />
+            ) : (
+              <CornerDownLeft className="size-4" strokeWidth={2.25} />
+            )}
           </Button>
         </div>
       </div>

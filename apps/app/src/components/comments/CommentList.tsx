@@ -19,7 +19,6 @@ import {
   settingsCardShellClass,
   settingsSurfaceHeaderClass,
 } from "@/components/settings/global/SectionCard";
-import { CommentsIcon } from "@/components/global/icons";
 import { cn } from "@featul/ui/lib/utils";
 import { commentCardInnerClass, commentCardShellClass } from "./styles";
 
@@ -129,21 +128,16 @@ export default function CommentList({
   return (
     <div className="space-y-4">
       <div className={cn(commentCardShellClass, plain && "mt-5")}>
-        <header className={settingsSurfaceHeaderClass}>
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex size-5 shrink-0 items-center justify-center">
-              <CommentsIcon className="size-5 text-primary" />
-            </div>
-            <h2 className="text-sm font-medium leading-6 text-foreground">
-              {hideHeading ? "Add a comment" : "Comments"}
+        {!hideHeading && (
+          <header className={settingsSurfaceHeaderClass}>
+            <h2 className="min-w-0 text-sm font-medium leading-6 text-foreground">
+              Comments
             </h2>
-          </div>
-          {!hideHeading && (
             <span className="text-xs tabular-nums text-accent">
               {commentCount} {commentCount === 1 ? "comment" : "comments"}
             </span>
-          )}
-        </header>
+          </header>
+        )}
         <div className={commentCardInnerClass}>
           <CommentForm
             postId={postId}
