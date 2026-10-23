@@ -5,7 +5,11 @@ import { DitherGradient } from "@featul/ui/components/gradient";
 import { fillOf, type PixelColor } from "@featul/ui/lib/pixel";
 import { rgb } from "@featul/ui/lib/palette";
 import Counter from "./counter";
-import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
+import {
+  modalCardInnerClass,
+  modalCardShellClass,
+  raisedSurfaceClass,
+} from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { planComparisonTableClass, planPatternClass } from "./styles";
 import { getPlanLimits } from "@featul/api/shared/plan";
@@ -36,7 +40,7 @@ import {
   RoadmapIcon,
   StarIcon,
 } from "@/components/global/icons";
-import type { PlanKey } from "@/lib/plan";
+import { getPlanColorClassName, type PlanKey } from "@/lib/plan";
 import { PLAN_ORDER, getPlan, type BillingCycle } from "./data";
 
 const planPattern: Record<PlanKey, PixelColor> = {
@@ -246,7 +250,14 @@ export default function Comparison({
                   {plan.label}
                 </h3>
                 {currentPlan === key ? (
-                  <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                  // Same raised chip as the workspace switcher's plan badge.
+                  <span
+                    className={cn(
+                      raisedSurfaceClass,
+                      "rounded-md px-1.5 py-[3px] text-[11px] font-medium leading-none",
+                      getPlanColorClassName(key),
+                    )}
+                  >
                     Current
                   </span>
                 ) : null}
