@@ -114,6 +114,18 @@ export function getPlanLimits(plan: PlanKey | string): PlanLimits {
   return LIMITS[normalizePlan(String(plan))];
 }
 
+/** Brand fill for each plan; drives the plan cards' dither pattern, icons and solid badges. */
+export const PLAN_FILL: Record<PlanKey, [number, number, number]> = {
+  free: [110, 114, 122],
+  starter: [53, 143, 243],
+  professional: [255, 150, 50],
+};
+
+export function getPlanFill(plan: PlanKey | string): string {
+  const [r, g, b] = PLAN_FILL[normalizePlan(String(plan))];
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
 /** Text colour used to identify each plan consistently across the product. */
 export function getPlanColorClassName(plan: PlanKey | string): string {
   switch (normalizePlan(String(plan))) {

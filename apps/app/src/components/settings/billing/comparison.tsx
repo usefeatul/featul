@@ -2,14 +2,8 @@
 
 import type { ComponentType, CSSProperties, ReactNode } from "react";
 import { DitherGradient } from "@featul/ui/components/gradient";
-import { fillOf, type PixelColor } from "@featul/ui/lib/pixel";
-import { rgb } from "@featul/ui/lib/palette";
 import Counter from "./counter";
-import {
-  modalCardInnerClass,
-  modalCardShellClass,
-  raisedSurfaceClass,
-} from "@featul/ui/lib/overlay";
+import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { planComparisonTableClass, planPatternClass } from "./styles";
 import { getPlanLimits } from "@featul/api/shared/plan";
@@ -40,14 +34,9 @@ import {
   RoadmapIcon,
   StarIcon,
 } from "@/components/global/icons";
-import { getPlanColorClassName, type PlanKey } from "@/lib/plan";
+import { PLAN_FILL, getPlanFill, type PlanKey } from "@/lib/plan";
+import PlanBadge from "@/components/global/PlanBadge";
 import { PLAN_ORDER, getPlan, type BillingCycle } from "./data";
-
-const planPattern: Record<PlanKey, PixelColor> = {
-  free: [110, 114, 122],
-  starter: "blue",
-  professional: "orange",
-};
 
 /** Filled plan marks, tinted with the plan's pattern color. */
 const planIcon = {
@@ -230,7 +219,7 @@ export default function Comparison({
         {PLAN_ORDER.map((key) => {
           const plan = getPlan(key);
           const PlanMark = planIcon[key];
-          const planColor = rgb(fillOf(planPattern[key]));
+          const planColor = getPlanFill(key);
           const amount =
             billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
           return (
@@ -250,16 +239,7 @@ export default function Comparison({
                   {plan.label}
                 </h3>
                 {currentPlan === key ? (
-                  // Same raised chip as the workspace switcher's plan badge.
-                  <span
-                    className={cn(
-                      raisedSurfaceClass,
-                      "rounded-md px-1.5 py-[3px] text-[11px] font-medium leading-none",
-                      getPlanColorClassName(key),
-                    )}
-                  >
-                    Current
-                  </span>
+                  <PlanBadge plan={key}>Current</PlanBadge>
                 ) : null}
               </div>
               <div
@@ -271,7 +251,7 @@ export default function Comparison({
                 {/* Pattern sits in the top-left corner and fades out toward the copy. */}
                 <div aria-hidden="true" className={planPatternClass}>
                   <DitherGradient
-                    from={planPattern[key]}
+                    from={PLAN_FILL[key]}
                     to="transparent"
                     direction="down"
                     cell={3}
