@@ -19,7 +19,7 @@ import {
   settingsCardShellClass,
 } from "@/components/settings/global/SectionCard";
 import { cn } from "@featul/ui/lib/utils";
-import { commentComposerBackgroundClass } from "./styles";
+import { commentCardInnerClass, commentCardShellClass } from "./styles";
 
 interface CommentListProps {
   postId: string;
@@ -126,7 +126,7 @@ export default function CommentList({
 
   return (
     <div className="space-y-4">
-      <div className={plain ? "pt-2" : settingsCardShellClass}>
+      <div className={cn(commentCardShellClass, plain && "mt-5")}>
         {!hideHeading && (
           <header className="flex flex-col gap-2 px-2 py-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-3">
@@ -141,14 +141,7 @@ export default function CommentList({
             </div>
           </header>
         )}
-        <div
-          className={cn(
-            plain
-              ? "mt-3 rounded-lg border border-border/40 p-3"
-              : settingsCardInnerClass,
-            commentComposerBackgroundClass[surface],
-          )}
-        >
+        <div className={commentCardInnerClass}>
           <CommentForm
             postId={postId}
             onSuccess={handleCommentSuccess}
