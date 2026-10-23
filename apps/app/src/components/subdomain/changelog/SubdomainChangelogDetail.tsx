@@ -28,6 +28,7 @@ export default function SubdomainChangelogDetail({
                     <ChangelogSidebar
                         title={entry.title}
                         author={entry.author}
+                        authors={entry.authors}
                         publishedAt={entry.publishedAt}
                     />
                 ) : null}
@@ -42,6 +43,7 @@ export default function SubdomainChangelogDetail({
                     <ChangelogSidebar
                         title={entry.title}
                         author={entry.author}
+                        authors={entry.authors}
                         publishedAt={entry.publishedAt}
                     />
                 ) : null}

@@ -2,23 +2,37 @@
 
 import { useState, type ComponentProps, type ReactNode } from "react";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@featul/ui/components/avatar";
 import { Button } from "@featul/ui/components/button";
 import {
   Popover,
   PopoverContent,
+  PopoverList,
+  PopoverListItem,
   PopoverTrigger,
 } from "@featul/ui/components/popover";
-import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
+import {
+  modalCardInnerClass,
+  modalCardShellClass,
+  raisedSurfaceClass,
+} from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { publicBoardUrlForWorkspace } from "@/config/nav";
 import {
   CalendarDays,
-  ChevronDown,
+  Check,
   Copy,
   DomainIcon,
+  TagIcon,
+  AccountIcon,
 } from "@/components/global/icons";
+import { TagDot } from "@/components/global/tag";
+import type { Member } from "@/types/team";
+import { randomAvatarUrl } from "@/utils/avatar";
+import { getInitials } from "@/utils/user";
 import { EntryUrlForm } from "./EntryUrlForm";
 import { ScheduleForm, formatSchedule } from "./ScheduleForm";
+import type { WorkspaceTag } from "@/types/changelog";
 
 interface PublishPanelProps {
   workspaceSlug: string;
@@ -33,15 +47,23 @@ interface PublishPanelProps {
   onPublish: () => void;
   onUnpublish: () => void;
   onScheduleChange: (scheduledAt: Date | null) => void;
+  members: Member[];
+  authorIds: string[];
+  onAuthorIdsChange: (authorIds: string[]) => void;
+  tags: WorkspaceTag[];
+  selectedTagIds: string[];
+  onTagIdsChange: (tagIds: string[]) => void;
 }
-
-type Section = "url";
 
 function shortDate(date: Date) {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-/** Status pill in the editor header; the popover holds publishing, scheduling and the URL. */
+function memberName(member: Member) {
+  return member.name || member.email?.split("@")[0] || "Member";
+}
+
+/** Status pill in the editor header; the popover holds publishing, scheduling, URL, authors and tags. */
 export function PublishPanel({
   workspaceSlug,
   entryId,
@@ -54,9 +76,15 @@ export function PublishPanel({
   onPublish,
   onUnpublish,
   onScheduleChange,
+  members,
+  authorIds,
+  onAuthorIdsChange,
+  tags,
+  selectedTagIds,
+  onTagIdsChange,
 }: PublishPanelProps) {
   const [open, setOpen] = useState(false);
-  const [section, setSection] = useState<Section | null>(null);
+  const [urlOpen, setUrlOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
 
   const origin = publicBoardUrlForWorkspace(workspaceSlug);
@@ -85,13 +113,10 @@ export function PublishPanel({
           detail: "Only your team can see this entry.",
         };
 
-  const toggle = (next: Section) =>
-    setSection((current) => (current === next ? null : next));
-
   const close = () => {
     setScheduleOpen(false);
+    setUrlOpen(false);
     setOpen(false);
-    setSection(null);
   };
 
   const copyLink = async () => {
@@ -109,7 +134,7 @@ export function PublishPanel({
       onOpenChange={(next) => {
         setOpen(next);
         if (!next) {
-          setSection(null);
+          setUrlOpen(false);
           setScheduleOpen(false);
         }
       }}
@@ -124,13 +149,12 @@ export function PublishPanel({
         >
           <span className={cn("size-1.5 rounded-full", status.dot)} aria-hidden="true" />
           {status.trigger}
-          <ChevronDown className="size-3 opacity-60" aria-hidden="true" />
         </button>
       </PopoverTrigger>
 
-      <PopoverContent align="end" className="w-80">
-        <div className="flex flex-col gap-3">
-          <div className="px-0.5">
+      <PopoverContent align="end" className="w-[22rem]">
+        <div className="flex flex-col gap-2.5">
+          <div className="px-1 pt-0.5">
             <p className="flex items-center gap-2 text-sm font-medium">
               <span className={cn("size-1.5 rounded-full", status.dot)} aria-hidden="true" />
               {status.label}
@@ -138,7 +162,7 @@ export function PublishPanel({
             <p className="mt-0.5 text-xs text-muted-foreground">{status.detail}</p>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-border/70 dark:border-white/[0.06]">
+          <PanelCard title="Publishing">
             {isDraft ? (
               <Popover open={scheduleOpen} onOpenChange={setScheduleOpen}>
                 <PopoverTrigger asChild>
@@ -146,6 +170,7 @@ export function PublishPanel({
                     icon={<CalendarDays className="size-3.5" />}
                     label="Schedule"
                     value={scheduledAt ? formatSchedule(scheduledAt) : "Not set"}
+                    muted={!scheduledAt}
                     open={scheduleOpen}
                   />
                 </PopoverTrigger>
@@ -165,32 +190,49 @@ export function PublishPanel({
               </Popover>
             ) : null}
 
-            <Row
-              icon={<DomainIcon className="size-3.5" />}
-              label="URL"
-              value={entryId && entrySlug ? `/p/${entrySlug}` : "Set after first save"}
-              disabled={!entryId || !entrySlug}
-              open={section === "url"}
-              onToggle={() => toggle("url")}
-            >
-              <p className="mb-1.5 truncate text-xs text-muted-foreground" title={host}>
-                {host}/changelog/p/
-              </p>
-              {entryId ? (
-                <EntryUrlForm
-                  workspaceSlug={workspaceSlug}
-                  entryId={entryId}
-                  entrySlug={entrySlug}
-                  title={title}
-                  isPublished={!isDraft}
-                  onSaved={(next) => {
-                    onEntrySlugChange(next);
-                    setSection(null);
-                  }}
-                />
+            <div>
+              <RowButton
+                icon={<DomainIcon className="size-3.5" />}
+                label="URL"
+                value={entryId && entrySlug ? `/p/${entrySlug}` : "Set after first save"}
+                muted={!entryId || !entrySlug}
+                disabled={!entryId || !entrySlug}
+                open={urlOpen}
+                onClick={() => setUrlOpen((current) => !current)}
+              />
+              {urlOpen && entryId ? (
+                <div className="border-t border-border/60 px-3 pt-2 pb-3 dark:border-white/[0.06]">
+                  <p className="mb-1.5 truncate text-xs text-muted-foreground" title={host}>
+                    {host}/changelog/p/
+                  </p>
+                  <EntryUrlForm
+                    workspaceSlug={workspaceSlug}
+                    entryId={entryId}
+                    entrySlug={entrySlug}
+                    title={title}
+                    isPublished={!isDraft}
+                    onSaved={(next) => {
+                      onEntrySlugChange(next);
+                      setUrlOpen(false);
+                    }}
+                  />
+                </div>
               ) : null}
-            </Row>
-          </div>
+            </div>
+          </PanelCard>
+
+          <PanelCard title="Details">
+            <AuthorsRow
+              members={members}
+              authorIds={authorIds}
+              onChange={onAuthorIdsChange}
+            />
+            <TagsRow
+              tags={tags}
+              selectedTagIds={selectedTagIds}
+              onChange={onTagIdsChange}
+            />
+          </PanelCard>
 
           {isDraft ? (
             <Button
@@ -234,19 +276,40 @@ export function PublishPanel({
   );
 }
 
+/** Settings-card frame: a labelled shell around a raised list of rows. */
+function PanelCard({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className={cn(modalCardShellClass, "rounded-xl")}>
+      <h3 className="px-2.5 pt-1 pb-1.5 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+        {title}
+      </h3>
+      <div
+        className={cn(
+          modalCardInnerClass,
+          "rounded-lg divide-y divide-border/60 dark:divide-white/[0.06]",
+        )}
+      >
+        {children}
+      </div>
+    </section>
+  );
+}
+
 type RowButtonProps = Omit<ComponentProps<"button">, "value"> & {
   icon: ReactNode;
   label: string;
-  value: string;
+  value: ReactNode;
   open: boolean;
+  muted?: boolean;
 };
 
-/** One line of the settings list: icon, label, value and a chevron. Doubles as a popover trigger. */
+/** One line of a card: icon, label, value and a chevron. Doubles as a popover trigger. */
 function RowButton({
   icon,
   label,
   value,
   open,
+  muted = false,
   disabled,
   className,
   ...props
@@ -257,48 +320,190 @@ function RowButton({
       disabled={disabled}
       aria-expanded={open}
       className={cn(
-        "flex h-9 w-full cursor-pointer items-center gap-2 px-2.5 text-left text-xs transition-colors not-first:border-t not-first:border-border/70 hover:bg-muted/50 disabled:cursor-default disabled:hover:bg-transparent data-[state=open]:bg-muted/50 dark:not-first:border-white/[0.06]",
+        "flex h-10 w-full cursor-pointer items-center gap-2 px-3 text-left text-xs transition-colors hover:bg-muted/40 disabled:cursor-default disabled:hover:bg-transparent data-[state=open]:bg-muted/40",
         className,
       )}
       {...props}
     >
       <span className="text-muted-foreground">{icon}</span>
-      <span className="text-muted-foreground">{label}</span>
+      <span className="shrink-0 text-muted-foreground">{label}</span>
       <span
         className={cn(
-          "ml-auto min-w-0 truncate font-medium",
-          disabled && "font-normal text-muted-foreground",
+          "ml-auto flex min-w-0 items-center justify-end gap-1.5 font-medium",
+          muted && "font-normal text-muted-foreground",
         )}
       >
-        {value}
+        {typeof value === "string" ? <span className="truncate">{value}</span> : value}
       </span>
-      {disabled ? null : (
-        <ChevronDown
-          className={cn(
-            "size-3 shrink-0 text-muted-foreground transition-transform",
-            open && "rotate-180",
-          )}
-          aria-hidden="true"
-        />
-      )}
     </button>
   );
 }
 
-/** A row that expands its settings in place underneath. */
-function Row({
-  children,
-  onToggle,
-  ...props
-}: Omit<RowButtonProps, "onClick"> & { onToggle: () => void; children: ReactNode }) {
+function MemberAvatar({ member, className }: { member: Member; className?: string }) {
+  const name = memberName(member);
   return (
-    <div className="not-first:border-t not-first:border-border/70 dark:not-first:border-white/[0.06]">
-      <RowButton {...props} onClick={onToggle} />
-      {props.open ? (
-        <div className="border-t border-border/70 bg-muted/20 p-2.5 dark:border-white/[0.06]">
-          {children}
-        </div>
-      ) : null}
-    </div>
+    <Avatar className={cn("size-5 ring-2 ring-card", className)}>
+      <AvatarImage src={member.image || randomAvatarUrl(member.userId)} alt={name} />
+      <AvatarFallback className="bg-muted text-[9px] text-muted-foreground">
+        {getInitials(name)}
+      </AvatarFallback>
+    </Avatar>
+  );
+}
+
+/** Credited authors, picked from the workspace team. At least one stays selected. */
+function AuthorsRow({
+  members,
+  authorIds,
+  onChange,
+}: {
+  members: Member[];
+  authorIds: string[];
+  onChange: (authorIds: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const byId = new Map(members.map((member) => [member.userId, member]));
+  const selected = authorIds
+    .map((id) => byId.get(id))
+    .filter((member): member is Member => Boolean(member));
+
+  const toggle = (userId: string) => {
+    if (authorIds.includes(userId)) {
+      if (authorIds.length === 1) return;
+      onChange(authorIds.filter((id) => id !== userId));
+    } else {
+      onChange([...authorIds, userId]);
+    }
+  };
+
+  const loading = members.length === 0 && authorIds.length > 0;
+  const value =
+    selected.length === 0 ? (
+      loading ? "Loading…" : "Choose"
+    ) : (
+      <>
+        <span className="flex -space-x-1.5">
+          {selected.slice(0, 3).map((member) => (
+            <MemberAvatar key={member.userId} member={member} />
+          ))}
+        </span>
+        <span className="truncate">
+          {selected.length === 1 ? memberName(selected[0]!) : `${selected.length} authors`}
+        </span>
+      </>
+    );
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <RowButton
+          icon={<AccountIcon className="size-3.5" />}
+          label="Authors"
+          value={value}
+          muted={selected.length === 0}
+          open={open}
+        />
+      </PopoverTrigger>
+      <PopoverContent align="end" sideOffset={6} list className="w-fit min-w-0">
+        {members.length === 0 ? (
+          <div className="p-2 text-xs text-muted-foreground">Loading team…</div>
+        ) : (
+          <PopoverList>
+            {members.map((member) => {
+              const checked = authorIds.includes(member.userId);
+              const locked = checked && authorIds.length === 1;
+              return (
+                <PopoverListItem
+                  key={member.userId}
+                  role="menuitemcheckbox"
+                  aria-checked={checked}
+                  aria-disabled={locked || undefined}
+                  title={locked ? "An entry needs at least one author" : undefined}
+                  onClick={() => toggle(member.userId)}
+                  className={cn(locked && "cursor-default")}
+                >
+                  <MemberAvatar member={member} className="ring-0" />
+                  <span className="min-w-28 max-w-48">
+                    <span className="block truncate text-sm">{memberName(member)}</span>
+                    {member.email ? (
+                      <span className="block truncate text-[11px] text-muted-foreground">
+                        {member.email}
+                      </span>
+                    ) : null}
+                  </span>
+                  <Check
+                    className={cn("ml-auto size-3.5 shrink-0 text-primary", !checked && "invisible")}
+                    aria-hidden="true"
+                  />
+                </PopoverListItem>
+              );
+            })}
+          </PopoverList>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/** Workspace changelog tags, toggled on and off. */
+function TagsRow({
+  tags,
+  selectedTagIds,
+  onChange,
+}: {
+  tags: WorkspaceTag[];
+  selectedTagIds: string[];
+  onChange: (tagIds: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = tags.filter((tag) => selectedTagIds.includes(tag.id));
+
+  const toggle = (tagId: string) =>
+    onChange(
+      selectedTagIds.includes(tagId)
+        ? selectedTagIds.filter((id) => id !== tagId)
+        : [...selectedTagIds, tagId],
+    );
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <RowButton
+          icon={<TagIcon className="size-3.5" />}
+          label="Tags"
+          value={selected.length === 0 ? "None" : selected.map((tag) => tag.name).join(", ")}
+          muted={selected.length === 0}
+          open={open}
+        />
+      </PopoverTrigger>
+      <PopoverContent align="end" sideOffset={6} list className="w-fit min-w-0">
+        {tags.length === 0 ? (
+          <div className="p-2 text-xs text-muted-foreground">
+            No tags yet. Add them in changelog settings.
+          </div>
+        ) : (
+          <PopoverList>
+            {tags.map((tag) => {
+              const checked = selectedTagIds.includes(tag.id);
+              return (
+                <PopoverListItem
+                  key={tag.id}
+                  role="menuitemcheckbox"
+                  aria-checked={checked}
+                  onClick={() => toggle(tag.id)}
+                >
+                  <TagDot />
+                  <span className="max-w-40 min-w-24 truncate text-sm">{tag.name}</span>
+                  <Check
+                    className={cn("ml-auto size-3.5 shrink-0 text-primary", !checked && "invisible")}
+                    aria-hidden="true"
+                  />
+                </PopoverListItem>
+              );
+            })}
+          </PopoverList>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }

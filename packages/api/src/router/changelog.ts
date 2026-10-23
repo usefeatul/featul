@@ -36,6 +36,12 @@ import {
   updateEntrySchema,
 } from "../validators/changelog";
 import { getRelatedPosts } from "../changelog/related";
+import {
+  getEntryAuthorIds,
+  loadEntryAuthors,
+  pickAuthors,
+  type EntryAuthor,
+} from "../changelog/authors";
 import { ACTIVITY_ACTIONS } from "../activity/actions";
 import { notifyChangelogSubscribers } from "../changelog/notify";
 
@@ -105,6 +111,42 @@ async function resolveValidMentionUserIds(params: {
   }
 
   return Array.from(validMentionUserIds);
+}
+
+/** Rejects author lists that include anyone outside the workspace. */
+async function assertWorkspaceAuthors(
+  ctx: any,
+  ws: { id: string; ownerId: string },
+  authorIds: string[],
+) {
+  const valid = await resolveValidMentionUserIds({
+    ctx,
+    workspaceId: ws.id,
+    ownerId: ws.ownerId,
+    mentionUserIds: authorIds,
+  });
+  if (valid.length !== authorIds.length) {
+    throw new HTTPException(400, {
+      message: "Authors must be members of this workspace",
+    });
+  }
+}
+
+/** Public author fields: every credited author, plus the first as `author` for older readers. */
+function withAuthors(
+  entry: { authorName: string | null; authorImage: string | null },
+  authors: EntryAuthor[],
+) {
+  return {
+    authorIds: undefined,
+    author: authors[0] ?? {
+      name: entry.authorName,
+      image: entry.authorImage,
+      role: null,
+      isOwner: false,
+    },
+    authors,
+  };
 }
 
 /** Workspace behind a public changelog, or 404 when the changelog is hidden. */
@@ -470,6 +512,8 @@ export function createChangelogRouter() {
         if ((await getRelatedPosts(ctx.db, ws.id, { ids: relatedPostIds })).length !== relatedPostIds.length) {
           throw new HTTPException(400, { message: "Some related posts are unavailable in this workspace" });
         }
+        const authorIds = input.authorIds ?? [ctx.session.user.id];
+        await assertWorkspaceAuthors(ctx, ws, authorIds);
         const entrySlug = (toUrlSlug(input.title) || "update") + "-" + Date.now().toString(36);
         const isPublished = input.status === "published";
         // Publishing now wins over a schedule; a scheduled entry stays a draft.
@@ -491,6 +535,7 @@ export function createChangelogRouter() {
             summary: input.summary?.trim() || null,
             coverImage: input.coverImage || null,
             authorId: ctx.session.user.id,
+            authorIds,
             status: input.status || "draft",
             tags: input.tags || [],
             relatedPostIds,
@@ -593,6 +638,10 @@ export function createChangelogRouter() {
               message: "Another entry already uses this URL",
             });
           updates.slug = input.entrySlug;
+        }
+        if (input.authorIds !== undefined) {
+          await assertWorkspaceAuthors(ctx, ws, input.authorIds);
+          updates.authorIds = input.authorIds;
         }
         if (input.title !== undefined) updates.title = input.title.trim();
         if (input.content !== undefined)
@@ -729,7 +778,7 @@ export function createChangelogRouter() {
       )
       .get(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
-          .select({ id: workspace.id })
+          .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
           .limit(1);
@@ -772,30 +821,11 @@ export function createChangelogRouter() {
 
         if (!entry) return c.superjson({ entry: null });
 
-        // Get author's role in the workspace
-        let authorRole: string | null = null;
-        let isOwner = false;
-        if (entry.authorId) {
-          const [member] = await ctx.db
-            .select({ role: workspaceMember.role })
-            .from(workspaceMember)
-            .where(
-              and(
-                eq(workspaceMember.workspaceId, ws.id),
-                eq(workspaceMember.userId, entry.authorId),
-              ),
-            )
-            .limit(1);
-          authorRole = member?.role || null;
-
-          // Check if author is workspace owner
-          const [wsOwner] = await ctx.db
-            .select({ ownerId: workspace.ownerId })
-            .from(workspace)
-            .where(eq(workspace.id, ws.id))
-            .limit(1);
-          isOwner = wsOwner?.ownerId === entry.authorId;
-        }
+        const authorIds = getEntryAuthorIds(entry);
+        const authors = pickAuthors(
+          authorIds,
+          await loadEntryAuthors(ctx.db, ws, authorIds),
+        );
 
         const relatedPosts = await getRelatedPosts(ctx.db, ws.id, { ids: entry.relatedPostIds, publicOnly: true });
         const allTags = getChangelogTags(b.changelogTags);
@@ -810,12 +840,7 @@ export function createChangelogRouter() {
             ...entry,
             relatedPostIds: undefined,
             relatedPosts,
-            author: {
-              name: entry.authorName,
-              image: entry.authorImage,
-              role: authorRole,
-              isOwner,
-            },
+            ...withAuthors(entry, authors),
             tags: entryTags,
           },
         });
@@ -997,7 +1022,7 @@ export function createChangelogRouter() {
       )
       .get(async ({ ctx, input, c }) => {
         const [ws] = await ctx.db
-          .select({ id: workspace.id })
+          .select({ id: workspace.id, ownerId: workspace.ownerId })
           .from(workspace)
           .where(eq(workspace.slug, input.slug))
           .limit(1);
@@ -1052,34 +1077,11 @@ export function createChangelogRouter() {
           .limit(limit)
           .offset(offset);
 
-        // Get workspace owner
-        const [wsOwner] = await ctx.db
-          .select({ ownerId: workspace.ownerId })
-          .from(workspace)
-          .where(eq(workspace.id, ws.id))
-          .limit(1);
-
-        // Get all members for author role lookup
         type EntryWithAuthor = (typeof entries)[number];
-        const authorIds = entries
-          .map((e: EntryWithAuthor) => e.authorId)
-          .filter((id: string | null): id is string => Boolean(id));
-        type MemberRole = {
-          userId: string;
-          role: "admin" | "member" | "viewer" | null;
-        };
-        const members: MemberRole[] =
-          authorIds.length > 0
-            ? await ctx.db
-                .select({
-                  userId: workspaceMember.userId,
-                  role: workspaceMember.role,
-                })
-                .from(workspaceMember)
-                .where(eq(workspaceMember.workspaceId, ws.id))
-            : [];
-        const memberRoleMap = new Map(
-          members.map((m: MemberRole) => [m.userId, m.role]),
+        const authorsById = await loadEntryAuthors(
+          ctx.db,
+          ws,
+          entries.flatMap((e: EntryWithAuthor) => getEntryAuthorIds(e)),
         );
 
         const allTags = getChangelogTags(b.changelogTags);
@@ -1093,12 +1095,7 @@ export function createChangelogRouter() {
               (t: ChangelogTag | undefined): t is ChangelogTag =>
                 t !== undefined,
             ),
-          author: {
-            name: e.authorName,
-            image: e.authorImage,
-            role: e.authorId ? memberRoleMap.get(e.authorId) || null : null,
-            isOwner: e.authorId ? wsOwner?.ownerId === e.authorId : false,
-          },
+          ...withAuthors(e, pickAuthors(getEntryAuthorIds(e), authorsById)),
         }));
 
         c.header(

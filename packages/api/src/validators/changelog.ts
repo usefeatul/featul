@@ -19,6 +19,13 @@ export const scheduledAtSchema = z.coerce
     "Schedule within the next year",
   );
 
+/** Credited authors in display order; each must belong to the workspace. */
+const authorIdsSchema = z
+  .array(z.string().min(1))
+  .min(1, "Add at least one author")
+  .max(10)
+  .transform((ids) => [...new Set(ids)]);
+
 export const createEntrySchema = z.object({
   slug: bySlugSchema.shape.slug,
   title: z.string().min(1).max(256),
@@ -33,6 +40,7 @@ export const createEntrySchema = z.object({
     .optional(),
   status: z.enum(["draft", "published"]).optional(),
   scheduledAt: scheduledAtSchema.optional(),
+  authorIds: authorIdsSchema.optional(),
 });
 
 export const entrySlugSchema = z
@@ -63,6 +71,7 @@ export const updateEntrySchema = z.object({
   scheduledAt: scheduledAtSchema.nullable().optional(),
   /** Public URL segment: `/changelog/p/{entrySlug}`. */
   entrySlug: entrySlugSchema.optional(),
+  authorIds: authorIdsSchema.optional(),
 });
 
 export const aiToneSchema = z.enum(["user-friendly", "technical", "brief"]);

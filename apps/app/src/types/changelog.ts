@@ -3,6 +3,14 @@ import type { Role } from "./team";
 /**
  * Changelog tag type
  */
+/** A changelog tag defined in workspace settings, selectable on an entry. */
+export interface WorkspaceTag {
+    id: string;
+    name: string;
+    slug: string;
+    color?: string | null;
+}
+
 export interface ChangelogTag {
     id: string;
     name: string;

@@ -14,6 +14,7 @@ interface UseChangelogEntryProps {
     mode: "create" | "edit";
     entryId?: string;
     autoSaveSuspended?: boolean;
+    initialAuthorIds?: string[];
     initialData?: {
         title: string;
         content: JSONContent;
@@ -32,6 +33,7 @@ export function useChangelogEntry({
     mode,
     entryId,
     autoSaveSuspended = false,
+    initialAuthorIds = [],
     initialData,
 }: UseChangelogEntryProps) {
     const router = useRouter();
@@ -42,6 +44,7 @@ export function useChangelogEntry({
     const [coverImage, setCoverImage] = useState<string | null>(initialData?.coverImage || null);
     const [selectedTags, setSelectedTags] = useState<string[]>(initialData?.tags || []);
     const [relatedPostIds, setRelatedPostIds] = useState<string[]>(initialData?.relatedPostIds || []);
+    const [authorIds, setAuthorIds] = useState<string[]>(initialAuthorIds);
     const [isDraft, setIsDraftState] = useState(initialData?.status !== "published");
     const [scheduledAt, setScheduledAtState] = useState<Date | null>(initialData?.scheduledAt ?? null);
     // Only send publish state when the user touched it, so an open editor's
@@ -112,6 +115,7 @@ export function useChangelogEntry({
                     coverImage: coverImage || undefined,
                     tags: selectedTags,
                     relatedPostIds,
+                    authorIds: authorIds.length > 0 ? authorIds : undefined,
                     status: isDraft ? "draft" : "published",
                     scheduledAt: isDraft && scheduledAt ? scheduledAt : undefined,
                 });
@@ -134,6 +138,7 @@ export function useChangelogEntry({
                     coverImage: coverImage,
                     tags: selectedTags,
                     relatedPostIds,
+                    authorIds: authorIds.length > 0 ? authorIds : undefined,
                     ...(publishStateChanged.current
                         ? {
                             status: isDraft ? "draft" : "published",
@@ -164,7 +169,7 @@ export function useChangelogEntry({
         } finally {
             setIsSaving(false);
         }
-    }, [mode, workspaceSlug, entryId, title, summary, coverImage, selectedTags, relatedPostIds, isDraft, scheduledAt, router]);
+    }, [mode, workspaceSlug, entryId, title, summary, coverImage, selectedTags, relatedPostIds, authorIds, isDraft, scheduledAt, router]);
 
     // Publish-state changes from the publish panel save right away rather than waiting for autosave.
     const [saveRequested, setSaveRequested] = useState(false);
@@ -201,6 +206,8 @@ export function useChangelogEntry({
         setSelectedTags,
         relatedPostIds,
         setRelatedPostIds,
+        authorIds,
+        setAuthorIds,
         isDraft,
         setIsDraft,
         scheduledAt,

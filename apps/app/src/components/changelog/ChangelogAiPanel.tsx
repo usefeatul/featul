@@ -37,7 +37,7 @@ import { useAiSourcePosts } from "@/features/changelog/hooks/useAiSourcePosts";
 import { runChangelogAiStream } from "@/features/changelog/hooks/useChangelogAiStream";
 import type { AiChatMessage } from "@/features/changelog/types";
 import type { AiSourcePost } from "./AiSourcePostItem";
-import type { WorkspaceTag } from "./TagSelector";
+import type { WorkspaceTag } from "@/types/changelog";
 import { Actions, type AssistantAction } from "./assistant/actions";
 import { Composer } from "./assistant/composer";
 import { ConversationHistory } from "./assistant/history";

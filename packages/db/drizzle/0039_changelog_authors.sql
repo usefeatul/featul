@@ -1,0 +1,1 @@
+ALTER TABLE "changelog_entry" ADD COLUMN "author_ids" json DEFAULT '[]'::json NOT NULL;

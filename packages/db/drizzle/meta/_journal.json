@@ -274,6 +274,13 @@
       "when": 1792653104206,
       "tag": "0038_changelog_schedule",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1792744378718,
+      "tag": "0039_changelog_authors",
+      "breakpoints": true
     }
   ]
 }

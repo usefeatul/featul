@@ -36,6 +36,8 @@ export const changelogEntry = pgTable(
       .default("draft"),
     tags: json("tags").$type<string[]>().notNull().default([]),
     relatedPostIds: json("related_post_ids").$type<string[]>().notNull().default([]),
+    /** Credited authors in display order; empty means just `authorId` (the creator). */
+    authorIds: json("author_ids").$type<string[]>().notNull().default([]),
     sourceProvider: text("source_provider"),
     sourceExternalId: text("source_external_id"),
     sourceImportedAt: timestamp("source_imported_at"),
