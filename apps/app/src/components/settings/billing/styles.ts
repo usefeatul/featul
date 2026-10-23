@@ -1,10 +1,19 @@
-// `rounded-full` is capped to the app radius, so the pill uses an explicit one.
-export const usageTrackClass =
-  "h-2.5 overflow-hidden rounded-[999px] bg-muted shadow-[inset_0_1px_2px_rgb(0_0_0/0.06)]";
+// Recessed, hairline-bordered track with squircle corners scaled down from the
+// buttons' radius-to-height ratio. The border leaves an 8px fill, two whole dot rows.
+export const usageTrackClass = [
+  "h-2.5 overflow-hidden rounded-[3px] [corner-shape:squircle] supports-[corner-shape:squircle]:rounded-[4px]",
+  "border border-black/[0.08] bg-muted shadow-[inset_0_1px_1px_rgb(0_0_0/0.08)]",
+  "dark:border-white/[0.07] dark:shadow-[inset_0_1px_2px_rgb(0_0_0/0.45)]",
+].join(" ");
 
-// Dotted fill with a brighter dot layer that sweeps across once on mount.
+// Raised dotted fill with a brighter dot layer that sweeps across once on mount.
+// ::before sits above both dot layers and draws the button-style shading, the lit
+// top edge and a darker outline.
 export const usageFillClass = [
-  "relative h-full overflow-hidden rounded-[inherit]",
+  "relative h-full overflow-hidden rounded-[inherit] [corner-shape:squircle]",
+  "before:absolute before:inset-0 before:z-1 before:rounded-[inherit] before:content-['']",
+  "before:bg-linear-to-b before:from-white/20 before:to-black/15",
+  "before:shadow-[inset_0_1px_0_rgb(255_255_255/0.35),inset_0_0_0_1px_rgb(0_0_0/0.15)]",
   "bg-[radial-gradient(rgb(255_255_255/0.36)_0.7px,transparent_0.8px)] bg-size-[4px_4px]",
   "after:absolute after:inset-0 after:content-[''] after:animate-sweep",
   "after:bg-[radial-gradient(rgb(255_255_255/0.85)_0.8px,transparent_0.9px)] after:bg-size-[4px_4px]",
