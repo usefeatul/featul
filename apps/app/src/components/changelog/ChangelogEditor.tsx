@@ -217,7 +217,6 @@ export function ChangelogEditor({
           entryId={entryId}
           entrySlug={entrySlug}
           onEntrySlugChange={setEntrySlug}
-          title={title}
           isDraft={isDraft}
           scheduledAt={scheduledAt}
           publishedAt={publishedAt}

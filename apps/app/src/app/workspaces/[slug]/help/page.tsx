@@ -1,7 +1,9 @@
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { createPageMetadata } from "@/lib/seo";
 import { HelpCenterList } from "@/components/help/HelpCenterList";
 import { HelpImportDialog } from "@/components/help/HelpImport";
+import { readInitialSelectionState } from "@/lib/selection/server";
 import { getHelpTreeData } from "./data";
 
 export const revalidate = 0;
@@ -17,10 +19,19 @@ export default async function HelpCenterPage({ params }: Props) {
   const { slug } = await params;
   const tree = await getHelpTreeData(slug);
   if (!tree) return notFound();
+  const { initialIsSelecting, initialSelectedIds } = readInitialSelectionState(
+    await cookies(),
+    `help-${slug}`,
+  );
 
   return (
     <section className="-mx-4 flex flex-1 flex-col bg-background pt-2 sm:-mx-8 lg:-mx-12 xl:-mx-16">
-      <HelpCenterList workspaceSlug={slug} initialTree={tree} />
+      <HelpCenterList
+        workspaceSlug={slug}
+        initialTree={tree}
+        initialIsSelecting={initialIsSelecting}
+        initialSelectedIds={initialSelectedIds}
+      />
       <HelpImportDialog workspaceSlug={slug} />
     </section>
   );

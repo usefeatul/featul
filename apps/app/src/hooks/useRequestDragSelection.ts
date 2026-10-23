@@ -9,7 +9,7 @@ import type {
 
 type Gesture = {
   pointerId: number;
-  list: HTMLUListElement;
+  list: HTMLElement;
   scrollRoot: HTMLElement | null;
   startX: number;
   startY: number;
@@ -31,7 +31,7 @@ const ROW_SELECTOR = "li[data-request-select-index]";
 const DRAG_DISTANCE = 6;
 const SCROLL_EDGE = 56;
 
-/** Paints request rows during a mouse drag while bulk selection is active. */
+/** Paints rows (`li[data-request-select-index]`) during a mouse drag while bulk selection is active. */
 export function useRequestDragSelection({
   enabled,
   selectedIds,
@@ -167,7 +167,7 @@ export function useRequestDragSelection({
   }, []);
 
   const onPointerDownCapture = useCallback(
-    (event: ReactPointerEvent<HTMLUListElement>) => {
+    (event: ReactPointerEvent<HTMLElement>) => {
       if (!enabledRef.current || event.button !== 0 || event.pointerType === "touch") return;
       const target = event.target as Element;
       if (target.closest("button, input, textarea, a, [role='checkbox']")) return;
@@ -192,14 +192,14 @@ export function useRequestDragSelection({
     [],
   );
 
-  const onClickCapture = useCallback((event: MouseEvent<HTMLUListElement>) => {
+  const onClickCapture = useCallback((event: MouseEvent<HTMLElement>) => {
     if (!suppressClickRef.current) return;
     event.preventDefault();
     event.stopPropagation();
     suppressClickRef.current = false;
   }, []);
 
-  const onDragStartCapture = useCallback((event: DragEvent<HTMLUListElement>) => {
+  const onDragStartCapture = useCallback((event: DragEvent<HTMLElement>) => {
     if (enabledRef.current) event.preventDefault();
   }, []);
 

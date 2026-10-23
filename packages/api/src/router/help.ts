@@ -16,6 +16,7 @@ import {
   helpArticleIdSchema,
   helpArticleUpdateSchema,
   helpArticlesDeleteSchema,
+  helpArticlesStatusSchema,
   helpCollectionIdSchema,
   helpVisibilitySchema,
   helpCollectionCreateSchema,
@@ -636,6 +637,62 @@ export function createHelpRouter() {
           throw publishLimitError(over);
         }
         return c.superjson({ ok: true, article });
+      }),
+
+    articlesSetStatus: privateProcedure
+      .input(helpArticlesStatusSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const inWorkspace = and(
+          inArray(helpArticle.id, input.articleIds),
+          eq(helpArticle.workspaceId, ws.id),
+        );
+
+        if (input.status === "draft") {
+          const updated = await ctx.db
+            .update(helpArticle)
+            .set({ status: "draft" })
+            .where(and(inWorkspace, eq(helpArticle.status, "published")))
+            .returning({ id: helpArticle.id });
+          return c.superjson({ ok: true, updated: updated.length, skipped: 0, limit: null });
+        }
+
+        const drafts: { id: string; publishedAt: Date | null }[] = await ctx.db
+          .select({ id: helpArticle.id, publishedAt: helpArticle.publishedAt })
+          .from(helpArticle)
+          .where(and(inWorkspace, eq(helpArticle.status, "draft")));
+        // Publish in the order the ids were sent, stopping at the plan's cap.
+        const order = new Map(input.articleIds.map((id, index) => [id, index]));
+        drafts.sort((a, b) => order.get(a.id)! - order.get(b.id)!);
+        const { maxHelpArticles: max } = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
+        const room =
+          max === null
+            ? drafts.length
+            : Math.max(0, max - (await countPublishedHelpArticles(ctx.db, ws.id)));
+        const batch = drafts.slice(0, room);
+        const skipped = drafts.length - batch.length;
+        if (batch.length === 0) {
+          if (skipped > 0) throw publishLimitError(max!);
+          return c.superjson({ ok: true, updated: 0, skipped: 0, limit: max });
+        }
+
+        const ids = batch.map((a) => a.id);
+        await ctx.db
+          .update(helpArticle)
+          .set({ status: "published", publishedAt: sql`coalesce(${helpArticle.publishedAt}, now())` })
+          .where(inArray(helpArticle.id, ids));
+        // Same race guard as single publishes: undo this batch if a parallel write pushed it over.
+        const over = await publishOverLimit(ctx, ws.id);
+        if (over !== null) {
+          for (const article of batch) {
+            await ctx.db
+              .update(helpArticle)
+              .set({ status: "draft", publishedAt: article.publishedAt })
+              .where(eq(helpArticle.id, article.id));
+          }
+          throw publishLimitError(over);
+        }
+        return c.superjson({ ok: true, updated: batch.length, skipped, limit: max });
       }),
 
     articlesDelete: privateProcedure

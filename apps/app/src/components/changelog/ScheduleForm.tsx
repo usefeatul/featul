@@ -39,11 +39,6 @@ function atNine(daysAhead: number) {
   return date;
 }
 
-function nextMondayAtNine() {
-  const day = new Date().getDay();
-  return atNine(((8 - day) % 7) || 7);
-}
-
 export function formatSchedule(date: Date) {
   return date.toLocaleString(undefined, {
     weekday: "short",
@@ -54,7 +49,7 @@ export function formatSchedule(date: Date) {
   });
 }
 
-/** A calendar, a time and quick picks; reports a future date on submit. */
+/** A compact calendar and a time; reports a future date on submit. */
 export function ScheduleForm({ scheduledAt, onSchedule, onRemove }: ScheduleFormProps) {
   const initial = scheduledAt ?? atNine(1);
   const [day, setDay] = useState<Date | undefined>(initial);
@@ -64,7 +59,7 @@ export function ScheduleForm({ scheduledAt, onSchedule, onRemove }: ScheduleForm
   const isValid = Boolean(picked && picked.getTime() > Date.now());
 
   return (
-    <div className="flex flex-col">
+    <div className="flex w-fit flex-col gap-3">
       <Calendar
         mode="single"
         selected={day}
@@ -72,49 +67,32 @@ export function ScheduleForm({ scheduledAt, onSchedule, onRemove }: ScheduleForm
         defaultMonth={day}
         disabled={{ before: startOfToday() }}
         weekStartsOn={1}
-        className="p-0"
-        classNames={{ root: "w-full" }}
+        showOutsideDays={false}
+        className="p-0 [--cell-size:--spacing(8)]"
+        classNames={{
+          caption_label: "text-[13px] font-medium",
+          weekday:
+            "flex-1 select-none text-[11px] font-normal text-muted-foreground/70",
+          week: "mt-1 flex w-full",
+          today:
+            "rounded-md font-semibold text-primary data-[selected=true]:text-primary-foreground",
+        }}
       />
 
-      <div className="-mx-3 mt-3 flex items-center justify-between gap-3 border-t border-border/70 px-3 pt-3 dark:border-white/[0.06]">
-        <label htmlFor="schedule-time" className="text-xs text-muted-foreground">
-          Time
-        </label>
+      <div className="flex items-center gap-1.5 border-t border-border/60 pt-3 dark:border-white/[0.06]">
         <Input
-          id="schedule-time"
           type="time"
           value={time}
           onChange={(event) => setTime(event.target.value)}
           aria-invalid={picked && !isValid ? true : undefined}
-          className="w-28 [&::-webkit-calendar-picker-indicator]:hidden"
+          aria-label="Publish time"
+          className="h-8 w-24 text-[13px] [&::-webkit-calendar-picker-indicator]:hidden"
         />
-      </div>
-
-      <div className="mt-3 flex gap-1.5">
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex-1 text-xs"
-          onClick={() => onSchedule(atNine(1))}
-        >
-          Tomorrow 9 AM
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex-1 text-xs"
-          onClick={() => onSchedule(nextMondayAtNine())}
-        >
-          Monday 9 AM
-        </Button>
-      </div>
-
-      <div className="mt-1.5 flex gap-1.5">
         {scheduledAt && onRemove ? (
           <Button
             variant="plain"
             size="sm"
-            className="flex-1 bg-transparent text-xs text-muted-foreground hover:text-foreground dark:bg-transparent dark:text-muted-foreground dark:hover:text-foreground"
+            className="ml-auto h-8 bg-transparent px-2 text-xs text-muted-foreground hover:text-foreground dark:bg-transparent dark:text-muted-foreground dark:hover:text-foreground"
             onClick={onRemove}
           >
             Remove
@@ -122,7 +100,7 @@ export function ScheduleForm({ scheduledAt, onSchedule, onRemove }: ScheduleForm
         ) : null}
         <Button
           size="sm"
-          className="flex-1 text-xs"
+          className={scheduledAt && onRemove ? "h-8 text-xs" : "ml-auto h-8 text-xs"}
           disabled={!isValid}
           onClick={() => picked && onSchedule(picked)}
         >

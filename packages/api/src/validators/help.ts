@@ -87,6 +87,10 @@ export const helpArticlesDeleteSchema = z.object({
   articleIds: z.array(z.string().min(1)).min(1).max(200),
 });
 
+export const helpArticlesStatusSchema = helpArticlesDeleteSchema.extend({
+  status: z.enum(["draft", "published"]),
+});
+
 /** A settled public search, sent once the visitor stops typing or opens a result. */
 export const helpTrackSearchSchema = z.object({
   slug,
