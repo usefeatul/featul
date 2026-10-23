@@ -70,6 +70,9 @@ export default async function ChangelogEntryPage({ params }: Props) {
         isOwner?: boolean;
       }
     | undefined;
+  const rawAuthors = Array.isArray(rawEntry.authors)
+    ? (rawEntry.authors as NonNullable<typeof rawAuthor>[])
+    : [];
   const content =
     rawEntry.content && typeof rawEntry.content === "object"
       ? (rawEntry.content as JSONContent)
@@ -91,6 +94,12 @@ export default async function ChangelogEntryPage({ params }: Props) {
           isOwner: rawAuthor.isOwner,
         }
       : undefined,
+    authors: rawAuthors.map((author) => ({
+      name: author.name,
+      image: author.image,
+      role: author.role as Role | null,
+      isOwner: author.isOwner,
+    })),
     relatedPosts: (rawEntry.relatedPosts || []) as RelatedPost[],
     tags: rawEntry.tags as Array<{ id: string; name: string }> | undefined,
   };

@@ -22,7 +22,7 @@ import { getInitials } from "@/utils/user"
 import { randomAvatarUrl } from "@/utils/avatar"
 import { relativeTime } from "@/lib/time"
 import { CalendarDays } from "@/components/global/icons"
-import { formatSchedule } from "./SchedulePicker"
+import { formatSchedule } from "./ScheduleForm"
 
 interface ChangelogItemProps {
   item: ChangelogEntryWithTags

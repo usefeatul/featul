@@ -1,3 +1,4 @@
+import { getServerSession } from "@featul/auth/session";
 import { createPageMetadata } from "@/lib/seo";
 import { ChangelogEditor } from "@/components/changelog/ChangelogEditor";
 import { getChangelogTags } from "../data";
@@ -17,7 +18,7 @@ type Props = { params: Promise<{ slug: string }> };
 export default async function NewChangelogPage({ params }: Props) {
     const { slug } = await params;
 
-    const tags = await getChangelogTags(slug);
+    const [tags, session] = await Promise.all([getChangelogTags(slug), getServerSession()]);
     const cookieStore = await cookies();
     const preference = cookieStore.get(ASSISTANT_PANEL_COOKIE)?.value;
 
@@ -28,6 +29,7 @@ export default async function NewChangelogPage({ params }: Props) {
             initialAiOpen={preference !== "false"}
             initialAiWidth={parsePanelWidth(cookieStore.get(PANEL_WIDTH_COOKIES.assistant)?.value)}
             availableTags={tags}
+            initialAuthorIds={session?.user?.id ? [session.user.id] : []}
         />
     );
 }

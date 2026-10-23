@@ -16,7 +16,8 @@ import {
   SparklesIcon,
 } from "@/components/global/icons";
 
-import { TagSelector, type WorkspaceTag } from "./TagSelector";
+import type { WorkspaceTag } from "@/types/changelog";
+import type { Member } from "@/types/team";
 import { useChangelogEntry } from "../../hooks/useChangelogEntry";
 import { fetchWorkspaceMembers } from "@/lib/team/client";
 import ChangelogAiPanel from "./ChangelogAiPanel";
@@ -27,7 +28,7 @@ import { useAssistantPanel } from "@/hooks/useAssistantPanel";
 import { PANEL_SHORTCUT_LABEL, usePanelShortcut } from "@/hooks/shortcut";
 
 import { Related } from "./related";
-import { SchedulePicker } from "./SchedulePicker";
+import { PublishPanel } from "./PublishPanel";
 import { Timeline } from "./timeline";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -47,8 +48,13 @@ interface ChangelogEditorProps {
     relatedPostIds?: string[];
     status: "draft" | "published";
     scheduledAt?: Date | null;
+    publishedAt?: Date | null;
+    /** Public URL segment; only known once the entry exists. */
+    slug?: string;
   };
   availableTags: WorkspaceTag[];
+  /** Credited authors; a new entry starts with whoever creates it. */
+  initialAuthorIds?: string[];
 }
 
 export function ChangelogEditor({
@@ -59,6 +65,7 @@ export function ChangelogEditor({
   entryId,
   initialData,
   availableTags,
+  initialAuthorIds,
 }: ChangelogEditorProps) {
   const router = useRouter();
   const scrollRef = useRef<HTMLElement>(null);
@@ -76,6 +83,11 @@ export function ChangelogEditor({
 
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [workspaceTags, setWorkspaceTags] = useState(availableTags);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [entrySlug, setEntrySlug] = useState(initialData?.slug ?? "");
+  const [publishedAt, setPublishedAt] = useState<Date | null>(
+    initialData?.publishedAt ?? null,
+  );
 
   const {
     editorRef,
@@ -89,6 +101,8 @@ export function ChangelogEditor({
     setSelectedTags,
     relatedPostIds,
     setRelatedPostIds,
+    authorIds,
+    setAuthorIds,
     isDraft,
     setIsDraft,
     scheduledAt,
@@ -98,11 +112,13 @@ export function ChangelogEditor({
     setIsDirty,
     handleImageUpload,
     handleSave,
+    requestSave,
   } = useChangelogEntry({
     workspaceSlug,
     mode,
     entryId,
     initialData,
+    initialAuthorIds,
     autoSaveSuspended: isAiGenerating,
   });
 
@@ -159,6 +175,7 @@ export function ChangelogEditor({
       if (isCancelled) {
         return;
       }
+      setMembers(members.filter((member) => member.userId && member.isActive !== false));
 
       const mapped = members
         .filter((member) => member.userId)
@@ -189,6 +206,49 @@ export function ChangelogEditor({
   }, [workspaceSlug]);
 
   const headerActions: EditorAction[] = [
+    {
+      key: "publish",
+      label: "Publishing",
+      type: "custom",
+      onClick: () => {},
+      render: () => (
+        <PublishPanel
+          workspaceSlug={workspaceSlug}
+          entryId={entryId}
+          entrySlug={entrySlug}
+          onEntrySlugChange={setEntrySlug}
+          title={title}
+          isDraft={isDraft}
+          scheduledAt={scheduledAt}
+          publishedAt={publishedAt}
+          onPublish={() => {
+            setIsDraft(false);
+            setPublishedAt((current) => current ?? new Date());
+            requestSave();
+          }}
+          onUnpublish={() => {
+            setIsDraft(true);
+            requestSave();
+          }}
+          onScheduleChange={(next) => {
+            setScheduledAt(next);
+            requestSave();
+          }}
+          members={members}
+          authorIds={authorIds}
+          onAuthorIdsChange={(ids) => {
+            setAuthorIds(ids);
+            setIsDirty(true);
+          }}
+          tags={workspaceTags}
+          selectedTagIds={selectedTags}
+          onTagIdsChange={(tags) => {
+            setSelectedTags(tags);
+            setIsDirty(true);
+          }}
+        />
+      ),
+    },
     ...(ENABLE_CHANGELOG_AI && !isAiOpen
       ? [
           {
@@ -202,36 +262,6 @@ export function ChangelogEditor({
           },
         ]
       : []),
-    ...(isDraft
-      ? [
-          {
-            key: "schedule",
-            label: "Schedule publish",
-            type: "custom" as const,
-            onClick: () => {},
-            render: (buttonClassName: string) => (
-              <SchedulePicker
-                scheduledAt={scheduledAt}
-                triggerClassName={buttonClassName}
-                onChange={(next) => {
-                  setScheduledAt(next);
-                  setIsDirty(true);
-                }}
-              />
-            ),
-          },
-        ]
-      : []),
-    {
-      key: "status",
-      label: "Published",
-      type: "switch",
-      checked: !isDraft,
-      onClick: () => {
-        setIsDraft(!isDraft);
-        setIsDirty(true);
-      },
-    },
     {
       key: "save",
       label: isSaving ? "Saving changes" : isDirty ? "Save unsaved changes" : "Saved",
@@ -290,14 +320,6 @@ export function ChangelogEditor({
 
             <header className="mx-auto w-full max-w-4xl shrink-0 px-4 pb-2 pt-4 sm:px-6">
               <div className="flex w-full flex-wrap items-center gap-1">
-                <TagSelector
-                  availableTags={workspaceTags}
-                  selectedTags={selectedTags}
-                  onTagsChange={(tags) => {
-                    setSelectedTags(tags);
-                    setIsDirty(true);
-                  }}
-                />
                 <Related
                   workspaceSlug={workspaceSlug}
                   selectedIds={relatedPostIds}

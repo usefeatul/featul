@@ -7,6 +7,13 @@ import { ChangelogRenderer } from "@/components/changelog/ChangelogRenderer";
 import type { JSONContent } from "@tiptap/core";
 import type { Role } from "@/types/team";
 
+export interface ChangelogEntryAuthor {
+  name?: string | null;
+  image?: string | null;
+  role?: Role | null;
+  isOwner?: boolean;
+}
+
 export interface ChangelogEntryData {
   id: string;
   title: string;
@@ -15,12 +22,9 @@ export interface ChangelogEntryData {
   summary?: string | null;
   coverImage?: string | null;
   publishedAt?: string | Date | null;
-  author?: {
-    name?: string | null;
-    image?: string | null;
-    role?: Role | null;
-    isOwner?: boolean;
-  };
+  author?: ChangelogEntryAuthor;
+  /** Every credited author in order; `author` is the first. */
+  authors?: ChangelogEntryAuthor[];
   relatedPosts?: RelatedPost[];
   tags?: Array<{ id: string; name: string }>;
 }

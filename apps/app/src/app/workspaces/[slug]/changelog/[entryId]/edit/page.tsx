@@ -5,6 +5,7 @@ import { PANEL_WIDTH_COOKIES, parsePanelWidth } from "@/lib/panel";
 import { createPageMetadata } from "@/lib/seo";
 import { ChangelogEditor } from "@/components/changelog/ChangelogEditor";
 import { getChangelogEntryForEdit } from "../../data";
+import { getEntryAuthorIds } from "@featul/api/changelog/authors";
 
 export const revalidate = 0;
 
@@ -44,8 +45,11 @@ export default async function EditChangelogPage({ params }: Props) {
                 relatedPostIds: entry.relatedPostIds,
                 status: entry.status,
                 scheduledAt: entry.scheduledAt ?? null,
+                publishedAt: entry.publishedAt ?? null,
+                slug: entry.slug,
             }}
             availableTags={availableTags}
+            initialAuthorIds={getEntryAuthorIds(entry)}
         />
     );
 }
