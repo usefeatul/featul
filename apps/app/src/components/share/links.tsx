@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
-import { cn } from "@featul/ui/lib/utils";
 import {
   ArrowIcon,
   ChangelogIcon,
@@ -11,7 +10,6 @@ import {
 import type { ShareLink } from "@/lib/share";
 import CopyButton from "./copy";
 import ShareSection from "./section";
-import { shareCardClass } from "./styles";
 
 const linkIcons = {
   Feedback: CollectIcon,
@@ -30,8 +28,9 @@ export default function WebsiteLinks({
     <ShareSection
       title="Links for your app or website"
       description="Add them to your help menu, footer, or docs once and keep collecting."
+      flush
     >
-      <ul className={cn(shareCardClass, "divide-y divide-border/50")}>
+      <ul className="divide-y divide-border/50 dark:divide-white/[0.06]">
         {links.map((link) => {
           const Icon =
             linkIcons[link.label as keyof typeof linkIcons] ?? CollectIcon;

@@ -12,7 +12,6 @@ import { cn } from "@featul/ui/lib/utils";
 import { buildShareMessages } from "@/lib/share";
 import CopyButton from "./copy";
 import ShareSection from "./section";
-import { shareCardClass } from "./styles";
 
 const hints: Record<string, string> = {
   community: "Slack, Discord, forums",
@@ -413,12 +412,10 @@ export default function Messages({
     <ShareSection
       title="Messages"
       description="A first draft for every place you talk to users."
+      flush
     >
       <div
-        className={cn(
-          shareCardClass,
-          "grid sm:grid-cols-[200px_minmax(0,1fr)]",
-        )}
+        className="grid sm:grid-cols-[200px_minmax(0,1fr)]"
       >
         <div
           role="tablist"

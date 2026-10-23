@@ -51,8 +51,9 @@ export default function Social({
     <ShareSection
       title="Share on social"
       description="Announce your board where your users already are."
+      flush
     >
-      <ul className="grid grid-cols-2 border-y border-border/50 sm:grid-cols-4">
+      <ul className="grid grid-cols-2 sm:grid-cols-4">
         {networks.map(
           ({ name: network, note, icon: Icon, hover, href }, index) => (
             <li
