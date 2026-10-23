@@ -5,7 +5,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import type { EmojiReaction } from "@featul/api/shared/reactions";
 import { Button } from "@featul/ui/components/button";
-import { cn } from "@featul/ui/lib/utils";
 import { toast } from "sonner";
 import { LikeIcon } from "@/components/global/icons";
 import {
@@ -91,19 +90,14 @@ export default function Reactions({
   return (
     <Button
       type="button"
-      variant="plain"
+      variant={reacted ? "default" : "outline"}
       size="xs"
       disabled={pending}
       aria-pressed={reacted}
       aria-label={`${reacted ? "Remove thumbs-up" : "Give thumbs-up"}, ${count} ${count === 1 ? "reaction" : "reactions"}`}
       title={reacted ? "Remove thumbs-up" : "Give thumbs-up"}
       onClick={() => void toggle()}
-      className={cn(
-        "h-7 gap-1.5 rounded-lg border px-2 text-xs tabular-nums shadow-none",
-        reacted
-          ? "border-primary bg-primary text-white hover:bg-primary/90 hover:text-white dark:bg-primary dark:text-white dark:hover:bg-primary/90 dark:hover:text-white"
-          : "border-border/50 bg-transparent text-muted-foreground hover:bg-muted/50 dark:bg-transparent",
-      )}
+      className="h-8 min-w-8 gap-1.5 px-2 text-xs tabular-nums"
     >
       <LikeIcon className="size-3.5" aria-hidden="true" />
       {count > 0 && <span aria-hidden="true">{count}</span>}
