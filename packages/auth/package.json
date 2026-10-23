@@ -39,7 +39,7 @@
     "better-auth": "1.7.7",
     "drizzle-orm": "^0.45.2",
     "posthog-node": "^5.55.1",
-    "stripe": "^20.4.1"
+    "stripe": "^22.6.2"
   },
   "devDependencies": {
     "@featul/tsconfig": "workspace:*",

@@ -1,14 +1,13 @@
 import { billingState, db, workspace } from "@featul/db"
 import { eq } from "drizzle-orm"
 import { setTimeout as delay } from "node:timers/promises"
-import type Stripe from "stripe"
 import { getComplimentaryWorkspacePlan } from "./billing/complimentary"
 import { syncWorkspaceBilling } from "./billing/sync"
-import type { BillingPlan } from "./billing/policy"
+import type { BillingPlan, SubscriptionStatus } from "./billing/policy"
 import { BillingBusyError } from "./billing/lock"
 
 export type { BillingPlan } from "./billing/policy"
-export type BillingSubscriptionStatus = Stripe.Subscription.Status
+export type BillingSubscriptionStatus = SubscriptionStatus
 
 const FRESH_FOR_MS = 5 * 60 * 1000
 const OUTAGE_GRACE_MS = 24 * 60 * 60 * 1000

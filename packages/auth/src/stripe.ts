@@ -7,7 +7,7 @@ type StripePriceLike = {
   } | null
 } | null | undefined
 
-const STRIPE_API_VERSION = "2026-02-25.clover"
+const STRIPE_API_VERSION = "2026-08-26.dahlia"
 
 let stripeClient: Stripe | null | undefined
 
