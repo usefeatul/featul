@@ -242,7 +242,7 @@ export const widgetCreate = publicProcedure
       values: {
         boardId: targetBoard.id, title: input.title, content: input.content,
         image: imageFields.image, slug: createPostSlug(input.title),
-        widgetUserId: authorId, isAnonymous: !authorId,
+        widgetUserId: authorId, isAnonymous: !authorId, source: "widget",
         metadata: mergePostMetadata(baseMetadata, imageFields.attachments),
         roadmapStatus: "pending",
       },

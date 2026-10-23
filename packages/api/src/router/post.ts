@@ -201,7 +201,7 @@ export function createPostRouter() {
           workspaceId: ws.id,
           values: {
             boardId: b.id, title, content, image: imageFields.image, slug,
-            authorId: userId || null, isAnonymous: !userId,
+            authorId: userId || null, isAnonymous: !userId, source: "board",
             metadata: mergePostMetadata(
               !userId ? { fingerprint: anonymousFingerprint } : undefined,
               imageFields.attachments,

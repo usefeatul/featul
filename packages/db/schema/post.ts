@@ -36,6 +36,10 @@ export const post = pgTable(
       onDelete: "set null",
     }),
     isAnonymous: boolean("is_anonymous").default(false),
+    // Where the post was submitted; null for seeded/onboarding/legacy rows.
+    source: text("source", {
+      enum: ["board", "widget", "csv", "canny", "nolt", "productboard"],
+    }),
     status: text("status", {
       enum: ["draft", "published", "archived", "spam", "pending_approval"],
     }).default("published"),

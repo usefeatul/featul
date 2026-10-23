@@ -13,7 +13,7 @@ import {
   type WorkspaceCsvImportIssue,
   type WorkspaceCsvImportSummary,
 } from "../workspace/import"
-import { PROVIDER_POST_LIMIT, type ProviderComment, type ProviderImportData } from "./providers"
+import { PROVIDER_POST_LIMIT, type ImportProvider, type ProviderComment, type ProviderImportData } from "./providers"
 
 type PostMetadata = NonNullable<typeof post.$inferInsert["metadata"]>
 type CommentMetadata = NonNullable<typeof comment.$inferInsert["metadata"]>
@@ -32,6 +32,7 @@ export type ProviderImportParams = {
   db: typeof databaseClient
   workspaceId: string
   actorUserId: string
+  provider: ImportProvider
   data: ProviderImportData
 }
 
@@ -43,6 +44,7 @@ export async function runProviderImport({
   db,
   workspaceId,
   actorUserId,
+  provider,
   data,
 }: ProviderImportParams): Promise<WorkspaceCsvImportSummary> {
   const errors: WorkspaceCsvImportIssue[] = []
@@ -193,6 +195,7 @@ export async function runProviderImport({
         slug: toPostSlug(title),
         authorId,
         isAnonymous: !authorId,
+        source: provider,
         createdAt,
         updatedAt: item.updatedAt ?? createdAt,
         metadata: {

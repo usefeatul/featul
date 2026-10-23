@@ -52,6 +52,7 @@ import {
   fetchNoltData,
   fetchProductboardData,
   ProviderImportError,
+  type ImportProvider,
   type ProviderImportData,
 } from "../import/providers";
 import {
@@ -96,6 +97,7 @@ async function runProviderImportResponse(
   c: any,
   ctx: any,
   workspaceId: string,
+  provider: ImportProvider,
   load: () => Promise<ProviderImportData>,
 ) {
   let data: ProviderImportData;
@@ -111,6 +113,7 @@ async function runProviderImportResponse(
     db: ctx.db,
     workspaceId,
     actorUserId: ctx.session.user.id,
+    provider,
     data,
   });
   return c.json(summary, 200);
@@ -1131,21 +1134,21 @@ export function createWorkspaceRouter() {
       .input(importFromProviderInputSchema)
       .post(async ({ ctx, input, c }) => {
         const ws = await requireProviderImportAccess(ctx, input.slug, "Canny");
-        return runProviderImportResponse(c, ctx, ws.id, () => fetchCannyData(input.apiKey));
+        return runProviderImportResponse(c, ctx, ws.id, "canny", () => fetchCannyData(input.apiKey));
       }),
 
     importFromNolt: privateProcedure
       .input(importFromNoltInputSchema)
       .post(async ({ ctx, input, c }) => {
         const ws = await requireProviderImportAccess(ctx, input.slug, "Nolt");
-        return runProviderImportResponse(c, ctx, ws.id, () => fetchNoltData(input.boardUrl, input.apiKey));
+        return runProviderImportResponse(c, ctx, ws.id, "nolt", () => fetchNoltData(input.boardUrl, input.apiKey));
       }),
 
     importFromProductBoard: privateProcedure
       .input(importFromProviderInputSchema)
       .post(async ({ ctx, input, c }) => {
         const ws = await requireProviderImportAccess(ctx, input.slug, "ProductBoard");
-        return runProviderImportResponse(c, ctx, ws.id, () => fetchProductboardData(input.apiKey));
+        return runProviderImportResponse(c, ctx, ws.id, "productboard", () => fetchProductboardData(input.apiKey));
       }),
   });
 }
