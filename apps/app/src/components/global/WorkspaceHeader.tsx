@@ -243,7 +243,7 @@ export default function WorkspaceHeader({
     const changelogTitle = editorTitle?.trim() || editorSection.untitled;
     return (
       <header className="relative z-40 shrink-0 bg-background px-4 sm:px-6">
-        <div className="flex min-h-12 min-w-0 items-center justify-between gap-2 sm:gap-3">
+        <div className="flex min-h-12 lg:min-h-[38px] min-w-0 items-center justify-between gap-2 sm:gap-3">
           {isHelpAnalytics ? (
             <nav aria-label="Help Center navigation" className="min-w-0 flex-1">
               <ol className="flex min-w-0 items-center gap-2 text-sm">
@@ -303,7 +303,7 @@ export default function WorkspaceHeader({
 
   return (
     <header className="relative z-40 shrink-0 bg-background">
-      <div className="flex min-h-12 items-center gap-2 px-4 text-sm sm:px-6">
+      <div className="flex min-h-12 lg:min-h-[38px] items-center gap-2 px-4 text-sm sm:px-6">
         <Link
           href={`/workspaces/${workspaceSlug}`}
           className="max-w-48 truncate rounded-lg px-1.5 py-1 text-accent transition-colors hover:bg-muted dark:hover:bg-white/5"
