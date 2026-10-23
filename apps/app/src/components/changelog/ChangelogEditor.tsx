@@ -23,6 +23,7 @@ import { PANEL_SHORTCUT_LABEL, usePanelShortcut } from "@/hooks/shortcut";
 import { Related } from "./related";
 import { PublishPanel } from "./PublishPanel";
 import { SaveStatus } from "./SaveStatus";
+import { TagSelector } from "./TagSelector";
 import { Timeline } from "./timeline";
 
 const ENABLE_CHANGELOG_AI = true;
@@ -289,6 +290,14 @@ export function ChangelogEditor({
 
             <header className="mx-auto w-full max-w-4xl shrink-0 px-4 pb-2 pt-4 sm:px-6">
               <div className="flex w-full flex-wrap items-center gap-1">
+                <TagSelector
+                  availableTags={workspaceTags}
+                  selectedTags={selectedTags}
+                  onTagsChange={(tags) => {
+                    setSelectedTags(tags);
+                    setIsDirty(true);
+                  }}
+                />
                 <Related
                   workspaceSlug={workspaceSlug}
                   selectedIds={relatedPostIds}

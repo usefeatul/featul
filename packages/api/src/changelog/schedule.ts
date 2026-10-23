@@ -43,7 +43,9 @@ export async function publishScheduledChangelogEntries(db: any, now = new Date()
         .update(changelogEntry)
         .set({
           status: "published",
-          publishedAt: item.publishedAt ?? item.scheduledAt,
+          // A schedule is an explicit go-live date, so it wins over an earlier publish date
+          // from before the entry was moved back to drafts.
+          publishedAt: item.scheduledAt,
           scheduledAt: null,
         })
         .where(
@@ -74,6 +76,7 @@ export async function publishScheduledChangelogEntries(db: any, now = new Date()
         metadata: { status: "published", scheduled: true },
       })
 
+      // Subscribers were already emailed the first time it went live.
       if (!item.publishedAt) await notifyChangelogSubscribers(db, entry.id)
     } catch (error) {
       failures++
