@@ -2,7 +2,7 @@ export type ShareLink = { label: string; description: string; url: string };
 
 export function buildShareLinks(
   boardUrl: string,
-  visibility: { roadmap: boolean; changelog: boolean },
+  visibility: { roadmap: boolean; changelog: boolean; help: boolean },
 ): ShareLink[] {
   const origin = boardUrl.replace(/\/$/, "");
   return [
@@ -26,6 +26,15 @@ export function buildShareLinks(
             label: "Changelog",
             description: "The latest product updates",
             url: `${origin}/changelog`,
+          },
+        ]
+      : []),
+    ...(visibility.help
+      ? [
+          {
+            label: "Help Center",
+            description: "Guides and answers to common questions",
+            url: `${origin}/help`,
           },
         ]
       : []),

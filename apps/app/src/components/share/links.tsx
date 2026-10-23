@@ -4,6 +4,7 @@ import {
   ArrowIcon,
   ChangelogIcon,
   CollectIcon,
+  HelpCenterIcon,
   Plus,
   RoadmapIcon,
 } from "@/components/global/icons";
@@ -15,6 +16,7 @@ const linkIcons = {
   Feedback: CollectIcon,
   Roadmap: RoadmapIcon,
   Changelog: ChangelogIcon,
+  "Help Center": HelpCenterIcon,
 } as const;
 
 export default function WebsiteLinks({
@@ -80,7 +82,9 @@ export default function WebsiteLinks({
             </li>
           );
         })}
-        {links.length < 3 ? (
+        {/* Roadmap and changelog are switched on from board settings. */}
+        {!links.some((link) => link.label === "Roadmap") ||
+        !links.some((link) => link.label === "Changelog") ? (
           <li>
             <Link
               href={`/workspaces/${slug}/settings/board`}

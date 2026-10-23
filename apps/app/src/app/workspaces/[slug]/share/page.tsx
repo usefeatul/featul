@@ -5,6 +5,7 @@ import { board, db, post } from "@featul/db";
 import Share from "@/components/share/share";
 import { requireSignedInUser } from "@/lib/auth/server";
 import { createPageMetadata } from "@/lib/seo";
+import { isHelpCenterPublic } from "@featul/api/help/queries";
 import { buildShareLinks } from "@/lib/share";
 import { publicBoardUrlForWorkspace } from "@/config/nav";
 import {
@@ -32,41 +33,44 @@ export default async function SharePage({ params }: Props) {
   if (!workspaces.some((workspace) => workspace.slug === slug)) notFound();
   const workspace = await getWorkspaceBySlug(slug);
   if (!workspace) notFound();
-  const [domainInfo, publicSections, topPosts] = await Promise.all([
-    getWorkspaceDomainInfoBySlug(slug),
-    db
-      .select({ type: board.systemType })
-      .from(board)
-      .where(
-        and(
-          eq(board.workspaceId, workspace.id),
-          eq(board.isSystem, true),
-          eq(board.isPublic, true),
-          eq(board.isVisible, true),
-          eq(board.isActive, true),
+  const [domainInfo, publicSections, topPosts, helpIsPublic] =
+    await Promise.all([
+      getWorkspaceDomainInfoBySlug(slug),
+      db
+        .select({ type: board.systemType })
+        .from(board)
+        .where(
+          and(
+            eq(board.workspaceId, workspace.id),
+            eq(board.isSystem, true),
+            eq(board.isPublic, true),
+            eq(board.isVisible, true),
+            eq(board.isActive, true),
+          ),
         ),
-      ),
-    db
-      .select({
-        id: post.id,
-        title: post.title,
-        upvotes: post.upvotes,
-        commentCount: post.commentCount,
-        roadmapStatus: post.roadmapStatus,
-      })
-      .from(post)
-      .innerJoin(board, eq(post.boardId, board.id))
-      .where(
-        and(
-          eq(board.workspaceId, workspace.id),
-          eq(board.isSystem, false),
-          eq(board.isPublic, true),
-          eq(post.status, "published"),
-        ),
-      )
-      .orderBy(desc(post.upvotes))
-      .limit(3),
-  ]);
+      db
+        .select({
+          id: post.id,
+          title: post.title,
+          upvotes: post.upvotes,
+          commentCount: post.commentCount,
+          roadmapStatus: post.roadmapStatus,
+        })
+        .from(post)
+        .innerJoin(board, eq(post.boardId, board.id))
+        .where(
+          and(
+            eq(board.workspaceId, workspace.id),
+            eq(board.isSystem, false),
+            eq(board.isPublic, true),
+            eq(post.status, "published"),
+          ),
+        )
+        .orderBy(desc(post.upvotes))
+        .limit(3),
+      // Same rule as the portal's Help tab: turned on and at least one published article.
+      isHelpCenterPublic(db, workspace.id),
+    ]);
   const customDomain =
     domainInfo?.domain?.status === "verified"
       ? workspace.customDomain || domainInfo.domain.host
@@ -75,6 +79,7 @@ export default async function SharePage({ params }: Props) {
   const links = buildShareLinks(boardUrl, {
     roadmap: publicSections.some((section) => section.type === "roadmap"),
     changelog: publicSections.some((section) => section.type === "changelog"),
+    help: helpIsPublic,
   });
   return (
     <Share
