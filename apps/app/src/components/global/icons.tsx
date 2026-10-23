@@ -45,6 +45,7 @@ import {
   IconAlertSquareRoundedFilled,
   IconBookFilled,
   IconBoltFilled,
+  IconSeedlingFilled,
   IconSparklesFilled,
   IconBulbFilled,
   IconThumbDownFilled,
@@ -202,6 +203,7 @@ export const ExportIcon = solid(IconDatabaseFilled);
 export const HelpCenterIcon = solid(IconHelpSquareRoundedFilled);
 export const BookIcon = solid(IconBookFilled);
 export const BoltIcon = solid(IconBoltFilled);
+export const SeedlingIcon = solid(IconSeedlingFilled);
 export const SparklesIcon = solid(IconSparklesFilled);
 export const BulbIcon = solid(IconBulbFilled);
 export const DislikeIcon = solid(IconThumbDownFilled);

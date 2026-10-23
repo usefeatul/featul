@@ -1,10 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import {
-  DitherGradient,
-  type DitherGradientProps,
-} from "@featul/ui/components/gradient";
+import { DitherGradient } from "@featul/ui/components/gradient";
+import { fillOf, type PixelColor } from "@featul/ui/lib/pixel";
+import { rgb } from "@featul/ui/lib/palette";
 import Counter from "./counter";
 import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
@@ -17,6 +16,7 @@ import {
   SearchIcon,
   SparklesIcon,
   BoardIcon,
+  BoltIcon,
   BookIcon,
   CheckIcon,
   CollectIcon,
@@ -32,16 +32,25 @@ import {
   LikeIcon,
   Copy,
   PanelIcon,
+  PlanIcon,
   RoadmapIcon,
+  SeedlingIcon,
 } from "@/components/global/icons";
 import type { PlanKey } from "@/lib/plan";
 import { PLAN_ORDER, getPlan, type BillingCycle } from "./data";
 
-const planPattern: Record<PlanKey, DitherGradientProps["from"]> = {
+const planPattern: Record<PlanKey, PixelColor> = {
   free: [110, 114, 122],
   starter: "blue",
   professional: "orange",
 };
+
+/** Filled plan marks, tinted with the plan's pattern color. */
+const planIcon = {
+  free: SeedlingIcon,
+  starter: BoltIcon,
+  professional: PlanIcon,
+} satisfies Record<PlanKey, typeof PlanIcon>;
 
 export const comparison = [
   {
@@ -213,6 +222,7 @@ export default function Comparison({
       <div className="grid gap-3 px-5 sm:grid-cols-3 sm:px-7">
         {PLAN_ORDER.map((key) => {
           const plan = getPlan(key);
+          const PlanMark = planIcon[key];
           const amount =
             billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
           return (
@@ -223,7 +233,14 @@ export default function Comparison({
               aria-label={`${plan.label} plan`}
             >
               <div className="flex h-7 items-center justify-between gap-2 pr-1 pl-2">
-                <h3 className="text-xs font-medium">{plan.label}</h3>
+                <h3 className="flex items-center gap-1.5 text-xs font-medium">
+                  <PlanMark
+                    aria-hidden
+                    className="size-3.5 shrink-0"
+                    style={{ color: rgb(fillOf(planPattern[key])) }}
+                  />
+                  {plan.label}
+                </h3>
                 {currentPlan === key ? (
                   <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
                     Current
