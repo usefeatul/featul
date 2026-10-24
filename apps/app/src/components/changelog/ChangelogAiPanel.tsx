@@ -1243,7 +1243,7 @@ export function ChangelogAiPanel({
         className="hidden lg:flex"
       />
       <div className="flex h-full w-full flex-col lg:w-[var(--resizable-panel-width)] lg:border-l lg:border-border/60 dark:lg:border-white/10">
-        <header className="flex min-h-12 lg:min-h-[38px] shrink-0 items-center gap-2 px-3">
+        <header className="flex min-h-12 shrink-0 items-center gap-2 px-3">
           {historyOpen ? (
             <Button
               type="button"

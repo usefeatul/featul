@@ -108,7 +108,7 @@ export default async function WorkspaceLayout({
         />
         <main className={workspacePanelClass}>
           <EditorHeaderProvider>
-            <WorkspaceHeader workspaceName={ws?.name ?? slug} />
+            <WorkspaceHeader />
             <div
               data-workspace-scroll
               className="min-h-0 flex-1 overflow-y-auto overscroll-none px-4 pb-[calc(var(--workspace-mobile-nav-height)+2rem)] sm:px-8 lg:px-12 lg:pb-8 xl:px-16 has-[[data-page-empty]]:flex has-[[data-page-empty]]:flex-col has-[[data-page-empty]]:lg:pb-0 [&>section:has([data-page-empty])]:flex [&>section:has([data-page-empty])]:flex-1 [&>section:has([data-page-empty])]:flex-col [&>section:has([data-page-empty])]:space-y-0 [&>section:has([data-page-empty])]:pb-36 has-[[data-changelog-editor]]:px-0 has-[[data-changelog-editor]]:pb-0 has-[[data-request-detail]]:overflow-hidden has-[[data-request-detail]]:pb-0 has-[[data-member-detail]]:overflow-hidden has-[[data-member-detail]]:pb-0 has-[[data-roadmap]]:flex has-[[data-roadmap]]:flex-col has-[[data-roadmap]]:overflow-hidden has-[[data-roadmap]]:lg:pb-0"

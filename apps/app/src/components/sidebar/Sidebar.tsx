@@ -147,7 +147,7 @@ export default function Sidebar({
         <div
           className={cn(
             "flex shrink-0 items-center gap-1",
-            collapsed ? "flex-col px-1.5 py-2" : "h-[52px] px-3",
+            collapsed ? "flex-col px-1.5 pb-2 pt-[13px]" : "mt-[5px] h-[52px] px-3",
           )}
         >
           <WorkspaceSwitcher

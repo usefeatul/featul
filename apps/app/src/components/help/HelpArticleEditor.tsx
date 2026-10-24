@@ -120,10 +120,8 @@ export function HelpArticleEditor({
     >
       <div className="flex min-w-0 flex-1 flex-col bg-background lg:min-h-0">
         <WorkspaceHeader
-          workspaceName={workspaceSlug}
           embeddedInEditor
           editorActions={headerActions}
-          editorTitle={title}
         />
         <div className="relative flex min-h-0 flex-1 flex-col">
           <Timeline scrollRef={scrollRef} title={title} />

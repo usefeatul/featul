@@ -207,7 +207,7 @@ export default function Navigator({
             aria-hidden
             className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-lg bg-border md:hidden"
           />
-          <div className="flex min-h-12 lg:min-h-[38px] shrink-0 items-center justify-between px-3">
+          <div className="flex min-h-12 shrink-0 items-center justify-between px-3">
             <div className="flex min-w-0 items-center gap-2">
               <h2 className="truncate text-sm font-semibold">Request queue</h2>
               {data ? (

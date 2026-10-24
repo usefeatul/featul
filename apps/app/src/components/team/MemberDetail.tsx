@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
+import { BackButton } from "@/components/global/BackButton";
 import { useQuery } from "@tanstack/react-query";
 import type { Member } from "@/types/team";
 import type { PaginatedActivity } from "@/types/activity";
@@ -99,7 +99,6 @@ export default function MemberDetail({
       "h-8 flex-1 px-3 text-xs",
       mobileTab === tab ? "text-foreground" : "text-accent",
     );
-  const memberName = member?.name || member?.email || userId;
 
   return (
     <section
@@ -107,29 +106,12 @@ export default function MemberDetail({
       className="relative -mx-4 flex h-[calc(100dvh-var(--workspace-mobile-nav-height))] min-w-0 flex-col overflow-hidden sm:-mx-8 md:flex-row lg:-mx-12 lg:h-(--workspace-frame-height) xl:-mx-16"
     >
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-background">
-        <header className="z-20 flex min-h-12 lg:min-h-[38px] shrink-0 items-center gap-2 bg-background px-4 text-sm sm:px-6">
-          <nav aria-label="Member navigation" className="min-w-0 flex-1">
-            <ol className="flex min-w-0 items-center gap-2">
-              <li className="shrink-0">
-                <Link
-                  href={`/workspaces/${slug}/members`}
-                  className="rounded-lg py-1 text-accent transition-colors hover:text-foreground"
-                >
-                  Members
-                </Link>
-              </li>
-              <li aria-hidden className="text-accent/50">
-                /
-              </li>
-              <li
-                aria-current="page"
-                className="min-w-0 truncate font-medium"
-                title={memberName}
-              >
-                {memberName}
-              </li>
-            </ol>
-          </nav>
+        <header className="z-20 flex min-h-12 shrink-0 items-center gap-2 bg-background px-4 text-sm sm:px-6">
+          <BackButton
+            href={`/workspaces/${slug}/members`}
+            label="members"
+            className="-ml-2"
+          />
         </header>
 
         <div

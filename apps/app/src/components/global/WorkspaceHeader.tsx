@@ -4,10 +4,10 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@featul/ui/components/button";
-import { Toolbar, toolbarItemClass } from "@featul/ui/components/toolbar";
 
 import { Switch } from "@featul/ui/components/switch";
-import { ChevronLeftIcon, Plus } from "@/components/global/icons";
+import { Plus } from "@/components/global/icons";
+import { BackButton } from "@/components/global/BackButton";
 import { SECTIONS, WORKSPACE_TITLES, getSectionMeta } from "@/config/sections";
 import HeaderActions from "@/components/requests/HeaderActions";
 import FilterDynamicIsland from "@/components/requests/FilterDynamicIsland";
@@ -86,15 +86,11 @@ function EditorActionButton({ action }: { action: EditorAction }) {
 }
 
 export default function WorkspaceHeader({
-  workspaceName,
   embeddedInEditor = false,
   editorActions,
-  editorTitle,
 }: {
-  workspaceName: string;
   embeddedInEditor?: boolean;
   editorActions?: EditorAction[];
-  editorTitle?: string;
 }) {
   const pathname = usePathname() || "/";
   const parts = pathname.split("/").filter(Boolean);
@@ -106,7 +102,7 @@ export default function WorkspaceHeader({
   const showChangelogActions = rest[0] === "changelog" && rest.length === 1;
   const showChangelogEditActions = rest[0] === "changelog" && rest.length >= 2;
   const showHelpActions = rest[0] === "help" && rest.length === 1;
-  // Help Center sub-pages that get a breadcrumb instead of the article editor chrome.
+  // Help Center sub-pages that get a back button instead of the article editor chrome.
   const helpSubpage =
     rest[0] === "help" ? ({ analytics: "Analytics" } as Record<string, string>)[rest[1] ?? ""] : undefined;
   const isHelpAnalytics = Boolean(helpSubpage);
@@ -139,23 +135,7 @@ export default function WorkspaceHeader({
   }
   if (helpSubpage) title = helpSubpage;
 
-  const pageActions = isMemberDetail ? (
-    <Toolbar size="sm">
-      <Button
-        asChild
-        variant="plain"
-        className={`${toolbarItemClass} px-3 text-xs font-medium text-muted-foreground hover:text-foreground`}
-      >
-        <Link
-          href={`/workspaces/${workspaceSlug}/members`}
-          aria-label="Back to members"
-        >
-          <ChevronLeftIcon className="size-3 mr-1" />
-          <span className="hidden sm:inline">Back</span>
-        </Link>
-      </Button>
-    </Toolbar>
-  ) : showRequestsActions ? (
+  const pageActions = showRequestsActions ? (
     <HeaderActions />
   ) : showRoadmapActions ? (
     <RoadmapHeaderActions />
@@ -238,55 +218,23 @@ export default function WorkspaceHeader({
 
   if (isCompactListHeader) {
     const editorSection = showHelpEditActions
-      ? { label: "Help Center", href: `/workspaces/${workspaceSlug}/help`, untitled: "Untitled article" }
-      : { label: "Changelog", href: `/workspaces/${workspaceSlug}/changelog`, untitled: "Untitled changelog" };
-    const changelogTitle = editorTitle?.trim() || editorSection.untitled;
+      ? { label: "Help Center", href: `/workspaces/${workspaceSlug}/help` }
+      : { label: "Changelog", href: `/workspaces/${workspaceSlug}/changelog` };
     return (
       <header className="relative z-40 shrink-0 bg-background px-4 sm:px-6">
-        <div className="flex min-h-12 lg:min-h-[38px] min-w-0 items-center justify-between gap-2 sm:gap-3">
+        <div className="flex min-h-12 min-w-0 items-center justify-between gap-2 sm:gap-3">
           {isHelpAnalytics ? (
-            <nav aria-label="Help Center navigation" className="min-w-0 flex-1">
-              <ol className="flex min-w-0 items-center gap-2 text-sm">
-                <li className="shrink-0">
-                  <Link
-                    href={`/workspaces/${workspaceSlug}/help`}
-                    className="flex items-center rounded-lg py-1 text-accent transition-colors hover:text-foreground"
-                  >
-                    Help Center
-                  </Link>
-                </li>
-                <li aria-hidden="true" className="shrink-0 text-accent/50">
-                  /
-                </li>
-                <li aria-current="page" className="min-w-0 truncate font-medium">
-                  {helpSubpage}
-                </li>
-              </ol>
-            </nav>
+            <BackButton
+              href={`/workspaces/${workspaceSlug}/help`}
+              label="Help Center"
+              className="-ml-2"
+            />
           ) : embeddedInEditor && showEditorActions ? (
-            <nav aria-label={`${editorSection.label} navigation`} className="min-w-0 flex-1">
-              <ol className="flex min-w-0 items-center gap-2 text-sm">
-                <li className="shrink-0">
-                  <Link
-                    href={editorSection.href}
-                    aria-label={`Back to ${editorSection.label.toLowerCase()}`}
-                    className="flex items-center rounded-lg py-1 text-accent transition-colors hover:text-foreground"
-                  >
-                    {editorSection.label}
-                  </Link>
-                </li>
-                <li aria-hidden="true" className="shrink-0 text-accent/50">
-                  /
-                </li>
-                <li
-                  aria-current="page"
-                  className="min-w-0 truncate font-medium"
-                  title={changelogTitle}
-                >
-                  {changelogTitle}
-                </li>
-              </ol>
-            </nav>
+            <BackButton
+              href={editorSection.href}
+              label={editorSection.label}
+              className="-ml-2"
+            />
           ) : (
             <h1 className="min-w-0 shrink-0 truncate text-sm font-medium">
               {title}
@@ -303,16 +251,7 @@ export default function WorkspaceHeader({
 
   return (
     <header className="relative z-40 shrink-0 bg-background">
-      <div className="flex min-h-12 lg:min-h-[38px] items-center gap-2 px-4 text-sm sm:px-6">
-        <Link
-          href={`/workspaces/${workspaceSlug}`}
-          className="max-w-48 truncate rounded-lg px-1.5 py-1 text-accent transition-colors hover:bg-muted dark:hover:bg-white/5"
-        >
-          {workspaceName}
-        </Link>
-        <span aria-hidden className="text-accent/50">
-          /
-        </span>
+      <div className="flex min-h-12 items-center gap-2 px-4 text-sm sm:px-6">
         <span className="truncate font-medium">{title}</span>
         {!showPageHeading ? <div className="ml-auto">{pageActions}</div> : null}
       </div>
