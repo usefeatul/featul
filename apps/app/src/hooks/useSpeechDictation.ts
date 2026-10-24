@@ -7,6 +7,8 @@ import { transcribeCommentAudio } from "@/lib/comment/service";
 
 /** Keeps uploads under the API's body cap (~2.6 MB of base64 WAV). */
 export const MAX_RECORDING_SECONDS = 60;
+/** Clips with less voiced audio than this are treated as silence. */
+const MIN_VOICED_SECONDS = 0.25;
 
 export type DictationState =
   "idle" | "starting" | "recording" | "transcribing" | "failed";
@@ -61,15 +63,22 @@ export function useSpeechDictation(
         setFailure(message);
         setState("failed");
       };
+      // Nothing worth retrying: drop the clip and go back to the composer.
+      const noSpeech = () => {
+        if (run !== runRef.current) return;
+        clipRef.current = null;
+        setState("idle");
+        toast.error("No speech detected");
+      };
       clipRef.current = clip;
       setFailure(null);
       setState("transcribing");
       try {
-        const { base64, duration } = await encodeWavBase64(clip);
-        if (duration < 0.3) return fail("That was too short.");
+        const { base64, duration, voiced } = await encodeWavBase64(clip);
+        if (duration < 0.3 || voiced < MIN_VOICED_SECONDS) return noSpeech();
         const text = await transcribeCommentAudio(postId, base64);
         if (run !== runRef.current) return;
-        if (!text) return fail("No speech was detected.");
+        if (!text) return noSpeech();
         clipRef.current = null;
         setState("idle");
         onTranscriptRef.current(text);

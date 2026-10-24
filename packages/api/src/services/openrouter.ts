@@ -163,8 +163,11 @@ export function resolveOpenRouterTranscribeModel() {
   );
 }
 
-const TRANSCRIBE_SYSTEM_PROMPT =
-  "You transcribe voice dictation for a comment box. Return only the spoken words, verbatim, with natural punctuation and capitalization, in the language spoken. Never translate, summarize, answer questions, or add commentary. If there is no intelligible speech, return nothing.";
+// Models tend to invent words for silent clips when asked to "return
+// nothing", so silence is reported with an explicit marker instead.
+const NO_SPEECH_MARKER = "NO_SPEECH";
+
+const TRANSCRIBE_SYSTEM_PROMPT = `You transcribe voice dictation for a comment box. Return only the words actually spoken, verbatim, with natural punctuation and capitalization, in the language spoken. Never translate, summarize, answer questions, or add commentary. Never guess or invent words. If the recording has no clearly intelligible speech (silence, background noise, breathing, typing, music), reply with exactly ${NO_SPEECH_MARKER} and nothing else.`;
 
 /** Speech-to-text through a chat model that accepts `input_audio`. */
 export async function transcribeOpenRouterAudio(
@@ -183,7 +186,10 @@ export async function transcribeOpenRouterAudio(
         {
           role: "user",
           content: [
-            { type: "text", text: "Transcribe this recording." },
+            {
+              type: "text",
+              text: `Transcribe this recording, or reply ${NO_SPEECH_MARKER} if nobody speaks.`,
+            },
             { type: "input_audio", input_audio: { data: audioBase64, format } },
           ],
         },
@@ -200,5 +206,6 @@ export async function transcribeOpenRouterAudio(
   const data = (await res.json()) as {
     choices?: Array<{ message?: { content?: string | null } }>;
   };
-  return String(data.choices?.[0]?.message?.content ?? "").trim();
+  const text = String(data.choices?.[0]?.message?.content ?? "").trim();
+  return text.includes(NO_SPEECH_MARKER) ? "" : text;
 }
