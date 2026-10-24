@@ -19,7 +19,7 @@
     "c15t": "3.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.43.0",
+    "framer-motion": "^14.2.0",
     "hono": "^4.13.13",
     "jstack": "^1.1.1",
     "lucide-react": "^0.544.0",
