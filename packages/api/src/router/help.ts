@@ -30,6 +30,7 @@ import {
 } from "../validators/help";
 import { markdownToTiptapDoc } from "../notra/content";
 import { getHelpImportUsage } from "../help/import/usage";
+import { createTitleIndex } from "../help/import/dedupe";
 import { clearHelpGithubConnection, getHelpGithubConnection } from "../help/import/github";
 import {
   createSetupState,
@@ -338,8 +339,24 @@ export function createHelpRouter() {
         let collectionCount = existing.length;
         let collectionsCreated = 0;
 
+        // Saving the same draft twice, or a draft from an older scan, mustn't duplicate articles.
+        const existingTitles: Array<{ title: string }> = await ctx.db
+          .select({ title: helpArticle.title })
+          .from(helpArticle)
+          .where(eq(helpArticle.workspaceId, ws.id));
+        const titles = createTitleIndex(
+          existingTitles.map((row) => row.title),
+          ws.name,
+        );
+        const articles = input.articles.filter((article) => {
+          if (titles.has(article.title)) return false;
+          titles.add(article.title);
+          return true;
+        });
+        const skipped = input.articles.length - articles.length;
+
         // Only collections an article actually uses; past the plan limit, articles stay uncategorized.
-        const wanted = new Set(input.articles.map((a) => a.collection?.trim().toLowerCase()).filter(Boolean));
+        const wanted = new Set(articles.map((a) => a.collection?.trim().toLowerCase()).filter(Boolean));
         for (const col of input.collections) {
           const key = col.name.trim().toLowerCase();
           if (!wanted.has(key) || byName.has(key)) continue;
@@ -365,7 +382,7 @@ export function createHelpRouter() {
         }
 
         let created = 0;
-        for (const article of input.articles) {
+        for (const article of articles) {
           const collectionId = byName.get(article.collection?.trim().toLowerCase() ?? "") ?? null;
           await ctx.db.insert(helpArticle).values({
             workspaceId: ws.id,
@@ -387,7 +404,7 @@ export function createHelpRouter() {
           });
           created += 1;
         }
-        return c.superjson({ ok: true, created, collectionsCreated });
+        return c.superjson({ ok: true, created, skipped, collectionsCreated });
       }),
 
     settings: privateProcedure

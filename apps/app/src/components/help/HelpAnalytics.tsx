@@ -1164,7 +1164,10 @@ function AnalyticsSkeleton({
   ];
 
   return (
-    <div className="space-y-4 px-4 pb-14 sm:px-6" aria-busy="true">
+    <div
+      className="mx-auto box-content max-w-4xl space-y-4 px-4 pb-14 sm:px-8 lg:px-12 xl:px-16"
+      aria-busy="true"
+    >
       <Panel
         title={
           trends ? `Help center · last ${days} days` : "Help center · all time"

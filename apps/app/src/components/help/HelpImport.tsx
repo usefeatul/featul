@@ -62,6 +62,7 @@ type LogEntry = {
 };
 type SaveResult = {
   created: number;
+  skipped: number;
   collectionsCreated: number;
   titles: string[];
 };
@@ -357,9 +358,10 @@ function HelpImport({
       await expectOk(res, "Couldn't save the drafts");
       const data = (await res.json()) as {
         created: number;
+        skipped?: number;
         collectionsCreated: number;
       };
-      setResult({ ...data, titles: articles.map((a) => a.title) });
+      setResult({ ...data, skipped: data.skipped ?? 0, titles: articles.map((a) => a.title) });
       await refreshTree();
       setStage("done");
     } catch (err) {
@@ -1463,6 +1465,9 @@ function DoneStage({
               ? ` in ${result.collectionsCreated} new ${result.collectionsCreated === 1 ? "collection" : "collections"}`
               : ""}
             , private until you publish them.
+            {result.skipped > 0
+              ? ` Skipped ${result.skipped} you already have.`
+              : ""}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">

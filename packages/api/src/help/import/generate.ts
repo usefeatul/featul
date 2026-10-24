@@ -66,22 +66,42 @@ function parseProposal(value: unknown): HelpProposal {
     .map((item) => draftArticleSchema.safeParse(item))
     .flatMap((result) => (result.success ? [result.data] : []))
     .slice(0, 30);
-  if (articles.length === 0) throw new Error("The draft came back empty. Please try again.");
   return proposalSchema.parse({ collections, articles });
 }
 
 const SOURCE_BUDGET = 70_000;
 
+export type ExistingHelpContent = {
+  articles: Array<{ title: string; summary: string | null; collection: string | null }>;
+  collections: string[];
+};
+
+/** Keeps the list of what's already written from crowding out the sources. */
+const EXISTING_LIMIT = 150;
+
 function buildPrompt(input: {
   workspaceName: string;
   maxArticles: number;
   sources: ImportSource[];
-  existingTitles: string[];
+  existing: ExistingHelpContent;
 }) {
+  const rescan = input.existing.articles.length > 0;
+  const scope = rescan
+    ? [
+        `You extend the help center for ${input.workspaceName}. Readers are ${input.workspaceName}'s customers, not its engineers or contributors.`,
+        `It already has ${input.existing.articles.length} articles, listed after the sources. Write only articles on topics none of them cover yet, up to ${input.maxArticles}. Never rewrite, reword, rename, split or merge an existing article, even if the sources describe it better.`,
+        'If the sources hold nothing the existing articles don\'t already cover, reply with {"collections":[],"articles":[]}. Fewer new articles is better than a repeat.',
+        input.existing.collections.length
+          ? "File each new article under an existing collection when one fits, using its exact name. Add a new collection only when none fits. List every collection your articles use, existing or new."
+          : "Group the new articles into 1 to 3 collections. Every collection must hold at least one of your articles.",
+      ]
+    : [
+        `You write the first help center for ${input.workspaceName}. Readers are ${input.workspaceName}'s customers, not its engineers or contributors.`,
+        `Write up to ${input.maxArticles} articles covering what a new customer needs most, in this order: what the product is, getting started, the core features, plans and billing when pricing is in the sources, and common questions.`,
+        "Group them into 2 to 5 collections. Every collection must hold at least one of your articles.",
+      ];
   const system = [
-    `You write the first help center for ${input.workspaceName}. Readers are ${input.workspaceName}'s customers, not its engineers or contributors.`,
-    `Write up to ${input.maxArticles} articles covering what a new customer needs most, in this order: what the product is, getting started, the core features, plans and billing when pricing is in the sources, and common questions.`,
-    "Group them into 2 to 5 collections. Every collection must hold at least one of your articles.",
+    ...scope,
     "Use only facts in the sources. Never invent prices, limits, URLs, settings names or steps. Leave out any topic the sources don't support.",
     "Write each body in Markdown, 150 to 400 words: a one-line intro, then ## sections, short paragraphs, '- ' lists and '1.' steps. No H1, no images, no HTML, no code blocks longer than 6 lines.",
     "Write in second person, plainly, without marketing language.",
@@ -98,8 +118,18 @@ function buildPrompt(input: {
     budget -= text.length;
     blocks.push(`### Source ${index + 1} (${source.kind}): ${source.title}\nURL: ${source.url}\n\n${text}`);
   });
-  const existing = input.existingTitles.length
-    ? `\n\nArticles that already exist (don't duplicate them):\n${input.existingTitles.map((t) => `- ${t}`).join("\n")}`
+  const listed = input.existing.articles.slice(0, EXISTING_LIMIT).map((article) => {
+    const where = article.collection ? ` [${article.collection}]` : "";
+    const about = article.summary?.trim() ? `: ${article.summary.trim()}` : "";
+    return `- ${article.title}${where}${about}`;
+  });
+  const more = input.existing.articles.length - listed.length;
+  const existing = rescan
+    ? [
+        "\n\n---\n\n## Articles that already exist. Don't write any of these topics again.",
+        listed.join("\n") + (more > 0 ? `\n- …and ${more} more` : ""),
+        input.existing.collections.length ? `\nExisting collections: ${input.existing.collections.join(", ")}` : "",
+      ].join("\n")
     : "";
   return { system, user: `${blocks.join("\n\n---\n\n")}${existing}` };
 }
@@ -120,7 +150,7 @@ export async function draftHelpCenter(input: {
   workspaceName: string;
   maxArticles: number;
   sources: ImportSource[];
-  existingTitles: string[];
+  existing: ExistingHelpContent;
   signal?: AbortSignal;
   onArticle?: (title: string) => void;
 }): Promise<HelpProposal> {
@@ -150,5 +180,9 @@ export async function draftHelpCenter(input: {
     input.signal,
   );
   const proposal = parseProposal(extractJson(raw));
+  // An empty reply is a valid answer on a re-scan: everything was already covered.
+  if (proposal.articles.length === 0 && input.existing.articles.length === 0) {
+    throw new Error("The draft came back empty. Please try again.");
+  }
   return { ...proposal, articles: proposal.articles.slice(0, input.maxArticles) };
 }
