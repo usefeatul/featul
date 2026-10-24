@@ -288,6 +288,13 @@
       "when": 1792778135385,
       "tag": "0040_post_source",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1792834696849,
+      "tag": "0041_security_hardening",
+      "breakpoints": true
     }
   ]
 }

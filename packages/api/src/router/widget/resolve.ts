@@ -14,10 +14,8 @@ import {
   workspaceDomain,
 } from "@featul/db";
 import { toSlug } from "../../shared/slug";
-import {
-  buildWidgetOriginAllowlist,
-  isVerifiedIdentity as verifySignedIdentity,
-} from "../../shared/identity";
+import { isVerifiedIdentity as verifySignedIdentity } from "../../shared/identity";
+import { widgetAllowedOrigins } from "./origins";
 import type { AuthenticatedRouterContext } from "../../types/router";
 import type { WidgetIdentity } from "./schema";
 import { listPostImageUrls } from "../../storage/images";
@@ -26,7 +24,10 @@ import {
   WORKSPACE_POST_FOLDERS,
 } from "../../storage/urls";
 
-export type WidgetRouterContext = Pick<AuthenticatedRouterContext, "db">;
+export type WidgetRouterContext = Pick<AuthenticatedRouterContext, "db"> & {
+  /** Cross-origin browser Origin of the API call, set by widgetProcedure. */
+  widgetOrigin?: string | null;
+};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -168,22 +169,7 @@ export async function resolveWidget(
         ),
       ),
   ]);
-  const allowedOrigins = buildWidgetOriginAllowlist({
-    slug: ws.slug,
-    workspaceDomain: ws.domain,
-    customDomain: ws.customDomain,
-    verifiedHosts: domains
-      .filter(
-        (row: { host: string; status: string }) => row.status === "verified",
-      )
-      .map((row: { host: string; status: string }) => row.host),
-    appOrigin:
-      process.env.NEXT_PUBLIC_APP_URL || process.env.BETTER_AUTH_URL || null,
-    configuredOrigins: Array.isArray(ws.widgetAllowedOrigins)
-      ? ws.widgetAllowedOrigins
-      : [],
-    includeDevOrigins: process.env.NODE_ENV !== "production",
-  });
+  const allowedOrigins = widgetAllowedOrigins(ws, domains);
 
   if (parentOrigin) {
     const normalizedParentOrigin = new URL(parentOrigin).origin;
@@ -192,6 +178,15 @@ export async function resolveWidget(
         message: "This site is not allowed to embed the widget",
       });
     }
+  }
+
+  // parentOrigin is client-supplied. When a browser calls the API directly
+  // from another site, its Origin header is authoritative and must also be
+  // allowed. Same-origin calls from the widget iframe carry no foreign Origin.
+  if (ctx.widgetOrigin && !allowedOrigins.includes(ctx.widgetOrigin)) {
+    throw new HTTPException(403, {
+      message: "This site is not allowed to use the widget",
+    });
   }
 
   const roadmapVisible = isPublicSectionVisible(

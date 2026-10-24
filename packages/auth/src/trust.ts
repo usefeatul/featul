@@ -1,25 +1,36 @@
-import { getValidatedTrustedOrigins, isConfiguredTrustedOrigin } from "./origins/trusted"
+import { getValidatedTrustedOrigins, isConfiguredTrustedOrigin, isExactTrustedOrigin } from "./origins/trusted"
 
 const configuredTrustedOrigins = getValidatedTrustedOrigins("AUTH_TRUSTED_ORIGINS")
+
+function isLocalDevHost(host: string): boolean {
+  return host === "localhost" || host === "127.0.0.1" || host.endsWith(".localhost")
+}
 
 export async function isTrustedOrigin(origin: string): Promise<boolean> {
   const value = String(origin || "").trim()
   if (!value) return false
 
-  let normalizedOrigin: string
+  let url: URL
   try {
-    const url = new URL(value)
+    url = new URL(value)
     if (!url.hostname) return false
-    normalizedOrigin = url.origin
   } catch {
     return false
   }
+  const normalizedOrigin = url.origin
 
   if (process.env.NODE_ENV === "production" && !normalizedOrigin.startsWith("https://")) {
     return false
   }
 
-  return isConfiguredTrustedOrigin(normalizedOrigin, configuredTrustedOrigins)
+  // Credentialed CORS can read sessions, so wildcard entries (https://*.featul.com) never get it:
+  // script on any subdomain could. Tenant pages call their own origin, where the shared cookie applies.
+  if (isExactTrustedOrigin(normalizedOrigin, configuredTrustedOrigins)) return true
+
+  // Local dev serves tenants on *.localhost against the localhost app, without a shared cookie domain.
+  return process.env.NODE_ENV !== "production" &&
+    isLocalDevHost(url.hostname) &&
+    isConfiguredTrustedOrigin(normalizedOrigin, configuredTrustedOrigins)
 }
 
 export function corsHeaders(origin: string): HeadersInit {

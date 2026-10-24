@@ -1,5 +1,6 @@
 import type { BetterAuthRateLimitStorage } from "@better-auth/core"
 import { Redis } from "@upstash/redis"
+import { isAuthRateLimitEnabled } from "./config"
 
 export const CONSUME_AUTH_LIMIT = `
 local now = tonumber(ARGV[1])
@@ -16,7 +17,11 @@ return 0`
 export function getAuthRateLimitStorage(): BetterAuthRateLimitStorage | undefined {
   const url = process.env.UPSTASH_REDIS_REST_URL
   const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return undefined
+  if (!url || !token) {
+    // Better Auth's in-memory fallback is per instance, so it barely limits serverless traffic.
+    if (isAuthRateLimitEnabled()) throw new Error("Missing UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN")
+    return undefined
+  }
   const redis = new Redis({ url, token })
   const prefix = process.env.AUTH_RATE_LIMIT_PREFIX || "ba:rl:"
   return {

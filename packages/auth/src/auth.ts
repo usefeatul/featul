@@ -198,8 +198,10 @@ export const auth = betterAuth({
       domain: cookieDomain || undefined,
     },
     useSecureCookies: true,
+    // Tenant subdomains are same-site with the app, so Lax still reaches them; the widget signs
+    // identities instead of relying on third-party cookies.
     defaultCookieAttributes: {
-      sameSite: "none",
+      sameSite: "lax",
       secure: true,
     },
     ipAddress: {

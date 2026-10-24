@@ -178,7 +178,10 @@ export async function verifyInstallerAccess(code: string, installationId: string
 export type GithubSetupState = { workspaceSlug: string; userId: string; returnTo: string; issuedAt: number };
 
 function stateSecret() {
-  const secret = readEnv("GITHUB_SETUP_STATE_SECRET") || readEnv("BETTER_AUTH_SECRET");
+  // Production needs its own key; reusing the auth secret is a local-dev convenience only.
+  const secret =
+    readEnv("GITHUB_SETUP_STATE_SECRET") ||
+    (process.env.NODE_ENV === "production" ? "" : readEnv("BETTER_AUTH_SECRET"));
   if (!secret) throw new HTTPException(500, { message: "Missing GITHUB_SETUP_STATE_SECRET" });
   return secret;
 }

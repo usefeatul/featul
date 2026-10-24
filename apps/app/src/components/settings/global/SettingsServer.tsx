@@ -243,6 +243,7 @@ function SectionRenderer({
           slug={slug}
           workspaceId={initialWorkspaceId}
           workspaceName={initialWorkspaceName}
+          workspaceOwnerId={initialWorkspaceOwnerId}
           timezone={initialTimezone}
         />
       );

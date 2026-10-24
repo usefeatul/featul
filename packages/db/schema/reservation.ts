@@ -15,6 +15,8 @@ export const workspaceSlugReservation = pgTable(
       .notNull()
       .default('reserved'),
     expiresAt: timestamp('expires_at').notNull(),
+    // Null until the emailed token is confirmed. Only confirmed reservations hold a slug.
+    confirmedAt: timestamp('confirmed_at'),
     claimedAt: timestamp('claimed_at'),
     claimedByUserId: text('claimed_by_user_id').references(() => user.id),
     createdAt: timestamp('created_at').notNull().defaultNow(),

@@ -161,32 +161,43 @@ export const postUpdate = pgTable("post_update", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const postReport = pgTable("post_report", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => createId()),
-  postId: text("post_id")
-    .notNull()
-    .references(() => post.id, { onDelete: "cascade" }),
-  reportedBy: text("reported_by").references(() => user.id, {
-    onDelete: "set null",
-  }),
+export const postReport = pgTable(
+  "post_report",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    postId: text("post_id")
+      .notNull()
+      .references(() => post.id, { onDelete: "cascade" }),
+    reportedBy: text("reported_by").references(() => user.id, {
+      onDelete: "set null",
+    }),
 
-  reason: text("reason", {
-    enum: ["spam", "harassment", "inappropriate", "off_topic", "other"],
-  }).notNull(),
-  description: text("description"),
+    reason: text("reason", {
+      enum: ["spam", "harassment", "inappropriate", "off_topic", "other"],
+    }).notNull(),
+    description: text("description"),
 
-  status: text("status", {
-    enum: ["pending", "reviewed", "resolved", "dismissed"],
-  }).default("pending"),
+    status: text("status", {
+      enum: ["pending", "reviewed", "resolved", "dismissed"],
+    }).default("pending"),
 
-  reviewedBy: text("reviewed_by").references(() => user.id),
-  reviewedAt: timestamp("reviewed_at"),
-  resolution: text("resolution"),
+    reviewedBy: text("reviewed_by").references(() => user.id),
+    reviewedAt: timestamp("reviewed_at"),
+    resolution: text("resolution"),
 
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) =>
+    ({
+      // One report per user per item; repeats must not re-notify the owner.
+      postReportPostReporterUnique: uniqueIndex("post_report_post_reporter_unique").on(
+        table.postId,
+        table.reportedBy,
+      ),
+    }) as const,
+);
 
 export const postMerge = pgTable(
   "post_merge",

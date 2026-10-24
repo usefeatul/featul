@@ -207,6 +207,20 @@ export function isConfiguredTrustedOrigin(
   return false;
 }
 
+/**
+ * Exact entries only. Wildcards cover every subdomain, so they never grant credentialed
+ * cross-origin access; tenant pages call their own origin instead.
+ */
+export function isExactTrustedOrigin(
+  origin: string,
+  trustedOriginPatterns: string[],
+): boolean {
+  return isConfiguredTrustedOrigin(
+    origin,
+    trustedOriginPatterns.filter((pattern) => !pattern.includes("*")),
+  );
+}
+
 function patternToRegex(originPattern: string): RegExp | null {
   const trimmed = originPattern.trim();
   if (!trimmed) return null;

@@ -14,12 +14,9 @@ export { AI_TEMPERATURE_BY_ACTION, getMaxTokensByAction } from "./constants";
 export {
   buildBodyStreamPrompt,
   buildChatTagsOpenRouterMessages,
-  buildJsonAiUserPrompt,
   buildStreamRefineUserPrompt,
   buildTitleStreamPrompt,
 } from "./prompts";
-
-export { buildJsonAiUserPrompt as buildAiUserPrompt } from "./prompts";
 
 export {
   fetchAiBrandContext,

@@ -2,7 +2,7 @@ import type { CommandProps } from "@tiptap/core";
 import { mergeAttributes, Node } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { FigureView } from "./figure-view";
-import { getSafeHttpUrlFromString } from "../../lib/safe-url";
+import { getSafeHttpUrlFromString, getSafeImageSrc } from "../../lib/safe-url";
 
 declare module "@tiptap/core" {
   // biome-ignore lint/style/useConsistentTypeDefinitions: Extending tiptap commands
@@ -44,12 +44,14 @@ export const Figure = Node.create({
       src: {
         default: null,
         parseHTML: (element) =>
-          element.querySelector("img")?.getAttribute("src") ||
-          element.querySelector("a img")?.getAttribute("src"),
+          getSafeImageSrc(
+            element.querySelector("img")?.getAttribute("src") ||
+              element.querySelector("a img")?.getAttribute("src"),
+          ),
         renderHTML: (attributes) => {
           // Return attribute to make it available in HTMLAttributes
           // Main renderHTML will apply it to img element
-          return { src: attributes.src };
+          return { src: getSafeImageSrc(attributes.src) };
         },
       },
       alt: {
@@ -137,8 +139,9 @@ export const Figure = Node.create({
 
     // Prepare img attributes
     const imgAttrs: Record<string, string> = {};
-    if (src) {
-      imgAttrs.src = src;
+    const safeSrc = getSafeImageSrc(src);
+    if (safeSrc) {
+      imgAttrs.src = safeSrc;
     }
     if (alt) {
       imgAttrs.alt = alt;
@@ -173,10 +176,12 @@ export const Figure = Node.create({
       setFigure:
         (options) =>
         ({ commands }: CommandProps) =>
-          commands.insertContent({
-            type: this.name,
-            attrs: options,
-          }),
+          getSafeImageSrc(options.src)
+            ? commands.insertContent({
+                type: this.name,
+                attrs: { ...options, src: getSafeImageSrc(options.src) },
+              })
+            : false,
       updateFigure:
         (attrs) =>
         ({ commands, tr, state }: CommandProps) => {

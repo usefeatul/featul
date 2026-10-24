@@ -1,7 +1,7 @@
 import { publicBoardConditions } from "../../post/access";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { board, post } from "@featul/db";
-import { publicProcedure } from "../../jstack";
+import { widgetProcedure } from "./procedure";
 import { getRequestFingerprint } from "../../request/fingerprint";
 import {
   getWidgetRequest,
@@ -14,7 +14,7 @@ import {
 } from "./resolve";
 import { projectInput, viewerSchema } from "./schema";
 
-export const widgetRoadmap = publicProcedure
+export const widgetRoadmap = widgetProcedure
   .input(projectInput.merge(viewerSchema))
   .get(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(

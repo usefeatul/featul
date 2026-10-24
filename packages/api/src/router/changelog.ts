@@ -16,6 +16,7 @@ import { getPlanLimits, assertWithinLimit } from "../shared/plan";
 import { toSlug, toUrlSlug } from "../shared/slug";
 import {
   getWorkspaceAccessPlan,
+  requireActiveWorkspaceMemberBySlug,
   requireBoardManagerBySlug,
 } from "../shared/access";
 import {
@@ -269,12 +270,7 @@ export function createChangelogRouter() {
     settings: privateProcedure
       .input(bySlugSchema)
       .get(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.superjson({ ok: false });
+        const ws = await requireActiveWorkspaceMemberBySlug(ctx, input.slug);
 
         const [b] = await ctx.db
           .select({
@@ -334,12 +330,7 @@ export function createChangelogRouter() {
     tagsList: privateProcedure
       .input(bySlugSchema)
       .get(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.superjson({ tags: [] });
+        const ws = await requireActiveWorkspaceMemberBySlug(ctx, input.slug);
         const [b] = await ctx.db
           .select({ id: board.id, changelogTags: board.changelogTags })
           .from(board)

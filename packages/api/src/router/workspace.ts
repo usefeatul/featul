@@ -62,6 +62,7 @@ import {
 } from "../workspace/creator";
 import { getWorkspaceAccessPlan, requireActiveWorkspaceMemberBySlug, requireWorkspaceManagerBySlug } from "../shared/access";
 import { createWidgetSecret } from "../shared/identity";
+import { isSlugHeldForOtherEmail } from "../workspace/reservation";
 
 const dnsResolver = new Resolver();
 
@@ -208,25 +209,19 @@ export function createWorkspaceRouter() {
           .limit(1);
         if (existing.length > 0) return c.json({ available: false });
 
-        const now = new Date();
-        const meEmail = (ctx.session.user.email || "").toLowerCase();
         const [resv] = await ctx.db
           .select({
             email: workspaceSlugReservation.email,
             status: workspaceSlugReservation.status,
+            confirmedAt: workspaceSlugReservation.confirmedAt,
             expiresAt: workspaceSlugReservation.expiresAt,
           })
           .from(workspaceSlugReservation)
           .where(eq(workspaceSlugReservation.slug, slug))
           .limit(1);
-        const active =
-          resv &&
-          resv.status === "reserved" &&
-          resv.expiresAt &&
-          resv.expiresAt.getTime() > now.getTime();
-        const mine =
-          active && String(resv?.email || "").toLowerCase() === meEmail;
-        return c.json({ available: !active || mine });
+        return c.json({
+          available: !isSlugHeldForOtherEmail(resv, ctx.session.user.email),
+        });
       }),
 
     exists: privateProcedure.get(async ({ ctx, c }) => {
@@ -412,27 +407,22 @@ export function createWorkspaceRouter() {
           throw new HTTPException(409, { message: "Slug is already taken" });
         }
 
-        // If a reservation exists for this slug, enforce email ownership
+        // Only an email-confirmed, unexpired reservation holds the slug for its owner
         const [resv] = await ctx.db
           .select({
             id: workspaceSlugReservation.id,
             email: workspaceSlugReservation.email,
             status: workspaceSlugReservation.status,
+            confirmedAt: workspaceSlugReservation.confirmedAt,
             expiresAt: workspaceSlugReservation.expiresAt,
           })
           .from(workspaceSlugReservation)
           .where(eq(workspaceSlugReservation.slug, slug))
           .limit(1);
-        if (resv) {
-          const expired =
-            resv.expiresAt && resv.expiresAt.getTime() < Date.now();
-          const active = resv.status === "reserved" && !expired;
-          const myEmail = (ctx.session.user.email || "").toLowerCase();
-          if (active && myEmail !== String(resv.email || "").toLowerCase()) {
-            throw new HTTPException(403, {
-              message: "Slug is reserved by another email",
-            });
-          }
+        if (isSlugHeldForOtherEmail(resv, ctx.session.user.email)) {
+          throw new HTTPException(403, {
+            message: "Slug is reserved by another email",
+          });
         }
 
         const host = (() => {
@@ -902,28 +892,10 @@ export function createWorkspaceRouter() {
           .limit(1);
         if (!ws) return c.json({ ok: false, message: "Workspace not found" });
 
-        const meId = ctx.session.user.id;
-        let allowed = ws.ownerId === meId;
-        if (!allowed) {
-          const [me] = await ctx.db
-            .select({
-              id: workspaceMember.id,
-              role: workspaceMember.role,
-              permissions: workspaceMember.permissions,
-            })
-            .from(workspaceMember)
-            .where(
-              and(
-                eq(workspaceMember.workspaceId, ws.id),
-                eq(workspaceMember.userId, meId),
-                eq(workspaceMember.isActive, true),
-              ),
-            )
-            .limit(1);
-          const perms = (me?.permissions || {}) as Record<string, boolean>;
-          if (me?.role === "admin" || perms?.canManageWorkspace) allowed = true;
+        // Deleting a workspace is irreversible, so only its owner may do it.
+        if (ws.ownerId !== ctx.session.user.id) {
+          throw new HTTPException(403, { message: "Forbidden" });
         }
-        if (!allowed) throw new HTTPException(403, { message: "Forbidden" });
 
         const expectedName = String(ws.name || "")
           .trim()

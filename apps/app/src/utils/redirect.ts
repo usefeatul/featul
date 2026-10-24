@@ -2,10 +2,19 @@ import { normalizeInternalRedirectPath } from "@/utils/path";
 
 const FALLBACK_REDIRECT = "/start";
 
+function isLocalHost(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname.endsWith(".localhost");
+}
+
+/** HTTPS only; plain HTTP is limited to local dev hosts. */
+function isAllowedRedirectProtocol(url: URL) {
+  return url.protocol === "https:" || (url.protocol === "http:" && isLocalHost(url.hostname));
+}
+
 /** True for localhost, the app host, or sibling subdomains of the app base. */
 function isAllowedRedirectHost(hostname: string) {
   if (!hostname) return false;
-  if (hostname === "localhost" || hostname === "127.0.0.1" || hostname.endsWith(".localhost")) {
+  if (isLocalHost(hostname)) {
     return true;
   }
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "";
@@ -33,7 +42,7 @@ export function normalizeRedirectParam(raw: string) {
   if (raw.startsWith("/")) return "";
   try {
     const url = new URL(raw);
-    return isAllowedRedirectHost(url.hostname) ? url.toString() : "";
+    return isAllowedRedirectProtocol(url) && isAllowedRedirectHost(url.hostname) ? url.toString() : "";
   } catch {
     return "";
   }

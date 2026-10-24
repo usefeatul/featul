@@ -1,4 +1,4 @@
-import { publicProcedure } from "../../jstack";
+import { widgetProcedure } from "./procedure";
 import { publicPortalOrigin } from "../../changelog/notify";
 import { isHelpCenterPublic } from "../../help/queries";
 import { rankHelpArticles } from "../../help/rank";
@@ -8,7 +8,7 @@ import { resolveWidget } from "./resolve";
 import { helpSuggestSchema } from "./schema";
 
 /** Help articles that may already answer the feedback being written, on plans that include it. */
-export const widgetHelpArticles = publicProcedure
+export const widgetHelpArticles = widgetProcedure
   .input(helpSuggestSchema)
   .get(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(ctx, input.projectId, input.parentOrigin);

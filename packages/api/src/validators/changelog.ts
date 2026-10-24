@@ -2,12 +2,92 @@ import { z } from "zod";
 
 export const bySlugSchema = z.object({ slug: z.string().min(2).max(64) });
 
+/** Serialized Tiptap JSON cap for changelog and help documents. */
+export const ENTRY_CONTENT_MAX_BYTES = 500_000;
+/** Deepest node nesting accepted (doc > list > item > ... ). */
+export const ENTRY_CONTENT_MAX_DEPTH = 64;
+
+const IMAGE_NODE_TYPES = new Set(["image", "figure"]);
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isLocalHostname(hostname: string) {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.endsWith(".localhost")
+  );
+}
+
+/** Image nodes may only point at HTTPS (or local dev HTTP) sources. */
+export function isSafeContentImageSrc(value: unknown): boolean {
+  if (typeof value !== "string" || !value.trim()) return false;
+  try {
+    const url = new URL(value.trim());
+    return (
+      url.protocol === "https:" ||
+      (url.protocol === "http:" && isLocalHostname(url.hostname))
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** Depth of nested `content` arrays, walked iteratively; stops past `limit`. */
+function contentDepthExceeds(root: unknown, limit: number): boolean {
+  const stack: Array<{ node: unknown; depth: number }> = [
+    { node: root, depth: 1 },
+  ];
+  while (stack.length) {
+    const { node, depth } = stack.pop()!;
+    if (depth > limit) return true;
+    if (!isRecord(node) || !Array.isArray(node.content)) continue;
+    for (const child of node.content) stack.push({ node: child, depth: depth + 1 });
+  }
+  return false;
+}
+
+/** Drop image/figure nodes whose src is not an HTTPS URL (e.g. data: URIs). */
+function stripUnsafeImages<T>(node: T): T {
+  if (!isRecord(node) || !Array.isArray(node.content)) return node;
+  const content = node.content
+    .filter(
+      (child) =>
+        !(
+          isRecord(child) &&
+          typeof child.type === "string" &&
+          IMAGE_NODE_TYPES.has(child.type) &&
+          !isSafeContentImageSrc(isRecord(child.attrs) ? child.attrs.src : null)
+        ),
+    )
+    .map((child) => stripUnsafeImages(child));
+  return { ...node, content };
+}
+
 export const entryContentSchema = z
   .object({
     type: z.string(),
     content: z.array(z.any()).optional(),
   })
-  .passthrough();
+  .passthrough()
+  .superRefine((value, ctx) => {
+    if (contentDepthExceeds(value, ENTRY_CONTENT_MAX_DEPTH)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Content is nested too deeply",
+      });
+      return;
+    }
+    if (new TextEncoder().encode(JSON.stringify(value)).length > ENTRY_CONTENT_MAX_BYTES) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Content is too large",
+      });
+    }
+  })
+  .transform((value) => stripUnsafeImages(value));
 
 /** Schedules must land between now and a year out; the cron publishes within minutes. */
 const SCHEDULE_MAX_MS = 366 * 24 * 60 * 60 * 1000;

@@ -7,9 +7,9 @@ const attachmentSchema = z.object({
   type: z.string().max(128),
 })
 
+// Mentions are parsed server-side from the content; client values are dropped.
 const metadataSchema = z.object({
   attachments: z.array(attachmentSchema).max(5).optional(),
-  mentions: z.array(z.string().max(128)).max(50).optional(),
 })
 
 const commentSurfaceSchema = z.enum(["workspace", "public"])

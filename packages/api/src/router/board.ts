@@ -291,6 +291,7 @@ export function createBoardRouter() {
               and(
                 eq(workspaceMember.workspaceId, ws.id),
                 eq(workspaceMember.userId, ctx.session.user.id),
+                eq(workspaceMember.isActive, true),
               ),
             )
             .limit(1);
@@ -378,6 +379,7 @@ export function createBoardRouter() {
               and(
                 eq(workspaceMember.workspaceId, ws.id),
                 eq(workspaceMember.userId, ctx.session.user.id),
+                eq(workspaceMember.isActive, true),
               ),
             )
             .limit(1);
@@ -1203,6 +1205,7 @@ export function createBoardRouter() {
               and(
                 eq(workspaceMember.workspaceId, ws.id),
                 eq(workspaceMember.userId, ctx.session.user.id),
+                eq(workspaceMember.isActive, true),
               ),
             )
             .limit(1);

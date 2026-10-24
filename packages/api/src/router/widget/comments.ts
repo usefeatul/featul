@@ -10,8 +10,10 @@ import {
   post,
   user,
   widgetUser,
+  workspace,
+  workspaceMember,
 } from "@featul/db";
-import { publicProcedure } from "../../jstack";
+import { widgetProcedure } from "./procedure";
 import { getRequestFingerprint } from "../../request/fingerprint";
 import {
   assertWidgetPostImageUrl,
@@ -57,7 +59,7 @@ function firstCommentImage(
   return image || fallback || null;
 }
 
-export const widgetComments = publicProcedure
+export const widgetComments = widgetProcedure
   .input(commentsSchema)
   .get(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(
@@ -80,6 +82,7 @@ export const widgetComments = publicProcedure
       .select({
         id: post.id,
         allowComments: board.allowComments,
+        hideMemberIdentity: board.hidePublicMemberIdentity,
       })
       .from(post)
       .innerJoin(board, eq(post.boardId, board.id))
@@ -112,10 +115,22 @@ export const widgetComments = publicProcedure
         depth: comment.depth,
         createdAt: comment.createdAt,
         metadata: comment.metadata,
+        authorId: comment.authorId,
+        memberRole: workspaceMember.role,
+        workspaceOwnerId: workspace.ownerId,
       })
       .from(comment)
       .leftJoin(user, eq(comment.authorId, user.id))
       .leftJoin(widgetUser, eq(comment.widgetUserId, widgetUser.id))
+      .leftJoin(workspace, eq(workspace.id, resolved.workspaceId))
+      .leftJoin(
+        workspaceMember,
+        and(
+          eq(workspaceMember.workspaceId, resolved.workspaceId),
+          eq(workspaceMember.userId, comment.authorId),
+          eq(workspaceMember.isActive, true),
+        ),
+      )
       .where(
         and(
           eq(comment.postId, input.postId),
@@ -147,10 +162,34 @@ export const widgetComments = publicProcedure
       for (const row of reactions) votedIds.add(row.commentId);
     }
 
+    // Widget viewers are never workspace members: hide team identities when
+    // the board opts in, mirroring comment.list.
+    const maskTeamAuthors = Boolean(targetPost.hideMemberIdentity);
+
     return c.superjson({
       allowComments: Boolean(targetPost.allowComments),
       comments: rows.map((row: (typeof rows)[number]) => {
         const image = firstCommentImage(row.metadata);
+        const isTeamAuthor =
+          Boolean(row.authorId) &&
+          (row.workspaceOwnerId === row.authorId || Boolean(row.memberRole));
+        if (maskTeamAuthors && isTeamAuthor) {
+          return {
+            id: row.id,
+            postId: row.postId,
+            parentId: row.parentId,
+            content: (row.content || "").trim(),
+            image,
+            authorName: "Member",
+            authorImage: null,
+            isAnonymous: Boolean(row.isAnonymous),
+            upvotes: row.upvotes || 0,
+            replyCount: row.replyCount || 0,
+            depth: row.depth || 0,
+            createdAt: row.createdAt,
+            hasVoted: votedIds.has(row.id),
+          };
+        }
         return {
           id: row.id,
           postId: row.postId,
@@ -170,7 +209,7 @@ export const widgetComments = publicProcedure
     });
   });
 
-export const widgetCreateComment = publicProcedure
+export const widgetCreateComment = widgetProcedure
   .input(createCommentSchema)
   .post(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(

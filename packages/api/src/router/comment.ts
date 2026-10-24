@@ -38,6 +38,8 @@ import {
   applyRateLimitHeaders,
   limitCommentTranscribe,
 } from "../services/ratelimiter";
+import { getWorkspaceAccessPlan } from "../shared/access";
+import { reserveVoiceTranscription } from "./comment/voice-quota";
 import { HTTPException } from "hono/http-exception";
 import { createHash } from "crypto";
 import { enforceTrustedBrowserOrigin } from "../request/origin";
@@ -172,6 +174,31 @@ async function persistCommentMentions({
   return nextMeta;
 }
 
+/** Anonymous votes and reactions follow the board's anonymous-participation setting. */
+async function requireAnonymousVoting(db: any, postId: string): Promise<void> {
+  const [target] = await db
+    .select({ allowAnonymous: board.allowAnonymous })
+    .from(post)
+    .innerJoin(board, eq(post.boardId, board.id))
+    .where(eq(post.id, postId))
+    .limit(1);
+  if (!target?.allowAnonymous) {
+    throw new HTTPException(401, { message: "Please sign in to vote on this board" });
+  }
+}
+
+/** Not-found and not-visible must look identical to the reporter. */
+async function requireReportableComment(db: any, commentId: string, userId: string) {
+  try {
+    return await requireCommentAccess(db, commentId, userId);
+  } catch (error) {
+    if (error instanceof HTTPException && error.status === 404) {
+      throw new HTTPException(404, { message: "Comment not found" });
+    }
+    throw error;
+  }
+}
+
 function getFingerprintFromMetadata(metadata: unknown): string | null {
   if (!metadata || typeof metadata !== "object") return null;
   const value = (metadata as { fingerprint?: unknown }).fingerprint;
@@ -194,6 +221,7 @@ export function createCommentRouter() {
             boardId: board.id,
             boardIsPublic: board.isPublic,
             allowComments: board.allowComments,
+            hideMemberIdentity: board.hidePublicMemberIdentity,
             workspaceId: workspace.id,
             workspaceOwnerId: workspace.ownerId,
           })
@@ -337,9 +365,29 @@ export function createCommentRouter() {
           `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(
             (seed || "anonymous").trim() || "anonymous",
           )}`;
+        // Mirror post activity: outsiders never receive team identities when hidden.
+        const maskTeamAuthors = Boolean(targetPost.hideMemberIdentity) && !canViewInternal;
         const formattedComments = comments.map(
           (row: (typeof comments)[number]) => {
-            const isOwner = row.workspaceOwnerId === row.authorId;
+            const { userName, userImage, memberRole, workspaceOwnerId, ...publicRow } = row;
+            const isOwner = Boolean(row.authorId) && workspaceOwnerId === row.authorId;
+            const shared = {
+              metadata: { attachments: row.metadata?.attachments, mentions: row.metadata?.mentions },
+              userVote: userVotes.get(row.id) || null,
+              reactions: emojiReactions.get(row.id) || [],
+              reportCount: canViewInternal && row.reportCount ? Number(row.reportCount) : 0,
+            };
+            if (maskTeamAuthors && (isOwner || memberRole)) {
+              return {
+                ...publicRow,
+                ...shared,
+                authorId: null,
+                authorName: "Member",
+                authorImage: null,
+                role: null,
+                isOwner: false,
+              };
+            }
             let avatarSeed = row.authorName || row.authorId;
             const fingerprintFromMetadata = getFingerprintFromMetadata(
               row.metadata,
@@ -351,16 +399,12 @@ export function createCommentRouter() {
             }
 
             return {
-              ...row,
-              metadata: { attachments: row.metadata?.attachments, mentions: row.metadata?.mentions },
-              workspaceOwnerId: undefined,
-              authorImage: row.userImage || toAvatar(avatarSeed),
-              authorName: row.userName || row.authorName || "Anonymous",
-              userVote: userVotes.get(row.id) || null,
-              reactions: emojiReactions.get(row.id) || [],
-              role: isOwner ? null : row.memberRole || null, // null means owner (handled separately)
-              isOwner: Boolean(isOwner),
-              reportCount: canViewInternal && row.reportCount ? Number(row.reportCount) : 0,
+              ...publicRow,
+              ...shared,
+              authorImage: userImage || toAvatar(avatarSeed),
+              authorName: userName || row.authorName || "Anonymous",
+              role: isOwner ? null : memberRole || null, // null means owner (handled separately)
+              isOwner,
             };
           },
         );
@@ -522,9 +566,10 @@ export function createCommentRouter() {
           await requireCommentAccess(ctx.db, parentId, userId, { allowUnpublishedForMembers: true });
         }
 
+        // Mentions are derived server-side below; clients only supply attachments.
         const commentMetadata = {
-          ...(metadata || {}),
-          fingerprint: anonymousFingerprint || undefined,
+          ...(metadata?.attachments ? { attachments: metadata.attachments } : {}),
+          ...(anonymousFingerprint ? { fingerprint: anonymousFingerprint } : {}),
         };
 
         const { comment: newComment } = await createCommentAtomically(ctx.db, {
@@ -597,7 +642,17 @@ export function createCommentRouter() {
           "Too many voice requests. Please try again shortly.",
         );
 
-        const text = await transcribeOpenRouterAudio(input.audio, input.format);
+        const refund = await reserveVoiceTranscription(
+          target.workspaceId,
+          await getWorkspaceAccessPlan(target.workspaceId),
+        );
+        let text: string;
+        try {
+          text = await transcribeOpenRouterAudio(input.audio, input.format);
+        } catch (error) {
+          await refund();
+          throw error;
+        }
         return c.superjson({ text });
       }),
 
@@ -917,6 +972,7 @@ export function createCommentRouter() {
           : null;
 
         const access = await requireCommentAccess(ctx.db, commentId, userId);
+        if (!userId) await requireAnonymousVoting(ctx.db, access.postId);
         return c.superjson(await toggleCommentVote(ctx.db, commentId, voteType, { userId, fingerprint: anonymousFingerprint }, {
           workspaceId: access.workspaceId, title: access.title,
           metadata: { postId: access.postId, roadmapStatus: access.roadmapStatus, voteType },
@@ -928,6 +984,10 @@ export function createCommentRouter() {
       .post(async ({ ctx, input, c }) => {
         enforceTrustedBrowserOrigin(c.req.raw);
         const userId = await getSessionUserId(c.req.raw.headers);
+        if (!userId) {
+          const access = await requireCommentAccess(ctx.db, input.commentId, null);
+          await requireAnonymousVoting(ctx.db, access.postId);
+        }
         return c.superjson(await setCommentReaction(ctx.db, input, {
           userId,
           fingerprint: userId ? null : getRequestFingerprint(c.req.raw),
@@ -941,45 +1001,30 @@ export function createCommentRouter() {
         const { commentId, reason, description } = input;
         const userId = ctx.session.user.id;
 
-        const [targetComment] = await ctx.db
-          .select({
-            id: comment.id,
-            postId: comment.postId,
-            content: comment.content,
-          })
-          .from(comment)
-          .where(eq(comment.id, commentId))
-          .limit(1);
-
-        if (!targetComment) {
-          throw new HTTPException(404, { message: "Comment not found" });
-        }
+        const access = await requireReportableComment(ctx.db, commentId, userId);
 
         const [postInfo] = await ctx.db
-          .select({
-            workspaceId: workspace.id,
-            postTitle: post.title,
-            postSlug: post.slug,
-            roadmapStatus: post.roadmapStatus,
-          })
+          .select({ postSlug: post.slug })
           .from(post)
-          .innerJoin(board, eq(post.boardId, board.id))
-          .innerJoin(workspace, eq(board.workspaceId, workspace.id))
-          .where(eq(post.id, targetComment.postId))
+          .where(eq(post.id, access.postId))
           .limit(1);
 
-        if (!postInfo) {
-          throw new HTTPException(404, { message: "Post not found" });
-        }
+        // One report per reporter: repeats succeed silently without re-notifying.
+        const [created] = await ctx.db
+          .insert(commentReport)
+          .values({
+            commentId,
+            reportedBy: userId,
+            reason,
+            description: description || null,
+            status: "pending",
+          })
+          .onConflictDoNothing()
+          .returning({ id: commentReport.id });
 
-        // Create report
-        await ctx.db.insert(commentReport).values({
-          commentId,
-          reportedBy: userId,
-          reason,
-          description: description || null,
-          status: "pending",
-        });
+        if (!created) {
+          return c.superjson({ success: true });
+        }
 
         // Count total reports
         const [{ count }] = await ctx.db
@@ -990,17 +1035,17 @@ export function createCommentRouter() {
         const reportCount = Number(count);
 
         await ctx.db.insert(activityLog).values({
-          workspaceId: postInfo.workspaceId,
+          workspaceId: access.workspaceId,
           userId,
           action: ACTIVITY_ACTIONS.COMMENT_REPORTED,
           actionType: "create",
           entity: "comment",
           entityId: String(commentId),
-          title: postInfo.postTitle,
+          title: access.title,
           metadata: {
-            postId: targetComment.postId,
-            postTitle: postInfo.postTitle,
-            roadmapStatus: postInfo.roadmapStatus,
+            postId: access.postId,
+            postTitle: access.title,
+            roadmapStatus: access.roadmapStatus,
             reason,
             hasDescription: Boolean(description),
             reportCount,
@@ -1015,7 +1060,7 @@ export function createCommentRouter() {
             ownerId: workspace.ownerId,
           })
           .from(workspace)
-          .where(eq(workspace.id, postInfo.workspaceId))
+          .where(eq(workspace.id, access.workspaceId))
           .limit(1);
 
         if (ws) {
@@ -1029,8 +1074,8 @@ export function createCommentRouter() {
             const { sendReportEmail } = await import("@featul/auth");
             await sendReportEmail(owner.email, {
               workspaceName: ws.name,
-              itemName: `Comment on ${postInfo.postTitle}`,
-              itemUrl: `https://${ws.slug}.featul.com/board/p/${postInfo.postSlug}`,
+              itemName: `Comment on ${access.title}`,
+              itemUrl: `https://${ws.slug}.featul.com/board/p/${postInfo?.postSlug ?? ""}`,
               itemType: "comment",
               reason,
               description,
