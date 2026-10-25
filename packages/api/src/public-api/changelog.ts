@@ -38,7 +38,8 @@ export const upsertEntrySchema = z.object({
 });
 
 export const updateEntrySchema = upsertEntrySchema
-  .omit({ externalId: true })
+  .omit({ externalId: true, scheduledAt: true })
+  .extend({ scheduledAt: scheduledAtSchema.nullable() })
   .partial()
   .refine((value) => Object.keys(value).length > 0, "Send at least one field to update");
 
@@ -159,7 +160,11 @@ async function applyUpdate(
   } else if (input.status === "draft") {
     updates.status = "draft";
   }
-  if (input.scheduledAt !== undefined && (updates.status ?? existing.status) === "draft") {
+  if (input.scheduledAt !== undefined) {
+    if (input.scheduledAt && (updates.status ?? existing.status) !== "draft") {
+      throw new ApiError(400, "invalid_request", "Only drafts can be scheduled. Send `status: \"draft\"` too.");
+    }
+    // `null` clears a schedule.
     updates.scheduledAt = input.scheduledAt;
   }
 

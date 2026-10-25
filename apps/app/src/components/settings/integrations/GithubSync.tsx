@@ -82,6 +82,7 @@ type SyncSummary = {
   updated: number;
   unlinked: number;
   truncated: string[];
+  failed: string[];
 };
 
 function syncMessage(summary: SyncSummary) {
@@ -97,7 +98,7 @@ function syncMessage(summary: SyncSummary) {
     : `${read}. Everything was up to date.`;
 }
 
-function LinkedIssues({ slug }: { slug: string }) {
+function LinkedIssues({ slug, allowed }: { slug: string; allowed: boolean }) {
   const {
     data,
     isLoading,
@@ -137,6 +138,11 @@ function LinkedIssues({ slug }: { slug: string }) {
           `Only the newest issues were read in ${summary.truncated.join(", ")}.`,
         );
       }
+      if (summary.failed.length > 0) {
+        toast.error(
+          `Couldn't read issues in ${summary.failed.join(", ")}. Check that the Featul GitHub App still has access, then reconnect GitHub.`,
+        );
+      }
       await refetch();
     } catch (error) {
       toast.error(
@@ -171,7 +177,7 @@ function LinkedIssues({ slug }: { slug: string }) {
           type="button"
           variant="card"
           loading={syncing}
-          disabled={syncing}
+          disabled={syncing || !allowed}
           onClick={sync}
         >
           Sync
@@ -549,7 +555,7 @@ export default function GithubSync({
           </div>
         ) : null}
       </SectionCard>
-      {connected ? <LinkedIssues slug={slug} /> : null}
+      {connected ? <LinkedIssues slug={slug} allowed={allowed} /> : null}
     </>
   );
 }

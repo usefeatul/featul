@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { markdownToTiptapDoc } from "./content";
+import { markdownToTiptapDoc, toPlainText } from "./content";
 
 test("markdown images become block image nodes for HTTPS sources only", () => {
   const doc = markdownToTiptapDoc(
@@ -25,4 +25,10 @@ test("a document with only unsafe images falls back to the placeholder paragraph
   expect(markdownToTiptapDoc("![x](data:image/png;base64,AAA)").content).toEqual([
     { type: "paragraph", content: [{ type: "text", text: "No details provided." }] },
   ]);
+});
+
+test("plain-text summaries drop images but keep link text", () => {
+  expect(toPlainText("![Dashboard](https://cdn.example.com/a.png) Faster [search](https://x.dev) ![](https://y.dev/b.png)")).toBe(
+    "Faster search",
+  );
 });

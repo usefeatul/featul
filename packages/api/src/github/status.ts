@@ -32,10 +32,14 @@ export function roadmapStatusForIssue(
 
 export type RequestRef =
   | { kind: "public"; host: string; postSlug: string }
-  | { kind: "app"; workspaceSlug: string; postSlug: string };
+  | { kind: "app"; host: string; workspaceSlug: string; postSlug: string };
 
-const REQUEST_URL_REGEX =
-  /https?:\/\/([a-z0-9.-]+(?::\d+)?)\/(?:board\/p\/([a-z0-9-]+)|workspaces\/([a-z0-9-]+)\/requests\/([a-z0-9-]+))/gi;
+// A slug must end at a real boundary, so `/board/p/foo_bar` never matches a request called `foo`.
+const SLUG_END = "(?=$|[/?#)\\]\\s<>\"'.,;:!])";
+const REQUEST_URL_REGEX = new RegExp(
+  `https?://([a-z0-9.-]+(?::\\d+)?)/(?:board/p/([a-z0-9-]+)${SLUG_END}|workspaces/([a-z0-9-]+)/requests/([a-z0-9-]+)${SLUG_END})`,
+  "gi",
+);
 const MAX_REFS = 20;
 
 /**
@@ -48,18 +52,40 @@ export function extractRequestRefs(body: string | null | undefined): RequestRef[
     const host = (match[1] ?? "").toLowerCase();
     const ref: RequestRef = match[2]
       ? { kind: "public", host, postSlug: match[2].toLowerCase() }
-      : { kind: "app", workspaceSlug: (match[3] ?? "").toLowerCase(), postSlug: (match[4] ?? "").toLowerCase() };
+      : { kind: "app", host, workspaceSlug: (match[3] ?? "").toLowerCase(), postSlug: (match[4] ?? "").toLowerCase() };
     refs.set(JSON.stringify(ref), ref);
     if (refs.size >= MAX_REFS) break;
   }
   return [...refs.values()];
 }
 
-/** Whether a link points at this workspace: its subdomain, its custom domain, or its app pages. */
-export function refBelongsTo(ref: RequestRef, ws: { slug: string; customDomain: string | null }) {
+/** Hosts that serve the Featul app's `/workspaces/...` pages. */
+export function featulAppHosts(): string[] {
+  const hosts = new Set(["app.featul.com"]);
+  for (const value of [process.env.NEXT_PUBLIC_APP_URL, process.env.BETTER_AUTH_URL]) {
+    try {
+      if (value) hosts.add(new URL(value).hostname.toLowerCase());
+    } catch {
+      // Not a URL; ignore.
+    }
+  }
+  return [...hosts];
+}
+
+/**
+ * Whether a link points at this workspace: its subdomain or custom domain for public links,
+ * or the Featul app's own host for `/workspaces/<slug>/requests/...` links.
+ */
+export function refBelongsTo(
+  ref: RequestRef,
+  ws: { slug: string; customDomain: string | null },
+  appHosts: string[] = featulAppHosts(),
+) {
   const slug = ws.slug.toLowerCase();
-  if (ref.kind === "app") return ref.workspaceSlug === slug;
   const hostname = ref.host.replace(/:\d+$/, "");
+  if (ref.kind === "app") {
+    return ref.workspaceSlug === slug && (appHosts.includes(hostname) || hostname === "localhost");
+  }
   return (
     hostname === `${slug}.featul.com` ||
     hostname === `${slug}.localhost` ||

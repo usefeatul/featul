@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { and, eq, isNull, lt, or } from "drizzle-orm";
 import { workspace, workspaceApiKey } from "@featul/db";
-import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
+import { getWorkspaceAccessPlan, requireWorkspaceManagerBySlug } from "../shared/access";
 import { getPlanLimits } from "../shared/plan";
 
 export const API_KEY_SCOPES = ["changelog:read", "changelog:write"] as const;
@@ -48,7 +48,7 @@ export type ApiKeyContext = {
   };
 };
 
-function readBearerToken(req: Request): string {
+export function readBearerToken(req: Request): string {
   const header = req.headers.get("authorization") || "";
   const match = /^Bearer\s+(.+)$/i.exec(header.trim());
   return match?.[1]?.trim() || "";
@@ -56,7 +56,7 @@ function readBearerToken(req: Request): string {
 
 /**
  * Resolves the `Authorization: Bearer ftl_...` header to a workspace.
- * The creator must still be able to manage boards there and the plan must include integrations.
+ * The creator must still manage the workspace (owner/admin) and the plan must include integrations.
  */
 export async function authenticateApiKey(db: any, req: Request): Promise<ApiKeyContext> {
   const token = readBearerToken(req);
@@ -96,7 +96,7 @@ export async function authenticateApiKey(db: any, req: Request): Promise<ApiKeyC
   }
 
   try {
-    await requireBoardManagerBySlug({ db, session: { user: { id: row.createdBy } } }, row.workspaceSlug);
+    await requireWorkspaceManagerBySlug({ db, session: { user: { id: row.createdBy } } }, row.workspaceSlug);
   } catch {
     throw new ApiError(
       401,

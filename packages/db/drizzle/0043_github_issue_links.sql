@@ -9,6 +9,7 @@ CREATE TABLE "github_issue_link" (
 	"state" text NOT NULL,
 	"state_reason" text,
 	"labels" json DEFAULT '[]'::json NOT NULL,
+	"issue_updated_at" timestamp,
 	"linked_by" text,
 	"synced_at" timestamp DEFAULT now() NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL
@@ -16,7 +17,7 @@ CREATE TABLE "github_issue_link" (
 --> statement-breakpoint
 CREATE TABLE "github_sync_settings" (
 	"workspace_id" text PRIMARY KEY NOT NULL,
-	"auto_status" boolean DEFAULT true NOT NULL,
+	"auto_status" boolean DEFAULT false NOT NULL,
 	"open_status" text DEFAULT 'planned' NOT NULL,
 	"progress_labels" json DEFAULT '["in progress"]'::json NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL

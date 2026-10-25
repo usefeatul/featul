@@ -7,8 +7,10 @@ export const API_SUBDOMAIN = "api"
 const DOCS_URL = "https://featul.com/docs/developers/api"
 
 /**
- * `api.featul.com` (and `api.localhost` in dev) serves only the public REST API:
- * `/v1/*` rewrites onto the `/api/v1/*` route handlers, everything else is a JSON 404.
+ * `api.featul.com` (and `api.localhost` in dev) is the public REST API's address: `/v1/*`
+ * rewrites onto the `/api/v1/*` route handlers, and app pages in the proxy matcher return a
+ * JSON 404 instead of rendering. Paths outside the matcher (like `/api/*`) aren't intercepted,
+ * so they behave as on any other host.
  */
 export function rewriteApiHost(req: NextRequest, ctx: ReturnType<typeof getHostInfo>) {
   if (ctx.subdomain !== API_SUBDOMAIN) return null

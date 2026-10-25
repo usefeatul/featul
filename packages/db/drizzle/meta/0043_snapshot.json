@@ -1,5 +1,5 @@
 {
-  "id": "4c4b1393-d551-4058-93f9-f57b0b35a380",
+  "id": "90ec2e32-296a-4c0d-b001-5a64bb2e68f6",
   "prevId": "d26696af-4664-4573-87f1-85a1ef13063b",
   "version": "7",
   "dialect": "postgresql",
@@ -6406,6 +6406,12 @@
           "notNull": true,
           "default": "'[]'::json"
         },
+        "issue_updated_at": {
+          "name": "issue_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "linked_by": {
           "name": "linked_by",
           "type": "text",
@@ -6542,7 +6548,7 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
-          "default": true
+          "default": false
         },
         "open_status": {
           "name": "open_status",

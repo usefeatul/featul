@@ -3,7 +3,7 @@ import { z } from "zod";
 import { HTTPException } from "hono/http-exception";
 import { j, privateProcedure } from "../jstack";
 import { activityLog, user, workspaceApiKey } from "@featul/db";
-import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
+import { getWorkspaceAccessPlan, requireWorkspaceManagerBySlug } from "../shared/access";
 import { isIntegrationsAllowed } from "../shared/plan";
 import { ACTIVITY_ACTIONS } from "../activity/actions";
 import { API_KEY_SCOPES, generateApiKey } from "../public-api/keys";
@@ -11,13 +11,16 @@ import { API_KEY_SCOPES, generateApiKey } from "../public-api/keys";
 const MAX_ACTIVE_KEYS = 10;
 const slugSchema = z.string().min(2).max(64);
 
-/** Workspace API keys for the public REST API, managed from Settings → Integrations. */
+/**
+ * Workspace API keys for the public REST API, managed from Settings → Integrations by
+ * workspace managers (owner, admins), like the other integrations.
+ */
 export function createApiKeyRouter() {
   return j.router({
     list: privateProcedure
       .input(z.object({ slug: slugSchema }))
       .get(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const ws = await requireWorkspaceManagerBySlug(ctx, input.slug);
         const keys = await ctx.db
           .select({
             id: workspaceApiKey.id,
@@ -39,7 +42,7 @@ export function createApiKeyRouter() {
     create: privateProcedure
       .input(z.object({ slug: slugSchema, name: z.string().trim().min(1).max(64) }))
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const ws = await requireWorkspaceManagerBySlug(ctx, input.slug);
         if (!isIntegrationsAllowed(await getWorkspaceAccessPlan(ws.id))) {
           throw new HTTPException(403, { message: "API keys are available on Starter or Professional plans" });
         }
@@ -83,7 +86,7 @@ export function createApiKeyRouter() {
     revoke: privateProcedure
       .input(z.object({ slug: slugSchema, keyId: z.string().min(1) }))
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const ws = await requireWorkspaceManagerBySlug(ctx, input.slug);
         const [row] = await ctx.db
           .update(workspaceApiKey)
           .set({ revokedAt: new Date() })

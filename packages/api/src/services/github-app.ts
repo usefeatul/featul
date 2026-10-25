@@ -127,6 +127,8 @@ export type GithubIssue = {
   state: "open" | "closed";
   stateReason: string | null;
   labels: string[];
+  /** GitHub's `updated_at`, used to ignore stale or replayed events. */
+  updatedAt: Date | null;
 };
 
 export type RawIssue = {
@@ -136,20 +138,55 @@ export type RawIssue = {
   state: string;
   state_reason?: string | null;
   labels?: Array<string | { name?: string }>;
+  updated_at?: string | null;
 };
 
-export function toGithubIssue(raw: RawIssue): GithubIssue {
+export function toGithubIssue(raw: RawIssue, repoFullName: string): GithubIssue {
+  const updatedAt = raw.updated_at ? new Date(raw.updated_at) : null;
+  // Rendered as a link in settings: only ever an https://github.com URL.
+  const url = /^https:\/\/github\.com\//.test(String(raw.html_url ?? ""))
+    ? String(raw.html_url)
+    : `https://github.com/${repoFullName}/issues/${raw.number}`;
   return {
     number: raw.number,
     title: String(raw.title ?? "").slice(0, 500),
-    url: raw.html_url,
+    url,
     state: raw.state === "closed" ? "closed" : "open",
     stateReason: raw.state_reason ?? null,
     labels: (raw.labels ?? [])
       .map((label) => (typeof label === "string" ? label : String(label?.name ?? "")))
       .filter(Boolean)
       .slice(0, 50),
+    updatedAt: updatedAt && !Number.isNaN(updatedAt.getTime()) ? updatedAt : null,
   };
+}
+
+const PERMISSION_CACHE_MS = 5 * 60 * 1000;
+const permissionCache = new Map<string, { permission: string; expires: number }>();
+
+/**
+ * `login`'s permission on `fullName` (admin, maintain, write, triage, read, or none), cached
+ * briefly. Errors count as "none" so a GitHub outage never grants access.
+ */
+export async function getRepoPermission(installationId: string, fullName: string, login: string): Promise<string> {
+  const key = `${installationId}:${fullName}:${login.toLowerCase()}`;
+  const cached = permissionCache.get(key);
+  if (cached && cached.expires > Date.now()) return cached.permission;
+  let permission = "none";
+  try {
+    const name = fullName.split("/")[1] ?? "";
+    const token = await createInstallationToken(installationId, { metadata: "read" }, [name]);
+    const data = await github<{ permission?: string }>(
+      `/repos/${fullName}/collaborators/${encodeURIComponent(login)}/permission`,
+      token,
+    );
+    permission = String(data.permission ?? "none");
+  } catch {
+    permission = "none";
+  }
+  if (permissionCache.size > 5000) permissionCache.clear();
+  permissionCache.set(key, { permission, expires: Date.now() + PERMISSION_CACHE_MS });
+  return permission;
 }
 
 /** An issue as listed by the REST API: also has the description, author, and PR marker. */

@@ -424,10 +424,26 @@ const ratelimitApiKey = redis
     })
   : null;
 
-/** Public REST API (`/api/v1/*`), counted per API key. */
-export async function limitApiKey(keyId: string): Promise<RateLimitResult> {
+/** Public REST API (`/api/v1/*`), counted per API key (by its hash, before any lookup). */
+export async function limitApiKey(keyHash: string): Promise<RateLimitResult> {
   if (!ratelimitApiKey) return createBypassRateLimitResult();
-  return withEnabledResult(await ratelimitApiKey.limit(keyId));
+  return withEnabledResult(await ratelimitApiKey.limit(keyHash));
+}
+
+const ratelimitApiIp = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(300, "60 s"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:api-ip",
+    })
+  : null;
+
+/** Public REST API per client IP; generous, since CI runners can share addresses. */
+export async function limitApiIp(req: Request): Promise<RateLimitResult> {
+  if (!ratelimitApiIp) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitApiIp.limit(getIp(req)));
 }
 
 const ratelimitGithubSync = redis

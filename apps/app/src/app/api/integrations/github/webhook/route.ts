@@ -1,20 +1,30 @@
 import { NextResponse } from "next/server";
 import { db } from "@featul/db";
 import { verifyWebhookSignature } from "@featul/api/services/github-app";
-import { handleInstallationDeleted, handleIssuesEvent, type StatusNotification } from "@featul/api/github/sync";
+import {
+  handleInstallationDeleted,
+  handleIssuesEvent,
+  handleRepositoriesRemoved,
+  type StatusNotification,
+} from "@featul/api/github/sync";
 import { sendAfterResponse } from "@featul/api/github/defer";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** GitHub App webhook. Linked posts follow their issue's state; uninstalls drop the connection. */
+/**
+ * GitHub App webhook. Linked posts follow their issue's state; uninstalls and removed repos
+ * drop out of the connection.
+ */
 export async function POST(req: Request) {
   const body = await req.text();
   if (!verifyWebhookSignature(body, req.headers.get("x-hub-signature-256"))) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  let payload: Parameters<typeof handleIssuesEvent>[1] & { installation?: { id?: number | string } };
+  let payload: Parameters<typeof handleIssuesEvent>[1] & {
+    repositories_removed?: Array<{ full_name?: string }>;
+  };
   try {
     payload = JSON.parse(body);
   } catch {
@@ -30,6 +40,10 @@ export async function POST(req: Request) {
     }
     if (event === "installation" && payload.action === "deleted" && payload.installation?.id) {
       return NextResponse.json(await handleInstallationDeleted(db, String(payload.installation.id)));
+    }
+    if (event === "installation_repositories" && payload.installation?.id) {
+      const removed = (payload.repositories_removed ?? []).map((repo) => String(repo.full_name ?? "")).filter(Boolean);
+      return NextResponse.json(await handleRepositoriesRemoved(db, String(payload.installation.id), removed));
     }
     return NextResponse.json({ ignored: event });
   } catch (error) {

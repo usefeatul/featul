@@ -134,10 +134,14 @@ test.skipIf(!local)("public changelog API: keys, upserts, validation, tenant iso
     expect(patched.status).toBe(200);
     expect(patched.body.data.publishedAt).not.toBeNull();
     expect((await call(one.PATCH, req("/x", key, { method: "PATCH", body: "{}" }), { id: "x" })).status).toBe(400);
+    // Schedules: only drafts, and `null` clears one
     const future = new Date(Date.now() + 86_400_000).toISOString();
-    const noop = await call(one.PATCH, req(`/${first.body.data.id}`, key, { method: "PATCH", body: JSON.stringify({ scheduledAt: future }) }), { id: first.body.data.id });
-    expect(noop.status).toBe(200);
-    expect(noop.body.data.scheduledAt).toBeNull();
+    const onPublished = await call(one.PATCH, req(`/${first.body.data.id}`, key, { method: "PATCH", body: JSON.stringify({ scheduledAt: future }) }), { id: first.body.data.id });
+    expect(onPublished.status).toBe(400);
+    const draft = await call(list.POST, req("", key, { method: "POST", body: JSON.stringify({ title: "Later", scheduledAt: future }) }));
+    expect(draft.body.data.scheduledAt).not.toBeNull();
+    const cleared = await call(one.PATCH, req(`/${draft.body.data.id}`, key, { method: "PATCH", body: JSON.stringify({ scheduledAt: null }) }), { id: draft.body.data.id });
+    expect([cleared.status, cleared.body.data.scheduledAt]).toEqual([200, null]);
 
     // Validation
     const badTags = await call(list.POST, req("", key, { method: "POST", body: JSON.stringify({ title: "x", tags: ["Beta"] }) }));

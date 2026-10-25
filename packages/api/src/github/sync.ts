@@ -2,7 +2,16 @@ import { and, desc, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { activityLog, board, githubIssueLink, githubSyncSettings, helpCenter, post, workspace } from "@featul/db";
 import { ACTIVITY_ACTIONS } from "../activity/actions";
 import { clearHelpGithubConnection, getHelpGithubConnection } from "../help/import/github";
-import { listRepoIssues, toGithubIssue, type GithubIssue, type ListedIssue, type RawIssue } from "../services/github-app";
+import {
+  getRepoPermission,
+  listRepoIssues,
+  toGithubIssue,
+  type GithubIssue,
+  type ListedIssue,
+  type RawIssue,
+} from "../services/github-app";
+import { getWorkspaceAccessPlan } from "../shared/access";
+import { isIntegrationsAllowed } from "../shared/plan";
 import { normalizeStatus } from "../shared/status";
 import { notifyPostStatusChange } from "../status/notify";
 
@@ -12,6 +21,7 @@ export type Notify = (notification: StatusNotification) => void;
 import {
   DEFAULT_GITHUB_STATUS_SETTINGS,
   extractRequestRefs,
+  featulAppHosts,
   refBelongsTo,
   roadmapStatusForIssue,
   type GithubStatusSettings,
@@ -28,7 +38,9 @@ export async function getSyncSettings(db: Db, workspaceId: string): Promise<Sync
     .where(eq(githubSyncSettings.workspaceId, workspaceId))
     .limit(1);
   return {
-    autoStatus: row?.autoStatus ?? true,
+    // Off until someone turns it on, so connecting GitHub (e.g. for Help Center) never
+    // starts changing statuses and emailing voters by itself.
+    autoStatus: row?.autoStatus ?? false,
     openStatus: row?.openStatus ?? DEFAULT_GITHUB_STATUS_SETTINGS.openStatus,
     progressLabels: row?.progressLabels ?? DEFAULT_GITHUB_STATUS_SETTINGS.progressLabels,
   };
@@ -129,28 +141,31 @@ async function applyStatus(
 
 type ConnectedWorkspace = { id: string; slug: string; customDomain: string | null; settings: SyncSettings };
 
-/** Workspaces connected through `installationId` whose connecting user can access `repo`. */
+/**
+ * Workspaces connected through `installationId` whose connecting user can access `repo` and
+ * whose plan still includes integrations.
+ */
 async function connectedWorkspaces(db: Db, installationId: string, repo: string): Promise<ConnectedWorkspace[]> {
   const rows: Array<{ id: string; slug: string; customDomain: string | null; repos: string[] | null }> = await db
     .select({ id: workspace.id, slug: workspace.slug, customDomain: workspace.customDomain, repos: helpCenter.githubRepos })
     .from(helpCenter)
     .innerJoin(workspace, eq(helpCenter.workspaceId, workspace.id))
     .where(eq(helpCenter.githubInstallationId, installationId));
-  return Promise.all(
-    rows
-      .filter((row) => row.repos?.includes(repo))
-      .map(async (row) => ({
-        id: row.id,
-        slug: row.slug,
-        customDomain: row.customDomain,
-        settings: await getSyncSettings(db, row.id),
-      })),
-  );
+  const result: ConnectedWorkspace[] = [];
+  for (const row of rows) {
+    if (!row.repos?.includes(repo)) continue;
+    if (!isIntegrationsAllowed(await getWorkspaceAccessPlan(row.id))) continue;
+    result.push({ id: row.id, slug: row.slug, customDomain: row.customDomain, settings: await getSyncSettings(db, row.id) });
+  }
+  return result;
 }
 
 /** Posts in `ws` that the issue description links to; slugs shared by several boards are skipped. */
 async function referencedPostIds(db: Db, ws: ConnectedWorkspace, body: string | null | undefined) {
-  const slugs = [...new Set(extractRequestRefs(body).filter((ref) => refBelongsTo(ref, ws)).map((ref) => ref.postSlug))];
+  const appHosts = featulAppHosts();
+  const slugs = [
+    ...new Set(extractRequestRefs(body).filter((ref) => refBelongsTo(ref, ws, appHosts)).map((ref) => ref.postSlug)),
+  ];
   if (slugs.length === 0) return [];
   const rows: Array<{ id: string; slug: string }> = await db
     .select({ id: post.id, slug: post.slug })
@@ -166,56 +181,77 @@ export type IssuesEvent = {
   action?: string;
   installation?: { id?: number | string };
   repository?: { full_name?: string };
-  sender?: { login?: string };
-  issue?: RawIssue & { body?: string | null; user?: { login?: string }; author_association?: string };
+  sender?: { login?: string; type?: string };
+  /** On `edited`, which fields changed. */
+  changes?: { body?: unknown; title?: unknown };
+  issue?: RawIssue & { body?: string | null; user?: { login?: string } };
 };
 
-const TRUSTED_AUTHORS = new Set(["OWNER", "MEMBER", "COLLABORATOR"]);
+const TRUSTED_PERMISSIONS = new Set(["admin", "maintain", "write", "triage"]);
 
 /**
- * Whether an issue's description may add or remove links. Anyone can open issues on a public
- * repo, so only repo members' own issues count, or edits to someone else's issue (which GitHub
- * only allows people with triage or write access to make).
+ * Whether `login` may steer linked requests: people with at least triage access, or Apps
+ * (bots) that the repo's admins installed. Anyone can open, edit, and close their own issues
+ * on a public repo, so issue authorship alone never counts.
  */
-function canChangeLinks(issue: { user?: { login?: string }; author_association?: string }, senderLogin?: string) {
-  const author = issue.user?.login;
-  if (author && senderLogin && author !== senderLogin) return true;
-  return TRUSTED_AUTHORS.has(String(issue.author_association ?? "").toUpperCase());
+async function isTrusted(installationId: string, repo: string, sender: { login?: string; type?: string } | undefined) {
+  if (!sender?.login) return false;
+  if (sender.type === "Bot") return true;
+  return TRUSTED_PERMISSIONS.has(await getRepoPermission(installationId, repo, sender.login));
 }
 
 /**
- * Brings one workspace in line with one issue: when `trusted`, its description decides which
- * requests are linked (pasting a link links it, removing it unlinks); then every linked request
- * gets the issue's latest title/state and follows its status.
+ * Brings one workspace in line with one issue. With `relink`, the description decides which
+ * requests are linked (pasting a link links it, removing it unlinks); otherwise existing links
+ * stay. A request already linked to another issue only moves here with `takeOver`, so two
+ * issues mentioning the same request don't trade it back and forth. Linked requests then get
+ * the issue's latest title/state and follow its status. Older events than the last one seen
+ * for this issue are ignored.
  */
 async function processIssue(
   db: Db,
   ws: ConnectedWorkspace,
   repo: string,
   raw: RawIssue & { body?: string | null },
-  trusted: boolean,
+  relink: boolean,
   notify: Notify,
+  /** Move requests linked to another issue onto this one (when its description was just written). */
+  takeOver: boolean,
 ) {
-  const issue = toGithubIssue(raw);
+  const issue = toGithubIssue(raw, repo);
   const forIssue = and(
     eq(githubIssueLink.workspaceId, ws.id),
     eq(githubIssueLink.repoFullName, repo),
     eq(githubIssueLink.issueNumber, issue.number),
   );
-  const existing: Array<{ postId: string }> = await db
-    .select({ postId: githubIssueLink.postId })
+  const existing: Array<{ postId: string; issueUpdatedAt: Date | null }> = await db
+    .select({ postId: githubIssueLink.postId, issueUpdatedAt: githubIssueLink.issueUpdatedAt })
     .from(githubIssueLink)
     .where(forIssue);
+  const seenAt = Math.max(0, ...existing.map((row) => row.issueUpdatedAt?.getTime() ?? 0));
+  if (issue.updatedAt && issue.updatedAt.getTime() < seenAt) return { linked: 0, updated: 0 };
   const alreadyLinked = new Set(existing.map((row) => row.postId));
 
   let postIds = [...alreadyLinked];
-  if (trusted) {
+  if (relink) {
     postIds = await referencedPostIds(db, ws, raw.body);
     // The description is the source of truth: drop links it no longer mentions.
     if (alreadyLinked.size > 0) {
       await db
         .delete(githubIssueLink)
         .where(postIds.length ? and(forIssue, notInArray(githubIssueLink.postId, postIds)) : forIssue);
+    }
+    if (!takeOver) {
+      // Leave requests that another issue already follows where they are.
+      const fresh = postIds.filter((id) => !alreadyLinked.has(id));
+      if (fresh.length) {
+        const taken: Array<{ postId: string }> = await db
+          .select({ postId: githubIssueLink.postId })
+          .from(githubIssueLink)
+          .where(inArray(githubIssueLink.postId, fresh));
+        const elsewhere = new Set(taken.map((row) => row.postId));
+        postIds = postIds.filter((id) => !elsewhere.has(id));
+      }
     }
   }
 
@@ -225,6 +261,7 @@ async function processIssue(
     state: issue.state,
     stateReason: issue.stateReason,
     labels: issue.labels,
+    issueUpdatedAt: issue.updatedAt,
     syncedAt: new Date(),
   };
   let linked = 0;
@@ -247,23 +284,42 @@ async function processIssue(
 /** Actions that can change the description (links) or the status. */
 const ISSUE_ACTIONS = new Set(["opened", "edited", "closed", "reopened", "labeled", "unlabeled"]);
 
+async function hasLinksFor(db: Db, workspaceId: string, repo: string, number: number) {
+  const [row] = await db
+    .select({ id: githubIssueLink.id })
+    .from(githubIssueLink)
+    .where(
+      and(
+        eq(githubIssueLink.workspaceId, workspaceId),
+        eq(githubIssueLink.repoFullName, repo),
+        eq(githubIssueLink.issueNumber, number),
+      ),
+    )
+    .limit(1);
+  return Boolean(row);
+}
+
 /**
  * Applies a GitHub `issues` webhook to every workspace connected through the sending
- * installation that can access the repo. Voter emails go to `notify` so the caller can
- * answer GitHub first.
+ * installation that can access the repo. Only trusted senders (see `isTrusted`) change
+ * anything, and links are only re-read when the description was written or changed.
+ * Voter emails go to `notify` so the caller can answer GitHub first.
  */
 export async function handleIssuesEvent(db: Db, event: IssuesEvent, notify: Notify) {
   const repo = String(event.repository?.full_name ?? "").toLowerCase();
   const installationId = String(event.installation?.id ?? "");
   const number = Number(event.issue?.number);
   const action = String(event.action);
-  const result = { linked: 0, updated: 0 };
+  const result = { linked: 0, updated: 0, ignored: false };
   if (!repo || !installationId || !Number.isSafeInteger(number) || !event.issue) return result;
   if (action !== "deleted" && action !== "transferred" && !ISSUE_ACTIONS.has(action)) return result;
 
   const workspaces = await connectedWorkspaces(db, installationId, repo);
-  for (const ws of workspaces) {
-    if (action === "deleted" || action === "transferred") {
+  if (workspaces.length === 0) return result;
+
+  if (action === "deleted" || action === "transferred") {
+    // Only admins can delete, and moving an issue needs write access; it's gone either way.
+    for (const ws of workspaces) {
       await db
         .delete(githubIssueLink)
         .where(
@@ -273,13 +329,50 @@ export async function handleIssuesEvent(db: Db, event: IssuesEvent, notify: Noti
             eq(githubIssueLink.issueNumber, number),
           ),
         );
-      continue;
     }
-    const counts = await processIssue(db, ws, repo, event.issue, canChangeLinks(event.issue, event.sender?.login), notify);
+    return result;
+  }
+
+  const relink = action === "opened" || (action === "edited" && event.changes?.body !== undefined);
+  const appHosts = featulAppHosts();
+  const mentions = relink ? extractRequestRefs(event.issue.body) : [];
+  const relevant: ConnectedWorkspace[] = [];
+  for (const ws of workspaces) {
+    if (mentions.some((ref) => refBelongsTo(ref, ws, appHosts)) || (await hasLinksFor(db, ws.id, repo, number))) {
+      relevant.push(ws);
+    }
+  }
+  // Most issues have nothing to do with Featul; don't spend a GitHub API call on them.
+  if (relevant.length === 0) return result;
+
+  if (!(await isTrusted(installationId, repo, event.sender))) {
+    result.ignored = true;
+    return result;
+  }
+  for (const ws of relevant) {
+    const counts = await processIssue(db, ws, repo, event.issue, relink, notify, relink);
     result.linked += counts.linked;
     result.updated += counts.updated;
   }
   return result;
+}
+
+/** Repos taken out of the App installation stop syncing for every workspace using it. */
+export async function handleRepositoriesRemoved(db: Db, installationId: string, removed: string[]) {
+  const gone = new Set(removed.map((name) => name.toLowerCase()));
+  if (gone.size === 0) return { updated: 0 };
+  const rows: Array<{ workspaceId: string; repos: string[] | null }> = await db
+    .select({ workspaceId: helpCenter.workspaceId, repos: helpCenter.githubRepos })
+    .from(helpCenter)
+    .where(eq(helpCenter.githubInstallationId, installationId));
+  let updated = 0;
+  for (const row of rows) {
+    const repos = (row.repos ?? []).filter((repo) => !gone.has(repo));
+    if (repos.length === (row.repos ?? []).length) continue;
+    await db.update(helpCenter).set({ githubRepos: repos, updatedAt: new Date() }).where(eq(helpCenter.workspaceId, row.workspaceId));
+    updated += 1;
+  }
+  return { updated };
 }
 
 /** Pages of 100 issues read per sync, across all repos (10,000 issues). */
@@ -293,6 +386,8 @@ export type SyncSummary = {
   unlinked: number;
   /** Repos that had more issues than the page budget; their oldest issues weren't read. */
   truncated: string[];
+  /** Repos GitHub wouldn't list (removed from the installation, renamed, or no Issues access). */
+  failed: string[];
 };
 
 /**
@@ -301,7 +396,7 @@ export type SyncSummary = {
  */
 export async function syncWorkspaceIssues(db: Db, workspaceId: string, notify: Notify): Promise<SyncSummary> {
   const connection = await getHelpGithubConnection(db, workspaceId);
-  const summary: SyncSummary = { repos: 0, issues: 0, linked: 0, updated: 0, unlinked: 0, truncated: [] };
+  const summary: SyncSummary = { repos: 0, issues: 0, linked: 0, updated: 0, unlinked: 0, truncated: [], failed: [] };
   if (!connection?.repos?.length) return summary;
 
   const [ws] = await db
@@ -325,7 +420,14 @@ export async function syncWorkspaceIssues(db: Db, workspaceId: string, notify: N
       summary.truncated.push(repo);
       continue;
     }
-    const listed = await listRepoIssues(connection.installationId, repo, budget);
+    let listed: Awaited<ReturnType<typeof listRepoIssues>>;
+    try {
+      listed = await listRepoIssues(connection.installationId, repo, budget);
+    } catch (error) {
+      console.error(`[github-sync] couldn't list issues for ${repo}`, error);
+      summary.failed.push(repo);
+      continue;
+    }
     budget -= listed.pages;
     summary.repos += 1;
     summary.issues += listed.issues.length;
@@ -337,12 +439,18 @@ export async function syncWorkspaceIssues(db: Db, workspaceId: string, notify: N
       .where(and(eq(githubIssueLink.workspaceId, workspaceId), eq(githubIssueLink.repoFullName, repo)));
     const linkedNumbers = new Set(linkedRows.map((row) => row.issueNumber));
 
+    const appHosts = featulAppHosts();
     for (const issue of listed.issues as ListedIssue[]) {
-      const trusted = canChangeLinks(issue);
       // Most issues neither are linked nor mention a request: skip them without touching the database.
-      const mentions = trusted && extractRequestRefs(issue.body).some((ref) => refBelongsTo(ref, target));
+      const mentions = extractRequestRefs(issue.body).some((ref) => refBelongsTo(ref, target, appHosts));
       if (!linkedNumbers.has(issue.number) && !mentions) continue;
-      const counts = await processIssue(db, target, repo, issue, trusted, notify);
+      // The listing doesn't say who last changed an issue, so only issues written by people with
+      // triage access or more are applied. Others are kept up to date by webhooks.
+      const author = issue.user?.login;
+      if (!author || !TRUSTED_PERMISSIONS.has(await getRepoPermission(connection.installationId, repo, author))) {
+        continue;
+      }
+      const counts = await processIssue(db, target, repo, issue, true, notify, false);
       summary.linked += counts.linked;
       summary.updated += counts.updated;
     }

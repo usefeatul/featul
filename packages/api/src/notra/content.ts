@@ -513,6 +513,8 @@ export function stripHtmlToText(value: string): string {
 
 export function toPlainText(value: string): string {
   return stripHtmlToText(value)
+    // Images say nothing in a plain-text summary.
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/`{1,3}[^`]*`{1,3}/g, " ")
     .replace(/[*_~>#-]/g, " ")

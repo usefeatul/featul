@@ -29,6 +29,8 @@ export const githubIssueLink = pgTable(
     /** GitHub's `state_reason`: completed, not_planned, duplicate, reopened, or null. */
     stateReason: text("state_reason"),
     labels: json("labels").$type<string[]>().notNull().default([]),
+    /** GitHub's `updated_at` for the issue; older events are ignored so replays can't roll back. */
+    issueUpdatedAt: timestamp("issue_updated_at"),
     linkedBy: text("linked_by").references(() => user.id, { onDelete: "set null" }),
     syncedAt: timestamp("synced_at").notNull().defaultNow(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -46,8 +48,8 @@ export const githubSyncSettings = pgTable("github_sync_settings", {
   workspaceId: text("workspace_id")
     .primaryKey()
     .references(() => workspace.id, { onDelete: "cascade" }),
-  /** Update linked posts' roadmap status when their issue changes. */
-  autoStatus: boolean("auto_status").notNull().default(true),
+  /** Update linked posts' roadmap status when their issue changes. Opt-in. */
+  autoStatus: boolean("auto_status").notNull().default(false),
   /** Status for open issues without a progress label. */
   openStatus: text("open_status", { enum: ["review", "planned"] }).notNull().default("planned"),
   /** Open issues with any of these labels (case-insensitive) are "In progress". */

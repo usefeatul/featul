@@ -1,7 +1,15 @@
 import { z } from "zod";
 import { db } from "@featul/db";
-import { limitApiKey } from "../services/ratelimiter";
-import { ApiError, authenticateApiKey, requireScope, type ApiKeyContext, type ApiKeyScope } from "./keys";
+import { limitApiIp, limitApiKey } from "../services/ratelimiter";
+import {
+  ApiError,
+  authenticateApiKey,
+  hashApiKey,
+  readBearerToken,
+  requireScope,
+  type ApiKeyContext,
+  type ApiKeyScope,
+} from "./keys";
 
 type RouteContext = { params: Promise<Record<string, string>> };
 type Handler = (args: {
@@ -47,14 +55,17 @@ function parse<T extends z.ZodTypeAny>(schema: T, value: unknown): z.infer<T> {
 export function withApiKey(scope: ApiKeyScope, handler: Handler) {
   return async (req: Request, context?: RouteContext) => {
     try {
-      const key = await authenticateApiKey(db, req);
-      const limit = await limitApiKey(key.keyId);
-      if (limit.enabled && !limit.success) {
-        const retryAfter = Math.max(1, Math.ceil((limit.reset - Date.now()) / 1000));
-        return errorResponse(429, "rate_limited", "Too many requests. Please try again shortly.", {
-          "Retry-After": String(retryAfter),
-        });
+      // Both limits run before any database work: per IP (stops floods of made-up keys) and per key.
+      const token = readBearerToken(req);
+      for (const limit of [await limitApiIp(req), ...(token ? [await limitApiKey(hashApiKey(token))] : [])]) {
+        if (limit.enabled && !limit.success) {
+          const retryAfter = Math.max(1, Math.ceil((limit.reset - Date.now()) / 1000));
+          return errorResponse(429, "rate_limited", "Too many requests. Please try again shortly.", {
+            "Retry-After": String(retryAfter),
+          });
+        }
       }
+      const key = await authenticateApiKey(db, req);
       requireScope(key, scope);
       const params = (await context?.params) ?? {};
       return await handler({ req, key, db, params });

@@ -90,22 +90,35 @@ runs:
           --arg tags "$INPUT_TAGS" \
           --arg status "$INPUT_STATUS" \
           --arg externalId "$external_id" \
-          '{title: $title, content: $content, status: $status}
+          '{title: $title, status: $status}
+            + (if $content != "" then {content: $content} else {} end)
             + (if $summary != "" then {summary: $summary} else {} end)
             + (if $externalId != "" then {externalId: $externalId} else {} end)
             + (if $tags != "" then {tags: ($tags | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(. != "")))} else {} end)')"
 
+        # Files, not arguments: release notes can exceed the OS argument size limit.
+        payload_file="$(mktemp)"
+        headers_file="$(mktemp)"
         response="$(mktemp)"
-        status_code="$(curl -sS -o "$response" -w '%{http_code}' \
-          --retry 3 --retry-all-errors --retry-delay 2 \
+        trap 'rm -f "$payload_file" "$headers_file" "$response"' EXIT
+        printf '%s' "$payload" > "$payload_file"
+        printf 'Authorization: Bearer %s\nContent-Type: application/json\n' "$FEATUL_API_KEY" > "$headers_file"
+
+        # Retrying is only safe when external-id makes the request idempotent.
+        retry=()
+        if [ -n "$external_id" ]; then retry=(--retry 3 --retry-all-errors --retry-delay 2); fi
+
+        status_code="$(curl -sS -o "$response" -w '%{http_code}' ${retry[@]+"${retry[@]}"} \
           -X POST "${FEATUL_API_URL%/}/changelog" \
-          -H "Authorization: Bearer $FEATUL_API_KEY" \
-          -H "Content-Type: application/json" \
-          --data "$payload")"
+          -H @"$headers_file" \
+          --data-binary @"$payload_file")"
+
+        # One line only, so text from the release can't inject workflow commands.
+        oneline() { tr -d '\r' | tr '\n' ' '; }
 
         if [ "$status_code" -ge 300 ]; then
           message="$(jq -r '.error.message // empty' "$response" 2>/dev/null || true)"
-          echo "::error::Featul API returned $status_code: ${message:-$(cat "$response")}"
+          echo "::error::Featul API returned $status_code: $(printf '%s' "${message:-$(cat "$response")}" | oneline)"
           exit 1
         fi
 
@@ -119,4 +132,4 @@ runs:
         } >> "$GITHUB_OUTPUT"
 
         if [ "$created" = "true" ]; then verb="Created"; else verb="Updated"; fi
-        echo "$verb changelog entry \"$title\" ($entry_id) ${entry_url}"
+        echo "$verb changelog entry \"$(printf '%s' "$title" | oneline)\" ($entry_id) ${entry_url}"

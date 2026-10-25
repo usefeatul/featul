@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { HTTPException } from "hono/http-exception";
 import { j, privateProcedure } from "../jstack";
-import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../shared/access";
+import {
+  getWorkspaceAccessPlan,
+  requireBoardManagerBySlug,
+  requireWorkspaceManagerBySlug,
+} from "../shared/access";
 import { isIntegrationsAllowed } from "../shared/plan";
 import { getHelpGithubConnection } from "../help/import/github";
 import { isGithubAppConfigured } from "../services/github-app";
@@ -19,7 +23,10 @@ import {
 const slugSchema = z.string().min(2).max(64);
 
 /**
- * GitHub roadmap sync settings. Requests are linked from GitHub itself, by pasting a request
+ * GitHub roadmap sync settings. Board managers can see the setup; changing it, syncing, and
+ * unlinking (which can move many statuses and email voters) is for workspace managers, like
+ * the other integrations.
+ * Requests are linked from GitHub itself, by pasting a request
  * link into an issue description; the issue then drives the request's roadmap status.
  */
 export function createGithubRouter() {
@@ -47,7 +54,7 @@ export function createGithubRouter() {
         }),
       )
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const ws = await requireWorkspaceManagerBySlug(ctx, input.slug);
         if (!isIntegrationsAllowed(await getWorkspaceAccessPlan(ws.id))) {
           throw new HTTPException(403, { message: "GitHub sync is available on Starter or Professional plans" });
         }
@@ -67,7 +74,7 @@ export function createGithubRouter() {
     sync: privateProcedure
       .input(z.object({ slug: slugSchema }))
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const ws = await requireWorkspaceManagerBySlug(ctx, input.slug);
         if (!isIntegrationsAllowed(await getWorkspaceAccessPlan(ws.id))) {
           throw new HTTPException(403, { message: "GitHub sync is available on Starter or Professional plans" });
         }
@@ -77,15 +84,9 @@ export function createGithubRouter() {
         applyRateLimitHeaders(c, await limitGithubSync(ws.id), "GitHub was synced recently. Try again in a few minutes.");
         const notifications: StatusNotification[] = [];
         let summary;
+        // Per-repo GitHub errors come back in `summary.failed`.
         try {
           summary = await syncWorkspaceIssues(ctx.db, ws.id, (n) => notifications.push(n));
-        } catch (error) {
-          if (error instanceof HTTPException && /\((401|403|404|422)\)/.test(error.message)) {
-            throw new HTTPException(403, {
-              message: "Featul couldn't read issues. Accept the GitHub App's Issues permission on GitHub, then try again.",
-            });
-          }
-          throw error;
         } finally {
           sendAfterResponse(notifications);
         }
@@ -95,7 +96,7 @@ export function createGithubRouter() {
     unlink: privateProcedure
       .input(z.object({ slug: slugSchema, linkId: z.string().min(1) }))
       .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const ws = await requireWorkspaceManagerBySlug(ctx, input.slug);
         if (!(await unlinkIssue(ctx.db, ws.id, input.linkId))) {
           throw new HTTPException(404, { message: "Linked issue not found" });
         }

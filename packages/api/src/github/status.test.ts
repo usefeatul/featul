@@ -42,20 +42,32 @@ describe("extractRequestRefs", () => {
   test("finds public and app request links, deduplicated", () => {
     expect(extractRequestRefs(body)).toEqual([
       { kind: "public", host: "acme.featul.com", postSlug: "dark-mode" },
-      { kind: "app", workspaceSlug: "acme", postSlug: "night-theme" },
+      { kind: "app", host: "app.featul.com", workspaceSlug: "acme", postSlug: "night-theme" },
       { kind: "public", host: "feedback.acme.io", postSlug: "sso-login" },
     ]);
     expect(extractRequestRefs(null)).toEqual([]);
+  });
+
+  test("slugs end at a real boundary", () => {
+    expect(extractRequestRefs("https://acme.featul.com/board/p/foo_bar")).toEqual([]);
+    expect(extractRequestRefs("(https://acme.featul.com/board/p/foo)").map((ref) => ref.postSlug)).toEqual(["foo"]);
+    expect(extractRequestRefs("https://acme.featul.com/board/p/foo%20x")).toEqual([]);
   });
 
   test("links only count for the workspace they point at", () => {
     const [sub, app, custom] = extractRequestRefs(body);
     const acme = { slug: "acme", customDomain: "feedback.acme.io" };
     const other = { slug: "other", customDomain: null };
-    expect([sub, app, custom].map((ref) => refBelongsTo(ref!, acme))).toEqual([true, true, true]);
-    expect([sub, app, custom].map((ref) => refBelongsTo(ref!, other))).toEqual([false, false, false]);
-    expect(refBelongsTo({ kind: "public", host: "acme.localhost:3000", postSlug: "x" }, acme)).toBe(true);
+    const hosts = ["app.featul.com"];
+    expect([sub, app, custom].map((ref) => refBelongsTo(ref!, acme, hosts))).toEqual([true, true, true]);
+    expect([sub, app, custom].map((ref) => refBelongsTo(ref!, other, hosts))).toEqual([false, false, false]);
+    expect(refBelongsTo({ kind: "public", host: "acme.localhost:3000", postSlug: "x" }, acme, hosts)).toBe(true);
+    // App links only count on Featul's app host
+    const appRef = (host: string) => ({ kind: "app" as const, host, workspaceSlug: "acme", postSlug: "x" });
+    expect(refBelongsTo(appRef("evil.io"), acme, hosts)).toBe(false);
+    expect(refBelongsTo(appRef("localhost:3000"), acme, hosts)).toBe(true);
+    expect(refBelongsTo(appRef("feedback.example.com"), acme, ["feedback.example.com"])).toBe(true);
     // A look-alike host can't claim another workspace's requests.
-    expect(refBelongsTo({ kind: "public", host: "acme.featul.com.evil.io", postSlug: "x" }, acme)).toBe(false);
+    expect(refBelongsTo({ kind: "public", host: "acme.featul.com.evil.io", postSlug: "x" }, acme, hosts)).toBe(false);
   });
 });
