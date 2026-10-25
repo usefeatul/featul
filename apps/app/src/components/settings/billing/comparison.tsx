@@ -1,10 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
-import {
-  DitherGradient,
-  type DitherGradientProps,
-} from "@featul/ui/components/gradient";
+import type { ComponentType, CSSProperties, ReactNode } from "react";
+import { DitherGradient } from "@featul/ui/components/gradient";
 import Counter from "./counter";
 import { modalCardInnerClass, modalCardShellClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
@@ -21,6 +18,7 @@ import {
   CheckIcon,
   CollectIcon,
   EditIcon,
+  GiftIcon,
   TagIcon,
   DocsIcon,
   ExportIcon,
@@ -32,16 +30,23 @@ import {
   LikeIcon,
   Copy,
   PanelIcon,
+  PlanIcon,
   RoadmapIcon,
+  StarIcon,
 } from "@/components/global/icons";
-import type { PlanKey } from "@/lib/plan";
+import { PLAN_FILL, getPlanFill, type PlanKey } from "@/lib/plan";
+import PlanBadge from "@/components/global/PlanBadge";
 import { PLAN_ORDER, getPlan, type BillingCycle } from "./data";
 
-const planPattern: Record<PlanKey, DitherGradientProps["from"]> = {
-  free: [110, 114, 122],
-  starter: "blue",
-  professional: "orange",
-};
+/** Filled plan marks, tinted with the plan's pattern color. */
+const planIcon = {
+  free: GiftIcon,
+  starter: StarIcon,
+  professional: PlanIcon,
+} satisfies Record<
+  PlanKey,
+  ComponentType<{ className?: string; style?: CSSProperties; "aria-hidden"?: boolean }>
+>;
 
 export const comparison = [
   {
@@ -213,6 +218,8 @@ export default function Comparison({
       <div className="grid gap-3 px-5 sm:grid-cols-3 sm:px-7">
         {PLAN_ORDER.map((key) => {
           const plan = getPlan(key);
+          const PlanMark = planIcon[key];
+          const planColor = getPlanFill(key);
           const amount =
             billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
           return (
@@ -223,11 +230,16 @@ export default function Comparison({
               aria-label={`${plan.label} plan`}
             >
               <div className="flex h-7 items-center justify-between gap-2 pr-1 pl-2">
-                <h3 className="text-xs font-medium">{plan.label}</h3>
+                <h3 className="flex items-center gap-1.5 text-xs font-medium">
+                  <PlanMark
+                    aria-hidden
+                    className="size-3.5 shrink-0"
+                    style={{ color: planColor }}
+                  />
+                  {plan.label}
+                </h3>
                 {currentPlan === key ? (
-                  <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
-                    Current
-                  </span>
+                  <PlanBadge plan={key}>Current</PlanBadge>
                 ) : null}
               </div>
               <div
@@ -239,7 +251,7 @@ export default function Comparison({
                 {/* Pattern sits in the top-left corner and fades out toward the copy. */}
                 <div aria-hidden="true" className={planPatternClass}>
                   <DitherGradient
-                    from={planPattern[key]}
+                    from={PLAN_FILL[key]}
                     to="transparent"
                     direction="down"
                     cell={3}
@@ -274,7 +286,13 @@ export default function Comparison({
                         : "Billed monthly"}
                   </p>
                 </div>
-                <div className="mt-auto">{renderAction(key)}</div>
+                {/* Re-point --primary so the action button takes the plan's color. */}
+                <div
+                  className="mt-auto"
+                  style={{ "--primary": planColor } as CSSProperties}
+                >
+                  {renderAction(key)}
+                </div>
               </div>
             </section>
           );

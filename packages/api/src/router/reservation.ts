@@ -1,5 +1,5 @@
 import { HTTPException } from "hono/http-exception"
-import { and, eq, gt, isNull, sql } from "drizzle-orm"
+import { and, eq, gt, isNotNull, isNull, sql } from "drizzle-orm"
 import { j, publicProcedure, privateProcedure } from "../jstack"
 import { workspace, workspaceSlugReservation } from "@featul/db"
 import { reserveSlugInputSchema, tokenInputSchema, checkSlugPublicInputSchema } from "../validators/reservation"
@@ -7,7 +7,13 @@ import { sendReservationEmail } from "@featul/auth/email"
 import { isReservedWorkspaceSlug } from "../workspace/slug"
 import { isReservedSlugBlockedForEmail } from "../workspace/creator"
 import { enforceTrustedBrowserOrigin } from "../request/origin"
-const MAX_RESERVATIONS_PER_EMAIL = 3
+import { applyRateLimitHeaders, limitReservation } from "../services/ratelimiter"
+import {
+  CONFIRMED_RESERVATION_TTL_MS,
+  MAX_RESERVATIONS_PER_EMAIL,
+  PENDING_RESERVATION_TTL_MS,
+  isReservationLive,
+} from "../workspace/reservation"
 
 async function sendReservationEmailBestEffort(email: string, slug: string, token: string): Promise<void> {
   try {
@@ -39,7 +45,7 @@ export function createReservationRouter() {
           .from(workspaceSlugReservation)
           .where(eq(workspaceSlugReservation.slug, slug))
           .limit(1)
-        const active = resv && resv.status === "reserved" && resv.expiresAt && resv.expiresAt.getTime() > now.getTime()
+        const active = isReservationLive(resv, now)
         return c.superjson({ available: !active, reason: active ? "reserved" : "available" })
       }),
 
@@ -50,6 +56,8 @@ export function createReservationRouter() {
         const email = input.email.trim().toLowerCase()
         const slug = input.slug.trim().toLowerCase()
         if (isReservedSlugBlockedForEmail(slug, email)) throw new HTTPException(403, { message: "Slug not allowed" })
+
+        applyRateLimitHeaders(c, await limitReservation(c.req.raw))
 
         const [ws] = await ctx.db
           .select({ id: workspace.id })
@@ -68,41 +76,42 @@ export function createReservationRouter() {
         if (Number(recent?.count || 0) > 0) throw new HTTPException(429, { message: "Too many requests" })
 
         const [existing] = await ctx.db
-          .select({ id: workspaceSlugReservation.id, email: workspaceSlugReservation.email, status: workspaceSlugReservation.status, expiresAt: workspaceSlugReservation.expiresAt, updatedAt: workspaceSlugReservation.updatedAt })
+          .select({ id: workspaceSlugReservation.id, email: workspaceSlugReservation.email, status: workspaceSlugReservation.status, confirmedAt: workspaceSlugReservation.confirmedAt, expiresAt: workspaceSlugReservation.expiresAt })
           .from(workspaceSlugReservation)
           .where(eq(workspaceSlugReservation.slug, slug))
           .limit(1)
 
-        // If someone else holds an active reservation, block
-        if (existing && existing.email !== email && existing.status === "reserved" && existing.expiresAt && existing.expiresAt.getTime() > now.getTime()) {
-          throw new HTTPException(409, { message: "Slug is already reserved" })
+        if (existing && isReservationLive(existing, now)) {
+          if (existing.email !== email) throw new HTTPException(409, { message: "Slug is already reserved" })
+          // Same email already holds (or is confirming) this slug: don't send another email.
+          return c.superjson({ ok: true })
         }
 
-        // Enforce per-email max active reservations (excluding expired/cancelled/claimed)
+        // Pending and confirmed reservations both count, so one email can't receive endless links.
         const [activeCountRes] = await ctx.db
           .select({ count: sql<number>`count(*)` })
           .from(workspaceSlugReservation)
-          .where(and(eq(workspaceSlugReservation.email, email), eq(workspaceSlugReservation.status, 'reserved'), gt(workspaceSlugReservation.expiresAt, now)))
+          .where(and(eq(workspaceSlugReservation.email, email), eq(workspaceSlugReservation.status, "reserved"), gt(workspaceSlugReservation.expiresAt, now)))
           .limit(1)
-        const activeCount = Number(activeCountRes?.count || 0)
-        const isSameRecord = existing && existing.email === email
-        if (!isSameRecord && activeCount >= MAX_RESERVATIONS_PER_EMAIL) {
+        if (Number(activeCountRes?.count || 0) >= MAX_RESERVATIONS_PER_EMAIL) {
           throw new HTTPException(403, { message: "Reservation limit reached" })
         }
 
         const token = crypto.randomUUID()
-        const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        const expires = new Date(now.getTime() + PENDING_RESERVATION_TTL_MS)
 
         if (existing) {
-          if (existing.email === email && existing.updatedAt && Date.now() - new Date(existing.updatedAt).getTime() < 60_000) {
-            throw new HTTPException(429, { message: "Too many requests" })
-          }
           await ctx.db
             .update(workspaceSlugReservation)
-            .set({ email, token, status: "reserved", expiresAt: expires, updatedAt: new Date() })
+            .set({ email, token, status: "reserved", confirmedAt: null, claimedAt: null, claimedByUserId: null, expiresAt: expires, updatedAt: now })
             .where(eq(workspaceSlugReservation.id, existing.id))
         } else {
-          await ctx.db.insert(workspaceSlugReservation).values({ slug, email, token, status: "reserved", expiresAt: expires })
+          const inserted = await ctx.db
+            .insert(workspaceSlugReservation)
+            .values({ slug, email, token, status: "reserved", expiresAt: expires })
+            .onConflictDoNothing()
+            .returning({ id: workspaceSlugReservation.id })
+          if (inserted.length === 0) throw new HTTPException(409, { message: "Slug is already reserved" })
         }
 
         await sendReservationEmailBestEffort(email, slug, token)
@@ -129,7 +138,7 @@ export function createReservationRouter() {
       .post(async ({ ctx, input, c }) => {
         enforceTrustedBrowserOrigin(c.req.raw)
         const [r] = await ctx.db
-          .select({ id: workspaceSlugReservation.id, status: workspaceSlugReservation.status, expiresAt: workspaceSlugReservation.expiresAt })
+          .select({ id: workspaceSlugReservation.id, status: workspaceSlugReservation.status, confirmedAt: workspaceSlugReservation.confirmedAt, expiresAt: workspaceSlugReservation.expiresAt })
           .from(workspaceSlugReservation)
           .where(eq(workspaceSlugReservation.token, input.token))
           .limit(1)
@@ -137,10 +146,14 @@ export function createReservationRouter() {
         if (r.expiresAt && r.expiresAt.getTime() < Date.now()) throw new HTTPException(410, { message: "Reservation expired" })
         if (r.status !== "reserved") throw new HTTPException(409, { message: "Reservation not active" })
 
-        await ctx.db
-          .update(workspaceSlugReservation)
-          .set({ updatedAt: new Date() })
-          .where(eq(workspaceSlugReservation.id, r.id))
+        // Clicking the emailed link proves email ownership; only then does the slug hold.
+        if (!r.confirmedAt) {
+          const now = new Date()
+          await ctx.db
+            .update(workspaceSlugReservation)
+            .set({ confirmedAt: now, expiresAt: new Date(now.getTime() + CONFIRMED_RESERVATION_TTL_MS), updatedAt: now })
+            .where(and(eq(workspaceSlugReservation.id, r.id), isNull(workspaceSlugReservation.confirmedAt)))
+        }
 
         return c.superjson({ ok: true })
       }),
@@ -152,12 +165,16 @@ export function createReservationRouter() {
         if (!email) return c.superjson({ slugLocked: null })
         const now = new Date()
         const [r] = await ctx.db
-          .select({ id: workspaceSlugReservation.id, slug: workspaceSlugReservation.slug, email: workspaceSlugReservation.email, expiresAt: workspaceSlugReservation.expiresAt })
+          .select({ slug: workspaceSlugReservation.slug })
           .from(workspaceSlugReservation)
-          .where(and(eq(workspaceSlugReservation.email, email), eq(workspaceSlugReservation.status, 'reserved')))
+          .where(and(
+            eq(workspaceSlugReservation.email, email),
+            eq(workspaceSlugReservation.status, 'reserved'),
+            isNotNull(workspaceSlugReservation.confirmedAt),
+            gt(workspaceSlugReservation.expiresAt, now),
+          ))
           .limit(1)
-        const active = r && r.expiresAt && r.expiresAt.getTime() > now.getTime()
-        return c.superjson({ slugLocked: active ? r?.slug || null : null })
+        return c.superjson({ slugLocked: r?.slug || null })
       }),
   })
 }

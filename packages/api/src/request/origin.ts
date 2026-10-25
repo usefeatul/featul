@@ -1,7 +1,7 @@
 import { HTTPException } from "hono/http-exception";
 import {
   getValidatedTrustedOrigins,
-  isConfiguredTrustedOrigin,
+  isExactTrustedOrigin,
 } from "@featul/auth/origins/trusted";
 
 const REQUEST_ORIGIN_WARNINGS = new Set<string>();
@@ -121,7 +121,9 @@ function isTrustedIncomingOrigin(
   requestOrigin: string,
 ): boolean {
   if (incomingOrigin === requestOrigin) return true;
-  if (isConfiguredTrustedOrigin(incomingOrigin, privilegedOriginPatterns))
+  // Tenant pages call their own origin, so only exact entries vouch for another origin:
+  // a wildcard would let any subdomain make credentialed writes here.
+  if (isExactTrustedOrigin(incomingOrigin, privilegedOriginPatterns))
     return true;
 
   // Local dev convenience: allow same-site localhost and *.localhost traffic.

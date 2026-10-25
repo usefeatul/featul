@@ -71,7 +71,8 @@ export function SelectionToolbar({
         <span className="text-xs text-muted-foreground">{emptySelectionHint}</span>
       )}
 
-      {showActions ? (
+      {/* Bulk actions appear once something is selected instead of sitting greyed out. */}
+      {showActions && hasSelection ? (
         <div className="ml-auto flex items-center gap-2">
           {extraActions}
           {!hideDelete ? (
@@ -79,11 +80,8 @@ export function SelectionToolbar({
               type="button"
               variant="destructive"
               size="sm"
-              className={cn(
-                "h-8 gap-1.5 rounded-lg px-3 py-0",
-                !hasSelection && "pointer-events-none opacity-40",
-              )}
-              disabled={!hasSelection || isPending}
+              className="h-8 gap-1.5 rounded-lg px-3 py-0"
+              disabled={isPending}
               onClick={onConfirmDelete}
               aria-label={`Delete selected ${pluralLabel}`}
             >

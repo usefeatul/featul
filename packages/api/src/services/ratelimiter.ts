@@ -51,12 +51,17 @@ function createBypassRateLimitResult(): RateLimitResult {
   };
 }
 
+// Upstash allows the request once this elapses, so keep it short and reject instead below.
+const RATE_LIMIT_TIMEOUT_MS = 1000;
+
 function withEnabledResult(
-  result: Omit<RateLimitResult, "enabled">,
+  result: Omit<RateLimitResult, "enabled"> & { reason?: string },
 ): RateLimitResult {
   return {
     enabled: true,
     ...result,
+    // A slow or unreachable Redis must not lift the limits; errors already fail closed.
+    success: result.success && result.reason !== "timeout",
   };
 }
 
@@ -95,6 +100,7 @@ const ratelimitPublic = redis
       redis,
       limiter: Ratelimit.slidingWindow(60, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:pub",
     })
   : null;
@@ -103,6 +109,7 @@ const ratelimitPrivate = redis
       redis,
       limiter: Ratelimit.slidingWindow(120, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:priv",
     })
   : null;
@@ -130,6 +137,7 @@ const ratelimitInvite = redis
       redis,
       limiter: Ratelimit.slidingWindow(5, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:invite",
     })
   : null;
@@ -144,6 +152,7 @@ const ratelimitStorageAvatar = redis
       redis,
       limiter: Ratelimit.slidingWindow(30, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:storage:avatar",
     })
   : null;
@@ -152,6 +161,7 @@ const ratelimitStorageWorkspace = redis
       redis,
       limiter: Ratelimit.slidingWindow(60, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:storage:workspace",
     })
   : null;
@@ -160,6 +170,7 @@ const ratelimitStoragePublicPostAnon = redis
       redis,
       limiter: Ratelimit.slidingWindow(10, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:storage:public-post:anon",
     })
   : null;
@@ -168,6 +179,7 @@ const ratelimitStoragePublicPostUser = redis
       redis,
       limiter: Ratelimit.slidingWindow(45, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:storage:public-post:user",
     })
   : null;
@@ -176,6 +188,7 @@ const ratelimitStorageComment = redis
       redis,
       limiter: Ratelimit.slidingWindow(60, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:storage:comment",
     })
   : null;
@@ -184,6 +197,7 @@ const ratelimitStorageDeleteAnon = redis
       redis,
       limiter: Ratelimit.slidingWindow(20, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:storage:delete:anon",
     })
   : null;
@@ -192,6 +206,7 @@ const ratelimitStorageDeleteUser = redis
       redis,
       limiter: Ratelimit.slidingWindow(60, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:storage:delete:user",
     })
   : null;
@@ -247,12 +262,31 @@ export async function limitStorageDeleteUser(
   return withEnabledResult(await ratelimitStorageDeleteUser.limit(userId));
 }
 
+// Each voice transcription costs a model call.
+const ratelimitCommentTranscribe = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, "60 s"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:comment-transcribe",
+    })
+  : null;
+
+export async function limitCommentTranscribe(
+  userId: string,
+): Promise<RateLimitResult> {
+  if (!ratelimitCommentTranscribe) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitCommentTranscribe.limit(userId));
+}
+
 // Each Ask AI answer costs a model call, so visitors get far fewer than ordinary reads.
 const ratelimitHelpAsk = redis
   ? new Ratelimit({
       redis,
       limiter: Ratelimit.slidingWindow(6, "60 s"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:help-ask",
     })
   : null;
@@ -268,13 +302,19 @@ const ratelimitHelpAskDaily = redis
       redis,
       limiter: Ratelimit.fixedWindow(30, "1 d"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:help-ask-day",
     })
   : null;
 
-export async function limitHelpAskDaily(req: Request, workspaceId: string): Promise<RateLimitResult> {
+export async function limitHelpAskDaily(
+  req: Request,
+  workspaceId: string,
+): Promise<RateLimitResult> {
   if (!ratelimitHelpAskDaily) return createBypassRateLimitResult();
-  return withEnabledResult(await ratelimitHelpAskDaily.limit(`${workspaceId}:${getIp(req)}`));
+  return withEnabledResult(
+    await ratelimitHelpAskDaily.limit(`${workspaceId}:${getIp(req)}`),
+  );
 }
 
 const ratelimitHelpSearchTrack = redis
@@ -282,12 +322,16 @@ const ratelimitHelpSearchTrack = redis
       redis,
       limiter: Ratelimit.slidingWindow(30, "1 h"),
       analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
       prefix: "rl:help-search-track",
     })
   : null;
 
 /** Whether this view counts: each visitor's view of an article at most once a day. */
-export async function claimHelpView(req: Request, articleId: string): Promise<boolean> {
+export async function claimHelpView(
+  req: Request,
+  articleId: string,
+): Promise<boolean> {
   if (!redis) return true;
   try {
     const key = `help-view:${articleId}:${getRequestFingerprint(req)}`;
@@ -314,8 +358,17 @@ export async function swapHelpVote(
   if (!redis) return null;
   try {
     const key = `help-vote:${articleId}:${getRequestFingerprint(req)}`;
-    const previous = await redis.eval(SWAP_VOTE, [key], [helpful ? "1" : "0", 90 * 86_400]);
-    return { previous: previous === null || previous === undefined ? undefined : String(previous) === "1" };
+    const previous = await redis.eval(
+      SWAP_VOTE,
+      [key],
+      [helpful ? "1" : "0", 90 * 86_400],
+    );
+    return {
+      previous:
+        previous === null || previous === undefined
+          ? undefined
+          : String(previous) === "1",
+    };
   } catch {
     return null;
   }
@@ -325,14 +378,86 @@ export async function swapHelpVote(
  * Whether a visitor's search should count toward analytics: each query once per visitor per day,
  * and a few dozen per hour at most, so one visitor can't flood top searches or content gaps.
  */
-export async function claimHelpSearchTrack(req: Request, workspaceId: string, query: string): Promise<boolean> {
+export async function claimHelpSearchTrack(
+  req: Request,
+  workspaceId: string,
+  query: string,
+): Promise<boolean> {
   if (!redis || !ratelimitHelpSearchTrack) return true;
   const visitor = `${workspaceId}:${getIp(req)}`;
   try {
-    const fresh = await redis.set(`help-search-seen:${visitor}:${query}`, 1, { nx: true, ex: 86_400 });
+    const fresh = await redis.set(`help-search-seen:${visitor}:${query}`, 1, {
+      nx: true,
+      ex: 86_400,
+    });
     if (fresh !== "OK") return false;
-    return (await ratelimitHelpSearchTrack.limit(visitor)).success;
+    const result = await ratelimitHelpSearchTrack.limit(visitor);
+    return result.success && result.reason !== "timeout";
   } catch {
     return true;
   }
+}
+
+// Each slug reservation sends an email, so one visitor can only request a handful per hour.
+const ratelimitReservation = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, "1 h"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:reservation",
+    })
+  : null;
+
+export async function limitReservation(req: Request): Promise<RateLimitResult> {
+  if (!ratelimitReservation) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitReservation.limit(getIp(req)));
+}
+
+const ratelimitApiKey = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(60, "60 s"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:api-key",
+    })
+  : null;
+
+/** Public REST API (`/api/v1/*`), counted per API key (by its hash, before any lookup). */
+export async function limitApiKey(keyHash: string): Promise<RateLimitResult> {
+  if (!ratelimitApiKey) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitApiKey.limit(keyHash));
+}
+
+const ratelimitApiIp = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(300, "60 s"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:api-ip",
+    })
+  : null;
+
+/** Public REST API per client IP; generous, since CI runners can share addresses. */
+export async function limitApiIp(req: Request): Promise<RateLimitResult> {
+  if (!ratelimitApiIp) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitApiIp.limit(getIp(req)));
+}
+
+const ratelimitGithubSync = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(3, "10 m"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:github-sync",
+    })
+  : null;
+
+/** "Sync with GitHub" re-reads every issue in the connected repos, so keep it occasional. */
+export async function limitGithubSync(workspaceId: string): Promise<RateLimitResult> {
+  if (!ratelimitGithubSync) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitGithubSync.limit(workspaceId));
 }

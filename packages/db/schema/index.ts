@@ -13,3 +13,5 @@ export * from "./integration";
 export * from "./notra";
 export * from "./delivery";
 export * from "./help";
+export * from "./api-key";
+export * from "./github";

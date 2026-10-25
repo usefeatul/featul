@@ -67,9 +67,14 @@ export const overlayChipShellClass =
 export const overlayChipInnerClass =
   "inline-flex h-4 min-h-4 min-w-4 flex-1 items-center justify-center overflow-hidden rounded-[4px] bg-background text-xs font-extralight tabular-nums text-accent"
 
-/** Avatar frame with the menu surface's depth: lit top edge, soft gradient, short shadow. Follows the root's radius. */
+/**
+ * Avatar frame: the picture fills the whole shape and a hairline outline and lit top edge are
+ * drawn over its edge, with the faintest drop shadow. In dark mode the outline sits just outside
+ * the picture instead, where it shows against the dark page. The radius is a percentage (the app
+ * pins `rounded-full` to the standard radius) so every avatar size is equally round.
+ */
 export const overlayAvatarShellClass =
-  "relative inline-flex shrink-0 overflow-visible rounded-full border border-black/[0.08] bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_6%)] shadow-[0_1px_2px_rgba(0,0,0,0.08)] after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-1px_0_rgba(0,0,0,0.08)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_6%)] dark:to-card dark:shadow-[0_1px_2px_rgba(0,0,0,0.4)] dark:after:shadow-[inset_0_1px_0_rgba(255,255,255,0.14),inset_0_-1px_0_rgba(0,0,0,0.3)]"
+  "relative inline-flex shrink-0 overflow-visible rounded-[40%] bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_6%)] shadow-[0_1px_1px_rgba(0,0,0,0.03)] after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.25)] dark:from-[color-mix(in_oklab,var(--card),white_6%)] dark:to-card dark:shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_1px_1px_rgba(0,0,0,0.12)] dark:after:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
 
 export const overlayAvatarInnerClass =
   "size-full overflow-hidden rounded-[inherit] bg-transparent"

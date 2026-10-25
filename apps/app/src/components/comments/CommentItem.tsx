@@ -20,9 +20,9 @@ import { useCommentEdit } from "../../hooks/useCommentEdit"
 import { useMentionableMembers } from "../../hooks/useMentions"
 import type { CommentData } from "../../types/comment"
 import type { CommentSurface } from "@/lib/comment/shared"
-import { settingsCardInnerClass } from "@/components/settings/global/SectionCard"
+import { settingsSurfaceHeaderClass } from "@/components/settings/global/SectionCard"
 import { cn } from "@featul/ui/lib/utils"
-import { commentComposerBackgroundClass } from "./styles"
+import { commentCardInnerClass, commentCardShellClass } from "./styles"
 
 interface CommentItemProps {
   comment: CommentData
@@ -182,23 +182,30 @@ export default function CommentItem({
       </div>
 
       {showReplyForm ? (
-        <div className={cn(settingsCardInnerClass, commentComposerBackgroundClass[surface], "mt-3")}>
-          <CommentForm
-            postId={comment.postId}
-            parentId={comment.id}
-            workspaceSlug={workspaceSlug}
-            surface={surface}
-            defaultInternal={Boolean(comment.isInternal)}
-            onSuccess={() => {
-              setShowReplyForm(false)
-              onReplySuccess?.()
-            }}
-            onBusyChange={setIsReplyBusy}
-            compact
-            placeholder="Write a reply..."
-            autoFocus
-            buttonText="Reply"
-          />
+        <div className={cn(commentCardShellClass, "mt-3")}>
+          <header className={settingsSurfaceHeaderClass}>
+            <h2 className="min-w-0 truncate text-sm font-medium leading-6 text-foreground">
+              Reply to {displayUser.name}
+            </h2>
+          </header>
+          <div className={commentCardInnerClass}>
+            <CommentForm
+              postId={comment.postId}
+              parentId={comment.id}
+              workspaceSlug={workspaceSlug}
+              surface={surface}
+              defaultInternal={Boolean(comment.isInternal)}
+              onSuccess={() => {
+                setShowReplyForm(false)
+                onReplySuccess?.()
+              }}
+              onBusyChange={setIsReplyBusy}
+              compact
+              placeholder="Write a reply..."
+              autoFocus
+              buttonText="Reply"
+            />
+          </div>
         </div>
       ) : null}
     </div>

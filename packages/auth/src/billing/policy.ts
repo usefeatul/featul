@@ -3,6 +3,11 @@ import { getStripePlanNameFromPriceId } from "../stripe"
 
 export type BillingPlan = "free" | "starter" | "professional"
 
+// Stripe's status type includes OtherString for statuses added after this SDK.
+// Store those as-is; hasPaidAccess grants them no access.
+export type SubscriptionStatus = "active" | "canceled" | "incomplete" | "incomplete_expired"
+  | "past_due" | "paused" | "trialing" | "unpaid"
+
 type TrialHistory = {
   status: string | null
   trialStart?: Date | string | null
@@ -43,7 +48,7 @@ export function getSubscriptionProjection(live: Stripe.Subscription) {
   const date = (value: number | null | undefined) => value ? new Date(value * 1000) : null
   return {
     plan,
-    status: live.status,
+    status: live.status as SubscriptionStatus,
     stripeCustomerId: stripeId(live.customer),
     stripeSubscriptionId: live.id,
     periodStart: date(item.current_period_start),

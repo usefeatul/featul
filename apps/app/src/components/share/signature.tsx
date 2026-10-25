@@ -4,11 +4,9 @@ import {
   AvatarImage,
 } from "@featul/ui/components/avatar";
 import { DitherClouds } from "@featul/ui/components/clouds";
-import { cn } from "@featul/ui/lib/utils";
 import { buildSignature } from "@/lib/share";
 import CopyButton from "./copy";
 import ShareSection from "./section";
-import { shareCardClass } from "./styles";
 
 export default function Signature({
   name,
@@ -31,12 +29,10 @@ export default function Signature({
     <ShareSection
       title="Email signature"
       description="A quiet invite at the bottom of every email you send."
+      flush
     >
       <div
-        className={cn(
-          shareCardClass,
-          "grid gap-2 p-2 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]",
-        )}
+        className="grid gap-2 p-2 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]"
       >
         <div className="flex flex-col p-4 sm:p-5">
           <p className="text-base font-medium">Every email becomes an invite</p>

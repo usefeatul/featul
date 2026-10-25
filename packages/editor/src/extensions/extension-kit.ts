@@ -18,6 +18,7 @@ import { Markdown } from "@tiptap/markdown";
 import StarterKit from "@tiptap/starter-kit";
 import { CodeBlock } from "./code-block/code-block";
 import { Figure } from "./figure/figure";
+import { getSafeImageSrc } from "../lib/safe-url";
 import { ImageUpload } from "./image-upload/image-upload";
 import { MarkdownInput } from "./markdown-input/markdown-input";
 import { configureMention } from "./mention/mention";
@@ -209,9 +210,25 @@ export const ExtensionKit = ({
     TwitterUpload,
 
     // Image extension for backward compatibility with older posts
-    Image.configure({
+    // Only HTTPS sources render; data: and other schemes are dropped.
+    Image.extend({
+      addAttributes() {
+        return {
+          ...this.parent?.(),
+          src: {
+            default: null,
+            parseHTML: (element: HTMLElement) =>
+              getSafeImageSrc(element.getAttribute("src")),
+            renderHTML: (attributes: Record<string, unknown>) => {
+              const src = getSafeImageSrc(attributes.src);
+              return src ? { src } : {};
+            },
+          },
+        };
+      },
+    }).configure({
       inline: false,
-      allowBase64: true,
+      allowBase64: false,
     }),
 
     // Figure (image with caption support)

@@ -1,7 +1,8 @@
 import { and, eq } from "drizzle-orm";
 import { workspace, workspaceMember } from "@featul/db";
 import { HTTPException } from "hono/http-exception";
-import { privateProcedure, publicProcedure } from "../../jstack";
+import { privateProcedure } from "../../jstack";
+import { widgetProcedure } from "./procedure";
 import { identifySchema, projectIdInput, projectInput } from "./schema";
 import {
   loadWidgetPublicConfig,
@@ -14,7 +15,7 @@ import {
   WIDGET_IDENTITY_TTL_SECONDS,
 } from "../../shared/identity";
 
-export const widgetConfig = publicProcedure
+export const widgetConfig = widgetProcedure
   .input(projectInput)
   .get(async ({ ctx, input, c }) => {
     const payload = await loadWidgetPublicConfig(
@@ -27,7 +28,7 @@ export const widgetConfig = publicProcedure
     return c.superjson(payload);
   });
 
-export const widgetIdentify = publicProcedure
+export const widgetIdentify = widgetProcedure
   .input(identifySchema)
   .post(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(

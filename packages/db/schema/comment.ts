@@ -143,32 +143,43 @@ export const commentMention = pgTable("comment_mention", {
 });
 
 // Comment reports for moderation
-export const commentReport = pgTable("comment_report", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => createId()),
-  commentId: text("comment_id")
-    .notNull()
-    .references(() => comment.id, { onDelete: "cascade" }),
-  reportedBy: text("reported_by").references(() => user.id, {
-    onDelete: "set null",
-  }),
+export const commentReport = pgTable(
+  "comment_report",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    commentId: text("comment_id")
+      .notNull()
+      .references(() => comment.id, { onDelete: "cascade" }),
+    reportedBy: text("reported_by").references(() => user.id, {
+      onDelete: "set null",
+    }),
 
-  reason: text("reason", {
-    enum: ["spam", "harassment", "inappropriate", "off_topic", "other"],
-  }).notNull(),
-  description: text("description"),
+    reason: text("reason", {
+      enum: ["spam", "harassment", "inappropriate", "off_topic", "other"],
+    }).notNull(),
+    description: text("description"),
 
-  status: text("status", {
-    enum: ["pending", "reviewed", "resolved", "dismissed"],
-  }).default("pending"),
+    status: text("status", {
+      enum: ["pending", "reviewed", "resolved", "dismissed"],
+    }).default("pending"),
 
-  reviewedBy: text("reviewed_by").references(() => user.id),
-  reviewedAt: timestamp("reviewed_at"),
-  resolution: text("resolution"),
+    reviewedBy: text("reviewed_by").references(() => user.id),
+    reviewedAt: timestamp("reviewed_at"),
+    resolution: text("resolution"),
 
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) =>
+    ({
+      // One report per user per item; repeats must not re-notify the owner.
+      commentReportCommentReporterUnique: uniqueIndex("comment_report_comment_reporter_unique").on(
+        table.commentId,
+        table.reportedBy,
+      ),
+    }) as const,
+);
 
 export type Comment = typeof comment.$inferSelect;
 export type CommentReaction = typeof commentReaction.$inferSelect;

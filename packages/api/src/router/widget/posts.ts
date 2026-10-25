@@ -4,7 +4,7 @@ import { publicBoardConditions } from "../../post/access";
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { board, post, widgetUser } from "@featul/db";
-import { publicProcedure } from "../../jstack";
+import { widgetProcedure } from "./procedure";
 import {
   listPostImageUrls,
   mergePostMetadata,
@@ -31,7 +31,7 @@ import {
   similarSchema,
 } from "./schema";
 
-export const widgetPosts = publicProcedure
+export const widgetPosts = widgetProcedure
   .input(postsSchema)
   .get(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(
@@ -83,7 +83,7 @@ export const widgetPosts = publicProcedure
     });
   });
 
-export const widgetPost = publicProcedure
+export const widgetPost = widgetProcedure
   .input(postDetailSchema)
   .get(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(
@@ -122,7 +122,7 @@ export const widgetPost = publicProcedure
     });
   });
 
-export const widgetSimilar = publicProcedure
+export const widgetSimilar = widgetProcedure
   .input(similarSchema)
   .get(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(
@@ -158,7 +158,7 @@ export const widgetSimilar = publicProcedure
     return c.superjson({ posts: rows });
   });
 
-export const widgetCreate = publicProcedure
+export const widgetCreate = widgetProcedure
   .input(createSchema)
   .post(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(
@@ -242,7 +242,7 @@ export const widgetCreate = publicProcedure
       values: {
         boardId: targetBoard.id, title: input.title, content: input.content,
         image: imageFields.image, slug: createPostSlug(input.title),
-        widgetUserId: authorId, isAnonymous: !authorId,
+        widgetUserId: authorId, isAnonymous: !authorId, source: "widget",
         metadata: mergePostMetadata(baseMetadata, imageFields.attachments),
         roadmapStatus: "pending",
       },

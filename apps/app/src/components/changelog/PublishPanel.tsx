@@ -12,12 +12,13 @@ import {
   PopoverTrigger,
 } from "@featul/ui/components/popover";
 import {
+  inputSurfaceClass,
   modalCardInnerClass,
   modalCardShellClass,
-  raisedSurfaceClass,
 } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { publicBoardUrlForWorkspace } from "@/config/nav";
+import { ActionTooltip } from "@/components/global/ActionTooltip";
 import {
   CalendarDays,
   Check,
@@ -30,7 +31,7 @@ import { TagDot } from "@/components/global/tag";
 import type { Member } from "@/types/team";
 import { randomAvatarUrl } from "@/utils/avatar";
 import { getInitials } from "@/utils/user";
-import { EntryUrlForm } from "./EntryUrlForm";
+import { EntryUrlRow } from "./EntryUrlRow";
 import { ScheduleForm, formatSchedule } from "./ScheduleForm";
 import type { WorkspaceTag } from "@/types/changelog";
 
@@ -40,7 +41,6 @@ interface PublishPanelProps {
   entryId?: string;
   entrySlug: string;
   onEntrySlugChange: (entrySlug: string) => void;
-  title: string;
   isDraft: boolean;
   scheduledAt: Date | null;
   publishedAt: Date | null;
@@ -69,7 +69,6 @@ export function PublishPanel({
   entryId,
   entrySlug,
   onEntrySlugChange,
-  title,
   isDraft,
   scheduledAt,
   publishedAt,
@@ -84,11 +83,9 @@ export function PublishPanel({
   onTagIdsChange,
 }: PublishPanelProps) {
   const [open, setOpen] = useState(false);
-  const [urlOpen, setUrlOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
 
   const origin = publicBoardUrlForWorkspace(workspaceSlug);
-  const host = origin.replace(/^https?:\/\//, "");
 
   const status = !isDraft
     ? {
@@ -115,7 +112,6 @@ export function PublishPanel({
 
   const close = () => {
     setScheduleOpen(false);
-    setUrlOpen(false);
     setOpen(false);
   };
 
@@ -134,25 +130,48 @@ export function PublishPanel({
       onOpenChange={(next) => {
         setOpen(next);
         if (!next) {
-          setUrlOpen(false);
-          setScheduleOpen(false);
+                setScheduleOpen(false);
         }
       }}
     >
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className={cn(
-            raisedSurfaceClass,
-            "flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-[filter,color] hover:text-foreground hover:brightness-[0.98] data-[state=open]:text-foreground dark:hover:brightness-125",
-          )}
-        >
-          <span className={cn("size-1.5 rounded-full", status.dot)} aria-hidden="true" />
-          {status.trigger}
-        </button>
-      </PopoverTrigger>
+      <ActionTooltip label={open ? "Hide details" : "Show details"}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            // The faintest surface shadow, so the pill sits almost flat in the header.
+            className={cn(
+              inputSurfaceClass,
+              "flex h-8 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-xs font-medium text-muted-foreground transition-[filter,color] hover:text-foreground hover:brightness-[0.98] data-[state=open]:text-foreground dark:hover:brightness-125",
+            )}
+          >
+            {status.trigger}
+            <span className="relative flex size-1.5" aria-hidden="true">
+              {!isDraft ? (
+                // Live entries breathe; drafts and schedules stay still.
+                <span
+                  className={cn(
+                    "absolute inline-flex size-full animate-ping rounded-full opacity-75 motion-reduce:hidden",
+                    status.dot,
+                  )}
+                />
+              ) : null}
+              <span className={cn("relative inline-flex size-1.5 rounded-full", status.dot)} />
+            </span>
+          </button>
+        </PopoverTrigger>
+      </ActionTooltip>
 
-      <PopoverContent align="end" className="w-[22rem]">
+      <PopoverContent
+        align="end"
+        className="w-[22rem]"
+        // Opening shouldn't drop the caret into the URL field and select the slug.
+        onOpenAutoFocus={(event) => event.preventDefault()}
+        onEscapeKeyDown={(event) => {
+          if (event.target instanceof HTMLElement && event.target.dataset.pendingEdit) {
+            event.preventDefault();
+          }
+        }}
+      >
         <div className="flex flex-col gap-2.5">
           <div className="px-1 pt-0.5">
             <p className="flex items-center gap-2 text-sm font-medium">
@@ -174,7 +193,7 @@ export function PublishPanel({
                     open={scheduleOpen}
                   />
                 </PopoverTrigger>
-                <PopoverContent align="end" sideOffset={6} className="w-72">
+                <PopoverContent align="end" sideOffset={6} className="w-auto">
                   <ScheduleForm
                     scheduledAt={scheduledAt}
                     onSchedule={(date) => {
@@ -190,35 +209,14 @@ export function PublishPanel({
               </Popover>
             ) : null}
 
-            <div>
-              <RowButton
-                icon={<DomainIcon className="size-3.5" />}
-                label="URL"
-                value={entryId && entrySlug ? `/p/${entrySlug}` : "Set after first save"}
-                muted={!entryId || !entrySlug}
-                disabled={!entryId || !entrySlug}
-                open={urlOpen}
-                onClick={() => setUrlOpen((current) => !current)}
-              />
-              {urlOpen && entryId ? (
-                <div className="border-t border-border/60 px-3 pt-2 pb-3 dark:border-white/[0.06]">
-                  <p className="mb-1.5 truncate text-xs text-muted-foreground" title={host}>
-                    {host}/changelog/p/
-                  </p>
-                  <EntryUrlForm
-                    workspaceSlug={workspaceSlug}
-                    entryId={entryId}
-                    entrySlug={entrySlug}
-                    title={title}
-                    isPublished={!isDraft}
-                    onSaved={(next) => {
-                      onEntrySlugChange(next);
-                      setUrlOpen(false);
-                    }}
-                  />
-                </div>
-              ) : null}
-            </div>
+            <EntryUrlRow
+              icon={<DomainIcon className="size-3.5" />}
+              workspaceSlug={workspaceSlug}
+              entryId={entryId}
+              entrySlug={entrySlug}
+              isPublished={!isDraft}
+              onSaved={onEntrySlugChange}
+            />
           </PanelCard>
 
           <PanelCard title="Details">
@@ -423,14 +421,7 @@ function AuthorsRow({
                   className={cn(locked && "cursor-default")}
                 >
                   <MemberAvatar member={member} className="ring-0" />
-                  <span className="min-w-28 max-w-48">
-                    <span className="block truncate text-sm">{memberName(member)}</span>
-                    {member.email ? (
-                      <span className="block truncate text-[11px] text-muted-foreground">
-                        {member.email}
-                      </span>
-                    ) : null}
-                  </span>
+                  <span className="min-w-28 max-w-48 truncate text-sm">{memberName(member)}</span>
                   <Check
                     className={cn("ml-auto size-3.5 shrink-0 text-primary", !checked && "invisible")}
                     aria-hidden="true"

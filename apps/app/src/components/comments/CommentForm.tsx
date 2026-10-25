@@ -3,10 +3,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import Emoji from "./emoji";
 import Visibility from "./visibility";
+import Dictation, { DictationBar } from "./dictation";
 import MentionList from "./MentionList";
 import { MentionTextarea } from "./MentionTextarea";
 import { Button } from "@featul/ui/components/button";
-import { LoaderIcon, ImageIcon, XMarkIcon } from "@/components/global/icons";
+import {
+  LoaderIcon,
+  ImageIcon,
+  CornerDownLeft,
+  XMarkIcon,
+} from "@/components/global/icons";
 
 import { commentActionIconClass } from "./styles";
 import ContentImage from "@/components/global/ContentImage";
@@ -14,6 +20,7 @@ import ContentImage from "@/components/global/ContentImage";
 import { useImageUpload } from "../../hooks/useImageUpload";
 import { useMentions } from "../../hooks/useMentions";
 import { useCommentSubmit } from "../../hooks/useCommentSubmit";
+import { useSpeechDictation } from "../../hooks/useSpeechDictation";
 import type { CommentSurface } from "@/lib/comment/shared";
 
 interface CommentFormProps {
@@ -73,6 +80,30 @@ export default function CommentForm({
     [members],
   );
 
+  const dictation = useSpeechDictation(postId, (transcript) => {
+    const textarea = textareaRef.current;
+    setContent((prev) => {
+      const caret = Math.min(
+        textarea?.selectionEnd ?? prev.length,
+        prev.length,
+      );
+      const before = prev.slice(0, caret);
+      const after = prev.slice(caret);
+      const lead = before && !/\s$/.test(before) ? " " : "";
+      const trail = after && !/^\s/.test(after) ? " " : "";
+      const next = before + lead + transcript + trail + after;
+      const nextCaret = (before + lead + transcript).length;
+      requestAnimationFrame(() => {
+        textarea?.focus();
+        textarea?.setSelectionRange(nextCaret, nextCaret);
+      });
+      return next;
+    });
+  });
+
+  // Voice typing is a team tool; the public portal doesn't offer it.
+  const canDictate = surface === "workspace";
+
   const resetForm = () => {
     setContent("");
     setUploadedImage(null);
@@ -98,9 +129,11 @@ export default function CommentForm({
 
   return (
     <form
-      onSubmit={(e) =>
-        handleSubmit(e, content, uploadedImage, internalForced || isInternal)
-      }
+      onSubmit={(e) => {
+        dictation.cancel();
+        handleSubmit(e, content, uploadedImage, internalForced || isInternal);
+      }}
+      data-dictation={dictation.state}
       className="space-y-2.5"
     >
       <div className="relative">
@@ -114,7 +147,13 @@ export default function CommentForm({
             const caret = e.target.selectionStart || next.length;
             checkForMention(next, caret);
           }}
-          placeholder={placeholder}
+          placeholder={
+            dictation.state === "starting" || dictation.state === "recording"
+              ? "Listening…"
+              : dictation.state === "transcribing"
+                ? "Transcribing…"
+                : placeholder
+          }
           compact={compact}
           autoFocus={autoFocus}
           disabled={isPending || uploadingImage}
@@ -158,62 +197,84 @@ export default function CommentForm({
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept={ALLOWED_IMAGE_TYPES.join(",")}
-            onChange={handleFileSelect}
-            className="hidden"
-            disabled={isPending || uploadingImage}
-          />
-          <Button
-            type="button"
-            size="icon-sm"
-            variant="plain"
-            className={commentActionIconClass}
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isPending || uploadingImage || !!uploadedImage}
-            aria-label="Add image"
-          >
-            {uploadingImage ? (
-              <LoaderIcon className="h-4 w-4" />
-            ) : (
-              <ImageIcon className="size-4" />
-            )}
-          </Button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ALLOWED_IMAGE_TYPES.join(",")}
+        onChange={handleFileSelect}
+        className="hidden"
+        disabled={isPending || uploadingImage}
+      />
+      {dictation.state === "idle" ? (
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              size="icon-sm"
+              variant="plain"
+              className={commentActionIconClass}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isPending || uploadingImage || !!uploadedImage}
+              aria-label="Add image"
+            >
+              {uploadingImage ? (
+                <LoaderIcon className="h-4 w-4" />
+              ) : (
+                <ImageIcon className="size-4" />
+              )}
+            </Button>
 
-          <Emoji
-            value={content}
-            onChange={setContent}
-            textareaRef={textareaRef}
-            disabled={isBusy}
-          />
-          {canMarkInternal && (
-            <Visibility
-              internal={isInternal}
-              onChange={setIsInternal}
+            <Emoji
+              value={content}
+              onChange={setContent}
+              textareaRef={textareaRef}
               disabled={isBusy}
-              forced={internalForced}
             />
-          )}
-        </div>
+            {canMarkInternal && (
+              <Visibility
+                internal={isInternal}
+                onChange={setIsInternal}
+                disabled={isBusy}
+                forced={internalForced}
+              />
+            )}
+          </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            type="submit"
-            size="xs"
-            variant="default"
-            className="h-8 px-4"
-            disabled={!canSubmit}
-            aria-label={submitLabel}
-            aria-busy={isPending}
-          >
-            {isPending ? <LoaderIcon className="h-3 w-3" /> : submitLabel}
-          </Button>
+          <div className="flex items-center gap-2">
+            {canDictate && (
+              <Dictation
+                onStart={() => void dictation.start()}
+                disabled={isBusy}
+              />
+            )}
+            <Button
+              type="submit"
+              size="icon-sm"
+              variant="default"
+              disabled={!canSubmit}
+              aria-label={submitLabel}
+              title={submitLabel}
+              aria-busy={isPending}
+            >
+              {isPending ? (
+                <LoaderIcon className="size-3.5" />
+              ) : (
+                <CornerDownLeft className="size-4" strokeWidth={2.25} />
+              )}
+            </Button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <DictationBar
+          state={dictation.state}
+          elapsed={dictation.elapsed}
+          analyser={dictation.analyser}
+          failure={dictation.failure}
+          onCancel={dictation.cancel}
+          onDone={dictation.stop}
+          onRetry={dictation.retry}
+        />
+      )}
     </form>
   );
 }

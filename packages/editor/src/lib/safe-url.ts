@@ -25,3 +25,31 @@ export function getSafeHttpUrlFromString(text: string): string | null {
 
   return null;
 }
+
+function isLocalHostname(hostname: string): boolean {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.endsWith(".localhost")
+  );
+}
+
+/**
+ * Image sources must be HTTPS (or HTTP on localhost for development).
+ * data:, blob:, javascript: and relative sources are dropped.
+ */
+export function getSafeImageSrc(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol === "https:") return trimmed;
+    if (parsed.protocol === "http:" && isLocalHostname(parsed.hostname)) {
+      return trimmed;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}

@@ -6,7 +6,7 @@ import {
   workspace,
   workspaceMember,
 } from "@featul/db";
-import { publicProcedure } from "../../jstack";
+import { widgetProcedure } from "./procedure";
 import { findTagsByIds, getChangelogTags } from "../../changelog/types";
 import { getRelatedPosts } from "../../changelog/related";
 import {
@@ -16,7 +16,7 @@ import {
 } from "./resolve";
 import { projectInput } from "./schema";
 
-export const widgetChangelog = publicProcedure
+export const widgetChangelog = widgetProcedure
   .input(projectInput)
   .get(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(

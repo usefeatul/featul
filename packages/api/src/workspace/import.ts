@@ -777,6 +777,7 @@ export async function runWorkspaceCsvImport({
         upvotes: upvotesValue,
         authorId: authorIdValue,
         isAnonymous: isAnonymousValue,
+        source: "csv",
         image: hasAssetColumns ? imageValue : null,
         createdAt: createdAtValue,
         updatedAt: updatedAtValue,

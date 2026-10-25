@@ -16,6 +16,7 @@ import {
   helpArticleIdSchema,
   helpArticleUpdateSchema,
   helpArticlesDeleteSchema,
+  helpArticlesStatusSchema,
   helpCollectionIdSchema,
   helpVisibilitySchema,
   helpCollectionCreateSchema,
@@ -29,6 +30,7 @@ import {
 } from "../validators/help";
 import { markdownToTiptapDoc } from "../notra/content";
 import { getHelpImportUsage } from "../help/import/usage";
+import { createTitleIndex } from "../help/import/dedupe";
 import { clearHelpGithubConnection, getHelpGithubConnection } from "../help/import/github";
 import {
   createSetupState,
@@ -337,8 +339,24 @@ export function createHelpRouter() {
         let collectionCount = existing.length;
         let collectionsCreated = 0;
 
+        // Saving the same draft twice, or a draft from an older scan, mustn't duplicate articles.
+        const existingTitles: Array<{ title: string }> = await ctx.db
+          .select({ title: helpArticle.title })
+          .from(helpArticle)
+          .where(eq(helpArticle.workspaceId, ws.id));
+        const titles = createTitleIndex(
+          existingTitles.map((row) => row.title),
+          ws.name,
+        );
+        const articles = input.articles.filter((article) => {
+          if (titles.has(article.title)) return false;
+          titles.add(article.title);
+          return true;
+        });
+        const skipped = input.articles.length - articles.length;
+
         // Only collections an article actually uses; past the plan limit, articles stay uncategorized.
-        const wanted = new Set(input.articles.map((a) => a.collection?.trim().toLowerCase()).filter(Boolean));
+        const wanted = new Set(articles.map((a) => a.collection?.trim().toLowerCase()).filter(Boolean));
         for (const col of input.collections) {
           const key = col.name.trim().toLowerCase();
           if (!wanted.has(key) || byName.has(key)) continue;
@@ -364,7 +382,7 @@ export function createHelpRouter() {
         }
 
         let created = 0;
-        for (const article of input.articles) {
+        for (const article of articles) {
           const collectionId = byName.get(article.collection?.trim().toLowerCase() ?? "") ?? null;
           await ctx.db.insert(helpArticle).values({
             workspaceId: ws.id,
@@ -386,7 +404,7 @@ export function createHelpRouter() {
           });
           created += 1;
         }
-        return c.superjson({ ok: true, created, collectionsCreated });
+        return c.superjson({ ok: true, created, skipped, collectionsCreated });
       }),
 
     settings: privateProcedure
@@ -636,6 +654,62 @@ export function createHelpRouter() {
           throw publishLimitError(over);
         }
         return c.superjson({ ok: true, article });
+      }),
+
+    articlesSetStatus: privateProcedure
+      .input(helpArticlesStatusSchema)
+      .post(async ({ ctx, input, c }) => {
+        const ws = await requireBoardManagerBySlug(ctx, input.slug);
+        const inWorkspace = and(
+          inArray(helpArticle.id, input.articleIds),
+          eq(helpArticle.workspaceId, ws.id),
+        );
+
+        if (input.status === "draft") {
+          const updated = await ctx.db
+            .update(helpArticle)
+            .set({ status: "draft" })
+            .where(and(inWorkspace, eq(helpArticle.status, "published")))
+            .returning({ id: helpArticle.id });
+          return c.superjson({ ok: true, updated: updated.length, skipped: 0, limit: null });
+        }
+
+        const drafts: { id: string; publishedAt: Date | null }[] = await ctx.db
+          .select({ id: helpArticle.id, publishedAt: helpArticle.publishedAt })
+          .from(helpArticle)
+          .where(and(inWorkspace, eq(helpArticle.status, "draft")));
+        // Publish in the order the ids were sent, stopping at the plan's cap.
+        const order = new Map(input.articleIds.map((id, index) => [id, index]));
+        drafts.sort((a, b) => order.get(a.id)! - order.get(b.id)!);
+        const { maxHelpArticles: max } = getPlanLimits(await getWorkspaceAccessPlan(ws.id));
+        const room =
+          max === null
+            ? drafts.length
+            : Math.max(0, max - (await countPublishedHelpArticles(ctx.db, ws.id)));
+        const batch = drafts.slice(0, room);
+        const skipped = drafts.length - batch.length;
+        if (batch.length === 0) {
+          if (skipped > 0) throw publishLimitError(max!);
+          return c.superjson({ ok: true, updated: 0, skipped: 0, limit: max });
+        }
+
+        const ids = batch.map((a) => a.id);
+        await ctx.db
+          .update(helpArticle)
+          .set({ status: "published", publishedAt: sql`coalesce(${helpArticle.publishedAt}, now())` })
+          .where(inArray(helpArticle.id, ids));
+        // Same race guard as single publishes: undo this batch if a parallel write pushed it over.
+        const over = await publishOverLimit(ctx, ws.id);
+        if (over !== null) {
+          for (const article of batch) {
+            await ctx.db
+              .update(helpArticle)
+              .set({ status: "draft", publishedAt: article.publishedAt })
+              .where(eq(helpArticle.id, article.id));
+          }
+          throw publishLimitError(over);
+        }
+        return c.superjson({ ok: true, updated: batch.length, skipped, limit: max });
       }),
 
     articlesDelete: privateProcedure

@@ -104,6 +104,15 @@ export type MergedRequestSummary = {
   authorImage?: string | null
 }
 
+/** Where a post was submitted or imported from. */
+export type PostSource =
+  | "board"
+  | "widget"
+  | "csv"
+  | "canny"
+  | "nolt"
+  | "productboard"
+
 /** Full request including merge graph, author, and lock/pin flags. */
 export type RequestDetailData = {
   id: string
@@ -120,6 +129,7 @@ export type RequestDetailData = {
   createdAt: string
   boardName: string
   boardSlug: string
+  source?: PostSource | null
   allowComments?: boolean
   hasVoted?: boolean
   role?: RequestRole

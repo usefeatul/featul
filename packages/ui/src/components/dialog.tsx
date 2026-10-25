@@ -3,13 +3,33 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { cn } from "@featul/ui/lib/utils"
+import { useBackgroundScaleLock, useOverlayOpenState } from "@featul/ui/hooks/use-background-scale"
 import { modalShellClass, modalInnerClass, overlayRoundedClass, overlayRoundedInnerClass } from "@featul/ui/lib/overlay"
 import { XMarkIcon } from '@featul/ui/icons/xmark';
 
 function Dialog({
+  open,
+  defaultOpen,
+  onOpenChange,
+  modal,
+  scaleBackground = modal !== false,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
+}: React.ComponentProps<typeof DialogPrimitive.Root> & {
+  /** Zoom the app out behind the dialog while it is open. */
+  scaleBackground?: boolean
+}) {
+  const [isOpen, handleOpenChange] = useOverlayOpenState({ open, defaultOpen, onOpenChange })
+  useBackgroundScaleLock(scaleBackground && isOpen)
+  return (
+    <DialogPrimitive.Root
+      data-slot="dialog"
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={handleOpenChange}
+      modal={modal}
+      {...props}
+    />
+  )
 }
 
 function DialogTrigger({
@@ -38,7 +58,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/20 backdrop-blur-xs dark:bg-black/40",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/20 backdrop-blur-[1px] dark:bg-black/40",
         className
       )}
       {...props}

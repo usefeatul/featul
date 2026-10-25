@@ -25,6 +25,9 @@ export type DocsPageId =
   | "branding-setup/domain"
   | "branding-setup/integrations"
   | "branding-setup/data"
+  | "developers/api"
+  | "developers/github-actions"
+  | "developers/github-issues"
   | "open-source/index"
 
 const DOC_IDS: DocsPageId[] = [
@@ -44,6 +47,9 @@ const DOC_IDS: DocsPageId[] = [
   "branding-setup/domain",
   "branding-setup/integrations",
   "branding-setup/data",
+  "developers/api",
+  "developers/github-actions",
+  "developers/github-issues",
   "open-source/index",
 ]
 

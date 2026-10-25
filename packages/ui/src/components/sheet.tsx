@@ -5,10 +5,32 @@ import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
 
 import { cn } from "@featul/ui/lib/utils"
+import { useBackgroundScaleLock, useOverlayOpenState } from "@featul/ui/hooks/use-background-scale"
 import { modalShellClass, modalInnerClass } from "@featul/ui/lib/overlay"
 
-function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />
+function Sheet({
+  open,
+  defaultOpen,
+  onOpenChange,
+  modal,
+  scaleBackground = modal !== false,
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Root> & {
+  /** Zoom the app out behind the sheet while it is open. */
+  scaleBackground?: boolean
+}) {
+  const [isOpen, handleOpenChange] = useOverlayOpenState({ open, defaultOpen, onOpenChange })
+  useBackgroundScaleLock(scaleBackground && isOpen)
+  return (
+    <SheetPrimitive.Root
+      data-slot="sheet"
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={handleOpenChange}
+      modal={modal}
+      {...props}
+    />
+  )
 }
 
 function SheetTrigger({
@@ -37,7 +59,7 @@ function SheetOverlay({
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/20 backdrop-blur-xs dark:bg-black/40",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/20 backdrop-blur-[1px] dark:bg-black/40",
         className
       )}
       {...props}

@@ -117,6 +117,79 @@ async function assertMemberLimitNotReached(ctx: TeamRouterContext, wsId: string)
 
 
 
+type InviteRole = (typeof workspaceInvite.$inferInsert)["role"]
+
+/** Creates a pending invite and emails it; joining always requires the invitee to accept. */
+async function createAndSendInvite(
+  ctx: TeamRouterContext,
+  ws: { id: string; ownerId: string; name: string | null },
+  inviter: { id: string; name?: string | null; email?: string | null },
+  email: string,
+  role: InviteRole,
+): Promise<string> {
+  // Check if email already belongs to an active member
+  const inviteEmail = email.trim().toLowerCase()
+  const [existingMember] = await ctx.db
+    .select({ id: workspaceMember.id })
+    .from(workspaceMember)
+    .innerJoin(user, eq(workspaceMember.userId, user.id))
+    .where(and(
+      eq(workspaceMember.workspaceId, ws.id),
+      eq(workspaceMember.isActive, true),
+      eq(user.email, inviteEmail)
+    ))
+    .limit(1)
+  if (existingMember) throw new HTTPException(400, { message: "User is already a member of this workspace" })
+
+  // Check if email belongs to the workspace owner
+  const [owner] = await ctx.db
+    .select({ email: user.email })
+    .from(user)
+    .where(eq(user.id, ws.ownerId))
+    .limit(1)
+  if (owner?.email?.toLowerCase() === inviteEmail) throw new HTTPException(400, { message: "User is already a member of this workspace" })
+
+  await assertMemberLimitNotReached(ctx, ws.id)
+
+  const token = crypto.randomUUID()
+  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+  await ctx.db.insert(workspaceInvite).values({
+    workspaceId: ws.id,
+    email: inviteEmail,
+    role,
+    invitedBy: inviter.id,
+    token,
+    expiresAt: expires,
+  })
+
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+    const url = `${baseUrl}/invite/${token}`
+    const inviterName = String(inviter.name || inviter.email || "").trim() || undefined
+    const [branding] = await ctx.db
+      .select({ primaryColor: brandingConfig.primaryColor })
+      .from(brandingConfig)
+      .where(eq(brandingConfig.workspaceId, ws.id))
+      .limit(1)
+    const brand = {
+      name: ws.name || "featul",
+      logoUrl: undefined,
+      primaryColor: branding?.primaryColor || undefined,
+      backgroundColor: undefined,
+      textColor: undefined,
+    }
+    await sendWorkspaceInvite(inviteEmail, ws.name || "Workspace", url, {
+      brand,
+      inviterName,
+    })
+  } catch {
+    throw new HTTPException(502, { message: "Invitation saved, but the email could not be sent. Use Resend to try again." })
+  }
+
+  return token
+}
+
 export function createTeamRouter() {
   return j.router({
     viewerByWorkspaceSlug: privateProcedure
@@ -252,67 +325,8 @@ export function createTeamRouter() {
         if (!success) throw new HTTPException(429, { message: "Too many invites. Please wait a minute." })
 
         const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
-        const { meId } = await requireCanManageMembers(ctx, ws)
-
-        // Check if email already belongs to an active member
-        const inviteEmail = input.email.trim().toLowerCase()
-        const [existingMember] = await ctx.db
-          .select({ id: workspaceMember.id })
-          .from(workspaceMember)
-          .innerJoin(user, eq(workspaceMember.userId, user.id))
-          .where(and(
-            eq(workspaceMember.workspaceId, ws.id),
-            eq(workspaceMember.isActive, true),
-            eq(user.email, inviteEmail)
-          ))
-          .limit(1)
-        if (existingMember) throw new HTTPException(400, { message: "User is already a member of this workspace" })
-
-        // Check if email belongs to the workspace owner
-        const [owner] = await ctx.db
-          .select({ email: user.email })
-          .from(user)
-          .where(eq(user.id, ws.ownerId))
-          .limit(1)
-        if (owner?.email?.toLowerCase() === inviteEmail) throw new HTTPException(400, { message: "User is already a member of this workspace" })
-
-        await assertMemberLimitNotReached(ctx, ws.id)
-
-        const token = crypto.randomUUID()
-        const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-
-        await ctx.db.insert(workspaceInvite).values({
-          workspaceId: ws.id,
-          email: input.email.trim().toLowerCase(),
-          role: input.role,
-          invitedBy: meId,
-          token,
-          expiresAt: expires,
-        })
-
-        try {
-          const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-          const url = `${baseUrl}/invite/${token}`
-          const inviterName = String(ctx.session.user.name || ctx.session.user.email || "").trim() || undefined
-          const [branding] = await ctx.db
-            .select({ primaryColor: brandingConfig.primaryColor })
-            .from(brandingConfig)
-            .where(eq(brandingConfig.workspaceId, ws.id))
-            .limit(1)
-          const brand = {
-            name: ws.name || "featul",
-            logoUrl: undefined,
-            primaryColor: branding?.primaryColor || undefined,
-            backgroundColor: undefined,
-            textColor: undefined,
-          }
-          await sendWorkspaceInvite(input.email.trim().toLowerCase(), ws.name || "Workspace", url, {
-            brand,
-            inviterName,
-          })
-        } catch {
-          throw new HTTPException(502, { message: "Invitation saved, but the email could not be sent. Use Resend to try again." })
-        }
+        await requireCanManageMembers(ctx, ws)
+        const token = await createAndSendInvite(ctx, ws, ctx.session.user, input.email, input.role)
 
         return c.superjson({ ok: true, token })
       }),
@@ -458,12 +472,9 @@ export function createTeamRouter() {
       .input(removeMemberInputSchema)
       .post(async ({ ctx, input, c }) => {
         const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
-        const { meId, me } = await requireCanManageMembers(ctx, ws)
-        const isSelf = input.userId === meId
-        const allowed = isSelf || me?.permissions?.canManageMembers || me?.role === "admin" || ws.ownerId === meId
-        if (!allowed) throw new HTTPException(403, { message: "Forbidden" })
-
         if (input.userId === ws.ownerId) throw new HTTPException(403, { message: "Owner cannot leave" })
+        // Any member may leave on their own; removing someone else needs member management rights.
+        if (input.userId !== ctx.session.user.id) await requireCanManageMembers(ctx, ws)
         const [u] = await ctx.db
           .select({ email: user.email })
           .from(user)
@@ -571,40 +582,16 @@ export function createTeamRouter() {
     addExisting: privateProcedure
       .input(addExistingMemberInputSchema)
       .post(async ({ ctx, input, c }) => {
+        const { success } = await limitInvite(ctx.session.user.id)
+        if (!success) throw new HTTPException(429, { message: "Too many invites. Please wait a minute." })
+
         const ws = await getWorkspaceBySlugOrThrow(ctx, input.slug)
-        const { meId } = await requireCanManageMembers(ctx, ws)
+        await requireCanManageMembers(ctx, ws)
 
-        const [u] = await ctx.db
-          .select({ id: user.id })
-          .from(user)
-          .where(eq(user.email, input.email.trim().toLowerCase()))
-          .limit(1)
-
-        if (u?.id) {
-          const plan = normalizePlan(await getWorkspaceAccessPlan(ws.id))
-          const maxMembers = getPlanLimits(plan).maxMembers
-          const activated = await activateMembership(ctx.db, {
-            workspaceId: ws.id, userId: u.id, email: input.email.trim().toLowerCase(),
-            role: input.role, maxMembers,
-          })
-          if (!activated) throw new HTTPException(403, {
-            message: getMemberLimitMessage(plan, maxMembers!),
-          })
-          return c.json({ ok: true, invited: false })
-        }
-
-        await assertMemberLimitNotReached(ctx, ws.id)
-        const token = crypto.randomUUID()
-        const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-        await ctx.db.insert(workspaceInvite).values({
-          workspaceId: ws.id,
-          email: input.email.trim().toLowerCase(),
-          role: input.role,
-          invitedBy: meId,
-          token,
-          expiresAt: expires,
-        })
-        return c.json({ ok: true, invited: true, token })
+        // Existing accounts go through the same invite flow so they consent to joining,
+        // and the response never reveals whether the email has an account.
+        await createAndSendInvite(ctx, ws, ctx.session.user, input.email, input.role)
+        return c.json({ ok: true, invited: true })
       }),
   })
 }

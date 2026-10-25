@@ -31,6 +31,8 @@ export const ACTIVITY_ACTIONS = {
   CHANGELOG_ENTRY_UPDATED: "changelog_entry_updated",
   CHANGELOG_ENTRY_DELETED: "changelog_entry_deleted",
   CHANGELOG_ENTRY_PUBLISHED: "changelog_entry_published",
+  API_KEY_CREATED: "api_key_created",
+  API_KEY_REVOKED: "api_key_revoked",
 } as const
 
 export type ActivityAction = (typeof ACTIVITY_ACTIONS)[keyof typeof ACTIVITY_ACTIONS]

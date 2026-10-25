@@ -50,7 +50,7 @@ await Promise.all([
   }),
   check("live Stripe prices and webhook endpoint", async () => {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { timeout: 15000, maxNetworkRetries: 0 });
-    const account = await stripe.accounts.retrieve();
+    const account = await stripe.accounts.retrieveCurrent();
     if (!account.charges_enabled || !account.payouts_enabled) throw new ReadinessError("Stripe charges or payouts are disabled");
     const priceIds: string[] = [];
     for (const [name, interval, amount] of [

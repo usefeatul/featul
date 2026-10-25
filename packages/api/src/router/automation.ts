@@ -14,19 +14,9 @@ import {
   getNotraConnectionSchema,
   importNotraSchema,
   saveNotraConnectionSchema,
-  aiAssistSchema,
   aiSourcePostsListSchema,
 } from "../validators/changelog";
-import { sendOpenRouterChat } from "../services/openrouter";
-import {
-  AI_TEMPERATURE_BY_ACTION,
-  buildAiUserPrompt,
-  fetchAiSourcePostsByIds,
-  fetchAiSourcePostsList,
-  getMaxTokensByAction,
-  getWorkspaceNameForAi,
-  type AiAction,
-} from "../ai";
+import { fetchAiSourcePostsList } from "../ai";
 import {
   deleteStoredNotraConnection,
   getStoredNotraConnection,
@@ -40,29 +30,6 @@ import {
   canEncryptSecrets,
   SecretCryptoError,
 } from "../crypto/secret";
-
-const AI_SYSTEM_PROMPT = [
-  "You are an expert product changelog writer for SaaS products.",
-  "Write polished, publish-ready changelog content that helps users understand what shipped and why it matters.",
-  "Return ONLY valid JSON. No markdown fences, no commentary.",
-  "JSON keys: title, contentMarkdown, summary. Omit keys you are not asked to return.",
-  "contentMarkdown must be GitHub-flavored Markdown with headings, paragraphs, and bullet lists.",
-  "Prefer substantive, well-structured entries over short summaries.",
-].join(" ");
-
-function parseAiJson(text: string) {
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  if (start === -1 || end === -1) {
-    throw new HTTPException(502, { message: "AI response was not valid JSON" });
-  }
-  const slice = text.slice(start, end + 1);
-  return JSON.parse(slice) as {
-    contentMarkdown?: unknown;
-    summary?: unknown;
-    title?: unknown;
-  };
-}
 
 async function getChangelogBoardId(
   db: { select: (...args: any[]) => any },
@@ -99,89 +66,6 @@ export function createChangelogAutomationProcedures() {
         });
 
         return c.superjson({ ok: true, posts });
-      }),
-
-    aiAssist: privateProcedure
-      .input(aiAssistSchema)
-      .post(async ({ ctx, input, c }) => {
-        const ws = await requireBoardManagerBySlug(ctx, input.slug);
-
-        const model = String(process.env.OPENROUTER_MODEL || "openrouter/auto");
-
-        let sourcePosts;
-        if (input.action === "generateFromPosts" && input.sourcePostIds?.length) {
-          sourcePosts = await fetchAiSourcePostsByIds({
-            db: ctx.db,
-            workspaceId: ws.id,
-            postIds: input.sourcePostIds,
-          });
-
-          if (sourcePosts.length === 0) {
-            throw new HTTPException(400, {
-              message: "No valid shipped feedback items were found for generation",
-            });
-          }
-        }
-
-        const workspaceName = await getWorkspaceNameForAi({
-          db: ctx.db,
-          workspaceId: ws.id,
-        });
-
-        try {
-          const result = await sendOpenRouterChat({
-            model,
-            messages: [
-              { role: "system", content: AI_SYSTEM_PROMPT },
-              {
-                role: "user",
-                content: buildAiUserPrompt({
-                  action: input.action,
-                  prompt: input.prompt,
-                  title: input.title,
-                  contentMarkdown: input.contentMarkdown,
-                  tone: input.tone,
-                  detailLevel: input.detailLevel,
-                  workspaceName,
-                  sourcePosts,
-                }),
-              },
-            ],
-            temperature: AI_TEMPERATURE_BY_ACTION[input.action],
-            max_tokens: getMaxTokensByAction(input.action, input.detailLevel),
-            response_format: { type: "json_object" },
-          });
-
-          const message = (result as any)?.choices?.[0]?.message?.content;
-          if (!message || typeof message !== "string") {
-            throw new HTTPException(502, { message: "AI response was empty" });
-          }
-
-          const data = parseAiJson(message);
-
-          const contentMarkdown =
-            typeof data.contentMarkdown === "string"
-              ? data.contentMarkdown.trim()
-              : undefined;
-          const title =
-            typeof data.title === "string"
-              ? data.title.trim().slice(0, 256)
-              : undefined;
-          const summaryRaw =
-            typeof data.summary === "string" ? data.summary.trim() : undefined;
-          const summary = summaryRaw ? summaryRaw.slice(0, 512) : undefined;
-
-          return c.superjson({ ok: true, contentMarkdown, title, summary });
-        } catch (err) {
-          if (err instanceof HTTPException) {
-            throw err;
-          }
-          const message =
-            err instanceof Error
-              ? err.message
-              : "Failed to generate AI response";
-          throw new HTTPException(500, { message });
-        }
       }),
 
     notraConnectionGet: privateProcedure

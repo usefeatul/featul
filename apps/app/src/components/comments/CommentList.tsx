@@ -17,9 +17,10 @@ import {
 import {
   settingsCardInnerClass,
   settingsCardShellClass,
+  settingsSurfaceHeaderClass,
 } from "@/components/settings/global/SectionCard";
 import { cn } from "@featul/ui/lib/utils";
-import { commentComposerBackgroundClass } from "./styles";
+import { commentCardInnerClass, commentCardShellClass } from "./styles";
 
 interface CommentListProps {
   postId: string;
@@ -126,29 +127,18 @@ export default function CommentList({
 
   return (
     <div className="space-y-4">
-      <div className={plain ? "pt-2" : settingsCardShellClass}>
+      <div className={cn(commentCardShellClass, plain && "mt-5")}>
         {!hideHeading && (
-          <header className="flex flex-col gap-2 px-2 py-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex min-w-0 items-center gap-3">
-              <h2 className="mt-0.5 text-sm font-medium leading-none text-foreground">
-                Comments
-              </h2>
-            </div>
-            <div className="flex w-full shrink-0 items-center justify-end sm:w-auto sm:pl-4">
-              <span className="text-xs tabular-nums text-accent">
-                {commentCount} {commentCount === 1 ? "comment" : "comments"}
-              </span>
-            </div>
+          <header className={settingsSurfaceHeaderClass}>
+            <h2 className="min-w-0 text-sm font-medium leading-6 text-foreground">
+              Comments
+            </h2>
+            <span className="text-xs tabular-nums text-accent">
+              {commentCount} {commentCount === 1 ? "comment" : "comments"}
+            </span>
           </header>
         )}
-        <div
-          className={cn(
-            plain
-              ? "mt-3 rounded-lg border border-border/40 p-3"
-              : settingsCardInnerClass,
-            commentComposerBackgroundClass[surface],
-          )}
-        >
+        <div className={commentCardInnerClass}>
           <CommentForm
             postId={postId}
             onSuccess={handleCommentSuccess}

@@ -1,22 +1,22 @@
 import Link from "next/link";
 import { Button } from "@featul/ui/components/button";
-import { cn } from "@featul/ui/lib/utils";
 import {
   ArrowIcon,
   ChangelogIcon,
   CollectIcon,
+  HelpCenterIcon,
   Plus,
   RoadmapIcon,
 } from "@/components/global/icons";
 import type { ShareLink } from "@/lib/share";
 import CopyButton from "./copy";
 import ShareSection from "./section";
-import { shareCardClass } from "./styles";
 
 const linkIcons = {
   Feedback: CollectIcon,
   Roadmap: RoadmapIcon,
   Changelog: ChangelogIcon,
+  "Help Center": HelpCenterIcon,
 } as const;
 
 export default function WebsiteLinks({
@@ -30,8 +30,9 @@ export default function WebsiteLinks({
     <ShareSection
       title="Links for your app or website"
       description="Add them to your help menu, footer, or docs once and keep collecting."
+      flush
     >
-      <ul className={cn(shareCardClass, "divide-y divide-border/50")}>
+      <ul className="divide-y divide-border/50 dark:divide-white/[0.06]">
         {links.map((link) => {
           const Icon =
             linkIcons[link.label as keyof typeof linkIcons] ?? CollectIcon;
@@ -81,7 +82,9 @@ export default function WebsiteLinks({
             </li>
           );
         })}
-        {links.length < 3 ? (
+        {/* Roadmap and changelog are switched on from board settings. */}
+        {!links.some((link) => link.label === "Roadmap") ||
+        !links.some((link) => link.label === "Changelog") ? (
           <li>
             <Link
               href={`/workspaces/${slug}/settings/board`}

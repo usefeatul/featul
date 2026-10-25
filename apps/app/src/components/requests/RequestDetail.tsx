@@ -18,7 +18,7 @@ import { Button } from "@featul/ui/components/button";
 import { EditIcon } from "@/components/global/icons";
 import { useIsMobile } from "@featul/ui/hooks/use-mobile";
 import EditPostModal from "../subdomain/request/EditPostModal";
-import type { RequestDetailData } from "@/types/request";
+import type { PostSource, RequestDetailData } from "@/types/request";
 import { isOnboardingPost } from "@/lib/onboarding/post";
 import { OnboardingPostContent } from "./OnboardingPostContent";
 import {
@@ -32,6 +32,15 @@ import RoleBadge from "../global/RoleBadge";
 import { MergeSubmissionSection } from "./MergeSubmission";
 import { Linkify } from "@/components/post/linkify";
 import { usePanelShortcut } from "@/hooks/shortcut";
+
+const SOURCE_LABELS: Record<PostSource, string> = {
+  board: "board",
+  widget: "widget",
+  csv: "CSV",
+  canny: "Canny",
+  nolt: "Nolt",
+  productboard: "ProductBoard",
+};
 
 type RequestDetailProps = {
   post: RequestDetailData;
@@ -145,12 +154,12 @@ export default function RequestDetail({
                       <p className="truncate text-sm font-medium">
                         {author.name}
                       </p>
-                      <time
-                        dateTime={post.publishedAt ?? post.createdAt}
-                        className="text-xs text-accent"
-                      >
-                        {relativeTime(post.publishedAt ?? post.createdAt)}
-                      </time>
+                      <p className="text-xs text-accent">
+                        <time dateTime={post.publishedAt ?? post.createdAt}>
+                          {relativeTime(post.publishedAt ?? post.createdAt)}
+                        </time>
+                        {post.source ? <> · via {SOURCE_LABELS[post.source]}</> : null}
+                      </p>
                     </div>
                   </div>
                 </header>

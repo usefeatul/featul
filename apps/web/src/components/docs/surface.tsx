@@ -3,6 +3,7 @@ import {
   IconBoltFilled,
   IconBookFilled,
   IconBrandGithubFilled,
+  IconCodeCircleFilled,
   IconKeyboardFilled,
   IconPaletteFilled,
 } from "@tabler/icons-react"
@@ -25,6 +26,7 @@ const ICONS: Record<DocsTopicIconKey, ComponentType<{ className?: string; size?:
   book: IconBookFilled,
   bolt: IconBoltFilled,
   palette: IconPaletteFilled,
+  code: IconCodeCircleFilled,
   keyboard: IconKeyboardFilled,
   github: IconBrandGithubFilled,
 }

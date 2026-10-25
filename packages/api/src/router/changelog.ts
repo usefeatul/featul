@@ -16,6 +16,7 @@ import { getPlanLimits, assertWithinLimit } from "../shared/plan";
 import { toSlug, toUrlSlug } from "../shared/slug";
 import {
   getWorkspaceAccessPlan,
+  requireActiveWorkspaceMemberBySlug,
   requireBoardManagerBySlug,
 } from "../shared/access";
 import {
@@ -269,12 +270,7 @@ export function createChangelogRouter() {
     settings: privateProcedure
       .input(bySlugSchema)
       .get(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.superjson({ ok: false });
+        const ws = await requireActiveWorkspaceMemberBySlug(ctx, input.slug);
 
         const [b] = await ctx.db
           .select({
@@ -334,12 +330,7 @@ export function createChangelogRouter() {
     tagsList: privateProcedure
       .input(bySlugSchema)
       .get(async ({ ctx, input, c }) => {
-        const [ws] = await ctx.db
-          .select({ id: workspace.id })
-          .from(workspace)
-          .where(eq(workspace.slug, input.slug))
-          .limit(1);
-        if (!ws) return c.superjson({ tags: [] });
+        const ws = await requireActiveWorkspaceMemberBySlug(ctx, input.slug);
         const [b] = await ctx.db
           .select({ id: board.id, changelogTags: board.changelogTags })
           .from(board)
@@ -508,10 +499,10 @@ export function createChangelogRouter() {
           (max) => `Changelog entries limit reached (${max})`,
         );
 
-        const relatedPostIds = input.relatedPostIds ?? [];
-        if ((await getRelatedPosts(ctx.db, ws.id, { ids: relatedPostIds })).length !== relatedPostIds.length) {
-          throw new HTTPException(400, { message: "Some related posts are unavailable in this workspace" });
-        }
+        // Posts that were deleted or unpublished are dropped rather than failing the save.
+        const relatedPostIds = (
+          await getRelatedPosts(ctx.db, ws.id, { ids: input.relatedPostIds ?? [] })
+        ).map((related) => related.id);
         const authorIds = input.authorIds ?? [ctx.session.user.id];
         await assertWorkspaceAuthors(ctx, ws, authorIds);
         const entrySlug = (toUrlSlug(input.title) || "update") + "-" + Date.now().toString(36);
@@ -658,11 +649,10 @@ export function createChangelogRouter() {
         }
         if (input.tags !== undefined) updates.tags = input.tags;
         if (input.relatedPostIds !== undefined) {
+          // A linked post deleted or unpublished since it was added would otherwise block every
+          // save of this entry, so unavailable posts are dropped instead.
           const posts = await getRelatedPosts(ctx.db, ws.id, { ids: input.relatedPostIds });
-          if (posts.length !== input.relatedPostIds.length) {
-            throw new HTTPException(400, { message: "Some related posts are unavailable in this workspace" });
-          }
-          updates.relatedPostIds = input.relatedPostIds;
+          updates.relatedPostIds = posts.map((related) => related.id);
         }
         const isFirstPublish =
           input.status === "published" && !existing.publishedAt;

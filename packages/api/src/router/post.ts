@@ -201,7 +201,7 @@ export function createPostRouter() {
           workspaceId: ws.id,
           values: {
             boardId: b.id, title, content, image: imageFields.image, slug,
-            authorId: userId || null, isAnonymous: !userId,
+            authorId: userId || null, isAnonymous: !userId, source: "board",
             metadata: mergePostMetadata(
               !userId ? { fingerprint: anonymousFingerprint } : undefined,
               imageFields.attachments,
@@ -555,31 +555,31 @@ export function createPostRouter() {
         const { postId, reason, description } = input
         const userId = ctx.session.user.id
 
-        // Check if post exists
+        // Same 404 for missing and not-visible posts (private boards, drafts).
+        const target = await requirePostAccess(ctx.db, postId, userId, { allowUnpublishedForMembers: true })
+
         const [existingPost] = await ctx.db
-          .select({
-            id: post.id,
-            boardId: post.boardId,
-            title: post.title,
-            slug: post.slug,
-            roadmapStatus: post.roadmapStatus,
-          })
+          .select({ slug: post.slug })
           .from(post)
           .where(eq(post.id, postId))
           .limit(1)
 
-        if (!existingPost) {
-          throw new HTTPException(404, { message: "Post not found" })
-        }
+        // One report per reporter: repeats succeed silently without re-notifying.
+        const [created] = await ctx.db
+          .insert(postReport)
+          .values({
+            postId,
+            reportedBy: userId,
+            reason,
+            description: description || null,
+            status: "pending",
+          })
+          .onConflictDoNothing()
+          .returning({ id: postReport.id })
 
-        // Create report
-        await ctx.db.insert(postReport).values({
-          postId,
-          reportedBy: userId,
-          reason,
-          description: description || null,
-          status: "pending",
-        })
+        if (!created) {
+          return c.superjson({ success: true })
+        }
 
         // Count total reports
         const [{ count }] = await ctx.db
@@ -589,61 +589,52 @@ export function createPostRouter() {
 
         const reportCount = Number(count)
 
-        // Get Workspace Owner Email
-        const [boardRow] = await ctx.db
-          .select({ workspaceId: board.workspaceId })
-          .from(board)
-          .where(eq(board.id, existingPost.boardId))
+        await ctx.db.insert(activityLog).values({
+          workspaceId: target.workspaceId,
+          userId,
+          action: ACTIVITY_ACTIONS.POST_REPORTED,
+          actionType: "create",
+          entity: "post",
+          entityId: String(postId),
+          title: target.title,
+          metadata: {
+            reason,
+            hasDescription: Boolean(description),
+            roadmapStatus: target.roadmapStatus,
+            slug: existingPost?.slug,
+            reportCount
+          },
+        })
+
+        // Send Email to Workspace Owner
+        const [ws] = await ctx.db
+          .select({
+            name: workspace.name,
+            slug: workspace.slug,
+            ownerId: workspace.ownerId
+          })
+          .from(workspace)
+          .where(eq(workspace.id, target.workspaceId))
           .limit(1)
 
-        if (boardRow) {
-          await ctx.db.insert(activityLog).values({
-            workspaceId: boardRow.workspaceId,
-            userId,
-            action: ACTIVITY_ACTIONS.POST_REPORTED,
-            actionType: "create",
-            entity: "post",
-            entityId: String(postId),
-            title: existingPost.title,
-            metadata: {
-              reason,
-              hasDescription: Boolean(description),
-              roadmapStatus: existingPost.roadmapStatus,
-              slug: existingPost.slug,
-              reportCount
-            },
-          })
-
-          // Send Email to Workspace Owner
-          const [ws] = await ctx.db
-            .select({
-              name: workspace.name,
-              slug: workspace.slug,
-              ownerId: workspace.ownerId
-            })
-            .from(workspace)
-            .where(eq(workspace.id, boardRow.workspaceId))
+        if (ws) {
+          const [owner] = await ctx.db
+            .select({ email: user.email })
+            .from(user)
+            .where(eq(user.id, ws.ownerId))
             .limit(1)
 
-          if (ws) {
-            const [owner] = await ctx.db
-              .select({ email: user.email })
-              .from(user)
-              .where(eq(user.id, ws.ownerId))
-              .limit(1)
-
-            if (owner && owner.email) {
-              const { sendReportEmail } = await import("@featul/auth")
-              await sendReportEmail(owner.email, {
-                workspaceName: ws.name,
-                itemName: existingPost.title,
-                itemUrl: `https://${ws.slug}.featul.com/board/p/${existingPost.slug}`,
-                itemType: "post",
-                reason,
-                description,
-                reportCount
-              })
-            }
+          if (owner && owner.email) {
+            const { sendReportEmail } = await import("@featul/auth")
+            await sendReportEmail(owner.email, {
+              workspaceName: ws.name,
+              itemName: target.title,
+              itemUrl: `https://${ws.slug}.featul.com/board/p/${existingPost?.slug ?? ""}`,
+              itemType: "post",
+              reason,
+              description,
+              reportCount
+            })
           }
         }
 
@@ -668,6 +659,17 @@ export function createPostRouter() {
         }
 
         const targetPost = await requirePostAccess(ctx.db, postId, userId)
+        if (!userId) {
+          const [settings] = await ctx.db
+            .select({ allowAnonymous: board.allowAnonymous })
+            .from(post)
+            .innerJoin(board, eq(post.boardId, board.id))
+            .where(eq(post.id, postId))
+            .limit(1)
+          if (!settings?.allowAnonymous) {
+            throw new HTTPException(401, { message: "Please sign in to vote on this board" })
+          }
+        }
         return c.superjson(await togglePostVote(ctx.db, postId, { userId, fingerprint: effectiveFingerprint }, {
           workspaceId: targetPost.workspaceId, title: targetPost.title,
           metadata: { roadmapStatus: targetPost.roadmapStatus },

@@ -92,7 +92,7 @@ export default function ReserveForm() {
         }
         throw new Error("Reservation failed")
       }
-      toast.success("Reservation created. Check your email to confirm.")
+      toast.success("Check your email and confirm within 24 hours to hold this subdomain.")
       setCooldownUntil(Date.now() + 60_000)
       setEmail("")
       setSlug("")

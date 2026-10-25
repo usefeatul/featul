@@ -46,3 +46,21 @@ test("explicit trusted origin works and hostile preflight receives no grant", as
   );
   expect(denied.headers.get("Access-Control-Allow-Origin")).toBeNull();
 });
+test("wildcard-matched subdomains never receive credentialed CORS", async () => {
+  const origin = "https://tenant.example.com";
+  const response = await withCors(
+    new Request("https://app.example.com/api/auth/get-session", {
+      headers: { origin, cookie: "synthetic=secret" },
+    }),
+    new Response("{}"),
+  );
+  expect(response.headers.get("Access-Control-Allow-Origin")).toBeNull();
+  expect(response.headers.get("Access-Control-Allow-Credentials")).toBeNull();
+  const preflight = await handlePreflight(
+    new Request("https://app.example.com/api/auth/get-session", {
+      method: "OPTIONS",
+      headers: { origin },
+    }),
+  );
+  expect(preflight.headers.get("Access-Control-Allow-Origin")).toBeNull();
+});

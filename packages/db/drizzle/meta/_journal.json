@@ -281,6 +281,34 @@
       "when": 1792744378718,
       "tag": "0039_changelog_authors",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1792778135385,
+      "tag": "0040_post_source",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1792834696849,
+      "tag": "0041_security_hardening",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1792919126510,
+      "tag": "0042_workspace_api_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1792925079741,
+      "tag": "0043_github_issue_links",
+      "breakpoints": true
     }
   ]
 }

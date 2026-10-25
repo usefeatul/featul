@@ -2,15 +2,24 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@featul/api/client";
 import { Button } from "@featul/ui/components/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverList,
+  PopoverSeparator,
+  PopoverTrigger,
+} from "@featul/ui/components/popover";
 import { Switch } from "@featul/ui/components/switch";
 import { raisedSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
-import { AnalyticsIcon, BookIcon, OpenExternalIcon, PlusIcon, SparklesIcon } from "@/components/global/icons";
+import { AnalyticsIcon, BookIcon, EditIcon, OpenExternalIcon, PlusIcon, SparklesIcon } from "@/components/global/icons";
 import { ActionTooltip } from "@/components/global/ActionTooltip";
+import { ContextMenuItem } from "@/components/global/ContextMenuItem";
 import { useWorkspaceNav } from "@/hooks/useWorkspaceNav";
 import { expectOk } from "@/hooks/useHelpTree";
 import { CollectionDialog } from "./CollectionDialog";
@@ -18,7 +27,7 @@ import { openHelpImport } from "./HelpImport";
 
 type HelpSettings = { isVisible: boolean; publishedCount: number };
 
-/** Help center list header: public toggle, view link, new collection, new article. */
+/** Help center list header: public toggle, view link, analytics, and one menu for creating things. */
 export function HelpHeaderActions({
   workspaceSlug,
   buttonClassName,
@@ -28,7 +37,9 @@ export function HelpHeaderActions({
 }) {
   const queryClient = useQueryClient();
   const queryKey = ["help-settings", workspaceSlug];
+  const router = useRouter();
   const [collectionOpen, setCollectionOpen] = React.useState(false);
+  const [createOpen, setCreateOpen] = React.useState(false);
   const { middleNav } = useWorkspaceNav(workspaceSlug);
   const boardUrl = middleNav.find((item) => item.label === "My Board")?.href;
 
@@ -61,6 +72,11 @@ export function HelpHeaderActions({
     }
   };
 
+  const create = (fn: () => void) => () => {
+    setCreateOpen(false);
+    fn();
+  };
+
   const visibilityHint = !isVisible
     ? "Hidden from your public site. Turn on to show it."
     : data && data.publishedCount === 0
@@ -89,17 +105,6 @@ export function HelpHeaderActions({
           </Button>
         </ActionTooltip>
       ) : null}
-      <ActionTooltip label="Draft articles from your website">
-        <Button
-          variant="plain"
-          size="icon-sm"
-          className={buttonClassName}
-          aria-label="Draft from website"
-          onClick={openHelpImport}
-        >
-          <SparklesIcon className="size-4" />
-        </Button>
-      </ActionTooltip>
       <ActionTooltip label="Analytics">
         <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
           <Link href={`/workspaces/${workspaceSlug}/help/analytics`} aria-label="Analytics">
@@ -107,24 +112,35 @@ export function HelpHeaderActions({
           </Link>
         </Button>
       </ActionTooltip>
-      <ActionTooltip label="New collection">
-        <Button
-          variant="plain"
-          size="icon-sm"
-          className={buttonClassName}
-          aria-label="New collection"
-          onClick={() => setCollectionOpen(true)}
-        >
-          <BookIcon className="size-4" />
-        </Button>
-      </ActionTooltip>
-      <ActionTooltip label="New article">
-        <Button asChild variant="plain" size="icon-sm" className={buttonClassName}>
-          <Link href={`/workspaces/${workspaceSlug}/help/new`} aria-label="New article">
-            <PlusIcon className="size-4" />
-          </Link>
-        </Button>
-      </ActionTooltip>
+      <Popover open={createOpen} onOpenChange={setCreateOpen}>
+        <ActionTooltip label="Create">
+          <PopoverTrigger asChild>
+            <Button variant="plain" size="icon-sm" className={buttonClassName} aria-label="Create">
+              <PlusIcon className="size-4" />
+            </Button>
+          </PopoverTrigger>
+        </ActionTooltip>
+        <PopoverContent align="end" list className="w-max min-w-0">
+          <PopoverList>
+            <ContextMenuItem
+              icon={<EditIcon className="size-4" />}
+              label="New article"
+              onClick={create(() => router.push(`/workspaces/${workspaceSlug}/help/new`))}
+            />
+            <ContextMenuItem
+              icon={<BookIcon className="size-4" />}
+              label="New collection"
+              onClick={create(() => setCollectionOpen(true))}
+            />
+            <PopoverSeparator />
+            <ContextMenuItem
+              icon={<SparklesIcon className="size-4" />}
+              label="Draft from website"
+              onClick={create(openHelpImport)}
+            />
+          </PopoverList>
+        </PopoverContent>
+      </Popover>
       <CollectionDialog open={collectionOpen} onOpenChange={setCollectionOpen} workspaceSlug={workspaceSlug} />
     </div>
   );

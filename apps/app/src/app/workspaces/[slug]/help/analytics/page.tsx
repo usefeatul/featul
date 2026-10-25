@@ -13,7 +13,7 @@ export default async function HelpAnalyticsPage({ params }: Props) {
   const { slug } = await params;
   const access = await getHelpAnalyticsAccess(slug);
   return (
-    <section className="-mx-4 flex flex-1 flex-col bg-background pt-2 sm:-mx-8 lg:-mx-12 xl:-mx-16">
+    <section className="-mx-4 bg-background pt-2 sm:-mx-8 lg:-mx-12 xl:-mx-16">
       <HelpAnalytics workspaceSlug={slug} initialAccess={access} />
     </section>
   );

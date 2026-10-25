@@ -31,3 +31,13 @@ export async function deleteCommentImageUpload(url: string): Promise<void> {
   if (res.ok || res.status === 409) return
   throw new Error("Failed to delete image")
 }
+
+/** Transcribes a voice-typing recording (base64 WAV) for the comment box. */
+export async function transcribeCommentAudio(postId: string, audio: string): Promise<string> {
+  const res = await client.comment.transcribe.$post({ postId, audio, format: "wav" })
+  if (!res.ok) {
+    throw new Error("Failed to transcribe audio")
+  }
+  const data = await res.json()
+  return data.text
+}

@@ -18,6 +18,7 @@ import Menu from "./menu";
 import { PANEL_ARIA_SHORTCUTS } from "@/hooks/shortcut";
 import { PanelShortcutKeys, ShortcutKey } from "@/components/global/keys";
 import { sidebarHeaderActionClassName } from "@/components/sidebar/styles";
+import { BackButton } from "@/components/global/BackButton";
 
 const actionClass =
   "size-8 rounded-lg border-0 bg-transparent p-0 text-accent shadow-none hover:bg-black/[0.06] data-[state=open]:bg-black/[0.06] dark:bg-transparent dark:hover:bg-white/[0.03] dark:data-[state=open]:bg-white/[0.03]";
@@ -44,7 +45,7 @@ export default function Header({
   onOpenList,
 }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-20 flex min-h-13 items-center gap-2 bg-background pl-2 pr-4 sm:pr-6">
+    <header className="sticky top-0 z-20 flex min-h-12 items-center gap-2 bg-background pl-2 pr-4 sm:pr-6">
       {onOpenList ? (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -71,29 +72,8 @@ export default function Header({
           </TooltipContent>
         </Tooltip>
       ) : null}
-      <nav aria-label="Request navigation" className="min-w-0 flex-1 pl-1.5">
-        <ol className="flex min-w-0 items-center gap-2 text-sm">
-          <li className="shrink-0">
-            <Link
-              href={backHref}
-              className="flex items-center gap-1 rounded-lg py-1 text-accent transition-colors hover:text-foreground"
-              aria-label="Back to requests"
-            >
-              <span className="sr-only sm:not-sr-only">Requests</span>
-            </Link>
-          </li>
-          <li aria-hidden="true" className="hidden text-accent/50 sm:block">
-            /
-          </li>
-          <li
-            aria-current="page"
-            className="min-w-0 truncate font-medium"
-            title={title}
-          >
-            {title}
-          </li>
-        </ol>
-      </nav>
+      <BackButton href={backHref} label="requests" />
+      <div className="flex-1" />
       <div className="flex h-8 shrink-0 items-center gap-0.5 sm:gap-1">
         <NavigationButton href={prevHref} direction="up" />
         <NavigationButton href={nextHref} direction="down" />

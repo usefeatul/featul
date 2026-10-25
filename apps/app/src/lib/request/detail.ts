@@ -40,6 +40,7 @@ export function buildPostSelect<T extends Record<string, unknown>>(
     id: post.id,
     authorId: post.authorId,
     widgetUserId: post.widgetUserId,
+    source: post.source,
     title: post.title,
     content: post.content,
     image: post.image,

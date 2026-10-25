@@ -1,13 +1,14 @@
 import { eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
-import { helpArticle } from "@featul/db";
+import { helpArticle, helpCollection } from "@featul/db";
 import { authorizePrivateChangelogAiRequest, changelogAiJsonResponse } from "../../ai/auth";
 import { createSseStreamHeaders } from "../../ai/sse";
 import { readBoundedJson } from "../../request/json";
 import { getWorkspaceAccessPlan, requireBoardManagerBySlug } from "../../shared/access";
 import { ImportFetchError, normalizeSiteUrl } from "./fetch";
 import { draftHelpCenter, type HelpProposal } from "./generate";
+import { createTitleIndex, dedupeProposal } from "./dedupe";
 import { parseGithubRepo, readRepo } from "./repo";
 import { readSite, type ImportSource } from "./site";
 import { getHelpImportUsage, markHelpImportDrafted, releaseHelpImport, reserveHelpImport } from "./usage";
@@ -158,19 +159,58 @@ export async function createHelpImportResponse(req: Request) {
         if (cancelled) return;
         drafting = true;
         send({ type: "step", step: "draft", state: "running" });
-        const existing = await db
-          .select({ title: helpArticle.title })
-          .from(helpArticle)
-          .where(eq(helpArticle.workspaceId, workspace.id));
-        const proposal = await draftHelpCenter({
-          workspaceName: workspace.name?.trim() || "this product",
+        // A re-scan only adds what's missing, so the draft is told what's already written.
+        const [existingArticles, existingCollections] = await Promise.all([
+          db
+            .select({ title: helpArticle.title, summary: helpArticle.summary, collection: helpCollection.name })
+            .from(helpArticle)
+            .leftJoin(helpCollection, eq(helpArticle.collectionId, helpCollection.id))
+            .where(eq(helpArticle.workspaceId, workspace.id)),
+          db
+            .select({ name: helpCollection.name, description: helpCollection.description, icon: helpCollection.icon })
+            .from(helpCollection)
+            .where(eq(helpCollection.workspaceId, workspace.id))
+            .orderBy(helpCollection.position),
+        ]);
+        const existingTitles = existingArticles.map((row: { title: string }) => row.title);
+        const productName = workspace.name?.trim() || null;
+        // Don't stream titles the review will drop as repeats.
+        const streamed = createTitleIndex(existingTitles, productName);
+        const drafted = await draftHelpCenter({
+          workspaceName: productName || "this product",
           maxArticles: usage.maxArticles,
           sources,
-          existingTitles: existing.map((row: { title: string }) => row.title),
+          existing: {
+            articles: existingArticles,
+            collections: existingCollections.map((col: { name: string }) => col.name),
+          },
           signal: upstream.signal,
-          onArticle: (title) => send({ type: "article", title }),
+          onArticle: (title) => {
+            if (streamed.has(title)) return;
+            streamed.add(title);
+            send({ type: "article", title });
+          },
         });
-        send({ type: "step", step: "draft", state: "done", detail: `${proposal.articles.length} articles` });
+        const { skipped, ...proposal } = dedupeProposal(drafted, {
+          titles: existingTitles,
+          collections: existingCollections,
+          productName,
+        });
+        if (proposal.articles.length === 0) {
+          // Nothing new was found, so the scan isn't counted.
+          send({ type: "step", step: "draft", state: "done", detail: "Nothing new" });
+          send({
+            type: "error",
+            message: "Your help center already covers everything we found. Nothing new to add, and this scan wasn't counted.",
+          });
+          return;
+        }
+        send({
+          type: "step",
+          step: "draft",
+          state: "done",
+          detail: `${proposal.articles.length} ${existingTitles.length ? "new " : ""}articles${skipped ? ` · ${skipped} already covered` : ""}`,
+        });
         send({ type: "proposal", proposal });
         keepScan = true;
         await markHelpImportDrafted(db, workspace.id).catch((error: unknown) =>

@@ -155,3 +155,57 @@ export function resolveOpenRouterStreamModel() {
     "anthropic/claude-sonnet-4.6"
   );
 }
+
+export function resolveOpenRouterTranscribeModel() {
+  return (
+    String(process.env.OPENROUTER_TRANSCRIBE_MODEL || "").trim() ||
+    "google/gemini-3.5-flash-lite"
+  );
+}
+
+// Models tend to invent words for silent clips when asked to "return
+// nothing", so silence is reported with an explicit marker instead.
+const NO_SPEECH_MARKER = "NO_SPEECH";
+
+const TRANSCRIBE_SYSTEM_PROMPT = `You transcribe voice dictation for a comment box. Return only the words actually spoken, verbatim, with natural punctuation and capitalization, in the language spoken. Never translate, summarize, answer questions, or add commentary. Never guess or invent words. If the recording has no clearly intelligible speech (silence, background noise, breathing, typing, music), reply with exactly ${NO_SPEECH_MARKER} and nothing else.`;
+
+/** Speech-to-text through a chat model that accepts `input_audio`. */
+export async function transcribeOpenRouterAudio(
+  audioBase64: string,
+  format: "wav",
+) {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: { ...getOpenRouterHeaders(), Accept: "application/json" },
+    body: JSON.stringify({
+      model: resolveOpenRouterTranscribeModel(),
+      temperature: 0,
+      max_tokens: 1500,
+      messages: [
+        { role: "system", content: TRANSCRIBE_SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `Transcribe this recording, or reply ${NO_SPEECH_MARKER} if nobody speaks.`,
+            },
+            { type: "input_audio", input_audio: { data: audioBase64, format } },
+          ],
+        },
+      ],
+    }),
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.text().catch(() => "");
+    console.error("OpenRouter transcription failed", res.status, errorBody);
+    throw new HTTPException(502, { message: "Couldn't transcribe audio" });
+  }
+
+  const data = (await res.json()) as {
+    choices?: Array<{ message?: { content?: string | null } }>;
+  };
+  const text = String(data.choices?.[0]?.message?.content ?? "").trim();
+  return text.includes(NO_SPEECH_MARKER) ? "" : text;
+}

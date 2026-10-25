@@ -12,6 +12,7 @@ import { cn } from "@featul/ui/lib/utils";
 import type { NodeViewProps } from "@tiptap/core";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { EditorNodeViewWrapper } from "../../components/shared/node-view-wrapper";
+import { getSafeImageSrc } from "../../lib/safe-url";
 
 export const FigureView = ({
   node,
@@ -254,7 +255,7 @@ export const FigureView = ({
             <img
               alt={altValue}
               className="h-auto w-full"
-              src={src}
+              src={getSafeImageSrc(src) ?? undefined}
             />
 
             {/* Resize handles - only shown when selected */}

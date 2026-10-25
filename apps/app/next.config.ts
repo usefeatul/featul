@@ -38,6 +38,8 @@ const nextConfig = {
                 "object-src 'none'",
             ].join('; '),
         }
+        // Fallback only: src/middleware/widget.ts replaces this on /widget/:id/frame
+        // with frame-ancestors limited to the workspace's allowed sites.
         const widgetCsp = {
             key: 'Content-Security-Policy',
             value: [

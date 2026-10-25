@@ -22,6 +22,10 @@ const routerImports = {
     import("./router/integration").then((m) => m.createIntegrationRouter()),
   account: () =>
     import("./router/account").then((m) => m.createAccountRouter()),
+  apiKey: () =>
+    import("./router/api-key").then((m) => m.createApiKeyRouter()),
+  github: () =>
+    import("./router/github").then((m) => m.createGithubRouter()),
 };
 
 const api = j
@@ -43,6 +47,8 @@ const appRouter = j.mergeRouters(api, {
   member: routerImports.member,
   integration: routerImports.integration,
   account: routerImports.account,
+  apiKey: routerImports.apiKey,
+  github: routerImports.github,
   widget: createWidgetRouter(),
 });
 

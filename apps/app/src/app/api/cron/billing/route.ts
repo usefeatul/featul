@@ -2,13 +2,13 @@ import { reconcileBilling } from "@featul/auth/billing/reconcile"
 import { checkStorageCleanup } from "@featul/api/storage/health"
 import { reconcileWebhooks } from "@featul/api/services/delivery"
 import * as Sentry from "@sentry/nextjs"
+import { isAuthorizedCron } from "../authorize"
 
 export const runtime = "nodejs"
 export const maxDuration = 60
 
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET?.trim()
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!isAuthorizedCron(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 })
   }
   try {

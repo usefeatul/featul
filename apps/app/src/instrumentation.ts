@@ -7,6 +7,10 @@ export async function register() {
       const { assertProductionConfiguration } = await import("@featul/auth/configuration");
       assertProductionConfiguration();
     }
+    if (process.env.NODE_ENV === "development") {
+      const { startDevScheduler } = await import("./lib/changelog/dev-scheduler");
+      startDevScheduler();
+    }
   }
 
   if (process.env.NEXT_RUNTIME === "edge") {
@@ -15,3 +19,4 @@ export async function register() {
 }
 
 export const onRequestError = Sentry.captureRequestError;
+

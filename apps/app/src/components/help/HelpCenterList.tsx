@@ -54,6 +54,14 @@ import { ContextMenuShell } from "@/components/global/ContextMenuShell";
 import { ContextMenuItem, CONTEXT_MENU_DESTRUCTIVE_CLASS } from "@/components/global/ContextMenuItem";
 import { DestructiveConfirmDialog } from "@/components/global/DestructiveConfirmDialog";
 import { useContextMenuPosition } from "@/hooks/useContextMenuPosition";
+import { useSelectableList } from "@/hooks/useSelectableList";
+import { useRequestDragSelection } from "@/hooks/useRequestDragSelection";
+import { SelectableListShell } from "@/components/selection/SelectableListShell";
+import { SelectionControl } from "@/components/selection/SelectionControl";
+import { getSelectableRowClassName, type SelectionItemProps } from "@/components/selection/Row";
+import { pluralizeItemLabel } from "@/components/selection/pluralize";
+import { getSelectedIds, removeSelectedIds } from "@/lib/selection/store";
+import type { SelectionHydrationState } from "@/types/selection";
 import { expectOk, helpTreeKey, useHelpTree, useRefreshHelpTree } from "@/hooks/useHelpTree";
 import { relativeTime } from "@/lib/time";
 import { getInitials } from "@/utils/user";
@@ -84,6 +92,8 @@ function groupArticles(tree: HelpAdminTree): Group[] {
 }
 
 type Move = "top" | "up" | "down" | "bottom";
+
+type GetSelectionProps = (id: string) => SelectionItemProps;
 
 /** New order of ids after moving `id`; null when it is already there. */
 function moved(ids: string[], id: string, move: Move) {
@@ -118,15 +128,105 @@ type Edges = { first: boolean; last: boolean };
 export function HelpCenterList({
   workspaceSlug,
   initialTree,
+  initialIsSelecting,
+  initialSelectedIds,
 }: {
   workspaceSlug: string;
   initialTree: HelpAdminTree;
-}) {
+} & SelectionHydrationState) {
   const { data: tree = initialTree } = useHelpTree(workspaceSlug, initialTree);
   const refresh = useRefreshHelpTree(workspaceSlug);
   const queryClient = useQueryClient();
   const [editing, setEditing] = React.useState<HelpAdminCollection | null>(null);
   const groups = React.useMemo(() => groupArticles(tree), [tree]);
+  const listKey = `help-${workspaceSlug}`;
+  // Selection runs across collections in the order they are shown, so shift-click ranges span groups.
+  const itemIds = React.useMemo(() => groups.flatMap((group) => group.articles.map((a) => a.id)), [groups]);
+  const itemIndex = React.useMemo(() => new Map(itemIds.map((id, index) => [id, index])), [itemIds]);
+  const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [bulkAction, setBulkAction] = React.useState<"delete" | "published" | "draft" | null>(null);
+
+  const selection = useSelectableList({
+    listKey,
+    itemIds,
+    initialIsSelecting,
+    initialSelectedIds,
+    isPending: bulkAction !== null,
+    confirmOpen,
+    setConfirmOpen,
+  });
+  const { getItemSelectionProps } = selection;
+  const getSelectionProps = React.useCallback<GetSelectionProps>(
+    (id) => getItemSelectionProps(id, itemIndex.get(id) ?? 0),
+    [getItemSelectionProps, itemIndex],
+  );
+  // Same click-and-drag painting as the requests list; it runs across every collection.
+  const dragSelection = useRequestDragSelection({
+    enabled: selection.isSelectingForRender && bulkAction === null && !confirmOpen,
+    selectedIds: selection.selectedIdsSet,
+    itemIds,
+    setRangeSelected: selection.setRangeSelected,
+  });
+
+  const selectedArticles = tree.articles.filter((a) => selection.selectedIdsSet.has(a.id));
+  const canPublish = selectedArticles.some((a) => a.status === "draft");
+  const canUnpublish = selectedArticles.some((a) => a.status === "published");
+
+  /** Selected ids that still exist; stale ones from another tab are dropped. */
+  const takeSelected = () => {
+    const known = new Set(itemIds);
+    return getSelectedIds(listKey).filter((id) => known.has(id));
+  };
+
+  const handleBulkDelete = async () => {
+    const ids = takeSelected();
+    if (ids.length === 0) return;
+    setBulkAction("delete");
+    try {
+      const res = await client.help.articlesDelete.$post({ slug: workspaceSlug, articleIds: ids });
+      await expectOk(res, "Couldn't delete the articles");
+      const gone = new Set(ids);
+      queryClient.setQueryData<HelpAdminTree>(helpTreeKey(workspaceSlug), (current) =>
+        current ? { ...current, articles: current.articles.filter((a) => !gone.has(a.id)) } : current,
+      );
+      removeSelectedIds(listKey, ids);
+      setConfirmOpen(false);
+      toast.success(`Deleted ${ids.length} ${pluralizeItemLabel("article", ids.length)}`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't delete the articles");
+    } finally {
+      setBulkAction(null);
+      await refresh();
+    }
+  };
+
+  const handleBulkStatus = async (status: "published" | "draft") => {
+    const ids = takeSelected().filter((id) => tree.articles.find((a) => a.id === id)?.status !== status);
+    if (ids.length === 0) return;
+    setBulkAction(status);
+    try {
+      const res = await client.help.articlesSetStatus.$post({ slug: workspaceSlug, articleIds: ids, status });
+      await expectOk(res, "Couldn't update the articles");
+      const { updated, skipped, limit } = (await res.json()) as {
+        updated: number;
+        skipped: number;
+        limit: number | null;
+      };
+      removeSelectedIds(listKey, ids);
+      const verb = status === "published" ? "Published" : "Unpublished";
+      toast.success(`${verb} ${updated} ${pluralizeItemLabel("article", updated)}`);
+      if (skipped > 0) {
+        toast.error(
+          `${skipped} ${pluralizeItemLabel("article", skipped)} left as draft: published articles limit reached (${limit})`,
+        );
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't update the articles");
+    } finally {
+      setBulkAction(null);
+      await refresh();
+    }
+  };
   // Saves run one at a time so quick successive drags land on the server in order.
   const saving = React.useRef<Promise<void>>(Promise.resolve());
 
@@ -164,34 +264,113 @@ export function HelpCenterList({
   const collectionIds = tree.collections.map((c) => c.id);
 
   return (
-    <div className="space-y-6 pb-10">
-      {groups.map((group, index) => (
-        <CollectionGroup
-          key={group.collection?.id ?? "uncategorized"}
-          group={group}
+    <SelectableListShell
+      variant="plain"
+      className="w-full"
+      wrapList={false}
+      toolbarClassName="mb-4 px-4 sm:px-6"
+      isPending={bulkAction === "delete"}
+      selection={selection}
+      confirmOpen={confirmOpen}
+      setConfirmOpen={setConfirmOpen}
+      handleBulkDelete={() => void handleBulkDelete()}
+      itemLabel="article"
+      emptySelectionHint="Click or drag rows to select"
+      deleteDescription="This action cannot be undone. These articles will be permanently removed from your help center."
+      totalCount={itemIds.length}
+      extraActions={
+        // Only the moves that apply to the selection are offered.
+        <>
+          {canPublish ? (
+            <BulkStatusButton
+              label="Publish"
+              pendingLabel="Publishing…"
+              icon={<ChangelogPublishedIcon className="size-3.5" />}
+              disabled={bulkAction !== null}
+              pending={bulkAction === "published"}
+              onClick={() => void handleBulkStatus("published")}
+            />
+          ) : null}
+          {canUnpublish ? (
+            <BulkStatusButton
+              label="Unpublish"
+              pendingLabel="Unpublishing…"
+              icon={<ChangelogDraftIcon className="size-3.5" />}
+              disabled={bulkAction !== null}
+              pending={bulkAction === "draft"}
+              onClick={() => void handleBulkStatus("draft")}
+            />
+          ) : null}
+        </>
+      }
+    >
+      <div className="space-y-6 pb-10" {...dragSelection}>
+        {groups.map((group, index) => (
+          <CollectionGroup
+            key={group.collection?.id ?? "uncategorized"}
+            group={group}
+            workspaceSlug={workspaceSlug}
+            isSelecting={selection.isSelectingForRender}
+            getSelectionProps={getSelectionProps}
+            selectionIndex={itemIndex}
+            edges={{ first: index === 0, last: index === collectionIds.length - 1 }}
+            onEdit={() => setEditing(group.collection)}
+            onMoveCollection={(move) => {
+              const next = group.collection ? moved(collectionIds, group.collection.id, move) : null;
+              if (next) reorder("collections", next);
+            }}
+            onReorderArticles={(ids) => reorder("articles", ids)}
+          />
+        ))}
+        <CollectionDialog
+          open={Boolean(editing)}
+          onOpenChange={(open) => !open && setEditing(null)}
           workspaceSlug={workspaceSlug}
-          edges={{ first: index === 0, last: index === collectionIds.length - 1 }}
-          onEdit={() => setEditing(group.collection)}
-          onMoveCollection={(move) => {
-            const next = group.collection ? moved(collectionIds, group.collection.id, move) : null;
-            if (next) reorder("collections", next);
-          }}
-          onReorderArticles={(ids) => reorder("articles", ids)}
+          collection={editing}
         />
-      ))}
-      <CollectionDialog
-        open={Boolean(editing)}
-        onOpenChange={(open) => !open && setEditing(null)}
-        workspaceSlug={workspaceSlug}
-        collection={editing}
-      />
-    </div>
+      </div>
+    </SelectableListShell>
+  );
+}
+
+/** Publish / Unpublish in the bulk selection toolbar. */
+function BulkStatusButton({
+  label,
+  pendingLabel,
+  icon,
+  disabled,
+  pending,
+  onClick,
+}: {
+  label: string;
+  pendingLabel: string;
+  icon: React.ReactNode;
+  disabled: boolean;
+  pending: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <Button
+      type="button"
+      variant="card"
+      size="sm"
+      className="h-8 gap-1.5 rounded-lg px-3 py-0"
+      disabled={disabled}
+      onClick={onClick}
+      aria-label={`${label} selected articles`}
+    >
+      {icon}
+      <span>{pending ? pendingLabel : label}</span>
+    </Button>
   );
 }
 
 function CollectionGroup({
   group,
   workspaceSlug,
+  isSelecting,
+  getSelectionProps,
+  selectionIndex,
   edges,
   onEdit,
   onMoveCollection,
@@ -199,6 +378,10 @@ function CollectionGroup({
 }: {
   group: Group;
   workspaceSlug: string;
+  isSelecting: boolean;
+  getSelectionProps: GetSelectionProps;
+  /** Position of each article across the whole list, for drag and shift-click ranges. */
+  selectionIndex: Map<string, number>;
   edges: Edges;
   onEdit: () => void;
   onMoveCollection: (move: Move) => void;
@@ -280,7 +463,8 @@ function CollectionGroup({
               : "Articles without a collection appear at the bottom of the help center."}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-0.5">
+        {/* Revealed on hover so the list reads as content, not a wall of buttons. */}
+        <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover/collection:opacity-100 has-[[data-state=open]]:opacity-100 [@media(hover:none)]:opacity-100">
           <ActionTooltip label={collection ? `New article in ${collection.name}` : "New article"}>
             <Button asChild variant="plain" size="icon-sm" className="text-muted-foreground hover:text-foreground">
               <Link href={newHref} aria-label={`New article in ${collection?.name ?? "Uncategorized"}`}>
@@ -316,7 +500,7 @@ function CollectionGroup({
           onDragEnd={handleDragEnd}
           onDragCancel={() => setActiveId(null)}
         >
-          <SortableContext items={articleIds} strategy={verticalListSortingStrategy}>
+          <SortableContext items={articleIds} strategy={verticalListSortingStrategy} disabled={isSelecting}>
             <ul
               className={cn(
                 "m-0 list-none p-0 [&>li+li]:border-t [&>li+li]:border-border/40 dark:[&>li+li]:border-white/6",
@@ -332,6 +516,8 @@ function CollectionGroup({
                   edges={{ first: index === 0, last: index === articles.length - 1 }}
                   listDragging={activeId !== null}
                   onMove={(move) => moveArticle(article.id, move)}
+                  selectionIndex={selectionIndex.get(article.id)}
+                  {...getSelectionProps(article.id)}
                 />
               ))}
             </ul>
@@ -501,6 +687,10 @@ function ArticleRow({
   edges,
   listDragging,
   onMove,
+  isSelecting = false,
+  isSelected = false,
+  onToggle,
+  selectionIndex,
 }: {
   article: HelpAdminArticle;
   workspaceSlug: string;
@@ -508,7 +698,8 @@ function ArticleRow({
   /** Some row in this collection is being dragged: hover states and handles stay quiet. */
   listDragging: boolean;
   onMove: (move: Move) => void;
-}) {
+  selectionIndex?: number;
+} & SelectionItemProps) {
   const router = useRouter();
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } =
     useSortable({ id: article.id });
@@ -538,6 +729,14 @@ function ArticleRow({
     }
   };
 
+  // In select mode a click anywhere on the row toggles it; shift-click selects a range.
+  const handleRowClick: React.MouseEventHandler<HTMLDivElement> = (event) => {
+    if (!isSelecting) return;
+    event.preventDefault();
+    event.stopPropagation();
+    onToggle?.(!isSelected, { shiftKey: event.shiftKey });
+  };
+
   const toggleStatus = () =>
     mutate(
       () =>
@@ -554,12 +753,14 @@ function ArticleRow({
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition }}
       className="relative list-none"
+      data-request-select-index={isSelecting ? selectionIndex : undefined}
     >
       <ContextMenuShell
         open={menu.open}
         onOpenChange={menu.handleOpenChange}
         position={menu.position}
         onContextMenu={menu.openAt}
+        onClick={handleRowClick}
         menu={
           <PopoverList>
             <ContextMenuItem icon={<EditIcon className="size-4" />} label="Edit" onClick={run(() => router.push(href))} />
@@ -582,9 +783,11 @@ function ArticleRow({
         }
       >
         <div
-          className={cn(
+          className={getSelectableRowClassName(
+            isSelecting,
+            isSelected,
             "group/article relative flex min-h-10 items-center gap-3 px-4 py-1.5 sm:px-6",
-            !listDragging && "hover:bg-muted/50 dark:hover:bg-white/[0.04]",
+            listDragging ? "" : "hover:bg-muted/50 dark:hover:bg-white/[0.04]",
           )}
         >
           {isDragging ? (
@@ -594,20 +797,31 @@ function ArticleRow({
               className="absolute inset-x-2 inset-y-1 rounded-lg border border-dashed border-black/[0.12] bg-muted/50 sm:inset-x-4 dark:border-white/[0.1] dark:bg-white/[0.03]"
             />
           ) : null}
-          <Link href={href} className="absolute inset-0 z-0" aria-label={article.title} tabIndex={isDragging ? -1 : undefined} />
-          <button
-            ref={setActivatorNodeRef}
-            type="button"
-            {...attributes}
-            {...listeners}
-            aria-label={`Drag to reorder ${article.title}`}
-            className={cn(
-              "absolute left-0 top-1/2 z-10 flex h-6 w-4 -translate-y-1/2 cursor-grab touch-none items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 active:cursor-grabbing sm:left-1 sm:w-5",
-              !listDragging && "group-hover/article:opacity-100 [@media(hover:none)]:opacity-100",
-            )}
-          >
-            <MoveVerticalIcon className="size-3.5" />
-          </button>
+          {isSelecting ? (
+            <SelectionControl
+              checked={isSelected}
+              label={isSelected ? "Deselect article" : "Select article"}
+              onCheckedChange={(value) => onToggle?.(value)}
+              onClick={(event) => event.stopPropagation()}
+            />
+          ) : (
+            <>
+              <Link href={href} className="absolute inset-0 z-0" aria-label={article.title} tabIndex={isDragging ? -1 : undefined} />
+              <button
+                ref={setActivatorNodeRef}
+                type="button"
+                {...attributes}
+                {...listeners}
+                aria-label={`Drag to reorder ${article.title}`}
+                className={cn(
+                  "absolute left-0 top-1/2 z-10 flex h-6 w-4 -translate-y-1/2 cursor-grab touch-none items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100 active:cursor-grabbing sm:left-1 sm:w-5",
+                  !listDragging && "group-hover/article:opacity-100 [@media(hover:none)]:opacity-100",
+                )}
+              >
+                <MoveVerticalIcon className="size-3.5" />
+              </button>
+            </>
+          )}
           <ArticleRowBody article={article} className={cn(isDragging && "invisible")} />
         </div>
       </ContextMenuShell>

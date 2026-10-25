@@ -7,9 +7,9 @@ const attachmentSchema = z.object({
   type: z.string().max(128),
 })
 
+// Mentions are parsed server-side from the content; client values are dropped.
 const metadataSchema = z.object({
   attachments: z.array(attachmentSchema).max(5).optional(),
-  mentions: z.array(z.string().max(128)).max(50).optional(),
 })
 
 const commentSurfaceSchema = z.enum(["workspace", "public"])
@@ -31,6 +31,13 @@ export const createCommentInputSchema = z.object({
     message: "Comment must have content or an image",
   }
 )
+
+// 16 kHz mono 16-bit WAV, base64: ~2.56M chars for the 60s client cap.
+export const transcribeCommentAudioInputSchema = z.object({
+  postId: z.string().min(1),
+  audio: z.string().min(1).max(2_700_000),
+  format: z.literal("wav"),
+})
 
 export const updateCommentInputSchema = z.object({
   commentId: z.string().min(1),

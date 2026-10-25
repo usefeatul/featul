@@ -3,12 +3,12 @@ import { publicBoardConditions } from "../../post/access";
 import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import { board, comment, post } from "@featul/db";
-import { publicProcedure } from "../../jstack";
+import { widgetProcedure } from "./procedure";
 import { getRequestFingerprint } from "../../request/fingerprint";
 import { getWidgetRequest, resolveAuthorId, resolveWidget } from "./resolve";
 import { voteCommentSchema, voteSchema } from "./schema";
 
-export const widgetVote = publicProcedure
+export const widgetVote = widgetProcedure
   .input(voteSchema)
   .post(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(
@@ -47,7 +47,7 @@ export const widgetVote = publicProcedure
     return c.superjson(await togglePostVote(ctx.db, input.postId, { widgetUserId: voterId, fingerprint }));
   });
 
-export const widgetVoteComment = publicProcedure
+export const widgetVoteComment = widgetProcedure
   .input(voteCommentSchema)
   .post(async ({ ctx, input, c }) => {
     const resolved = await resolveWidget(
