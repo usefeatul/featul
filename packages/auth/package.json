@@ -30,15 +30,15 @@
     "./ip": "./src/ip.ts"
   },
   "dependencies": {
-    "@better-auth/passkey": "1.7.7",
-    "@better-auth/stripe": "1.7.7",
+    "@better-auth/passkey": "1.7.12",
+    "@better-auth/stripe": "1.7.12",
     "@featul/db": "workspace:*",
     "@react-email/components": "^1.0.12",
-    "@react-email/render": "^2.1.0",
+    "@react-email/render": "^2.1.1",
     "@upstash/redis": "^1.39.0",
-    "better-auth": "1.7.7",
+    "better-auth": "1.7.12",
     "drizzle-orm": "^0.45.2",
-    "posthog-node": "^5.55.1",
+    "posthog-node": "^5.56.4",
     "stripe": "^22.6.2"
   },
   "devDependencies": {
