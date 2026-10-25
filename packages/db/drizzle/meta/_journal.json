@@ -295,6 +295,20 @@
       "when": 1792834696849,
       "tag": "0041_security_hardening",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1792919126510,
+      "tag": "0042_workspace_api_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1792920505902,
+      "tag": "0043_github_issue_links",
+      "breakpoints": true
     }
   ]
 }

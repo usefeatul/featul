@@ -64,3 +64,33 @@ describe("session routing", () => {
     expect(location.searchParams.get("redirect")).toBe("/workspaces/demo")
   })
 })
+
+describe("api host routing", () => {
+  const rewritten = (response: Response) =>
+    new URL(response.headers.get("x-middleware-rewrite")!).pathname
+
+  for (const host of ["api.featul.com", "api.localhost:3000"]) {
+    test(`${host}/v1/* rewrites onto the /api/v1 route handlers`, async () => {
+      const response = await middleware(request(host, "/v1/changelog/abc?x=1"))
+      expect(rewritten(response)).toBe("/api/v1/changelog/abc")
+    })
+  }
+
+  test("api host never renders a workspace or app page", async () => {
+    const response = await middleware(request("api.featul.com", "/workspaces/demo"))
+    expect(response.status).toBe(404)
+    expect(response.headers.get("location")).toBeNull()
+    expect(response.headers.get("x-middleware-rewrite")).toBeNull()
+    expect(((await response.json()) as { error: { code: string } }).error.code).toBe("not_found")
+  })
+
+  test("api is not treated as a workspace subdomain", () => {
+    const req = request("api.featul.com", "/roadmap")
+    expect(rewriteSubdomain(req, getHostInfo(req))).toBeNull()
+  })
+
+  test("/v1 on other hosts is not rewritten", async () => {
+    const response = await middleware(request("app.featul.com", "/v1/changelog"))
+    expect(response.headers.get("x-middleware-rewrite")).toBeNull()
+  })
+})

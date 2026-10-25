@@ -354,6 +354,19 @@ function blockquoteNode(text: string): TiptapNode {
   };
 }
 
+/** A line holding only `![alt](url "title")`. */
+const IMAGE_LINE_REGEX = /^!\[([^\]]*)\]\(\s*<?([^\s)>]+)>?(?:\s+"[^"]*")?\s*\)$/;
+
+/** Block image for HTTPS sources; anything else (data:, http:, javascript:) is dropped. */
+function imageNode(alt: string, src: string): TiptapNode | null {
+  try {
+    if (new URL(src).protocol !== "https:") return null;
+  } catch {
+    return null;
+  }
+  return { type: "image", attrs: { src, alt: alt.trim() || null } };
+}
+
 function normalizeMarkdown(markdown: string): string {
   return markdown.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
 }
@@ -394,6 +407,14 @@ export function markdownToTiptapDoc(markdown: string): TiptapDoc {
         attrs: { language: fence[1] || null },
         ...(code ? { content: [{ type: "text", text: code }] } : {}),
       });
+      continue;
+    }
+
+    const imageMatch = line.match(IMAGE_LINE_REGEX);
+    if (imageMatch) {
+      const image = imageNode(imageMatch[1] ?? "", imageMatch[2] ?? "");
+      if (image) nodes.push(image);
+      index += 1;
       continue;
     }
 
@@ -455,7 +476,8 @@ export function markdownToTiptapDoc(markdown: string): TiptapDoc {
         /^>\s?/.test(part) ||
         /^[-*]\s+/.test(part) ||
         /^\d+\.\s+/.test(part) ||
-        /^```/.test(part)
+        /^```/.test(part) ||
+        IMAGE_LINE_REGEX.test(part)
       ) {
         break;
       }

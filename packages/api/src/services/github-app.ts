@@ -76,14 +76,23 @@ export async function getInstallation(installationId: string): Promise<GithubIns
   return { id: String(data.id), accountLogin: String(data.account?.login ?? ""), accountType: String(data.account?.type ?? "") };
 }
 
-/** Short-lived (1 hour) token limited to the repos the installation was granted, read-only contents. */
-export async function createInstallationToken(installationId: string): Promise<string> {
+type TokenPermissions = Partial<Record<"contents" | "issues" | "metadata", "read">>;
+
+/**
+ * Short-lived (1 hour) token limited to the repos the installation was granted, read-only contents
+ * by default. `repositories` (repo names without the owner) narrows it further.
+ */
+export async function createInstallationToken(
+  installationId: string,
+  permissions: TokenPermissions = { contents: "read", metadata: "read" },
+  repositories?: string[],
+): Promise<string> {
   const data = await github<{ token?: string }>(
     `/app/installations/${encodeURIComponent(installationId)}/access_tokens`,
     appJwt(),
     {
       method: "POST",
-      body: JSON.stringify({ permissions: { contents: "read", metadata: "read" } }),
+      body: JSON.stringify({ permissions, ...(repositories ? { repositories } : {}) }),
       headers: { "Content-Type": "application/json" },
     },
   );
@@ -109,6 +118,78 @@ export async function listInstallationRepos(installationId: string, allowed?: st
   return repos
     .filter((r) => !allow || allow.has(r.fullName.toLowerCase()))
     .sort((a, b) => (b.pushedAt ?? "").localeCompare(a.pushedAt ?? ""));
+}
+
+export type GithubIssue = {
+  number: number;
+  title: string;
+  url: string;
+  state: "open" | "closed";
+  stateReason: string | null;
+  labels: string[];
+};
+
+export type RawIssue = {
+  number: number;
+  title: string;
+  html_url: string;
+  state: string;
+  state_reason?: string | null;
+  labels?: Array<string | { name?: string }>;
+};
+
+export function toGithubIssue(raw: RawIssue): GithubIssue {
+  return {
+    number: raw.number,
+    title: String(raw.title ?? "").slice(0, 500),
+    url: raw.html_url,
+    state: raw.state === "closed" ? "closed" : "open",
+    stateReason: raw.state_reason ?? null,
+    labels: (raw.labels ?? [])
+      .map((label) => (typeof label === "string" ? label : String(label?.name ?? "")))
+      .filter(Boolean)
+      .slice(0, 50),
+  };
+}
+
+/** An issue as listed by the REST API: also has the description, author, and PR marker. */
+export type ListedIssue = RawIssue & {
+  body?: string | null;
+  user?: { login?: string };
+  author_association?: string;
+  pull_request?: unknown;
+};
+
+/**
+ * Every issue in `fullName` (lowercase `owner/name`), open and closed, newest first, up to
+ * `maxPages` pages of 100. Pull requests are skipped. `complete` is false when it stopped early.
+ */
+export async function listRepoIssues(
+  installationId: string,
+  fullName: string,
+  maxPages: number,
+): Promise<{ issues: ListedIssue[]; complete: boolean; pages: number }> {
+  const name = fullName.split("/")[1] ?? "";
+  const token = await createInstallationToken(installationId, { issues: "read", metadata: "read" }, [name]);
+  const issues: ListedIssue[] = [];
+  for (let page = 1; page <= maxPages; page++) {
+    const batch = await github<ListedIssue[]>(
+      `/repos/${fullName}/issues?state=all&sort=created&direction=desc&per_page=100&page=${page}`,
+      token,
+    );
+    issues.push(...batch.filter((issue) => !issue.pull_request));
+    if (batch.length < 100) return { issues, complete: true, pages: page };
+  }
+  return { issues, complete: false, pages: maxPages };
+}
+
+/** Checks `X-Hub-Signature-256` against the App's webhook secret. */
+export function verifyWebhookSignature(body: string, signature: string | null): boolean {
+  const secret = readEnv("GITHUB_WEBHOOK_SECRET");
+  if (!secret || !signature?.startsWith("sha256=")) return false;
+  const expected = Buffer.from(`sha256=${createHmac("sha256", secret).update(body).digest("hex")}`);
+  const given = Buffer.from(signature);
+  return expected.length === given.length && timingSafeEqual(expected, given);
 }
 
 export function githubAppInstallUrl(state: string) {

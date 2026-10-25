@@ -55,4 +55,7 @@ export const {
   workspaceIntegration,
   workspaceNotraConnection,
   webhookDelivery,
+  workspaceApiKey,
+  githubIssueLink,
+  githubSyncSettings,
 } = schema;

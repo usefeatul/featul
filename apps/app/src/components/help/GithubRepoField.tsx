@@ -21,7 +21,7 @@ type GithubRepo = {
 };
 
 const STATUS_MESSAGES: Record<string, string> = {
-  connected: "GitHub connected. Private repos can now be scanned.",
+  connected: "GitHub connected.",
   authorization_required:
     "GitHub didn't send an authorization code. Ask an admin to turn on user authorization for the Featul GitHub App.",
   wrong_user:

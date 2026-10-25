@@ -16,6 +16,10 @@ import {
   type PostActivityPage,
 } from "../activity/post";
 
+function isGithubSync(metadata: unknown) {
+  return (metadata as { via?: unknown } | null)?.via === "github";
+}
+
 export async function listPostActivity(
   database: typeof db,
   input: { postId: string; surface: "workspace" | "public"; offset: number },
@@ -80,7 +84,8 @@ export async function listPostActivity(
         !internal && settings?.hideIdentity
           ? { name: "Member", image: null, role: null, isOwner: false }
           : {
-              name: row.name || "Guest",
+              // Status changes synced from a linked GitHub issue have no Featul user.
+              name: row.name || (isGithubSync(row.metadata) ? "GitHub" : "Guest"),
               image: row.image,
               role: row.memberRole ?? null,
               isOwner: row.actorId === target.ownerId,

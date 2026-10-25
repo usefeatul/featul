@@ -413,3 +413,35 @@ export async function limitReservation(req: Request): Promise<RateLimitResult> {
   if (!ratelimitReservation) return createBypassRateLimitResult();
   return withEnabledResult(await ratelimitReservation.limit(getIp(req)));
 }
+
+const ratelimitApiKey = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(60, "60 s"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:api-key",
+    })
+  : null;
+
+/** Public REST API (`/api/v1/*`), counted per API key. */
+export async function limitApiKey(keyId: string): Promise<RateLimitResult> {
+  if (!ratelimitApiKey) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitApiKey.limit(keyId));
+}
+
+const ratelimitGithubSync = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(3, "10 m"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:github-sync",
+    })
+  : null;
+
+/** "Sync with GitHub" re-reads every issue in the connected repos, so keep it occasional. */
+export async function limitGithubSync(workspaceId: string): Promise<RateLimitResult> {
+  if (!ratelimitGithubSync) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitGithubSync.limit(workspaceId));
+}
