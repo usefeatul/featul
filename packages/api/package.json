@@ -29,6 +29,8 @@
     "./status/*": "./src/status/*.ts",
     "./crypto/*": "./src/crypto/*.ts",
     "./notra/*": "./src/notra/*.ts",
+    "./public-api/*": "./src/public-api/*.ts",
+    "./github/*": "./src/github/*.ts",
     "./ai": "./src/ai/index.ts",
     "./ai/*": "./src/ai/*.ts",
     "./elysia": "./src/elysia.ts",

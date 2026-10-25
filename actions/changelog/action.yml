@@ -1,0 +1,135 @@
+name: Featul changelog
+description: Create or update a Featul changelog entry, for example from a GitHub release.
+author: Featul
+branding:
+  icon: bell
+  color: gray-dark
+
+inputs:
+  api-key:
+    description: Featul API key (Settings → Integrations → API keys). Store it as a secret.
+    required: true
+  title:
+    description: Entry title. Defaults to the release name or tag on `release` events.
+    required: false
+  content:
+    description: Markdown body. Defaults to the release notes on `release` events.
+    required: false
+  content-file:
+    description: Path to a Markdown file to use as the body instead of `content`.
+    required: false
+  summary:
+    description: Short summary shown in lists. Defaults to the start of the body.
+    required: false
+  tags:
+    description: Comma-separated changelog tag names. Tags must already exist in Featul.
+    required: false
+  status:
+    description: "`published` or `draft`."
+    required: false
+    default: published
+  external-id:
+    description: >-
+      Your id for this update. Running again with the same id updates the entry instead of creating
+      a new one. Defaults to the release tag on `release` events.
+    required: false
+  api-url:
+    description: API base URL. Self-hosted instances use `https://your-app/api/v1`.
+    required: false
+    default: https://api.featul.com/v1
+
+outputs:
+  entry-id:
+    description: Featul changelog entry id.
+    value: ${{ steps.publish.outputs.entry-id }}
+  entry-url:
+    description: Public URL of the entry, empty for drafts.
+    value: ${{ steps.publish.outputs.entry-url }}
+  created:
+    description: "`true` when a new entry was created, `false` when an existing one was updated."
+    value: ${{ steps.publish.outputs.created }}
+
+runs:
+  using: composite
+  steps:
+    - id: publish
+      shell: bash
+      env:
+        FEATUL_API_KEY: ${{ inputs.api-key }}
+        FEATUL_API_URL: ${{ inputs.api-url }}
+        INPUT_TITLE: ${{ inputs.title }}
+        INPUT_CONTENT: ${{ inputs.content }}
+        INPUT_CONTENT_FILE: ${{ inputs.content-file }}
+        INPUT_SUMMARY: ${{ inputs.summary }}
+        INPUT_TAGS: ${{ inputs.tags }}
+        INPUT_STATUS: ${{ inputs.status }}
+        INPUT_EXTERNAL_ID: ${{ inputs.external-id }}
+        RELEASE_NAME: ${{ github.event.release.name }}
+        RELEASE_TAG: ${{ github.event.release.tag_name }}
+        RELEASE_BODY: ${{ github.event.release.body }}
+      run: |
+        set -euo pipefail
+
+        title="${INPUT_TITLE:-${RELEASE_NAME:-$RELEASE_TAG}}"
+        external_id="${INPUT_EXTERNAL_ID:-$RELEASE_TAG}"
+        if [ -n "$INPUT_CONTENT_FILE" ]; then
+          content="$(cat "$INPUT_CONTENT_FILE")"
+        else
+          content="${INPUT_CONTENT:-$RELEASE_BODY}"
+        fi
+
+        if [ -z "$title" ]; then
+          echo "::error::Set the \`title\` input, or run this action on a release event."
+          exit 1
+        fi
+
+        payload="$(jq -n \
+          --arg title "$title" \
+          --arg content "$content" \
+          --arg summary "$INPUT_SUMMARY" \
+          --arg tags "$INPUT_TAGS" \
+          --arg status "$INPUT_STATUS" \
+          --arg externalId "$external_id" \
+          '{title: $title, status: $status}
+            + (if $content != "" then {content: $content} else {} end)
+            + (if $summary != "" then {summary: $summary} else {} end)
+            + (if $externalId != "" then {externalId: $externalId} else {} end)
+            + (if $tags != "" then {tags: ($tags | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(. != "")))} else {} end)')"
+
+        # Files, not arguments: release notes can exceed the OS argument size limit.
+        payload_file="$(mktemp)"
+        headers_file="$(mktemp)"
+        response="$(mktemp)"
+        trap 'rm -f "$payload_file" "$headers_file" "$response"' EXIT
+        printf '%s' "$payload" > "$payload_file"
+        printf 'Authorization: Bearer %s\nContent-Type: application/json\n' "$FEATUL_API_KEY" > "$headers_file"
+
+        # Retrying is only safe when external-id makes the request idempotent.
+        retry=()
+        if [ -n "$external_id" ]; then retry=(--retry 3 --retry-all-errors --retry-delay 2); fi
+
+        status_code="$(curl -sS -o "$response" -w '%{http_code}' ${retry[@]+"${retry[@]}"} \
+          -X POST "${FEATUL_API_URL%/}/changelog" \
+          -H @"$headers_file" \
+          --data-binary @"$payload_file")"
+
+        # One line only, so text from the release can't inject workflow commands.
+        oneline() { tr -d '\r' | tr '\n' ' '; }
+
+        if [ "$status_code" -ge 300 ]; then
+          message="$(jq -r '.error.message // empty' "$response" 2>/dev/null || true)"
+          echo "::error::Featul API returned $status_code: $(printf '%s' "${message:-$(cat "$response")}" | oneline)"
+          exit 1
+        fi
+
+        entry_id="$(jq -r '.data.id' "$response")"
+        entry_url="$(jq -r '.data.url // ""' "$response")"
+        created="$([ "$status_code" = "201" ] && echo true || echo false)"
+        {
+          echo "entry-id=$entry_id"
+          echo "entry-url=$entry_url"
+          echo "created=$created"
+        } >> "$GITHUB_OUTPUT"
+
+        if [ "$created" = "true" ]; then verb="Created"; else verb="Updated"; fi
+        echo "$verb changelog entry \"$(printf '%s' "$title" | oneline)\" ($entry_id) ${entry_url}"

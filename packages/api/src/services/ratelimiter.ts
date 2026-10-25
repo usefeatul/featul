@@ -413,3 +413,51 @@ export async function limitReservation(req: Request): Promise<RateLimitResult> {
   if (!ratelimitReservation) return createBypassRateLimitResult();
   return withEnabledResult(await ratelimitReservation.limit(getIp(req)));
 }
+
+const ratelimitApiKey = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(60, "60 s"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:api-key",
+    })
+  : null;
+
+/** Public REST API (`/api/v1/*`), counted per API key (by its hash, before any lookup). */
+export async function limitApiKey(keyHash: string): Promise<RateLimitResult> {
+  if (!ratelimitApiKey) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitApiKey.limit(keyHash));
+}
+
+const ratelimitApiIp = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(300, "60 s"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:api-ip",
+    })
+  : null;
+
+/** Public REST API per client IP; generous, since CI runners can share addresses. */
+export async function limitApiIp(req: Request): Promise<RateLimitResult> {
+  if (!ratelimitApiIp) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitApiIp.limit(getIp(req)));
+}
+
+const ratelimitGithubSync = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(3, "10 m"),
+      analytics: false,
+      timeout: RATE_LIMIT_TIMEOUT_MS,
+      prefix: "rl:github-sync",
+    })
+  : null;
+
+/** "Sync with GitHub" re-reads every issue in the connected repos, so keep it occasional. */
+export async function limitGithubSync(workspaceId: string): Promise<RateLimitResult> {
+  if (!ratelimitGithubSync) return createBypassRateLimitResult();
+  return withEnabledResult(await ratelimitGithubSync.limit(workspaceId));
+}

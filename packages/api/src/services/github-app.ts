@@ -76,14 +76,23 @@ export async function getInstallation(installationId: string): Promise<GithubIns
   return { id: String(data.id), accountLogin: String(data.account?.login ?? ""), accountType: String(data.account?.type ?? "") };
 }
 
-/** Short-lived (1 hour) token limited to the repos the installation was granted, read-only contents. */
-export async function createInstallationToken(installationId: string): Promise<string> {
+type TokenPermissions = Partial<Record<"contents" | "issues" | "metadata", "read">>;
+
+/**
+ * Short-lived (1 hour) token limited to the repos the installation was granted, read-only contents
+ * by default. `repositories` (repo names without the owner) narrows it further.
+ */
+export async function createInstallationToken(
+  installationId: string,
+  permissions: TokenPermissions = { contents: "read", metadata: "read" },
+  repositories?: string[],
+): Promise<string> {
   const data = await github<{ token?: string }>(
     `/app/installations/${encodeURIComponent(installationId)}/access_tokens`,
     appJwt(),
     {
       method: "POST",
-      body: JSON.stringify({ permissions: { contents: "read", metadata: "read" } }),
+      body: JSON.stringify({ permissions, ...(repositories ? { repositories } : {}) }),
       headers: { "Content-Type": "application/json" },
     },
   );
@@ -109,6 +118,115 @@ export async function listInstallationRepos(installationId: string, allowed?: st
   return repos
     .filter((r) => !allow || allow.has(r.fullName.toLowerCase()))
     .sort((a, b) => (b.pushedAt ?? "").localeCompare(a.pushedAt ?? ""));
+}
+
+export type GithubIssue = {
+  number: number;
+  title: string;
+  url: string;
+  state: "open" | "closed";
+  stateReason: string | null;
+  labels: string[];
+  /** GitHub's `updated_at`, used to ignore stale or replayed events. */
+  updatedAt: Date | null;
+};
+
+export type RawIssue = {
+  number: number;
+  title: string;
+  html_url: string;
+  state: string;
+  state_reason?: string | null;
+  labels?: Array<string | { name?: string }>;
+  updated_at?: string | null;
+};
+
+export function toGithubIssue(raw: RawIssue, repoFullName: string): GithubIssue {
+  const updatedAt = raw.updated_at ? new Date(raw.updated_at) : null;
+  // Rendered as a link in settings: only ever an https://github.com URL.
+  const url = /^https:\/\/github\.com\//.test(String(raw.html_url ?? ""))
+    ? String(raw.html_url)
+    : `https://github.com/${repoFullName}/issues/${raw.number}`;
+  return {
+    number: raw.number,
+    title: String(raw.title ?? "").slice(0, 500),
+    url,
+    state: raw.state === "closed" ? "closed" : "open",
+    stateReason: raw.state_reason ?? null,
+    labels: (raw.labels ?? [])
+      .map((label) => (typeof label === "string" ? label : String(label?.name ?? "")))
+      .filter(Boolean)
+      .slice(0, 50),
+    updatedAt: updatedAt && !Number.isNaN(updatedAt.getTime()) ? updatedAt : null,
+  };
+}
+
+const PERMISSION_CACHE_MS = 5 * 60 * 1000;
+const permissionCache = new Map<string, { permission: string; expires: number }>();
+
+/**
+ * `login`'s permission on `fullName` (admin, maintain, write, triage, read, or none), cached
+ * briefly. Errors count as "none" so a GitHub outage never grants access.
+ */
+export async function getRepoPermission(installationId: string, fullName: string, login: string): Promise<string> {
+  const key = `${installationId}:${fullName}:${login.toLowerCase()}`;
+  const cached = permissionCache.get(key);
+  if (cached && cached.expires > Date.now()) return cached.permission;
+  let permission = "none";
+  try {
+    const name = fullName.split("/")[1] ?? "";
+    const token = await createInstallationToken(installationId, { metadata: "read" }, [name]);
+    const data = await github<{ permission?: string }>(
+      `/repos/${fullName}/collaborators/${encodeURIComponent(login)}/permission`,
+      token,
+    );
+    permission = String(data.permission ?? "none");
+  } catch {
+    permission = "none";
+  }
+  if (permissionCache.size > 5000) permissionCache.clear();
+  permissionCache.set(key, { permission, expires: Date.now() + PERMISSION_CACHE_MS });
+  return permission;
+}
+
+/** An issue as listed by the REST API: also has the description, author, and PR marker. */
+export type ListedIssue = RawIssue & {
+  body?: string | null;
+  user?: { login?: string };
+  author_association?: string;
+  pull_request?: unknown;
+};
+
+/**
+ * Every issue in `fullName` (lowercase `owner/name`), open and closed, newest first, up to
+ * `maxPages` pages of 100. Pull requests are skipped. `complete` is false when it stopped early.
+ */
+export async function listRepoIssues(
+  installationId: string,
+  fullName: string,
+  maxPages: number,
+): Promise<{ issues: ListedIssue[]; complete: boolean; pages: number }> {
+  const name = fullName.split("/")[1] ?? "";
+  const token = await createInstallationToken(installationId, { issues: "read", metadata: "read" }, [name]);
+  const issues: ListedIssue[] = [];
+  for (let page = 1; page <= maxPages; page++) {
+    const batch = await github<ListedIssue[]>(
+      `/repos/${fullName}/issues?state=all&sort=created&direction=desc&per_page=100&page=${page}`,
+      token,
+    );
+    issues.push(...batch.filter((issue) => !issue.pull_request));
+    if (batch.length < 100) return { issues, complete: true, pages: page };
+  }
+  return { issues, complete: false, pages: maxPages };
+}
+
+/** Checks `X-Hub-Signature-256` against the App's webhook secret. */
+export function verifyWebhookSignature(body: string, signature: string | null): boolean {
+  const secret = readEnv("GITHUB_WEBHOOK_SECRET");
+  if (!secret || !signature?.startsWith("sha256=")) return false;
+  const expected = Buffer.from(`sha256=${createHmac("sha256", secret).update(body).digest("hex")}`);
+  const given = Buffer.from(signature);
+  return expected.length === given.length && timingSafeEqual(expected, given);
 }
 
 export function githubAppInstallUrl(state: string) {

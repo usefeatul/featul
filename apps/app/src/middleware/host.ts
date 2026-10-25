@@ -3,7 +3,7 @@ import { isIP } from "node:net"
 import { reroute } from "./reroute"
 
 /** Subdomains that must stay on the main app, not tenant public sites. */
-export const reservedSubdomains = new Set(["www", "app", "featul", "feedgot", "staging"])
+export const reservedSubdomains = new Set(["www", "app", "api", "featul", "feedgot", "staging"])
 
 /** Host, tenant slug, and whether this is localhost vs *.featul.com. */
 export function getHostInfo(req: NextRequest) {

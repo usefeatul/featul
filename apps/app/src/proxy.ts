@@ -24,5 +24,8 @@ export const config = {
     "/reserve",
     "/board/:path*",
     "/widget/:projectId/frame",
+    // Public REST API on api.featul.com; other hosts have no /v1 pages.
+    "/v1",
+    "/v1/:path*",
   ],
 }

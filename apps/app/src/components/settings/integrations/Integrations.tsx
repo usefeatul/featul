@@ -5,6 +5,8 @@ import PlanNotice from "../global/PlanNotice";
 import SlackCard from "./SlackCard";
 import DiscordCard from "./DiscordCard";
 import SuggestIntegrationCard from "./SuggestIntegrationCard";
+import ApiKeys from "./ApiKeys";
+import GithubSync from "./GithubSync";
 import { useIntegrations, type Integration } from "@/hooks/useIntegrations";
 import { isIntegrationsAllowed } from "@/lib/plan";
 
@@ -127,8 +129,10 @@ export default function IntegrationsSection({
               !discordActionsEnabled
             }
           />
+          <GithubSync slug={slug} allowed={allowIntegrations} />
         </div>
       </section>
+      <ApiKeys slug={slug} allowed={allowIntegrations} />
       <SuggestIntegrationCard />
       <PlanNotice slug={slug} plan={plan} feature="integrations" />
     </div>

@@ -1,4 +1,4 @@
-export type DocsTopicIconKey = "book" | "bolt" | "palette" | "keyboard" | "github"
+export type DocsTopicIconKey = "book" | "bolt" | "palette" | "code" | "keyboard" | "github"
 
 export interface DocsNavItem {
   id: string
@@ -74,6 +74,15 @@ export const docsSections: DocsNavSection[] = [
       { id: "branding-setup/domain", label: "Custom Domain", href: "/docs/branding-setup/domain" },
       { id: "branding-setup/integrations", label: "Integrations", href: "/docs/branding-setup/integrations" },
       { id: "branding-setup/data", label: "Import & Export", href: "/docs/branding-setup/data" },
+    ],
+  },
+  {
+    label: "Developers",
+    icon: "code",
+    items: [
+      { id: "developers/api", label: "REST API", href: "/docs/developers/api" },
+      { id: "developers/github-actions", label: "GitHub Actions", href: "/docs/developers/github-actions" },
+      { id: "developers/github-issues", label: "GitHub Issues", href: "/docs/developers/github-issues" },
     ],
   },
   {
