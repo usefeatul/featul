@@ -83,49 +83,68 @@ export function Showcase() {
       data-component="Showcase"
     >
       <DitherBackdrop multicolor className="top-16 sm:top-0" />
-      <svg
-        aria-hidden
-        viewBox="0 0 720 56"
-        preserveAspectRatio="none"
-        className="pointer-events-none absolute left-1/2 top-0 -z-10 hidden h-14 w-full max-w-[720px] -translate-x-1/2 fill-background sm:block"
-      >
-        <path d="M0 0C40 0 40 56 96 56H624C680 56 680 0 720 0Z" />
-      </svg>
-      <Tabs.List
-        aria-label="Explore Featul"
-        className="mx-auto flex h-14 w-fit max-w-full items-center justify-center gap-1 sm:gap-3 lg:gap-4"
-        onPointerLeave={() => setHovered(null)}
-        onKeyDown={() => setHovered(null)}
-        onBlur={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) {
-            setFocused(null);
-          }
-        }}
-      >
-        {previews.map(({ id, label, icon: Icon, iconColor }) => (
-          <Tabs.Trigger
-            key={id}
-            value={id}
-            aria-label={label}
-            className="relative isolate inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-xs text-accent transition-colors hover:text-foreground outline-none data-[state=active]:text-foreground sm:px-3 sm:text-sm"
-            onPointerEnter={(event) => {
-              if (event.pointerType !== "touch") setHovered(id);
-            }}
-            onFocus={() => setFocused(id)}
+      <div className="relative mx-auto w-fit max-w-full">
+        {/* The tray hugs the tabs: fixed curved ends sit outside the list, so the first and last tab keep clear of the slope. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 hidden sm:block"
+        >
+          <svg
+            viewBox="0 0 80 64"
+            preserveAspectRatio="none"
+            className="absolute right-full top-0 -mr-px h-full w-20 fill-background"
           >
-            {highlighted === id ? (
-              <span
-                ref={highlightRef}
+            <path d="M0 0C36 0 36 64 80 64V0Z" />
+          </svg>
+          <div className="absolute inset-0 bg-background" />
+          <svg
+            viewBox="0 0 80 64"
+            preserveAspectRatio="none"
+            className="absolute left-full top-0 -ml-px h-full w-20 fill-background"
+          >
+            <path d="M80 0C44 0 44 64 0 64V0Z" />
+          </svg>
+        </div>
+        <Tabs.List
+          aria-label="Explore Featul"
+          className="flex h-14 items-center justify-center gap-1 sm:h-16 sm:gap-3 sm:px-2 sm:pb-1.5 lg:gap-4"
+          onPointerLeave={() => setHovered(null)}
+          onKeyDown={() => setHovered(null)}
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) {
+              setFocused(null);
+            }
+          }}
+        >
+          {previews.map(({ id, label, icon: Icon, iconColor }) => (
+            <Tabs.Trigger
+              key={id}
+              value={id}
+              aria-label={label}
+              className="relative isolate inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-md px-2 py-2 text-xs text-accent transition-colors hover:text-foreground outline-none data-[state=active]:text-foreground sm:px-3 sm:text-sm"
+              onPointerEnter={(event) => {
+                if (event.pointerType !== "touch") setHovered(id);
+              }}
+              onFocus={() => setFocused(id)}
+            >
+              {highlighted === id ? (
+                <span
+                  ref={highlightRef}
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 -z-10 border border-black/[0.08] bg-card bg-linear-to-b from-card to-[color-mix(in_oklab,var(--card),var(--foreground)_5%)] shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_2px_rgba(0,0,0,0.06)] dark:border-white/[0.08] dark:from-[color-mix(in_oklab,var(--card),white_5%)] dark:to-card dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_1px_1px_rgba(0,0,0,0.3)]"
+                  style={{ borderRadius: 6 }}
+                />
+              ) : null}
+              <Icon
                 aria-hidden
-                className="pointer-events-none absolute inset-0 -z-10 bg-muted"
-                style={{ borderRadius: 6 }}
+                className="hidden size-4 sm:block"
+                style={{ color: iconColor }}
               />
-            ) : null}
-            <Icon aria-hidden className="hidden size-4 sm:block" style={{ color: iconColor }} />
-            {label}
-          </Tabs.Trigger>
-        ))}
-      </Tabs.List>
+              {label}
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
+      </div>
       {previews.map((preview, index) => (
         <Tabs.Content
           key={preview.id}
