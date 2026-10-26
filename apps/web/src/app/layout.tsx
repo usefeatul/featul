@@ -3,6 +3,7 @@ import { DitherEngineScript } from "@featul/ui/components/dither-engine";
 import { Geist_Mono, Inter_Tight } from "next/font/google";
 import { DebugTools } from "@featul/ui/global/debug-tools";
 import ConsentProvider from "@/components/legal/consent";
+import { CONSENT_BACKEND_URL } from "@/config/consent";
 import "./globals.css";
 import {
   SITE_URL,
@@ -31,6 +32,8 @@ const interTight = Inter_Tight({
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   display: "swap",
+  // Only small details use mono; keep it out of the preloads that compete with first paint.
+  preload: false,
   variable: "--font-geist-mono",
 });
 
@@ -110,6 +113,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="preconnect" href={CONSENT_BACKEND_URL} crossOrigin="anonymous" />
         <script
           id="home-scroll-memory"
           dangerouslySetInnerHTML={{

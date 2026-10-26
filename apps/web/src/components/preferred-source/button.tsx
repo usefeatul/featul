@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useConsent, useExplicitChoice, useSetActiveUI } from "c15t/next";
 import { Button } from "@featul/ui/components/button";
 import { GoogleIcon } from "@featul/ui/icons/google";
 import { cn } from "@featul/ui/lib/utils";
@@ -12,6 +11,10 @@ import {
   getPreferredSourceTheme,
   initPreferredSource,
 } from "@/lib/preferred-source";
+import {
+  openConsentDialog,
+  useFunctionalityAllowed,
+} from "@/components/legal/consent-state";
 
 export const PREFERRED_SOURCE_BUTTON_LABEL = "Make us preferred on Google";
 
@@ -22,11 +25,7 @@ type PreferredSourceButtonProps = {
 export function PreferredSourceButton({
   className,
 }: PreferredSourceButtonProps) {
-  const permission = useConsent("functionality");
-  const choice = useExplicitChoice();
-  const allowed =
-    permission && choice?.categories.functionality?.value === true;
-  const setActiveUI = useSetActiveUI();
+  const allowed = useFunctionalityAllowed();
 
   useEffect(() => {
     if (!allowed) return;
@@ -60,7 +59,7 @@ export function PreferredSourceButton({
       variant="default"
       size="sm"
       className={cn("font-heading text-xs", className)}
-      onClick={() => (allowed ? addPreferredSource() : setActiveUI("dialog"))}
+      onClick={() => (allowed ? addPreferredSource() : openConsentDialog())}
     >
       {/* White chip keeps the blue segment of the logo visible on bg-primary. */}
       <span className="flex size-4.5 shrink-0 items-center justify-center rounded-[5px] bg-white">

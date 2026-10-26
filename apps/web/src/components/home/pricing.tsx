@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import { AnimatePresence, animate, motion } from "framer-motion"
 import { Button } from "@featul/ui/components/button"
 import { StarIcon } from "@featul/ui/icons/star"
 import {
@@ -41,11 +40,19 @@ const PLAN_WASH: Record<PricingPlanKey, PixelColor> = {
 
 export function PricingPlans() {
   const [billingCycle, setBillingCycle] = React.useState<BillingCycle>("monthly")
+  // The suffix only animates once the visitor switches cycles, never on first paint.
+  const [cycleChanged, setCycleChanged] = React.useState(false)
 
   return (
     <>
       <div className="flex justify-start">
-        <BillingCycleTabs billingCycle={billingCycle} onChange={setBillingCycle} />
+        <BillingCycleTabs
+          billingCycle={billingCycle}
+          onChange={(value) => {
+            setCycleChanged(true)
+            setBillingCycle(value)
+          }}
+        />
       </div>
 
       <div className="mt-8 mb-2 -mx-1 grid gap-3 md:grid-cols-2 lg:grid-cols-3 sm:-mx-4 lg:-mx-8">
@@ -54,6 +61,7 @@ export function PricingPlans() {
             key={planKey}
             planKey={planKey}
             billingCycle={billingCycle}
+            cycleChanged={cycleChanged}
           />
         ))}
       </div>
@@ -114,9 +122,11 @@ export default function Pricing() {
 function PricingPlanCard({
   planKey,
   billingCycle,
+  cycleChanged,
 }: {
   planKey: PricingPlanKey
   billingCycle: BillingCycle
+  cycleChanged: boolean
 }) {
   const plan = getPricingPlan(planKey)
   const ribbon = getPlanRibbon(planKey)
@@ -163,18 +173,16 @@ function PricingPlanCard({
             <AnimatedPrice
               value={billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice}
             />
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={billingCycle}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="ml-1 text-sm font-normal text-foreground/80"
-              >
-                /{billingCycle === "yearly" ? "year" : "mo"}
-              </motion.span>
-            </AnimatePresence>
+            <span
+              key={billingCycle}
+              className={cn(
+                "ml-1 text-sm font-normal text-foreground/80",
+                cycleChanged &&
+                  "animate-in fade-in slide-in-from-bottom-1 duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              )}
+            >
+              /{billingCycle === "yearly" ? "year" : "mo"}
+            </span>
           </div>
           <p className="relative z-10 mt-2 text-sm text-foreground/80">{plan.note}</p>
         </div>
@@ -239,13 +247,16 @@ function AnimatedPrice({ value }: { value: number }) {
       return
     }
 
-    const controls = animate(from, value, {
-      duration: 0.55,
-      ease: [0.22, 1, 0.36, 1],
-      onUpdate: (latest) => setDisplayValue(Math.round(latest)),
+    // A plain rAF tween keeps framer-motion out of the pricing bundle.
+    const start = performance.now()
+    let frame = requestAnimationFrame(function step(now) {
+      const t = Math.min(1, (now - start) / 550)
+      const eased = 1 - (1 - t) ** 4
+      setDisplayValue(Math.round(from + (value - from) * eased))
+      if (t < 1) frame = requestAnimationFrame(step)
     })
 
-    return () => controls.stop()
+    return () => cancelAnimationFrame(frame)
   }, [value])
 
   return <span>£{displayValue}</span>

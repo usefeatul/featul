@@ -9,8 +9,7 @@ import {
 } from "@/components/global/icons";
 
 import Image from "next/image";
-import { useId, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useState } from "react";
 import { Tabs } from "radix-ui";
 import {
   MarketingContainer,
@@ -21,6 +20,7 @@ import roadmap from "../../../public/image/roadmap.png";
 import changelog from "../../../public/image/changelog.png";
 import helpCenter from "../../../public/image/help-center.png";
 import widget from "../../../public/image/widget.png";
+import { useSlidingIndicator } from "@featul/ui/hooks/use-sliding-indicator";
 import { selectorSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 import { DitherBackdrop } from "./backdrop";
@@ -72,8 +72,7 @@ export function Showcase() {
   const [selected, setSelected] = useState("feedback");
   const [hovered, setHovered] = useState<string | null>(null);
   const [focused, setFocused] = useState<string | null>(null);
-  const highlightId = useId();
-  const reduceMotion = useReducedMotion();
+  const highlightRef = useSlidingIndicator({ duration: 220 });
   const highlighted = hovered ?? focused ?? selected;
 
   return (
@@ -115,17 +114,11 @@ export function Showcase() {
             onFocus={() => setFocused(id)}
           >
             {highlighted === id ? (
-              <motion.span
+              <span
+                ref={highlightRef}
                 aria-hidden
-                layoutId={reduceMotion ? undefined : highlightId}
-                initial={false}
                 className="pointer-events-none absolute inset-0 -z-10 bg-muted"
                 style={{ borderRadius: 6 }}
-                transition={
-                  reduceMotion
-                    ? { duration: 0 }
-                    : { type: "spring", stiffness: 420, damping: 36 }
-                }
               />
             ) : null}
             <Icon aria-hidden className="hidden size-4 sm:block" style={{ color: iconColor }} />
@@ -147,12 +140,7 @@ export function Showcase() {
                   "overflow-hidden rounded-xl to-[color-mix(in_oklab,var(--card),var(--foreground)_3%)] p-1 supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*3.5)] sm:rounded-2xl sm:supports-[corner-shape:squircle]:rounded-[calc(var(--radius)*4)]",
                 )}
               >
-                <motion.div
-                  initial={reduceMotion ? false : { opacity: 0.85 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: reduceMotion ? 0 : 0.2, ease: "easeOut" }}
-                  className="aspect-[4/3] overflow-hidden rounded-lg"
-                >
+                <div className="aspect-[4/3] overflow-hidden rounded-lg motion-safe:animate-in motion-safe:fade-in-85 motion-safe:duration-200 motion-safe:ease-out">
                   <Image
                     src={preview.image}
                     alt={preview.alt}
@@ -162,7 +150,7 @@ export function Showcase() {
                     placeholder="blur"
                     className="block h-full w-full object-contain"
                   />
-                </motion.div>
+                </div>
               </div>
             </MarketingRail>
           </MarketingContainer>

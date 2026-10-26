@@ -39,7 +39,7 @@ export function Wordmark() {
           WebkitMaskRepeat: "no-repeat",
         }}
       >
-        <DitherClouds multicolor />
+        <DitherClouds multicolor lazy />
       </div>
     </div>
   );

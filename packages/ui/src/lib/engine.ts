@@ -11,9 +11,11 @@ import { LIGHT_PURPLE, type Rgb } from "./palette";
 import { BAYER4 } from "./pixel";
 
 /**
- * One animation loop for every dither surface on the page. It runs from an inline
- * script in the document head, so surfaces animate from the first painted frame
- * rather than after hydration, and picks up surfaces mounted later (dialogs, menus).
+ * One animation loop for every dither surface on the page. It is inlined in the
+ * document head but waits for the page to load and the main thread to go idle, so it
+ * never competes with first paint or hydration; until then each surface shows its
+ * still artwork, which matches the canvas's first frame. It picks up surfaces mounted
+ * later (dialogs, menus).
  *
  * Surfaces are plain markup described by data attributes:
  * - `data-dither="gradient"` with `data-from`, `data-to` ("r,g,b", "primary" or
@@ -36,6 +38,8 @@ const ART_H = 600;
 /** CSS pixels per animated cloud dot. */
 const CLOUD_CELL = 2;
 const PRIMARY_FALLBACK: Rgb = [40, 117, 197];
+/** Main-thread budget per frame for rebuilding grids, so a page full of surfaces never blocks input. */
+const LAYOUT_BUDGET_MS = 8;
 
 type Direction = "up" | "down" | "left" | "right";
 
@@ -145,6 +149,13 @@ function gradientGrid(
   return grid;
 }
 
+function setRgb(data: Uint8ClampedArray, p: number, [r, g, b]: Rgb) {
+  data[p] = r;
+  data[p + 1] = g;
+  data[p + 2] = b;
+  data[p + 3] = 255;
+}
+
 function cloudGrid(
   ctx: CanvasRenderingContext2D,
   width: number,
@@ -175,16 +186,16 @@ function cloudGrid(
       const p = i * 4;
       if (variant === "primary") {
         // Off dots stay transparent so the container's bg-primary shows through.
-        on.set([...LIGHT_PURPLE, 255], p);
+        setRgb(on, p, LIGHT_PURPLE);
       } else if (variant === "contours") {
         // Thresholds outside [0, 1] force the lit and unlit colours.
-        on.set([...contourColor(u, v, -1), 255], p);
-        off.set([...contourColor(u, v, 2), 255], p);
+        setRgb(on, p, contourColor(u, v, -1));
+        setRgb(off, p, contourColor(u, v, 2));
       } else {
         // The cloud art has no rings; its dots only glint.
-        const color = [...cloudColor(u, v, threshold), 255];
-        on.set(color, p);
-        off.set(color, p);
+        const color = cloudColor(u, v, threshold);
+        setRgb(on, p, color);
+        setRgb(off, p, color);
       }
     }
   }
@@ -248,12 +259,22 @@ function paint(s: Surface, time: number) {
 export function startDitherEngine() {
   if (typeof window === "undefined" || window.__featulDither) return;
   window.__featulDither = true;
+  const idle = () =>
+    typeof requestIdleCallback === "function"
+      ? requestIdleCallback(runDitherEngine, { timeout: 3000 })
+      : setTimeout(runDitherEngine, 200);
+  if (document.readyState === "complete") idle();
+  else window.addEventListener("load", idle, { once: true });
+}
 
+function runDitherEngine() {
   const surfaces = new Map<HTMLElement, Surface>();
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   const still = (s: Surface) =>
     reduce.matches || s.el.dataset.animated === "false";
-  const clock = () => performance.now() / 1000;
+  // Time runs from boot so the first canvas frame is the still artwork it replaces.
+  const start = performance.now();
+  const clock = () => (performance.now() - start) / 1000;
 
   const io =
     typeof IntersectionObserver === "undefined"
@@ -333,8 +354,6 @@ export function startDitherEngine() {
     });
     io?.observe(s.watch);
     ro?.observe(el);
-    // Paint now, before the browser's next frame, so there is never a still flash.
-    layout(s);
     wake();
   };
 
@@ -396,15 +415,22 @@ export function startDitherEngine() {
   const tick = (now: number) => {
     raf = 0;
     let moving = false;
+    let pending = false;
+    const deadline = performance.now() + LAYOUT_BUDGET_MS;
     for (const s of surfaces.values()) {
       if (!s.el.isConnected) continue;
-      if (s.dirty) layout(s);
+      if (s.dirty) {
+        // Spread rebuilds across frames; the still artwork covers the wait.
+        if (performance.now() < deadline) layout(s);
+        else pending = true;
+      }
       if (still(s) || !s.grid) continue;
       moving = true;
-      if (s.visible && now - last >= 1000 / FPS) paint(s, now / 1000);
+      if (s.visible && now - last >= 1000 / FPS)
+        paint(s, (now - start) / 1000);
     }
     if (now - last >= 1000 / FPS) last = now;
-    if (moving) raf = window.requestAnimationFrame(tick);
+    if (moving || pending) raf = window.requestAnimationFrame(tick);
   };
   function wake() {
     if (!raf) raf = window.requestAnimationFrame(tick);

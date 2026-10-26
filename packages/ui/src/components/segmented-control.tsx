@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { MotionConfig, motion } from "framer-motion";
+import { useSlidingIndicator } from "@featul/ui/hooks/use-sliding-indicator";
 import { selectorSurfaceClass } from "@featul/ui/lib/overlay";
 import { cn } from "@featul/ui/lib/utils";
 
@@ -30,7 +30,7 @@ const sizeClass = {
 
 /**
  * Pill switcher: the selected option wears the button's raised surface and slides
- * between options with a short spring.
+ * between options.
  */
 export function SegmentedControl<T extends string>({
   value,
@@ -51,8 +51,8 @@ export function SegmentedControl<T extends string>({
   disabled?: boolean;
   "aria-label"?: string;
 }) {
-  const pillId = React.useId();
   const refs = React.useRef<Array<HTMLButtonElement | null>>([]);
+  const pillRef = useSlidingIndicator();
 
   const move = (from: number, step: 1 | -1) => {
     for (let i = 1; i <= options.length; i++) {
@@ -67,57 +67,64 @@ export function SegmentedControl<T extends string>({
   };
 
   return (
-    <MotionConfig reducedMotion="user">
-      <div role="radiogroup" aria-label={ariaLabel} className={cn(segmentedTrackClass, className)}>
-        {options.map((option, index) => {
-          const active = option.value === value;
-          return (
-            <button
-              key={option.value}
-              ref={(el) => {
-                refs.current[index] = el;
-              }}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              aria-label={option.ariaLabel}
-              title={option.title}
-              tabIndex={active ? 0 : -1}
-              disabled={disabled || option.disabled}
-              onClick={() => onValueChange(option.value)}
-              onKeyDown={(e) => {
-                if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-                  e.preventDefault();
-                  move(index, 1);
-                } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-                  e.preventDefault();
-                  move(index, -1);
-                }
-              }}
-              className={cn(
-                "relative inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-md font-medium whitespace-nowrap text-accent outline-none transition-colors duration-200 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
-                squircleClass,
-                sizeClass[size],
-                active && "text-foreground",
-                itemClassName,
-              )}
-            >
-              {active ? (
-                <motion.span
-                  layoutId={pillId}
-                  aria-hidden
-                  className={cn(selectorSurfaceClass, "absolute inset-0 rounded-md", squircleClass)}
-                  transition={{ type: "spring", stiffness: 520, damping: 40, mass: 0.8 }}
-                />
-              ) : null}
-              {option.icon ? <span className="relative inline-flex">{option.icon}</span> : null}
-              {option.label != null && option.label !== "" ? (
-                <span className="relative">{option.label}</span>
-              ) : null}
-            </button>
-          );
-        })}
-      </div>
-    </MotionConfig>
+    <div
+      role="radiogroup"
+      aria-label={ariaLabel}
+      className={cn(segmentedTrackClass, className)}
+    >
+      {options.map((option, index) => {
+        const active = option.value === value;
+        return (
+          <button
+            key={option.value}
+            ref={(el) => {
+              refs.current[index] = el;
+            }}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            aria-label={option.ariaLabel}
+            title={option.title}
+            tabIndex={active ? 0 : -1}
+            disabled={disabled || option.disabled}
+            onClick={() => onValueChange(option.value)}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                e.preventDefault();
+                move(index, 1);
+              } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                e.preventDefault();
+                move(index, -1);
+              }
+            }}
+            className={cn(
+              "relative inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-md font-medium whitespace-nowrap text-accent outline-none transition-colors duration-200 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+              squircleClass,
+              sizeClass[size],
+              active && "text-foreground",
+              itemClassName,
+            )}
+          >
+            {active ? (
+              <span
+                ref={pillRef}
+                aria-hidden
+                className={cn(
+                  selectorSurfaceClass,
+                  "absolute inset-0 rounded-md",
+                  squircleClass,
+                )}
+              />
+            ) : null}
+            {option.icon ? (
+              <span className="relative inline-flex">{option.icon}</span>
+            ) : null}
+            {option.label != null && option.label !== "" ? (
+              <span className="relative">{option.label}</span>
+            ) : null}
+          </button>
+        );
+      })}
+    </div>
   );
 }

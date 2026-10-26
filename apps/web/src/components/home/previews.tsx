@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowLeftIcon,
   ListFilterIcon,
@@ -65,16 +64,13 @@ type FeedProps = {
   extraPost?: FeedPost | null;
 };
 function Feed({ section, widget = false, extraPost }: FeedProps) {
-  const reduceMotion = useReducedMotion();
   return (
-    <motion.div
+    <div
       key={section}
-      initial={{ opacity: reduceMotion ? 1 : 0.85 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: reduceMotion ? 0 : 0.16 }}
+      className="motion-safe:animate-in motion-safe:fade-in-85 motion-safe:duration-160"
     >
       <FeedContent section={section} widget={widget} extraPost={extraPost} />
-    </motion.div>
+    </div>
   );
 }
 
