@@ -20,7 +20,9 @@ import { BAYER4 } from "./pixel";
  *   "transparent"), `data-direction`, `data-cell` and `data-opacity`.
  * - `data-dither="clouds"` with `data-variant` ("primary", "contours", "clouds") and
  *   `data-fit` ("fill" or "cover").
- * Both take `data-animated="false"` to stay still, and contain a `canvas[data-dither-canvas]`
+ * Both take `data-animated="false"` to stay still,
+ * and an ancestor marked `data-dither-viewport` stands in for visibility checks (for
+ * fixed-position surfaces that are revealed by a clipped, scrolling parent); and contain a `canvas[data-dither-canvas]`
  * plus an optional `[data-dither-still]` shown until the canvas paints.
  */
 
@@ -53,6 +55,8 @@ type Grid = {
 
 type Surface = {
   el: HTMLElement;
+  /** The element whose visibility decides whether this surface animates. */
+  watch: Element;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   grid: Grid | null;
@@ -247,7 +251,8 @@ export function startDitherEngine() {
 
   const surfaces = new Map<HTMLElement, Surface>();
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const still = (s: Surface) => reduce.matches || s.el.dataset.animated === "false";
+  const still = (s: Surface) =>
+    reduce.matches || s.el.dataset.animated === "false";
   const clock = () => performance.now() / 1000;
 
   const io =
@@ -255,8 +260,9 @@ export function startDitherEngine() {
       ? null
       : new IntersectionObserver((entries) => {
           for (const entry of entries) {
-            const s = surfaces.get(entry.target as HTMLElement);
-            if (s) s.visible = entry.isIntersecting;
+            for (const s of surfaces.values()) {
+              if (s.watch === entry.target) s.visible = entry.isIntersecting;
+            }
           }
         });
   const ro =
@@ -276,7 +282,13 @@ export function startDitherEngine() {
     if (box.width < 1 || box.height < 1 || s.ctx.isContextLost?.()) return;
     const d = s.el.dataset;
     if (d.dither === "clouds") {
-      s.grid = cloudGrid(s.ctx, box.width, box.height, d.variant ?? "clouds", d.fit ?? "fill");
+      s.grid = cloudGrid(
+        s.ctx,
+        box.width,
+        box.height,
+        d.variant ?? "clouds",
+        d.fit ?? "fill",
+      );
     } else {
       s.grid = gradientGrid(
         s.ctx,
@@ -298,11 +310,14 @@ export function startDitherEngine() {
 
   const add = (el: HTMLElement) => {
     if (surfaces.has(el)) return;
-    const canvas = el.querySelector<HTMLCanvasElement>("canvas[data-dither-canvas]");
+    const canvas = el.querySelector<HTMLCanvasElement>(
+      "canvas[data-dither-canvas]",
+    );
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
     const s: Surface = {
       el,
+      watch: el.closest("[data-dither-viewport]") ?? el,
       canvas,
       ctx,
       grid: null,
@@ -316,7 +331,7 @@ export function startDitherEngine() {
       s.dirty = true;
       wake();
     });
-    io?.observe(el);
+    io?.observe(s.watch);
     ro?.observe(el);
     // Paint now, before the browser's next frame, so there is never a still flash.
     layout(s);
@@ -330,10 +345,10 @@ export function startDitherEngine() {
   };
 
   const prune = () => {
-    for (const [el] of surfaces) {
+    for (const [el, s] of surfaces) {
       if (el.isConnected) continue;
       surfaces.delete(el);
-      io?.unobserve(el);
+      io?.unobserve(s.watch);
       ro?.unobserve(el);
     }
   };
@@ -405,5 +420,7 @@ export function startDitherEngine() {
   });
 
   scan(document.documentElement);
-  document.addEventListener("DOMContentLoaded", () => scan(document.documentElement));
+  document.addEventListener("DOMContentLoaded", () =>
+    scan(document.documentElement),
+  );
 }
