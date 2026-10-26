@@ -1,18 +1,46 @@
 import { LIGHT_PURPLE } from "./palette";
 
-/** Shared contour density in [0, 1], with soft edges for ordered dithering. */
-export function contourDensity(u: number, v: number) {
+/** The warped ring field behind the contours; each whole unit is one ring. */
+export function contourField(u: number, v: number) {
   const x = (u - 0.48) * 1.5;
   const y = v - 0.5;
   const radius = Math.hypot(x, y);
   const angle = Math.atan2(y, x);
-  const field =
+  return (
     radius * 9 +
     0.38 * (radius / (radius + 0.2)) * Math.sin(angle * 3 + radius * 4) +
-    0.18 * Math.sin(u * 7 + v * 4);
+    0.18 * Math.sin(u * 7 + v * 4)
+  );
+}
+
+/** Density of a ring field value; subtracting time from `field` ripples the rings outward. */
+export function fieldDensity(field: number) {
   const phase = field - Math.floor(field);
   const line = Math.max(0, 1 - Math.abs(phase - 0.5) / 0.3);
   return Math.min(1, line * 1.6);
+}
+
+/** Shared contour density in [0, 1], with soft edges for ordered dithering. */
+export function contourDensity(u: number, v: number) {
+  return fieldDensity(contourField(u, v));
+}
+
+/** Rings drift outward by this many field units per second. */
+export const DRIFT_SPEED = 0.12;
+
+/** Stable per-cell hash in [0, 1), so each dot keeps its own glint timing. */
+export function cellHash(x: number, y: number) {
+  const h = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+  return h - Math.floor(h);
+}
+
+/**
+ * Glint strength in [0, 1] for a dot at `time` seconds: mostly 0, with a short flash
+ * every few seconds at a moment unique to the cell.
+ */
+export function glint(hash: number, time: number) {
+  const wave = Math.sin(time * 1.3 + hash * 97);
+  return wave > 0.97 ? (wave - 0.97) / 0.03 : 0;
 }
 
 /** A soft field shared by monochrome washes and the full-colour dither artwork. */

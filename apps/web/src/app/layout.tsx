@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { DitherEngineScript } from "@featul/ui/components/dither-engine";
 import { Geist_Mono, Inter_Tight } from "next/font/google";
 import { DebugTools } from "@featul/ui/global/debug-tools";
 import ConsentProvider from "@/components/legal/consent";
@@ -115,6 +116,7 @@ export default function RootLayout({
             __html: `(function(){if(location.pathname!=="/")return;history.scrollRestoration="manual";var nav=performance.getEntriesByType("navigation")[0];var reload=nav&&(nav.type==="reload"||nav.type==="back_forward");var y=0;try{y=parseInt(sessionStorage.getItem("featul:home-scroll:v4")||"0",10)||0}catch(e){}if(!reload)y=0;var h=document.documentElement;h.style.scrollBehavior="auto";if(y>0){h.setAttribute("data-scrolled","");if(y>=80)h.style.opacity="0"}function go(){scrollTo(0,y);if(y>=80)h.style.opacity=""}go();addEventListener("DOMContentLoaded",go);addEventListener("load",go)})();`,
           }}
         />
+        <DitherEngineScript />
         <OrganizationJsonLd />
         <script
           id="site-navigation-jsonld"
