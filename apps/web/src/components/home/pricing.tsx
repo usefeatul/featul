@@ -15,6 +15,7 @@ import type { PixelColor } from "@/components/dither-kit/pixel"
 import { SubtleDitherWash } from "@/components/home/visual-well"
 import Link from "next/link"
 import Faq from "@/components/home/faq"
+import { pricingCopy } from "@/data/home"
 import { SkyPageShell } from "@/components/layout/shell"
 import {
   MarketingContainer,
@@ -72,8 +73,8 @@ export function PricingPlans() {
 function PricingTitle() {
   return (
     <>
-      <span className="inline-block">Pricing that grows</span>{" "}
-      <HeadingHighlight>with your team.</HeadingHighlight>
+      <span className="inline-block">{pricingCopy.title}</span>{" "}
+      <HeadingHighlight>{pricingCopy.highlight}</HeadingHighlight>
     </>
   )
 }
@@ -88,8 +89,7 @@ export function PricingSection() {
               <PricingTitle />
             </h2>
             <p className={marketingLeadClass}>
-              Start free, then move into simple flat-workspace plans for early
-              and growing product teams.
+              {pricingCopy.description}
             </p>
           </div>
           <div className="mt-8">
@@ -108,8 +108,7 @@ export default function Pricing() {
       title={<PricingTitle />}
       description={
         <p className={cn(marketingLeadClass, "mt-0 sm:mt-0")}>
-          Start free, then move into simple flat-workspace plans for early and growing
-          product teams.
+          {pricingCopy.description}
         </p>
       }
       below={<Faq />}
@@ -225,10 +224,10 @@ function PricingPlanCard({
       <footer className="flex min-h-13 flex-col justify-center gap-0.5 px-2.5 py-2 text-center text-xs font-extralight text-foreground/65">
         <p>
           {planKey !== "free" && billingCycle === "yearly"
-            ? "2 months free. Billed annually. Cancel anytime."
+            ? pricingCopy.yearlyNote
             : plan.finePrint}
         </p>
-        {plan.trialDays ? <p>One trial per account. No credit card required.</p> : null}
+        {plan.trialDays ? <p>{pricingCopy.trialNote}</p> : null}
       </footer>
     </section>
   )

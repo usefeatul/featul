@@ -5,16 +5,17 @@ import {
   marketingLeadClass,
 } from "@/components/shared/heading-highlight";
 import { cn } from "@featul/ui/lib/utils";
+import { homeHero } from "@/data/home";
 
 export function HeroContent({
   title = (
     <>
-      Build what your customers
+      {homeHero.title}
       <br className="hidden sm:block" />{" "}
-      <span className="text-accent">actually want.</span>
+      <span className="text-accent">{homeHero.highlight}</span>
     </>
   ),
-  description = "Turn customer feedback into your next great feature. Gather ideas, decide what’s next, and bring your customers along as you ship.",
+  description = homeHero.description,
   dataComponent = "HeroContent",
 }: {
   title?: ReactNode;

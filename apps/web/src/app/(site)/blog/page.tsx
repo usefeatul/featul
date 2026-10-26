@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   alternates: {
     ...blogPageMetadata.alternates,
     types: {
+      ...blogPageMetadata.alternates?.types,
       "application/rss+xml": absoluteUrl("/blog/feed.xml"),
     },
   },

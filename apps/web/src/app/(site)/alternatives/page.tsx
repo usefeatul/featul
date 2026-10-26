@@ -14,6 +14,8 @@ import {
 } from "@/lib/schema";
 
 export const metadata = createPageMetadata({
+  aiSummary:
+    "A 2026 roundup comparing Featul with Featurebase, Canny, Frill, UserJot, Productboard, and other feedback tools on pricing model, open source, self-hosting, EU hosting, and changelogs, with links to each one-to-one comparison.",
   title: "Best Featurebase alternatives 2026 | Featul vs Canny",
   description:
     "Compare the best Featurebase and Canny alternatives in 2026. Featul, Frill, UserJot, and Productboard side by side on pricing, open source, EU hosting, and changelogs.",

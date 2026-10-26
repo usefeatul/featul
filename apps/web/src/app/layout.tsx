@@ -43,11 +43,6 @@ export const metadata: Metadata = {
   },
   description: DEFAULT_DESCRIPTION,
   keywords: DEFAULT_KEYWORDS,
-  alternates: {
-    types: {
-      "text/markdown": "/index.md",
-    },
-  },
   openGraph: {
     type: "website",
     url: `${SITE_URL}/`,

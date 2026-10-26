@@ -1,11 +1,5 @@
 /** @type {import('next').NextConfig} */
 
-const acceptMarkdown = {
-  type: 'header',
-  key: 'accept',
-  value: '(.*)text/markdown(.*)',
-}
-
 const nextConfig = {
   turbopack: {
     rules: {
@@ -40,41 +34,7 @@ const nextConfig = {
     // Preserve the terms link used by the existing Google OAuth consent screen.
     return [{ source: '/term', destination: '/terms', permanent: true }]
   },
-  async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: '/docs/llms.txt',
-          destination: '/md/docs/llms.txt',
-        },
-        {
-          source: '/index.md',
-          destination: '/md',
-        },
-        {
-          source: '/:path*.md',
-          destination: '/md/:path*',
-        },
-        {
-          source: '/',
-          has: [acceptMarkdown],
-          destination: '/md',
-        },
-        {
-          source: '/pricing',
-          has: [acceptMarkdown],
-          destination: '/md/pricing',
-        },
-        {
-          source: '/docs/:path*',
-          has: [acceptMarkdown],
-          destination: '/md/docs/:path*',
-        },
-      ],
-    }
-  },
   async headers() {
-    const varyAccept = { key: 'Vary', value: 'Accept' }
     const securityHeaders = [
       { key: 'X-Content-Type-Options', value: 'nosniff' },
       { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
@@ -96,42 +56,8 @@ const nextConfig = {
         ].join('; '),
       },
     ]
+    // Markdown twin `Link` and `Vary: Accept` headers are set in src/proxy.ts.
     return [
-      {
-        source: '/',
-        headers: [
-          varyAccept,
-          {
-            key: 'Link',
-            value:
-              '</index.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"',
-          },
-          ...securityHeaders,
-        ],
-      },
-      {
-        source: '/pricing',
-        headers: [
-          varyAccept,
-          {
-            key: 'Link',
-            value:
-              '</pricing.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"',
-          },
-          ...securityHeaders,
-        ],
-      },
-      {
-        source: '/docs/:path*',
-        headers: [
-          varyAccept,
-          {
-            key: 'Link',
-            value: '</docs/llms.txt>; rel="describedby"',
-          },
-          ...securityHeaders,
-        ],
-      },
       {
         source: '/:path*',
         headers: securityHeaders,

@@ -8,6 +8,7 @@
 import { COMPETITORS, INTEGRATIONS, USE_CASES } from "../data/programmatic/matrix";
 import { getDefinitionBySlug, getAllDefinitionSlugs } from "@/content/definitions";
 import { getCategoryBySlug, getAllCategorySlugs, findToolBySlug, findToolForDefinition } from "@/types/tools";
+import { getCompetitorDetail, KIND_RELATED_LINKS } from "@/config/alternatives-detail";
 
 const DEFINITION_SLUG_ALIASES: Record<string, string> = {
     "changelog": "retention-rate",
@@ -452,4 +453,48 @@ export function getBreadcrumbs(path: string): BreadcrumbItem[] {
     }
 
     return crumbs;
+}
+
+/** Related links shown on `/alternatives/[slug]` (HTML and Markdown). */
+export function getAlternativeRelatedLinks(slug: string, limit = 5): RelatedLink[] {
+    const relatedLinks = getRelatedPages({
+        currentSlug: slug,
+        currentType: "competitor",
+    });
+    relatedLinks.unshift({
+        href: "/alternatives",
+        label: "Best Featurebase alternatives 2026",
+        type: "hub",
+    });
+    const kind = getCompetitorDetail(slug)?.kind;
+    if (kind) {
+        const useCase = KIND_RELATED_LINKS[kind];
+        relatedLinks.unshift({
+            href: useCase.href,
+            label: useCase.label,
+            type: "use-case",
+        });
+    }
+    if (slug === "featurebase") {
+        relatedLinks.unshift(
+            {
+                href: "/use-cases/open-source-roadmap",
+                label: "Open source roadmap use case",
+                type: "use-case",
+            },
+            {
+                href: "/docs/open-source",
+                label: "Featul is open source",
+                type: "hub",
+            },
+        );
+    }
+    if (slug === "canny") {
+        relatedLinks.unshift({
+            href: "/integrations/canny",
+            label: "Canny integrations and import",
+            type: "integration",
+        });
+    }
+    return relatedLinks.slice(0, limit);
 }

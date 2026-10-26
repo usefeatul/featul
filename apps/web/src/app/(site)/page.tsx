@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createPageMetadata } from "@/lib/seo";
 import { DEFAULT_DESCRIPTION } from "@/config/seo";
 import { faqItems } from "@/data/faqs";
+import { summarizePricingPlans } from "@/types/plan";
 import { buildFaqPageSchema } from "@/lib/schema";
 import { serializeJsonLd } from "@/lib/security";
 import { Hero } from "@/components/home/hero";
@@ -20,6 +21,7 @@ export const metadata: Metadata = createPageMetadata({
   description: DEFAULT_DESCRIPTION,
   path: "/",
   absoluteTitle: true,
+  aiSummary: `Featul's homepage: an open source, EU-hosted tool for customer feedback boards with voting, public or private roadmaps, and changelogs. Priced per workspace: ${summarizePricingPlans()}.`,
 });
 
 export default function Home() {

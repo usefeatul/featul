@@ -29,7 +29,11 @@ export function absoluteUrl(path = "/") {
   return `${SITE_URL}${normalized}`
 }
 
-export const DEFAULT_TITLE = "Featul"
+export const SITE_NAME = "Featul"
+export const CONTACT_EMAIL = "contact@featul.com"
+export const SITE_SOCIALS = ["https://github.com/usefeatul/featul"]
+
+export const DEFAULT_TITLE = SITE_NAME
 export const TITLE_TEMPLATE = "%s - Featul"
 
 export const DEFAULT_DESCRIPTION =
@@ -50,16 +54,14 @@ export function getOrganizationJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Featul',
+    name: SITE_NAME,
     url: absoluteUrl('/'),
     logo: absoluteUrl('/og.png'),
-    sameAs: [
-      "https://github.com/usefeatul/feautl",
-    ],
+    sameAs: SITE_SOCIALS,
     contactPoint: [
       {
         '@type': 'ContactPoint',
-        email: 'contact@featul.com',
+        email: CONTACT_EMAIL,
         contactType: 'customer support',
       },
     ],

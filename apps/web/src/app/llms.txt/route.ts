@@ -1,8 +1,10 @@
-import { renderLlmsTxt } from "@/lib/llms/content"
-import { markdownResponse } from "@/lib/llms/response"
+import { textResponse } from "@/lib/md/http"
+import { renderLlmsTxt } from "@/lib/md/site-files"
 
+// Prerendered and revalidated daily; Next answers HEAD from the cached GET.
+export const dynamic = "force-static"
 export const revalidate = 86400
 
-export function GET() {
-  return markdownResponse(renderLlmsTxt())
+export async function GET() {
+  return textResponse(await renderLlmsTxt())
 }

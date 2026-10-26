@@ -119,3 +119,13 @@ export function formatPricingPrice(plan: PricingPlan, cycle: BillingCycle) {
   if (cycle === "yearly") return `£${amount} / year`;
   return `£${amount} / month`;
 }
+
+/** "Free (£0/month), Starter (£18/month or £180/year), …" for summaries and agent-facing copy. */
+export function summarizePricingPlans() {
+  return PRICING_PLAN_ORDER.map((key) => {
+    const plan = PRICING_PLANS[key];
+    return plan.monthlyPrice === 0
+      ? `${plan.name} (£0)`
+      : `${plan.name} (£${plan.monthlyPrice}/month or £${plan.yearlyPrice}/year)`;
+  }).join(", ");
+}

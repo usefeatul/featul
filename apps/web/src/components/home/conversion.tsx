@@ -12,45 +12,22 @@ import {
   MarketingContainer,
   MarketingRail,
 } from "@/components/layout/container";
+import { homeConversion } from "@/data/home";
 import { DitherGradient } from "@/components/dither-kit/gradient";
 
-const steps: {
-  number: string;
-  icon: typeof BoardIcon;
-  iconColor: string;
-  tone: [number, number, number];
-  label: string;
-  title: string;
-  body: string;
-}[] = [
-  {
-    number: "01",
-    icon: BoardIcon,
-    iconColor: "#4189e2",
-    tone: [142, 198, 250],
-    label: "Listen",
-    title: "Bring the good ideas together.",
-    body: "Give customers one place to share requests and vote. Spend less time chasing feedback across chats and spreadsheets.",
-  },
-  {
-    number: "02",
-    icon: RoadmapIcon,
-    iconColor: "#3b95af",
-    tone: [90, 192, 202],
-    label: "Decide",
-    title: "Know what deserves your time.",
-    body: "See which requests have momentum, choose what comes next, and share a roadmap that keeps everyone in the loop.",
-  },
-  {
-    number: "03",
-    icon: ChangelogIcon,
-    iconColor: "#837ec8",
-    tone: [186, 166, 240],
-    label: "Deliver",
-    title: "Turn a request into a reason to stay.",
-    body: "Publish an update when you ship. Help customers discover what’s new and see how their feedback shaped your product.",
-  },
-];
+const stepStyles: Record<
+  string,
+  { icon: typeof BoardIcon; iconColor: string; tone: [number, number, number] }
+> = {
+  "01": { icon: BoardIcon, iconColor: "#4189e2", tone: [142, 198, 250] },
+  "02": { icon: RoadmapIcon, iconColor: "#3b95af", tone: [90, 192, 202] },
+  "03": { icon: ChangelogIcon, iconColor: "#837ec8", tone: [186, 166, 240] },
+};
+
+const steps = homeConversion.steps.map((step) => ({
+  ...step,
+  ...stepStyles[step.number]!,
+}));
 
 export function ConversionHero() {
   return (
@@ -59,11 +36,10 @@ export function ConversionHero() {
         <MarketingRail>
           <div className="max-w-2xl text-left">
             <h2 className="font-heading text-balance text-2xl font-semibold text-foreground sm:text-3xl">
-              A better product starts with a closer conversation.
+              {homeConversion.title}
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-accent sm:text-base">
-              Make your customers part of what comes next. One connected
-              workflow, from their first idea to your latest release.
+              {homeConversion.description}
             </p>
           </div>
           <div className="mt-9 grid gap-3 sm:mt-12 sm:grid-cols-3">
