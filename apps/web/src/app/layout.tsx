@@ -32,8 +32,6 @@ const interTight = Inter_Tight({
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   display: "swap",
-  // Only small details use mono; keep it out of the preloads that compete with first paint.
-  preload: false,
   variable: "--font-geist-mono",
 });
 
