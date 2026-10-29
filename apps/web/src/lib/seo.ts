@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { absoluteUrl, DEFAULT_OG_IMAGE } from '@/config/seo'
-import { htmlPathToMarkdownPath } from '@/lib/llms/paths'
+import { htmlPathToMarkdownPath } from '@/lib/md/patterns'
 
 const TITLE_MIN_LENGTH = 50
 const TITLE_MAX_LENGTH = 60
@@ -108,6 +108,12 @@ type BaseMetaArgs = {
   image?: string
   absoluteTitle?: boolean
   markdownPath?: string
+  /** `<meta name="ai-summary">`: 1–2 factual sentences for agents. Defaults to the description. */
+  aiSummary?: string
+}
+
+export function aiSummaryMeta(summary: string): Metadata['other'] {
+  return { 'ai-summary': normalizeText(summary) }
 }
 
 export function createPageMetadata({
@@ -117,6 +123,7 @@ export function createPageMetadata({
   image,
   absoluteTitle,
   markdownPath,
+  aiSummary,
 }: BaseMetaArgs): Metadata {
   const img = image || DEFAULT_OG_IMAGE
   const canonicalPath = normalizePath(path || '/')
@@ -127,6 +134,7 @@ export function createPageMetadata({
     title: titleProp,
     description: normalizedDescription,
     alternates: createAlternates(canonicalPath, markdownPath),
+    other: aiSummaryMeta(aiSummary ?? description),
     openGraph: {
       url: pageUrl(path || '/'),
       type: 'website',
@@ -150,6 +158,7 @@ export function createArticleMetadata({
   image,
   absoluteTitle,
   markdownPath,
+  aiSummary,
 }: BaseMetaArgs): Metadata {
   const img = image || DEFAULT_OG_IMAGE
   const canonicalPath = normalizePath(path || '/')
@@ -160,6 +169,7 @@ export function createArticleMetadata({
     title: titleProp,
     description: normalizedDescription,
     alternates: createAlternates(canonicalPath, markdownPath),
+    other: aiSummaryMeta(aiSummary ?? description),
     openGraph: {
       url: pageUrl(path || '/'),
       type: 'article',

@@ -25,13 +25,14 @@ import {
 
 import type { NavItem } from "../types/nav";
 import { SECTIONS } from "./sections";
+import { workspaceHost } from "./domain";
 
 /** Path under `/workspaces/{slug}`. Empty slug uses `/workspaces{p}`. */
 function w(slug: string, p: string) {
   return slug ? `/workspaces/${slug}${p}` : `/workspaces${p}`;
 }
 
-/** Public board origin: custom domain if set, else `{slug}.featul.com`. */
+/** Public board origin: custom domain if set, else `{slug}.{ROOT_DOMAIN}`. */
 export function publicBoardUrlForWorkspace(
   slug: string,
   customDomain?: string | null,
@@ -39,7 +40,7 @@ export function publicBoardUrlForWorkspace(
   const s = (slug || "").trim();
   if (customDomain && customDomain.trim())
     return `https://${customDomain.trim()}`;
-  return `https://${s}.featul.com`;
+  return `https://${workspaceHost(s)}`;
 }
 
 /** Workspace slug from `/workspaces/{slug}/…`. */

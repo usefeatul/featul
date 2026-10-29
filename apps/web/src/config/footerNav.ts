@@ -165,7 +165,7 @@ export const footerNavigationConfig: FooterNavigationConfig = {
   socials: [
     {
       name: "GitHub",
-      href: "https://github.com/usefeatul/feautl",
+      href: "https://github.com/usefeatul/featul",
       icon: "github",
     },
     {

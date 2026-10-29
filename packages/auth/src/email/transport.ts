@@ -1,3 +1,5 @@
+import { isSelfHosted } from "../selfhost"
+
 export type EmailPayload = {
   to: string
   from?: string
@@ -12,6 +14,12 @@ export async function sendEmail({ to, from: explicitFrom, subject, html, text, i
   const from = explicitFrom || process.env.RESEND_FROM || "featul <no-reply@featul.com>"
 
   if (!apiKey) {
+    if (isSelfHosted()) {
+      // Self-hosted without an email provider: the admin reads codes and links from the
+      // server logs (`docker compose logs app`) instead of losing sign-up entirely.
+      console.warn(`[email:self-hosted] RESEND_API_KEY is not set, so this email was logged instead of sent.\nto=${to}\nsubject=${subject}\n${text ?? ""}`)
+      return
+    }
     if (process.env.NODE_ENV === "production") {
       throw new Error("RESEND_API_KEY is required for production email")
     }

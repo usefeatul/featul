@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { DitherEngineScript } from "@featul/ui/components/dither-engine";
 import { headers } from "next/headers";
 import Script from "next/script";
 import { Geist_Mono, Inter_Tight } from "next/font/google";
@@ -99,6 +100,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <DitherEngineScript />
         <OrganizationJsonLd />
         <Script
           id="software-app-jsonld"

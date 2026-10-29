@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { GoogleIcon } from "@featul/ui/icons/google";
 import { StarIcon } from "@featul/ui/icons/star";
+import { cn } from "@featul/ui/lib/utils";
 
 const REVIEWS = [
   "Featul is the kind of product I'm happy to open every day.",
@@ -15,10 +15,8 @@ const REVIEWS = [
 
 const INTERVAL_MS = 5000;
 
-const fade = {
-  duration: 0.35,
-  ease: [0.22, 1, 0.36, 1] as const,
-};
+/** Each quote fades out, swaps, then fades back in. */
+const FADE_MS = 350;
 
 function Stars() {
   return (
@@ -48,19 +46,29 @@ function ReviewLine({ quote }: { quote: string }) {
 }
 
 export function HeroReviews() {
-  const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    if (reduceMotion || paused) return;
+    if (paused) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    let swap = 0;
     const id = window.setInterval(() => {
-      setIndex((current) => (current + 1) % REVIEWS.length);
+      setVisible(false);
+      swap = window.setTimeout(() => {
+        setIndex((current) => (current + 1) % REVIEWS.length);
+        setVisible(true);
+      }, FADE_MS);
     }, INTERVAL_MS);
 
-    return () => window.clearInterval(id);
-  }, [paused, reduceMotion]);
+    return () => {
+      window.clearInterval(id);
+      window.clearTimeout(swap);
+      setVisible(true);
+    };
+  }, [paused]);
 
   const quote = REVIEWS[index] ?? REVIEWS[0];
 
@@ -75,19 +83,15 @@ export function HeroReviews() {
         aria-live="polite"
         aria-atomic="true"
       >
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.p
-            key={quote}
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={reduceMotion ? undefined : { opacity: 0 }}
-            transition={fade}
-            className="m-0 min-w-0"
-          >
-            <span className="sr-only">Google review: </span>
-            <ReviewLine quote={quote} />
-          </motion.p>
-        </AnimatePresence>
+        <p
+          className={cn(
+            "m-0 min-w-0 transition-opacity duration-350 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            !visible && "opacity-0",
+          )}
+        >
+          <span className="sr-only">Google review: </span>
+          <ReviewLine quote={quote} />
+        </p>
       </div>
     </div>
   );

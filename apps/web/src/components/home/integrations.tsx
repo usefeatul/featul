@@ -14,6 +14,7 @@ import { NotraIcon } from "@featul/ui/icons/notra";
 import { NoltIcon } from "@featul/ui/icons/nolt";
 import { CannyIcon } from "@featul/ui/icons/canny";
 import { ProductBoardIcon } from "@featul/ui/icons/productboard";
+import { homeIntegrations } from "@/data/home";
 
 type IntegrationItem = {
   slug: string;
@@ -22,46 +23,19 @@ type IntegrationItem = {
   icon: ComponentType<{ className?: string; size?: number }>;
 };
 
-const integrations: IntegrationItem[] = [
-  {
-    slug: "slack",
-    name: "Slack",
-    description: "Get instant Slack alerts when new requests are submitted.",
-    icon: SlackIcon,
-  },
-  {
-    slug: "discord",
-    name: "Discord",
-    description:
-      "Send feedback notifications directly into your Discord channels.",
-    icon: DiscordIcon,
-  },
-  {
-    slug: "notra",
-    name: "Notra",
-    description:
-      "Import Notra changelog entries to keep product updates synced.",
-    icon: NotraIcon,
-  },
-  {
-    slug: "nolt",
-    name: "Nolt",
-    description: "Import requests and comments from Nolt into Featul.",
-    icon: NoltIcon,
-  },
-  {
-    slug: "canny",
-    name: "Canny",
-    description: "Bring feature requests and comments over from Canny.",
-    icon: CannyIcon,
-  },
-  {
-    slug: "productboard",
-    name: "ProductBoard",
-    description: "Migrate posts, boards, and comments from ProductBoard.",
-    icon: ProductBoardIcon,
-  },
-];
+const integrationIcons: Record<string, IntegrationItem["icon"]> = {
+  slack: SlackIcon,
+  discord: DiscordIcon,
+  notra: NotraIcon,
+  nolt: NoltIcon,
+  canny: CannyIcon,
+  productboard: ProductBoardIcon,
+};
+
+const integrations: IntegrationItem[] = homeIntegrations.items.map((item) => ({
+  ...item,
+  icon: integrationIcons[item.slug]!,
+}));
 
 export default function Integrations() {
   return (
@@ -72,11 +46,10 @@ export default function Integrations() {
       >
         <div className={marketingRailClass}>
           <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
-            Integrate with your favorite tools
+            {homeIntegrations.title}
           </h2>
           <p className="mt-3 text-accent max-w-2xl text-sm leading-6 sm:text-base">
-            Connect notifications, imports, and migration paths so feedback
-            stays close to the tools your team already uses.
+            {homeIntegrations.description}
           </p>
 
           <div

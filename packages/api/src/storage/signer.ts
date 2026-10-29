@@ -17,13 +17,13 @@ export interface StorageContext {
 }
 
 export function createStorageContext(): StorageContext {
-  const accountId = getEnv("R2_ACCOUNT_ID")
   const accessKeyId = getEnv("R2_ACCESS_KEY_ID")
   const secretAccessKey = getEnv("R2_SECRET_ACCESS_KEY")
   const bucket = getEnv("R2_BUCKET")
   const publicBase = getEnv("R2_PUBLIC_BASE_URL")
 
-  const endpoint = `https://${accountId}.r2.cloudflarestorage.com`
+  // Any S3-compatible store (MinIO, Backblaze B2, …) via R2_ENDPOINT; Cloudflare R2 otherwise.
+  const endpoint = process.env.R2_ENDPOINT?.trim() || `https://${getEnv("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`
   const s3 = new S3Client({
     region: "auto",
     endpoint,

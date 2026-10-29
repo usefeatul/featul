@@ -17,11 +17,7 @@ import {
   getAlternativePageTitle,
   getAlternativeSlugs,
 } from "@/config/alternatives";
-import {
-  getCompetitorDetail,
-  KIND_RELATED_LINKS,
-} from "@/config/alternatives-detail";
-import { getRelatedPages } from "@/lib/seo/interlink";
+import { getAlternativeRelatedLinks } from "@/lib/seo/interlink";
 import { RelatedLinks } from "@/components/seo/links";
 import { getAlternativeFaq } from "@/data/alt";
 import { serializeJsonLd } from "@/lib/security";
@@ -68,46 +64,7 @@ export default async function AlternativePage({
   const faqSchema = buildFaqPageSchema(
     faqItems.map((item) => ({ question: item.question, answer: item.answer })),
   );
-  const relatedLinks = getRelatedPages({
-    currentSlug: slug,
-    currentType: "competitor",
-  });
-  relatedLinks.unshift({
-    href: "/alternatives",
-    label: "Best Featurebase alternatives 2026",
-    type: "hub",
-  });
-  const kind = getCompetitorDetail(slug)?.kind;
-  if (kind) {
-    const useCase = KIND_RELATED_LINKS[kind];
-    relatedLinks.unshift({
-      href: useCase.href,
-      label: useCase.label,
-      type: "use-case",
-    });
-  }
-  if (slug === "featurebase") {
-    relatedLinks.unshift(
-      {
-        href: "/use-cases/open-source-roadmap",
-        label: "Open source roadmap use case",
-        type: "use-case",
-      },
-      {
-        href: "/docs/open-source",
-        label: "Featul is open source",
-        type: "hub",
-      },
-    );
-  }
-  if (slug === "canny") {
-    relatedLinks.unshift({
-      href: "/integrations/canny",
-      label: "Canny integrations and import",
-      type: "integration",
-    });
-  }
-  const related = relatedLinks.slice(0, 5);
+  const related = getAlternativeRelatedLinks(slug);
 
   return (
     <main className="min-h-screen overflow-x-clip">

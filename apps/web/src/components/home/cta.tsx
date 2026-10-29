@@ -3,6 +3,7 @@ import {
   marketingRailClass,
 } from "@/components/layout/container";
 import { Promotion } from "@/components/shared/promotion";
+import { homeCta } from "@/data/home";
 
 export default function CTA() {
   return (
@@ -13,8 +14,8 @@ export default function CTA() {
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
           <Promotion
-            title="Your next great feature starts with listening."
-            description="Give your customers a voice and your team a clear next step. Create your free workspace and start the conversation today."
+            title={homeCta.title}
+            description={homeCta.description}
           />
         </div>
       </MarketingContainer>

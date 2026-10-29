@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { withSentryConfig } from '@sentry/nextjs/config';
 import { assertProductionConfiguration } from '@featul/auth/configuration';
 
@@ -6,8 +7,25 @@ if (process.env.VERCEL_ENV === 'production' || process.env.VALIDATE_PRODUCTION_E
   assertProductionConfiguration();
 }
 
+// Uploaded images (logos, attachments) are served from the storage bucket's public URL.
+// Self-hosted builds pass R2_PUBLIC_BASE_URL as a build argument so next/image allows it.
+const storageImagePattern = (() => {
+    try {
+        const url = new URL(process.env.R2_PUBLIC_BASE_URL || '');
+        const protocol = url.protocol.replace(':', '');
+        if (protocol !== 'https' && protocol !== 'http') return null;
+        return { protocol, hostname: url.hostname, port: url.port, pathname: '/**' } as const;
+    } catch {
+        return null;
+    }
+})();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // Self-hosted Docker image (Dockerfile): a minimal server.js with only the traced files.
+    ...(process.env.NEXT_OUTPUT === 'standalone'
+        ? { output: 'standalone' as const, outputFileTracingRoot: fileURLToPath(new URL('../../', import.meta.url)) }
+        : {}),
     async redirects() {
         return [
             { source: '/auth/sign-in', destination: '/auth/signin', permanent: true },
@@ -86,10 +104,13 @@ const nextConfig = {
           { protocol: 'https', hostname: 'www.google.com', pathname: '/**' },
           { protocol: 'https', hostname: 't1.gstatic.com', pathname: '/**' },
           { protocol: 'https', hostname: 'pub-e058408694e44c9e829046a8a6d5d1a5.r2.dev', pathname: '/**' },
+          ...(storageImagePattern ? [storageImagePattern] : []),
         ],
       },
   typescript: {
-    ignoreBuildErrors: false,
+    // CI type-checks every change; the Docker build skips it, since it needs more memory
+    // than a small self-hosting server has.
+    ignoreBuildErrors: process.env.NEXT_OUTPUT === 'standalone',
   },
   experimental: {
     agentUpgrade: 'security',

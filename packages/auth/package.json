@@ -21,6 +21,7 @@
     "./stripe": "./src/stripe.ts",
     "./password": "./src/password.ts",
     "./session": "./src/session.ts",
+    "./selfhost": "./src/selfhost.ts",
     "./email": "./src/email.ts",
     "./origins/trusted": "./src/origins/trusted.ts",
     "./trust": "./src/trust.ts",

@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "bun run validate-seo && next build",
+    "build": "bun run validate-seo && bun run check-md && next build",
     "start": "next start",
     "lint": "eslint .",
     "check-types": "next typegen && tsc --noEmit",
-    "validate-seo": "bun run scripts/validate-seo.ts"
+    "validate-seo": "bun run scripts/validate-seo.ts",
+    "check-md": "bun run scripts/check-md-coverage.ts"
   },
   "dependencies": {
     "@featul/editor": "workspace:*",

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { and, desc, eq } from "drizzle-orm";
-import { board, db, post } from "@featul/db";
+import { and, eq } from "drizzle-orm";
+import { board, db } from "@featul/db";
 import Share from "@/components/share/share";
 import { requireSignedInUser } from "@/lib/auth/server";
 import { createPageMetadata } from "@/lib/seo";
@@ -11,8 +11,11 @@ import { publicBoardUrlForWorkspace } from "@/config/nav";
 import {
   getWorkspaceBySlug,
   getWorkspaceDomainInfoBySlug,
+  getWorkspacePosts,
   listUserWorkspaces,
 } from "@/lib/workspace";
+import { toRequestItemData } from "@/lib/request/item";
+import { loadSubdomainLayoutData } from "@/app/[subdomain]/data";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -33,7 +36,7 @@ export default async function SharePage({ params }: Props) {
   if (!workspaces.some((workspace) => workspace.slug === slug)) notFound();
   const workspace = await getWorkspaceBySlug(slug);
   if (!workspace) notFound();
-  const [domainInfo, publicSections, topPosts, helpIsPublic] =
+  const [domainInfo, publicSections, topPosts, helpIsPublic, portal] =
     await Promise.all([
       getWorkspaceDomainInfoBySlug(slug),
       db
@@ -48,28 +51,11 @@ export default async function SharePage({ params }: Props) {
             eq(board.isActive, true),
           ),
         ),
-      db
-        .select({
-          id: post.id,
-          title: post.title,
-          upvotes: post.upvotes,
-          commentCount: post.commentCount,
-          roadmapStatus: post.roadmapStatus,
-        })
-        .from(post)
-        .innerJoin(board, eq(post.boardId, board.id))
-        .where(
-          and(
-            eq(board.workspaceId, workspace.id),
-            eq(board.isSystem, false),
-            eq(board.isPublic, true),
-            eq(post.status, "published"),
-          ),
-        )
-        .orderBy(desc(post.upvotes))
-        .limit(3),
+      // Same rows and portal shell data the public board renders.
+      getWorkspacePosts(slug, { order: "likes", limit: 3, publicOnly: true }),
       // Same rule as the portal's Help tab: turned on and at least one published article.
       isHelpCenterPublic(db, workspace.id),
+      loadSubdomainLayoutData(slug),
     ]);
   const customDomain =
     domainInfo?.domain?.status === "verified"
@@ -90,7 +76,8 @@ export default async function SharePage({ params }: Props) {
       userName={user.name || workspace.name}
       userImage={user.image}
       logo={workspace.logo}
-      topPosts={topPosts}
+      posts={topPosts.map((row) => toRequestItemData(row))}
+      portal={portal}
       links={links}
     />
   );

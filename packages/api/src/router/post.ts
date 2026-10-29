@@ -13,6 +13,7 @@ import { headers } from "next/headers"
 import { mapPermissions } from "../shared/permissions"
 import { canModerateWorkspace } from "../shared/access"
 import { createPostAtomically } from "../post/creation"
+import { mergePostInto } from "../post/merge"
 import { notifyPostStatusChange } from "../status/notify"
 import { normalizeStatus } from "../shared/status"
 import { enforceTrustedBrowserOrigin } from "../request/origin"
@@ -797,96 +798,18 @@ export function createPostRouter() {
           throw new HTTPException(403, { message: "You don't have permission to merge posts" })
         }
 
-        // Check if merge already exists
-        const [existingMerge] = await ctx.db
-          .select()
-          .from(postMerge)
-          .where(or(
-            and(eq(postMerge.sourcePostId, sourcePost.id), eq(postMerge.targetPostId, targetPost.id)),
-            and(eq(postMerge.sourcePostId, targetPost.id), eq(postMerge.targetPostId, sourcePost.id))
-          ))
-          .limit(1)
-
-        if (existingMerge) {
-          throw new HTTPException(400, { message: "These posts are already merged" })
-        }
-
-        // Create merge record
-        const [mergeRecord] = await ctx.db.insert(postMerge).values({
-          sourcePostId: sourcePost.id,
-          targetPostId: targetPost.id,
-          mergedBy: userId,
-          mergeType,
-          reason: reason || null,
-          metadata: {
-            consolidatedVotes: true,
-            transferredComments: true,
-            transferredTags: true,
-          }
-        }).returning()
-
-        // Consolidate votes (transfer upvotes from source to target)
-        await ctx.db
-          .update(post)
-          .set({
-            upvotes: sql`${post.upvotes} + ${sourcePost.upvotes}`
-          })
-          .where(eq(post.id, targetPost.id))
-
-        // Archive the source post
-        await ctx.db
-          .update(post)
-          .set({
-            status: 'archived',
-            duplicateOfId: targetPost.id
-          })
-          .where(eq(post.id, sourcePost.id))
-
-        // Transfer comments from source to target
-        await ctx.db
-          .update(comment)
-          .set({ postId: targetPost.id })
-          .where(eq(comment.postId, sourcePost.id))
-
-        // Transfer tags from source to target (avoiding duplicates)
-        const sourceTags = await ctx.db
-          .select({ tagId: postTag.tagId })
-          .from(postTag)
-          .where(eq(postTag.postId, sourcePost.id))
-
-        const targetTags = await ctx.db
-          .select({ tagId: postTag.tagId })
-          .from(postTag)
-          .where(eq(postTag.postId, targetPost.id))
-
-        const targetTagIds = new Set((targetTags as Array<{ tagId: string }>).map((t) => t.tagId))
-        const tagsToTransfer = (sourceTags as Array<{ tagId: string }>).filter((st) => !targetTagIds.has(st.tagId))
-
-        if (tagsToTransfer.length > 0) {
-          await ctx.db.insert(postTag).values(
-            (tagsToTransfer as Array<{ tagId: string }>).map((st) => ({
-              postId: targetPost.id,
-              tagId: st.tagId,
-            }))
-          )
-        }
-
-        await ctx.db.insert(activityLog).values({
+        const mergeRecord = await mergePostInto(ctx.db, {
+          sourcePost,
+          targetPost,
           workspaceId: ws.id,
           userId,
-          action: ACTIVITY_ACTIONS.POST_MERGED,
-          actionType: "update",
-          entity: "post",
-          entityId: String(targetPost.id),
-          title: targetPost.title,
-          metadata: {
-            sourcePostId: sourcePost.id,
-            sourcePostTitle: sourcePost.title,
-            mergeType,
-            reason: reason || null,
-            roadmapStatus: targetPost.roadmapStatus,
-          },
+          mergeType,
+          reason,
         })
+
+        if (!mergeRecord) {
+          throw new HTTPException(400, { message: "These posts are already merged" })
+        }
 
         return c.superjson({ success: true, merge: mergeRecord })
       }),

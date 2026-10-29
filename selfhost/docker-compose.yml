@@ -1,0 +1,139 @@
+# Featul self-hosted stack. Run ./install.sh, or fill in .env and `docker compose up -d --build`.
+name: featul
+
+# What the proxy connects to.
+x-postgres-url: &postgres-url postgres://featul:${POSTGRES_PASSWORD:?run install.sh}@postgres:5432/featul
+# What the app sends the proxy. Queries go to DATABASE_HTTP_ENDPOINT; the proxy only reads
+# the user, password, and database from this, and expects the db.localtest.me host.
+x-database-url: &database-url postgres://featul:${POSTGRES_PASSWORD}@db.localtest.me:5432/featul
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: featul
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: featul
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U featul -d featul"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # The app talks to Postgres through Neon's HTTP protocol, the same driver as Featul Cloud.
+  neon-proxy:
+    image: ghcr.io/timowilhelm/local-neon-http-proxy:main
+    restart: unless-stopped
+    environment:
+      PG_CONNECTION_STRING: *postgres-url
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis:/data
+
+  # Upstash-compatible REST API over Redis, for the rate limiters.
+  redis-http:
+    image: hiett/serverless-redis-http:latest
+    restart: unless-stopped
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: ${REDIS_TOKEN:?run install.sh}
+      SRH_CONNECTION_STRING: redis://redis:6379
+    depends_on:
+      - redis
+
+  migrate:
+    build:
+      context: ..
+      target: migrate
+    restart: "no"
+    environment:
+      DATABASE_URL: *database-url
+      DATABASE_HTTP_ENDPOINT: http://neon-proxy:4444/sql
+    depends_on:
+      - neon-proxy
+
+  app:
+    build:
+      context: ..
+      target: app
+      args:
+        NEXT_PUBLIC_APP_URL: https://${FEATUL_DOMAIN:?run install.sh}
+        NEXT_PUBLIC_ROOT_DOMAIN: ${FEATUL_DOMAIN}
+        R2_PUBLIC_BASE_URL: ${R2_PUBLIC_BASE_URL:-}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      FEATUL_SELF_HOSTED: "true"
+      DATABASE_URL: *database-url
+      DATABASE_HTTP_ENDPOINT: http://neon-proxy:4444/sql
+      NEXT_PUBLIC_APP_URL: https://${FEATUL_DOMAIN}
+      NEXT_PUBLIC_ROOT_DOMAIN: ${FEATUL_DOMAIN}
+      BETTER_AUTH_URL: https://${FEATUL_DOMAIN}
+      AUTH_COOKIE_DOMAIN: ${FEATUL_DOMAIN}
+      AUTH_TRUSTED_ORIGINS: https://${FEATUL_DOMAIN},https://*.${FEATUL_DOMAIN}
+      PASSKEY_RP_ID: ${FEATUL_DOMAIN}
+      PASSKEY_ORIGIN: https://${FEATUL_DOMAIN}
+      UPSTASH_REDIS_REST_URL: http://redis-http:80
+      UPSTASH_REDIS_REST_TOKEN: ${REDIS_TOKEN}
+      # Caddy overwrites this header with the real client address.
+      TRUSTED_PROXY_IP_HEADER: x-forwarded-for
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis-http:
+        condition: service_started
+
+  # HTTPS for the app, every workspace subdomain, and verified custom domains.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      FEATUL_DOMAIN: ${FEATUL_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:?run install.sh}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+  # Vercel Cron equivalent: scheduled changelog posts every minute, webhook retries every 5.
+  cron:
+    image: curlimages/curl:8.11.1
+    restart: unless-stopped
+    environment:
+      CRON_SECRET: ${CRON_SECRET:?run install.sh}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        i=0
+        while true; do
+          sleep 60
+          curl -fsS -o /dev/null -H "Authorization: Bearer $$CRON_SECRET" http://app:3000/api/cron/changelog || true
+          if [ $$((i % 5)) -eq 0 ]; then
+            curl -fsS -o /dev/null -H "Authorization: Bearer $$CRON_SECRET" http://app:3000/api/cron/billing || true
+          fi
+          i=$$((i + 1))
+        done
+    depends_on:
+      - app
+
+volumes:
+  postgres:
+  redis:
+  caddy_data:
+  caddy_config:

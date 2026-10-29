@@ -4,9 +4,10 @@ import React from "react"
 import { Button } from "@featul/ui/components/button"
 import { Mascot } from "@featul/ui/components/mascot"
 import { cn } from "@featul/ui/lib/utils"
+import { workspaceHost } from "@/config/domain"
 
 export default function EmptyRequests({ workspaceSlug, className = "" }: { workspaceSlug: string; className?: string }) {
-  const href = `https://${workspaceSlug}.featul.com`
+  const href = `https://${workspaceHost(workspaceSlug)}`
 
   return (
     <div data-page-empty className={cn("flex flex-1 items-center justify-center", className)}>

@@ -1,5 +1,6 @@
 import { client } from "@featul/api/client";
 import type { IdentifiedUser, WidgetApiBase } from "./types";
+import { workspaceHost } from "@/config/domain";
 
 /** Strip HTML tags. Collapse whitespace. Empty in → empty out. */
 export function toPlain(value?: string | null): string {
@@ -37,7 +38,7 @@ export function publicBoardPostUrl(
 ): string {
   const slug = workspaceSlug.trim();
   if (typeof window === "undefined") {
-    return `https://${slug}.featul.com/board/p/${postSlug}`;
+    return `https://${workspaceHost(slug)}/board/p/${postSlug}`;
   }
   const { hostname, protocol, port } = window.location;
   if (
@@ -48,13 +49,13 @@ export function publicBoardPostUrl(
     const hostPort = port ? `:${port}` : "";
     return `${protocol}//${slug}.localhost${hostPort}/board/p/${postSlug}`;
   }
-  return `https://${slug}.featul.com/board/p/${postSlug}`;
+  return `https://${workspaceHost(slug)}/board/p/${postSlug}`;
 }
 
-/** Workspace board origin. SSR and prod use featul.com; local uses *.localhost. */
+/** Workspace board origin. SSR and prod use {slug}.{ROOT_DOMAIN}; local uses *.localhost. */
 export function publicBoardUrl(workspaceSlug: string): string {
   const slug = workspaceSlug.trim();
-  if (typeof window === "undefined") return `https://${slug}.featul.com`;
+  if (typeof window === "undefined") return `https://${workspaceHost(slug)}`;
   const { hostname, protocol, port } = window.location;
   if (
     hostname === "localhost" ||
@@ -64,7 +65,7 @@ export function publicBoardUrl(workspaceSlug: string): string {
     const hostPort = port ? `:${port}` : "";
     return `${protocol}//${slug}.localhost${hostPort}`;
   }
-  return `https://${slug}.featul.com`;
+  return `https://${workspaceHost(slug)}`;
 }
 
 /** Merge API base with signed identity or fingerprint. Unsigned identity is omitted. */

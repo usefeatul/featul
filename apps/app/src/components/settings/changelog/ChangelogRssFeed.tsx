@@ -3,11 +3,12 @@
 import React from "react"
 import CopyValueButton from "@/components/settings/domain/CopyValueButton"
 import SectionCard from "../global/SectionCard"
+import { workspaceHost } from "@/config/domain"
 
 function publicChangelogFeedUrl(slug: string, customDomain?: string | null) {
   const host = customDomain?.trim()
   if (host) return `https://${host}/changelog/feed.xml`
-  return `https://${slug}.featul.com/changelog/feed.xml`
+  return `https://${workspaceHost(slug)}/changelog/feed.xml`
 }
 
 export default function ChangelogRssFeed({

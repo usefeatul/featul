@@ -13,6 +13,7 @@ import {
   MarketingContainer,
   marketingRailClass,
 } from "@/components/layout/container";
+import { homeAccess } from "@/data/home";
 
 type PortalItem = {
   name: string;
@@ -20,44 +21,19 @@ type PortalItem = {
   icon: ComponentType<{ className?: string; size?: number }>;
 };
 
-const portalItems: PortalItem[] = [
-  {
-    name: "Your Featul subdomain",
-    description:
-      "Every workspace gets a public URL such as yourproduct.featul.com as soon as it exists. Share that link — it is the customer page, not the admin dashboard.",
-    icon: DomainIcon,
-  },
-  {
-    name: "Your own domain",
-    description:
-      "Point feedback.yourbrand.com at the same portal. Customers stay on your brand; both URLs serve the public site.",
-    icon: LinkIcon,
-  },
-  {
-    name: "Browse, vote, and submit",
-    description:
-      "People open the subdomain, pick a board, vote on ideas, and send a new request. No workspace login required.",
-    icon: VoteIcon,
-  },
-  {
-    name: "Roadmap and changelog",
-    description:
-      "The same public page can show what you plan to build and what already shipped, so the loop is visible without a second tool.",
-    icon: BoardIcon,
-  },
-  {
-    name: "Private boards stay off it",
-    description:
-      "Give a key account their own board. Private boards never appear in public navigation. Your team still sees the full picture.",
-    icon: LockIcon,
-  },
-  {
-    name: "Guest and anonymous",
-    description:
-      "Let people vote and submit without creating an account, and mask names when a public board should not show identities.",
-    icon: MemberIcon,
-  },
+const portalIcons: PortalItem["icon"][] = [
+  DomainIcon,
+  LinkIcon,
+  VoteIcon,
+  BoardIcon,
+  LockIcon,
+  MemberIcon,
 ];
+
+const portalItems: PortalItem[] = homeAccess.items.map((item, index) => ({
+  ...item,
+  icon: portalIcons[index]!,
+}));
 
 export default function Access() {
   return (
@@ -68,12 +44,10 @@ export default function Access() {
       <MarketingContainer className="relative z-10">
         <div className={marketingRailClass}>
           <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
-            Make it easy for customers to take part.
+            {homeAccess.title}
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-accent sm:text-base">
-            Meet customers on your own domain, welcome their ideas, and give
-            them a clear view of what’s coming. You choose how open the
-            conversation should be.
+            {homeAccess.description}
           </p>
 
           <div

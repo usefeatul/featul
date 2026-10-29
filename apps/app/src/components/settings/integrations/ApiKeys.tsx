@@ -38,6 +38,12 @@ type ApiKey = {
 };
 
 const DOCS_URL = "https://featul.com/docs/developers/api";
+const MCP_DOCS_URL = "https://featul.com/docs/developers/mcp";
+const MCP_URL = "https://api.featul.com/mcp";
+
+function claudeCodeCommand(key: string) {
+  return `claude mcp add --transport http featul ${MCP_URL} --header "Authorization: Bearer ${key}"`;
+}
 
 async function errorMessage(res: { json: () => Promise<unknown> }, fallback: string) {
   const body = (await res.json().catch(() => null)) as { message?: string } | null;
@@ -103,6 +109,20 @@ function CreateKeyDialog({
             <code className="min-w-0 flex-1 truncate text-xs text-foreground">{createdKey}</code>
             <CopyValueButton value={createdKey} label="API key" />
           </div>
+          <p className="text-sm text-accent">
+            To let Claude Code triage feedback and draft changelog entries, run this. For Cursor and
+            other assistants,{" "}
+            <a href={MCP_DOCS_URL} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+              see the MCP setup
+            </a>
+            .
+          </p>
+          <div className="flex items-center gap-2 rounded-lg border border-border/60 px-3 py-2">
+            <code className="min-w-0 flex-1 truncate text-xs text-foreground">
+              {claudeCodeCommand(createdKey)}
+            </code>
+            <CopyValueButton value={claudeCodeCommand(createdKey)} label="Command" />
+          </div>
           <div className="flex justify-end">
             <LoadingButton type="button" onClick={() => handleOpenChange(false)}>
               Done
@@ -140,7 +160,7 @@ function CreateKeyDialog({
   );
 }
 
-/** Workspace API keys for the REST API, e.g. publishing changelog entries from CI. */
+/** Workspace API keys for the REST API and MCP server, e.g. publishing changelog entries from CI. */
 export default function ApiKeys({ slug, allowed }: { slug: string; allowed: boolean }) {
   const queryKey = ["api-keys", slug];
   const { data: keys = [], isLoading, refetch } = useQuery<ApiKey[]>({
@@ -180,9 +200,13 @@ export default function ApiKeys({ slug, allowed }: { slug: string; allowed: bool
       title="API keys"
       description={
         <>
-          Publish changelog entries from CI/CD or your own scripts.{" "}
+          Publish changelog entries from CI/CD, or connect Claude and Cursor to triage feedback.{" "}
           <a href={DOCS_URL} target="_blank" rel="noreferrer" className="text-primary hover:underline">
-            Read the API docs
+            API docs
+          </a>
+          {" · "}
+          <a href={MCP_DOCS_URL} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+            MCP setup
           </a>
           .
         </>
