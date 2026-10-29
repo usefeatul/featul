@@ -13,10 +13,14 @@ export function useSlidingIndicator({
   easing = "cubic-bezier(0.22, 1, 0.36, 1)",
 }: { duration?: number; easing?: string } = {}) {
   const last = useRef<Box | null>(null);
+  const lastEl = useRef<HTMLElement | null>(null);
 
   return useCallback(
     (el: HTMLElement | null) => {
-      if (!el) return;
+      // Re-attaching the same node (React StrictMode calls refs twice) is not a move:
+      // measuring it now would read the mid-slide box and play the slide in reverse.
+      if (!el || el === lastEl.current) return;
+      lastEl.current = el;
       const rect = el.getBoundingClientRect();
       // Page coordinates, so scrolling between moves does not skew the slide.
       const box = {
