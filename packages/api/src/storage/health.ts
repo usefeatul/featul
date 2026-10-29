@@ -1,11 +1,14 @@
 import { Redis } from "@upstash/redis";
+import { upstashCredentials } from "@featul/auth/upstash";
+import { readEnv } from "@featul/auth/selfhost";
 
 const DAY = 24 * 60 * 60 * 1000;
 
 /** Keep local/preview runs from satisfying the production cleanup monitor. */
 export function storageHealthKey(env: NodeJS.ProcessEnv = process.env): string {
-  if (!env.BETTER_AUTH_URL) throw new Error("Storage health requires the app origin");
-  return `jobs:${env.VERCEL_ENV || env.NODE_ENV || "development"}:${new URL(env.BETTER_AUTH_URL).origin}:storage-gc:completed`;
+  const appUrl = readEnv("BETTER_AUTH_URL", env);
+  if (!appUrl) throw new Error("Storage health requires the app origin");
+  return `jobs:${env.VERCEL_ENV || env.NODE_ENV || "development"}:${new URL(appUrl).origin}:storage-gc:completed`;
 }
 
 /** Daily 04:00 UTC cleanup has until 05:00 UTC to complete. */
@@ -20,8 +23,7 @@ export function requireRecentStorageCleanup(completedAt: unknown, now = Date.now
 }
 
 function healthStore(): Redis {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const { url, token } = upstashCredentials();
   if (!url || !token) throw new Error("Storage health tracking is unavailable");
   return new Redis({ url, token, retry: false, signal: () => AbortSignal.timeout(5000) });
 }

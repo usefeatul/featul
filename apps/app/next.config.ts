@@ -1,6 +1,16 @@
 import { fileURLToPath } from 'node:url';
 import { withSentryConfig } from '@sentry/nextjs/config';
 import { assertProductionConfiguration } from '@featul/auth/configuration';
+import { isSelfHosted, readEnv } from '@featul/auth/selfhost';
+
+// Self-hosted (FEATUL_DOMAIN): fill in the browser-visible settings derived from the domain
+// before Next inlines NEXT_PUBLIC_* values, and keep error reports out of Featul's Sentry.
+if (isSelfHosted()) {
+  for (const key of ['NEXT_PUBLIC_APP_URL', 'NEXT_PUBLIC_ROOT_DOMAIN']) {
+    process.env[key] ||= readEnv(key);
+  }
+  process.env.NEXT_PUBLIC_SENTRY_DSN ??= '';
+}
 
 // Reject incomplete production deployments before Vercel replaces the live app.
 if (process.env.VERCEL_ENV === 'production' || process.env.VALIDATE_PRODUCTION_ENV === 'true') {

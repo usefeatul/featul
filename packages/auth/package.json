@@ -22,6 +22,7 @@
     "./password": "./src/password.ts",
     "./session": "./src/session.ts",
     "./selfhost": "./src/selfhost.ts",
+    "./upstash": "./src/upstash.ts",
     "./email": "./src/email.ts",
     "./origins/trusted": "./src/origins/trusted.ts",
     "./trust": "./src/trust.ts",

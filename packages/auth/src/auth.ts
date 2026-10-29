@@ -33,14 +33,15 @@ import { isAuthRateLimitEnabled } from "./rate/config";
 import { isWorkspaceBillingOwner } from "./billing";
 import { getStripeClient } from "./stripe";
 import { getAccountTrialCheckoutParams } from "./billing/trial";
+import { readEnv } from "./selfhost";
 
 function resolveCookieDomain() {
-  const explicit = (process.env.AUTH_COOKIE_DOMAIN || "").trim();
+  const explicit = readEnv("AUTH_COOKIE_DOMAIN") || "";
   if (explicit) {
     if (explicit === "localhost" || explicit === "127.0.0.1") return "";
     return explicit;
   }
-  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "").trim();
+  const appUrl = readEnv("NEXT_PUBLIC_APP_URL") || "";
   if (!appUrl) return "";
   try {
     const hostname = new URL(appUrl).hostname;
@@ -158,6 +159,8 @@ const stripePlugin = (() => {
 })();
 
 export const auth = betterAuth({
+  // Same as Better Auth reading BETTER_AUTH_URL itself, plus the self-hosted default.
+  baseURL: readEnv("BETTER_AUTH_URL"),
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
@@ -247,11 +250,11 @@ export const auth = betterAuth({
       },
     }),
     passkey({
-      rpID: process.env.PASSKEY_RP_ID || "localhost",
+      rpID: readEnv("PASSKEY_RP_ID") || "localhost",
       rpName: process.env.PASSKEY_RP_NAME || "Featul",
       origin:
-        process.env.PASSKEY_ORIGIN ||
-        process.env.NEXT_PUBLIC_APP_URL ||
+        readEnv("PASSKEY_ORIGIN") ||
+        readEnv("NEXT_PUBLIC_APP_URL") ||
         "http://localhost:3000",
     }),
     twoFactor({

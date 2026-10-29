@@ -79,11 +79,13 @@ test("a configured GitHub App needs its own setup-state secret in production", (
 });
 
 test("enabled auth rate limiting refuses the per-instance memory fallback", () => {
-  const keys = ["AUTH_RATE_LIMIT_ENABLED", "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN"];
+  const keys = ["AUTH_RATE_LIMIT_ENABLED", "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN", "KV_REST_API_URL", "KV_REST_API_TOKEN"];
   const original = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
   try {
     delete process.env.UPSTASH_REDIS_REST_URL;
     delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
     process.env.AUTH_RATE_LIMIT_ENABLED = "true";
     expect(() => getAuthRateLimitStorage()).toThrow("UPSTASH_REDIS_REST_URL");
     process.env.AUTH_RATE_LIMIT_ENABLED = "false";

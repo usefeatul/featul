@@ -16,5 +16,5 @@
     }
   ],
   "installCommand": "bun install --frozen-lockfile",
-  "buildCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then bun ../../packages/api/scripts/readiness.ts; fi && bun run build"
+  "buildCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then if [ -n \"$FEATUL_DOMAIN\" ]; then bun ../../packages/db/scripts/selfhost/migrate.ts; fi && bun ../../packages/api/scripts/readiness.ts; fi && bun run build"
 }

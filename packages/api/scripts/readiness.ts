@@ -2,8 +2,10 @@
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { productionConfigurationErrors } from "@featul/auth/configuration";
+import { isSelfHosted } from "@featul/auth/selfhost";
 import { neon } from "@neondatabase/serverless";
 import { Redis } from "@upstash/redis";
+import { upstashCredentials } from "@featul/auth/upstash";
 import Stripe from "stripe";
 import { HeadBucketCommand, GetBucketCorsCommand } from "@aws-sdk/client-s3";
 import { createStorageContext } from "../src/storage/signer";
@@ -15,6 +17,10 @@ if (errors.length) {
   process.exit(1);
 }
 class ReadinessError extends Error {}
+// Self-hosted installs have no billing, uploads are optional, and the first deploy has no
+// cleanup history yet.
+const selfHosted = isSelfHosted();
+const storageConfigured = Boolean(process.env.R2_PRIVATE_BUCKET?.trim());
 
 const results: { check: string; ok: boolean; detail?: string }[] = [];
 async function check(name: string, run: () => Promise<void>) {
@@ -36,11 +42,11 @@ await Promise.all([
     }
   }),
   check("shared Redis", async () => {
-    const redis = new Redis({ url: process.env.UPSTASH_REDIS_REST_URL!, token: process.env.UPSTASH_REDIS_REST_TOKEN!, retry: false });
+    const redis = new Redis({ ...upstashCredentials(), retry: false });
     if (await redis.ping() !== "PONG") throw new ReadinessError("Unavailable");
   }),
-  check("daily storage cleanup heartbeat", checkStorageCleanup),
-  check("private storage and upload CORS", async () => {
+  !selfHosted && check("daily storage cleanup heartbeat", checkStorageCleanup),
+  (!selfHosted || storageConfigured) && check("private storage and upload CORS", async () => {
     const { s3 } = createStorageContext();
     const input = { Bucket: process.env.R2_PRIVATE_BUCKET! };
     await s3.send(new HeadBucketCommand(input), { abortSignal: AbortSignal.timeout(15000) });
@@ -48,7 +54,7 @@ await Promise.all([
     const origin = new URL(process.env.NEXT_PUBLIC_APP_URL!).origin;
     if (!cors.CORSRules?.some(rule => rule.AllowedMethods?.includes("PUT") && rule.AllowedOrigins?.some(value => value === "*" || value === origin))) throw new ReadinessError("Upload origin missing");
   }),
-  check("live Stripe prices and webhook endpoint", async () => {
+  !selfHosted && check("live Stripe prices and webhook endpoint", async () => {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { timeout: 15000, maxNetworkRetries: 0 });
     const account = await stripe.accounts.retrieveCurrent();
     if (!account.charges_enabled || !account.payouts_enabled) throw new ReadinessError("Stripe charges or payouts are disabled");

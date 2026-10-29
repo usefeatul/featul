@@ -1,3 +1,5 @@
+import { readEnv } from "../selfhost";
+
 const INVALID_ORIGIN_WARNINGS = new Set<string>();
 
 type NormalizeOriginOptions = {
@@ -179,7 +181,7 @@ export function getValidatedTrustedOrigins(
   envName: string,
   rawValue?: string,
 ): string[] {
-  const parsed = parseTrustedOrigins(rawValue ?? process.env[envName] ?? "");
+  const parsed = parseTrustedOrigins(rawValue ?? readEnv(envName) ?? "");
   reportInvalidPatterns(envName, parsed.invalid);
   return parsed.origins;
 }

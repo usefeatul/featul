@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis";
+import { upstashCredentials } from "@featul/auth/upstash";
 import { HTTPException } from "hono/http-exception";
 import { readBoundedJson } from "../request/json";
 import { getWorkspaceAccessPlan } from "../shared/access";
@@ -30,8 +31,7 @@ function resolveHelpModel() {
 }
 
 function getRedis() {
-  const url = String(process.env.UPSTASH_REDIS_REST_URL || "").trim();
-  const token = String(process.env.UPSTASH_REDIS_REST_TOKEN || "").trim();
+  const { url, token } = upstashCredentials();
   return url && token ? new Redis({ url, token }) : null;
 }
 
