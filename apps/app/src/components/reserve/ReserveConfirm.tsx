@@ -7,6 +7,7 @@ import { Button } from "@featul/ui/components/button"
 import { toast } from "sonner"
 import { authClient } from "@featul/auth/client"
 import { Link2, Mail } from "@/components/global/icons"
+import { workspaceHost } from "@/config/domain";
 
 export default function ReserveConfirm() {
   const router = useRouter()
@@ -91,7 +92,7 @@ export default function ReserveConfirm() {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Link2 className="size-4 text-accent" />
-              <div className="rounded-lg  bg-muted px-2 py-1 text-sm font-mono">{slug}.featul.com</div>
+              <div className="rounded-lg  bg-muted px-2 py-1 text-sm font-mono">{workspaceHost(slug ?? "")}</div>
             </div>
             <div className="flex items-center gap-2">
               <Mail className="size-4 text-accent" />

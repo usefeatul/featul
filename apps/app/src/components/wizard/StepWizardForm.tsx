@@ -30,6 +30,7 @@ import {
 } from "../../lib/validators"
 import { analyticsEvents, captureAnalyticsEvent } from "@/lib/posthog"
 import { WIZARD_STEPS } from "./steps"
+import { ROOT_DOMAIN, workspaceHost } from "@/config/domain"
 
 interface StepWizardFormProps {
   name: string
@@ -83,7 +84,7 @@ export default function StepWizardForm({
     slugLocked: null as string | null,
     step: 0,
   })
-  const reservedWorkspaceUrl = slugLocked ? `${slugLocked}.featul.com` : null
+  const reservedWorkspaceUrl = slugLocked ? workspaceHost(slugLocked) : null
   const nameReserved = !isAppCreator && isReservedWorkspaceName(name)
   const slugReserved = !isAppCreator && isReservedWorkspaceSlug(slug)
   const reservedAllowed = React.useMemo(
@@ -303,7 +304,7 @@ export default function StepWizardForm({
                         <XMarkIcon className="size-2.5" />
                       </span>
                     ) : null}
-                    <span className="text-xs text-accent">.featul.com</span>
+                    <span className="text-xs text-accent">.{ROOT_DOMAIN}</span>
                   </span>
                 </InputGroup>
                 {slug && !slugReserved && !isSlugValid(slug, reservedAllowed) ? (

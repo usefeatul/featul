@@ -7,6 +7,7 @@ import { Button } from "@featul/ui/components/button"
 import { toast } from "sonner"
 import { isSlugValid } from "@/lib/validators"
 import { Link2, Mail } from "@/components/global/icons"
+import { ROOT_DOMAIN, workspaceHost } from "@/config/domain";
 
 type CheckSlugResponse = {
   available?: boolean
@@ -111,7 +112,7 @@ export default function ReserveForm() {
       <div className="w-full max-w-sm">
         <div className="mb-6 space-y-1">
           <h1 className="text-3xl sm:text-4xl font-semibold">Reserve your subdomain</h1>
-          <p className="text-sm sm:text-base text-accent">Pick a name like <span className="font-mono">acme</span> to get <span className="font-mono">acme.featul.com</span>.</p>
+          <p className="text-sm sm:text-base text-accent">Pick a name like <span className="font-mono">acme</span> to get <span className="font-mono">{workspaceHost("acme")}</span>.</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
@@ -119,7 +120,7 @@ export default function ReserveForm() {
               <div className="relative">
                 <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-accent" />
                 <Input value={slug} onChange={handleSlugChange} placeholder="yourname" className="pl-9 pr-28" />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs sm:text-sm text-muted-foreground select-none">.featul.com</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs sm:text-sm text-muted-foreground select-none">.{ROOT_DOMAIN}</span>
               </div>
               <div className="flex items-center gap-2">
                 {checking ? (
@@ -131,7 +132,7 @@ export default function ReserveForm() {
                 ) : (
                   <div className="mt-1 text-xs text-accent">Only lowercase letters, 5–32 characters</div>
                 )}
-                <div className="ml-auto text-xs text-accent">{slug ? `${slug}.featul.com` : `yourname.featul.com`}</div>
+                <div className="ml-auto text-xs text-accent">{workspaceHost(slug || "yourname")}</div>
               </div>
             </div>
             <div className="space-y-2">

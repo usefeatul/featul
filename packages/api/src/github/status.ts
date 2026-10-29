@@ -88,6 +88,7 @@ export function refBelongsTo(
   }
   return (
     hostname === `${slug}.featul.com` ||
+    hostname === `${slug}.${(process.env.NEXT_PUBLIC_ROOT_DOMAIN || "featul.com").trim().toLowerCase()}` ||
     hostname === `${slug}.localhost` ||
     (Boolean(ws.customDomain) && hostname === ws.customDomain!.toLowerCase())
   );

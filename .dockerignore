@@ -1,0 +1,17 @@
+# Keep the build context to source: no installs, build output, secrets, or local scratch.
+**/node_modules
+**/.next
+**/.turbo
+**/.vercel
+**/*.tsbuildinfo
+**/.env
+**/.env.*
+!**/.env.example
+.git
+.github
+.claude
+.cursor-screenshots
+.tmp-*
+.vscode
+.DS_Store
+selfhost/.env

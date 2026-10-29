@@ -14,6 +14,7 @@ import { ArrowIcon } from "@/components/global/icons";
 import { normalizePlan } from "@/lib/plan";
 import { useCanEditDomain } from "@/hooks/useWorkspaceAccess";
 import { LoadingButton } from "@/components/global/LoadingButton";
+import { workspaceHost } from "@/config/domain";
 export default function DomainSection({
   slug,
   initialPlan,
@@ -56,7 +57,7 @@ export default function DomainSection({
     canEditDomain,
     onCreated: () => setOpen(false),
   });
-  const currentHost = info?.host || `${slug}.featul.com`;
+  const currentHost = info?.host || workspaceHost(slug);
   const status: SectionCardStatus | undefined = !info?.host
     ? undefined
     : verifyMutation.isPending

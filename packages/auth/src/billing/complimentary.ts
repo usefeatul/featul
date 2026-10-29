@@ -1,3 +1,5 @@
+import { isSelfHosted } from "../selfhost"
+
 export type ComplimentaryPlan = "starter" | "professional"
 
 type ComplimentarySubscription = {
@@ -27,6 +29,8 @@ function asComplimentaryPlan(value: unknown): ComplimentaryPlan | null {
 export function getComplimentaryWorkspacePlan(workspaceId: string): ComplimentaryPlan | null {
   const id = String(workspaceId ?? "").trim()
   if (!id) return null
+  // No billing when self-hosted: every workspace gets the full product.
+  if (isSelfHosted()) return "professional"
   if (!parseWorkspaceIds(process.env.COMPLIMENTARY_WORKSPACE_IDS).has(id)) return null
 
   return asComplimentaryPlan(process.env.COMPLIMENTARY_WORKSPACE_PLAN) ?? "professional"

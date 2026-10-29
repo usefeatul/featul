@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next"
 import { headers } from "next/headers"
+import { ROOT_DOMAIN } from "@/config/domain"
 
 const RESERVED_SUBDOMAINS = new Set([
   "www",
@@ -49,12 +50,13 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   const host = (headerStore.get("host") || "").replace(/:\d+$/, "").toLowerCase()
 
   // Dashboard / auth host — never crawl (keeps GSC domain property clean)
-  if (host === "app.featul.com" || host.startsWith("app.")) {
+  // Self-hosted installs serve the app on ROOT_DOMAIN itself.
+  if (host === "app.featul.com" || host.startsWith("app.") || host === ROOT_DOMAIN) {
     return blockRobots()
   }
 
-  if (host.endsWith(".featul.com")) {
-    const subdomain = host.slice(0, -".featul.com".length).split(".")[0] || ""
+  if (host.endsWith(`.${ROOT_DOMAIN}`)) {
+    const subdomain = host.slice(0, -(ROOT_DOMAIN.length + 1)).split(".")[0] || ""
     if (!subdomain || RESERVED_SUBDOMAINS.has(subdomain)) {
       return blockRobots()
     }

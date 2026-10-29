@@ -8,6 +8,7 @@ import { Popover, PopoverTrigger, PopoverContent, PopoverList, PopoverListItem, 
 import { RequestShareAction } from "@/components/subdomain/request/actions/RequestShareAction";
 import { toast } from "sonner";
 import { DeletePostButton } from "./DeletePostButton";
+import { workspaceHost } from "@/config/domain";
 
 const itemClass = "text-sm hover:bg-black/10 focus-visible:bg-black/10 dark:hover:bg-white/10 dark:focus-visible:bg-white/10";
 
@@ -16,7 +17,7 @@ type MenuProps = { postId: string; workspaceSlug: string; title: string; backHre
 export default function Menu({ postId, workspaceSlug, title, backHref, readonly, className }: MenuProps) {
   const pathname = usePathname();
   const postSlug = pathname.split("/").filter(Boolean).at(-1) || "";
-  const publicUrl = `https://${workspaceSlug}.featul.com/board/p/${encodeURIComponent(decodeURIComponent(postSlug))}`;
+  const publicUrl = `https://${workspaceHost(workspaceSlug)}/board/p/${encodeURIComponent(decodeURIComponent(postSlug))}`;
 
   const copyLink = async () => {
     try {
