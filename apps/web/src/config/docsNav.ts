@@ -81,6 +81,7 @@ export const docsSections: DocsNavSection[] = [
     icon: "code",
     items: [
       { id: "developers/api", label: "REST API", href: "/docs/developers/api" },
+      { id: "developers/mcp", label: "MCP Server", href: "/docs/developers/mcp" },
       { id: "developers/github-actions", label: "GitHub Actions", href: "/docs/developers/github-actions" },
       { id: "developers/github-issues", label: "GitHub Issues", href: "/docs/developers/github-issues" },
     ],

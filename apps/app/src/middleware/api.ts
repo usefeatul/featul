@@ -8,16 +8,16 @@ const DOCS_URL = "https://featul.com/docs/developers/api"
 
 /**
  * `api.featul.com` (and `api.localhost` in dev) is the public REST API's address: `/v1/*`
- * rewrites onto the `/api/v1/*` route handlers, and app pages in the proxy matcher return a
- * JSON 404 instead of rendering. Paths outside the matcher (like `/api/*`) aren't intercepted,
- * so they behave as on any other host.
+ * rewrites onto the `/api/v1/*` route handlers and `/mcp` onto the MCP server at `/api/mcp`,
+ * and app pages in the proxy matcher return a JSON 404 instead of rendering. Paths outside the
+ * matcher (like `/api/*`) aren't intercepted, so they behave as on any other host.
  */
 export function rewriteApiHost(req: NextRequest, ctx: ReturnType<typeof getHostInfo>) {
   if (ctx.subdomain !== API_SUBDOMAIN) return null
   if (!ctx.isMainDomain && !ctx.isLocal) return null
 
   const { pathname } = ctx
-  if (pathname === "/v1" || pathname.startsWith("/v1/")) {
+  if (pathname === "/v1" || pathname.startsWith("/v1/") || pathname === "/mcp") {
     const url = req.nextUrl.clone()
     url.pathname = `/api${pathname}`
     return NextResponse.rewrite(url)

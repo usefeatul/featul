@@ -4,7 +4,7 @@ import { workspace, workspaceApiKey } from "@featul/db";
 import { getWorkspaceAccessPlan, requireWorkspaceManagerBySlug } from "../shared/access";
 import { getPlanLimits } from "../shared/plan";
 
-export const API_KEY_SCOPES = ["changelog:read", "changelog:write"] as const;
+export const API_KEY_SCOPES = ["changelog:read", "changelog:write", "feedback:read", "feedback:write"] as const;
 export type ApiKeyScope = (typeof API_KEY_SCOPES)[number];
 
 const KEY_PREFIX = "ftl_";
@@ -138,6 +138,10 @@ export async function authenticateApiKey(db: any, req: Request): Promise<ApiKeyC
 
 export function requireScope(key: ApiKeyContext, scope: ApiKeyScope) {
   if (!key.scopes.includes(scope)) {
-    throw new ApiError(403, "insufficient_scope", `This API key is missing the \`${scope}\` scope`);
+    throw new ApiError(
+      403,
+      "insufficient_scope",
+      `This API key is missing the \`${scope}\` scope. Create a new key in Settings → Integrations to get it.`,
+    );
   }
 }
