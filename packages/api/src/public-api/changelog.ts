@@ -2,6 +2,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { activityLog, board, changelogEntry } from "@featul/db";
 import { ACTIVITY_ACTIONS } from "../activity/actions";
+import { getRelatedPosts } from "../changelog/related";
 import { getChangelogTags, type ChangelogTag } from "../changelog/types";
 import { notifyChangelogSubscribers, publicPortalOrigin } from "../changelog/notify";
 import { markdownToTiptapDoc, toPlainText } from "../notra/content";
@@ -35,6 +36,8 @@ export const upsertEntrySchema = z.object({
   scheduledAt: scheduledAtSchema.optional(),
   /** Your own id for this update (release tag, commit SHA...). Sending it again updates the same entry. */
   externalId: externalIdSchema.optional(),
+  /** Feedback post ids this update ships; they're linked from the published entry. */
+  relatedFeedbackIds: z.array(z.string().trim().min(1).max(128)).max(20).optional(),
 });
 
 export const updateEntrySchema = upsertEntrySchema
@@ -87,6 +90,18 @@ function resolveTagIds(allTags: ChangelogTag[], requested: string[]): string[] {
   return [...new Set(ids)];
 }
 
+/** Keeps the workspace's published feedback posts, in the order given, rejecting unknown ids. */
+async function resolveRelatedPostIds(db: any, key: ApiKeyContext, ids: string[]): Promise<string[]> {
+  const unique = [...new Set(ids)];
+  if (unique.length === 0) return [];
+  const found = (await getRelatedPosts(db, key.workspace.id, { ids: unique })).map((related) => related.id);
+  const missing = unique.filter((id) => !found.includes(id));
+  if (missing.length > 0) {
+    throw new ApiError(400, "unknown_feedback", `Unknown feedback posts: ${missing.join(", ")}`);
+  }
+  return found;
+}
+
 function toContent(markdown: string) {
   return entryContentSchema.parse(markdownToTiptapDoc(markdown)) as Record<string, unknown>;
 }
@@ -107,6 +122,7 @@ export function serializeEntry(entry: EntryRow, key: ApiKeyContext, allTags: Cha
     summary: entry.summary,
     tags: (entry.tags || []).map((id) => tagsById.get(id)).filter(Boolean),
     externalId: entry.sourceProvider === API_SOURCE_PROVIDER ? entry.sourceExternalId : null,
+    relatedFeedbackIds: entry.relatedPostIds ?? [],
     url: entry.status === "published" ? `${origin}/changelog/p/${entry.slug}` : null,
     publishedAt: entry.publishedAt?.toISOString() ?? null,
     scheduledAt: entry.scheduledAt?.toISOString() ?? null,
@@ -151,6 +167,9 @@ async function applyUpdate(
     updates.summary = input.summary || null;
   }
   if (input.tags !== undefined) updates.tags = resolveTagIds(allTags, input.tags);
+  if (input.relatedFeedbackIds !== undefined) {
+    updates.relatedPostIds = await resolveRelatedPostIds(db, key, input.relatedFeedbackIds);
+  }
 
   const isFirstPublish = input.status === "published" && !existing.publishedAt;
   if (input.status === "published") {
@@ -256,6 +275,7 @@ export async function upsertChangelogEntry(
     authorIds: [key.userId],
     status: isPublished ? ("published" as const) : ("draft" as const),
     tags: resolveTagIds(b.tags, input.tags ?? []),
+    relatedPostIds: await resolveRelatedPostIds(db, key, input.relatedFeedbackIds ?? []),
     sourceProvider: input.externalId ? API_SOURCE_PROVIDER : null,
     sourceExternalId: input.externalId ?? null,
     sourceImportedAt: input.externalId ? new Date() : null,

@@ -74,6 +74,11 @@ describe("api host routing", () => {
       const response = await middleware(request(host, "/v1/changelog/abc?x=1"))
       expect(rewritten(response)).toBe("/api/v1/changelog/abc")
     })
+
+    test(`${host}/mcp rewrites onto the MCP server`, async () => {
+      const response = await middleware(request(host, "/mcp"))
+      expect(rewritten(response)).toBe("/api/mcp")
+    })
   }
 
   test("api host never renders a workspace or app page", async () => {

@@ -51,8 +51,11 @@ function parse<T extends z.ZodTypeAny>(schema: T, value: unknown): z.infer<T> {
   throw new ApiError(400, "invalid_request", message);
 }
 
-/** Public REST handler: API key auth, a per-key rate limit, a scope check, and JSON errors. */
-export function withApiKey(scope: ApiKeyScope, handler: Handler) {
+/**
+ * Public REST handler: API key auth, a per-key rate limit, a scope check, and JSON errors.
+ * `scope: null` skips the check for handlers that check scopes per operation (the MCP server).
+ */
+export function withApiKey(scope: ApiKeyScope | null, handler: Handler) {
   return async (req: Request, context?: RouteContext) => {
     try {
       // Both limits run before any database work: per IP (stops floods of made-up keys) and per key.
@@ -66,7 +69,7 @@ export function withApiKey(scope: ApiKeyScope, handler: Handler) {
         }
       }
       const key = await authenticateApiKey(db, req);
-      requireScope(key, scope);
+      if (scope) requireScope(key, scope);
       const params = (await context?.params) ?? {};
       return await handler({ req, key, db, params });
     } catch (error) {
