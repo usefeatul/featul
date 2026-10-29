@@ -11,6 +11,7 @@ import {
   CollectIcon as WorkspaceFeedbackIcon,
   ImageIcon as WorkspaceImageIcon,
   IntegrationIcon as WorkspaceIntegrationIcon,
+  DeveloperIcon as WorkspaceDeveloperIcon,
   MemberIcon as WorkspaceMembersIcon,
   RoadmapIcon as WorkspaceRoadmapIcon,
   SettingIcon as WorkspaceSettingsIcon,
@@ -129,6 +130,7 @@ const SETTINGS_ICONS: Record<string, NavItem["icon"]> = {
   billing: WorkspaceBillingIcon,
   domain: WorkspaceDomainIcon,
   integrations: WorkspaceIntegrationIcon,
+  developers: WorkspaceDeveloperIcon,
   data: WorkspaceExportIcon,
   workspace: WorkspaceArchiveIcon,
 };

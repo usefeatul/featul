@@ -10,6 +10,7 @@ import {
   IconMessageFilled,
   IconMessageCircleFilled,
   IconWorldFilled,
+  IconKeyFilled,
   IconPuzzleFilled,
   IconSettingsFilled,
   IconBellFilled,
@@ -183,6 +184,7 @@ export const BoardIcon = solid(IconLayoutBoardFilled);
 export const CollectIcon = solid(IconMessageFilled);
 export const DomainIcon = solid(IconWorldFilled);
 export const IntegrationIcon = solid(IconPuzzleFilled);
+export const DeveloperIcon = solid(IconKeyFilled);
 export const SettingIcon = solid(IconSettingsFilled);
 export const Bell = solid(IconBellFilled);
 export const CheckCircle = solid(IconSquareRoundedCheckFilled);

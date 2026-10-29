@@ -5,7 +5,7 @@ description: Publish a changelog entry every time you ship a GitHub release.
 
 ## Before you start
 
-1. Create an API key in **Settings → Integrations → API keys**.
+1. Create an API key in **Settings → Developers**.
 2. In your GitHub repository, open **Settings → Secrets and variables → Actions** and add it as `FEATUL_API_KEY`.
 
 ## Publish on every release

@@ -21,7 +21,7 @@ Paste a request link into a GitHub issue and the request's roadmap status follow
 
 ### API keys
 
-Create API keys in **Settings → Integrations → API keys** to publish changelog entries from CI/CD. See the [REST API](/docs/developers/api) and the [GitHub Action](/docs/developers/github-actions).
+Create API keys in **Settings → Developers** to publish changelog entries from CI/CD. See the [REST API](/docs/developers/api) and the [GitHub Action](/docs/developers/github-actions).
 
 ## Suggest an integration
 

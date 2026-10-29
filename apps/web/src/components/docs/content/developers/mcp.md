@@ -16,7 +16,7 @@ The MCP server is available on Starter and Professional.
 
 ## Create an API key
 
-Workspace owners and admins can create a key in **Settings → Integrations → API keys**. The key acts as the person who created it, so changes made by the assistant show up in the activity log under their name.
+Workspace owners and admins can create a key in **Settings → Developers**. The key acts as the person who created it, so changes made by the assistant show up in the activity log under their name.
 
 Keys created before the MCP server launched only have changelog access. Create a new key to triage feedback.
 

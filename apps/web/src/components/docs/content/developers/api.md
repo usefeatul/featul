@@ -11,7 +11,7 @@ All requests go to `https://api.featul.com/v1` and send and return JSON. If you 
 
 ## Authentication
 
-Workspace owners and admins can create a key in **Settings → Integrations → API keys**. The key is shown once, so store it as a secret right away (for example `FEATUL_API_KEY` in GitHub Actions).
+Workspace owners and admins can create a key in **Settings → Developers**. The key is shown once, so store it as a secret right away (for example `FEATUL_API_KEY` in GitHub Actions).
 
 Send the key in the `Authorization` header:
 
