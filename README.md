@@ -54,6 +54,16 @@ The monorepo is split into two Next.js apps:
 - Better Auth
 - Stripe, Upstash, PostHog, Sentry, and other service integrations
 
+## Self-Hosting
+
+Run Featul on your own server with one command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/usefeatul/featul/main/selfhost/install.sh | bash
+```
+
+You need Docker and a domain pointed at the server. See [selfhost/README.md](selfhost/README.md) for requirements, configuration, upgrades, and backups.
+
 ## Setup
 
 ### Prerequisites

@@ -125,6 +125,9 @@ export function buildWidgetOriginAllowlist(input: {
   };
 
   addHost(`${input.slug}.featul.com`);
+  // Self-hosted installs serve portals on their own root domain.
+  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim().toLowerCase();
+  if (rootDomain) addHost(`${input.slug}.${rootDomain}`);
   if (input.workspaceDomain) addHost(input.workspaceDomain);
   if (input.customDomain) addHost(input.customDomain);
   for (const host of input.verifiedHosts || []) addHost(host);

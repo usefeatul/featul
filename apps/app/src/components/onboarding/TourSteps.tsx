@@ -1,5 +1,6 @@
 import type React from "react";
 import { ArrowBigUp, CheckCircle } from "@/components/global/icons";
+import { workspaceHost } from "@/config/domain";
 
 export type WelcomeTourStep = {
   id: string;
@@ -48,7 +49,7 @@ export function buildWelcomeTourSteps(input: {
   workspaceName: string;
   workspaceSlug: string;
 }): WelcomeTourStep[] {
-  const publicUrl = `${input.workspaceSlug}.featul.com`;
+  const publicUrl = workspaceHost(input.workspaceSlug);
 
   return [
     {

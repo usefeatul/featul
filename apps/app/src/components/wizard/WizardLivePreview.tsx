@@ -13,6 +13,7 @@ import {
   PREVIEW_BRAND_PRIMARY,
   PREVIEW_CARD_WIDTH,
 } from "./WizardPortalPreview"
+import { workspaceHost } from "@/config/domain";
 
 /** How much of the panel the preview fills, across and down. */
 const FILL_WIDTH = 0.94
@@ -109,7 +110,7 @@ export default function WizardLivePreview({
           <span className="flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-md bg-background px-2.5 py-1 text-[10px] text-muted-foreground">
             <LockIcon className="size-2.5 shrink-0" />
             <span className="truncate">
-              {subdomain}.featul.com{showHelp ? "/help" : ""}
+              {workspaceHost(subdomain)}{showHelp ? "/help" : ""}
             </span>
           </span>
           {/* Balances the window dots, so the address sits in the true centre. */}

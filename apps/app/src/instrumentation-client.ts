@@ -3,10 +3,11 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import { SENTRY_DSN } from "./lib/sentry";
 import { startAnalyticsConsent } from "./lib/posthog";
 
 Sentry.init({
-  dsn: "https://556e2890d3864557b454c237ffc80638@o4510728807055360.ingest.de.sentry.io/4510728808759376",
+  dsn: SENTRY_DSN,
 
   // Add optional integrations for additional features
   integrations: [Sentry.replayIntegration()],

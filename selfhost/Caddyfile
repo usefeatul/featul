@@ -1,0 +1,20 @@
+{
+	email {$ACME_EMAIL}
+	# Certificates are issued on first visit, and only for hosts the app vouches for:
+	# the app itself, existing workspace subdomains, and verified custom domains.
+	on_demand_tls {
+		ask http://app:3000/api/selfhost/tls
+	}
+}
+
+https:// {
+	tls {
+		on_demand
+	}
+	encode zstd gzip
+	reverse_proxy app:3000
+}
+
+http:// {
+	redir https://{host}{uri} permanent
+}
