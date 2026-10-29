@@ -1,5 +1,6 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { upstashCredentials } from "@featul/auth/upstash";
 import { HTTPException } from "hono/http-exception";
 import { getClientIp } from "../request/ip";
 import { getRequestFingerprint } from "../request/fingerprint";
@@ -86,8 +87,7 @@ export function applyRateLimitHeaders(
   }
 }
 
-const url = String(process.env.UPSTASH_REDIS_REST_URL || "").trim();
-const token = String(process.env.UPSTASH_REDIS_REST_TOKEN || "").trim();
+const { url, token } = upstashCredentials();
 
 if (apiRateLimitEnabled && (!url || !token)) {
   throw new Error("Missing UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN");

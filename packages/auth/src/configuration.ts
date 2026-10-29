@@ -1,18 +1,34 @@
 import { trustedIpHeaders } from "./ip"
+import { isSelfHosted, readEnv } from "./selfhost"
+import { upstashCredentials } from "./upstash"
 
 type Environment = Record<string, string | undefined>
 
+const cloudOnlyRequired = ["RESEND_API_KEY", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET",
+  "STRIPE_PRICE_ID_STARTER_MONTHLY", "STRIPE_PRICE_ID_STARTER_YEARLY",
+  "STRIPE_PRICE_ID_PROFESSIONAL_MONTHLY", "STRIPE_PRICE_ID_PROFESSIONAL_YEARLY",
+  "R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET", "R2_PRIVATE_BUCKET", "R2_PUBLIC_BASE_URL"]
+
 /** Return variable names only; credentials must never be included in errors. */
-export function productionConfigurationErrors(env: Environment): string[] {
-  const required = ["DATABASE_URL", "BETTER_AUTH_SECRET", "BETTER_AUTH_URL", "NEXT_PUBLIC_APP_URL", "RESEND_API_KEY", "CRON_SECRET",
-    "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET",
-    "STRIPE_PRICE_ID_STARTER_MONTHLY", "STRIPE_PRICE_ID_STARTER_YEARLY",
-    "STRIPE_PRICE_ID_PROFESSIONAL_MONTHLY", "STRIPE_PRICE_ID_PROFESSIONAL_YEARLY",
-    "R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET", "R2_PRIVATE_BUCKET", "R2_PUBLIC_BASE_URL"]
+export function productionConfigurationErrors(rawEnv: Environment): string[] {
+  // Self-hosted installs have no billing, and email and uploads are optional; their URLs and
+  // Redis credentials may come from FEATUL_DOMAIN and the Vercel Upstash integration.
+  const selfHosted = isSelfHosted(rawEnv)
+  const upstash = upstashCredentials(rawEnv)
+  const env: Environment = {
+    ...rawEnv,
+    BETTER_AUTH_URL: readEnv("BETTER_AUTH_URL", rawEnv),
+    NEXT_PUBLIC_APP_URL: readEnv("NEXT_PUBLIC_APP_URL", rawEnv),
+    UPSTASH_REDIS_REST_URL: upstash.url,
+    UPSTASH_REDIS_REST_TOKEN: upstash.token,
+  }
+  const required = ["DATABASE_URL", "BETTER_AUTH_SECRET", "BETTER_AUTH_URL", "NEXT_PUBLIC_APP_URL", "CRON_SECRET",
+    "UPSTASH_REDIS_REST_URL", "UPSTASH_REDIS_REST_TOKEN", ...(selfHosted ? [] : cloudOnlyRequired)]
   const errors = required.filter(key => !env[key]?.trim()).map(key => `${key} is required`)
   if (!trustedIpHeaders({ ...env, NODE_ENV: "production" }).length) errors.push("TRUSTED_PROXY_IP_HEADER is required outside Vercel")
   if (env.R2_PRIVATE_BUCKET && env.R2_PRIVATE_BUCKET === env.R2_BUCKET) errors.push("R2_PRIVATE_BUCKET must differ from the public bucket")
-  for (const key of ["BETTER_AUTH_URL", "NEXT_PUBLIC_APP_URL", "R2_PUBLIC_BASE_URL", "UPSTASH_REDIS_REST_URL"]) {
+  // Docker self-hosts reach Redis over the private compose network.
+  for (const key of ["BETTER_AUTH_URL", "NEXT_PUBLIC_APP_URL", "R2_PUBLIC_BASE_URL", ...(selfHosted ? [] : ["UPSTASH_REDIS_REST_URL"])]) {
     if (!env[key]) continue
     try {
       const url = new URL(env[key]!)

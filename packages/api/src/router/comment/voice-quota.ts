@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis";
+import { upstashCredentials } from "@featul/auth/upstash";
 import { HTTPException } from "hono/http-exception";
 import { normalizePlan } from "../../shared/plan";
 
@@ -19,8 +20,7 @@ return used`;
 const REFUND_VOICE = `local used = tonumber(redis.call('GET', KEYS[1]) or '0') if used > 0 then redis.call('DECR', KEYS[1]) end return 0`;
 
 function getRedis() {
-  const url = String(process.env.UPSTASH_REDIS_REST_URL || "").trim();
-  const token = String(process.env.UPSTASH_REDIS_REST_TOKEN || "").trim();
+  const { url, token } = upstashCredentials();
   return url && token ? new Redis({ url, token }) : null;
 }
 

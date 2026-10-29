@@ -62,7 +62,11 @@ Run Featul on your own server with one command:
 curl -fsSL https://raw.githubusercontent.com/usefeatul/featul/main/selfhost/install.sh | bash
 ```
 
-You need Docker and a domain pointed at the server. See [selfhost/README.md](selfhost/README.md) for requirements, configuration, upgrades, and backups.
+Or deploy it to Vercel (Pro plan), with a Neon database and Upstash Redis set up for you:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fusefeatul%2Ffeatul&root-directory=apps%2Fapp&project-name=featul&repository-name=featul&env=FEATUL_DOMAIN%2CBETTER_AUTH_SECRET%2CCRON_SECRET&envDescription=Needs%20Vercel%20Pro.%20FEATUL_DOMAIN%20is%20where%20Featul%20will%20live%2C%20e.g.%20feedback.yourcompany.com.%20Generate%20BETTER_AUTH_SECRET%20and%20CRON_SECRET%20with%3A%20openssl%20rand%20-hex%2032&envLink=https%3A%2F%2Fgithub.com%2Fusefeatul%2Ffeatul%2Fblob%2Fmain%2Fselfhost%2FREADME.md%23deploy-to-vercel&stores=%5B%7B%22type%22%3A%22integration%22%2C%22protocol%22%3A%22storage%22%2C%22integrationSlug%22%3A%22neon%22%2C%22productSlug%22%3A%22neon%22%7D%2C%7B%22type%22%3A%22integration%22%2C%22protocol%22%3A%22storage%22%2C%22integrationSlug%22%3A%22upstash%22%2C%22productSlug%22%3A%22upstash-kv%22%7D%5D)
+
+Either way you need a domain. See [selfhost/README.md](selfhost/README.md) for requirements, configuration, upgrades, and backups.
 
 ## Setup
 

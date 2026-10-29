@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis";
+import { upstashCredentials } from "@featul/auth/upstash";
 import { HTTPException } from "hono/http-exception";
 import { normalizePlan } from "../shared/plan";
 
@@ -23,8 +24,7 @@ export async function reserveAiRequest(
   workspaceId: string,
   plan: string,
 ): Promise<() => Promise<void>> {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const { url, token } = upstashCredentials();
   if (!url || !token)
     throw new HTTPException(503, {
       message: "AI usage tracking is unavailable",
