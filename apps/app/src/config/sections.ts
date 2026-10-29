@@ -67,6 +67,12 @@ export const SECTIONS: SettingsSection[] = [
     desc: "Connect external tools",
   },
   {
+    value: "developers",
+    group: "Connections",
+    label: "Developers",
+    desc: "API keys for the REST API and MCP server",
+  },
+  {
     value: "data",
     group: "Connections",
     label: "Data",

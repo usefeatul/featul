@@ -8,6 +8,7 @@ import HelpCenterSection from "../help/HelpCenter";
 import BillingSection from "../billing/Billing";
 import DomainSection from "../domain/Domain";
 import IntegrationsSection from "../integrations/Integrations";
+import DevelopersSection from "../developers/Developers";
 
 import DataSection from "../data/Data";
 import WorkspaceSection from "../workspace/Workspace";
@@ -236,6 +237,8 @@ function SectionRenderer({
       );
     case "integrations":
       return <IntegrationsSection slug={slug} plan={initialPlan} initialIntegrations={initialIntegrations} />;
+    case "developers":
+      return <DevelopersSection slug={slug} plan={initialPlan} />;
 
     case "workspace":
       return (
