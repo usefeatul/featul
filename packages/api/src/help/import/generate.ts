@@ -69,6 +69,53 @@ function parseProposal(value: unknown): HelpProposal {
   return proposalSchema.parse({ collections, articles });
 }
 
+/**
+ * Constrains the reply to valid JSON. Without it the model now and then leaves a `"` unescaped
+ * inside an article body, and the whole draft fails to parse.
+ */
+const PROPOSAL_RESPONSE_FORMAT = {
+  type: "json_schema",
+  json_schema: {
+    name: "help_center_draft",
+    strict: true,
+    schema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["collections", "articles"],
+      properties: {
+        collections: {
+          type: "array",
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["name", "description", "icon"],
+            properties: {
+              name: { type: "string" },
+              description: { type: "string" },
+              icon: { type: "string", enum: [...HELP_COLLECTION_ICONS] },
+            },
+          },
+        },
+        articles: {
+          type: "array",
+          items: {
+            type: "object",
+            additionalProperties: false,
+            required: ["title", "summary", "collection", "body", "sources"],
+            properties: {
+              title: { type: "string" },
+              summary: { type: "string" },
+              collection: { type: "string" },
+              body: { type: "string" },
+              sources: { type: "array", items: { type: "string" } },
+            },
+          },
+        },
+      },
+    },
+  },
+} as const;
+
 const SOURCE_BUDGET = 70_000;
 
 export type ExistingHelpContent = {
@@ -168,6 +215,9 @@ export async function draftHelpCenter(input: {
       ],
       temperature: 0.3,
       max_tokens: Math.min(32_000, 1_400 * input.maxArticles + 1_200),
+      response_format: PROPOSAL_RESPONSE_FORMAT,
+      // Only route to providers that honour the schema.
+      provider: { require_parameters: true },
     },
     (text) => {
       raw += text;

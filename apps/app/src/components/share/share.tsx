@@ -8,7 +8,9 @@ import Signature from "./signature";
 import Messages from "./messages";
 import Embed from "./embed";
 import Social from "./social";
-import BoardPreview, { type PreviewPost } from "./preview";
+import BoardPreview from "./preview";
+import type { RequestItemData } from "@/types/request";
+import type { SubdomainLayoutData } from "@/app/[subdomain]/data";
 import ShareSection from "./section";
 
 export default function Share({
@@ -19,7 +21,8 @@ export default function Share({
   userName,
   userImage,
   logo,
-  topPosts,
+  posts,
+  portal,
   links,
 }: {
   workspaceId: string;
@@ -29,7 +32,8 @@ export default function Share({
   userName: string;
   userImage?: string | null;
   logo?: string | null;
-  topPosts: PreviewPost[];
+  posts: RequestItemData[];
+  portal: SubdomainLayoutData | null;
   links: ShareLink[];
 }) {
   const displayUrl = boardUrl.replace(/^https?:\/\//, "");
@@ -88,9 +92,11 @@ export default function Share({
             </div>
             <BoardPreview
               name={name}
+              slug={slug}
               logo={logo}
               displayUrl={displayUrl}
-              posts={topPosts}
+              posts={posts}
+              portal={portal}
             />
           </div>
         </div>
