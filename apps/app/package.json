@@ -34,7 +34,7 @@
     "effect": "^3.22.2",
     "elysia": "^1.4.30",
     "emoji-picker-react": "^5.0.0",
-    "framer-motion": "^12.43.0",
+    "framer-motion": "^14.6.0",
     "hono": "^4.13.13",
     "jstack": "^1.1.1",
     "lucide-react": "^0.544.0",
